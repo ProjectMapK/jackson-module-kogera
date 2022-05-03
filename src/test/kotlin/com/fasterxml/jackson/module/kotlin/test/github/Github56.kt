@@ -5,12 +5,11 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
 import com.fasterxml.jackson.module.kotlin.*
-import org.junit.Before
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
-
-class TestGithub56 {
+private class TestGithub56 {
 
     private data class TestGalleryWidget_BAD(
             val widgetReferenceId: String,
@@ -40,7 +39,7 @@ class TestGithub56 {
             val crops: Map<String, String>? = null
     )
 
-    lateinit var mapper: ObjectMapper
+    val mapper: ObjectMapper = jacksonObjectMapper()
 
     private val gallery = TestGallery(
             id = "id",
@@ -56,20 +55,15 @@ class TestGithub56 {
          {"widgetReferenceId":"widgetReferenceId","id":"id","headline":"headline","intro":"intro","role":"role","images":[{"id":"testImage1"},{"id":"testImage2"}]}
     """.trim()
 
-    @Before
-    fun setUp() {
-        mapper = jacksonObjectMapper()
-    }
-
     @Test
     fun serializes() {
         val result = mapper.writeValueAsString(TestGalleryWidget_BAD("widgetReferenceId", gallery))
         assertEquals(validJson, result)
     }
 
-    @Test(expected = InvalidDefinitionException::class)
+    @Test
     fun deserializesWithError() {
-        mapper.readValue<TestGalleryWidget_BAD>(validJson)
+        assertThrows<InvalidDefinitionException> { mapper.readValue<TestGalleryWidget_BAD>(validJson) }
     }
 
     @Test

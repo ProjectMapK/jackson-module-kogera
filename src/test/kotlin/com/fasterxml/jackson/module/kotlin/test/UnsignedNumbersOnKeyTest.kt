@@ -3,10 +3,10 @@ package com.fasterxml.jackson.module.kotlin.test
 import com.fasterxml.jackson.core.exc.InputCoercionException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.junit.Assert.assertThrows
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.math.BigInteger
-import kotlin.test.assertEquals
 
 internal class UnsignedNumbersOnKeyTest {
     companion object {
@@ -24,14 +24,14 @@ internal class UnsignedNumbersOnKeyTest {
 
         @Test
         fun overflow() {
-            assertThrows(InputCoercionException::class.java) {
+            assertThrows<InputCoercionException> {
                 MAPPER.readValue<Map<UByte, UByte>>(makeSrc(UByte.MAX_VALUE.toInt() + 1))
             }
         }
 
         @Test
         fun underflow() {
-            assertThrows(InputCoercionException::class.java) {
+            assertThrows<InputCoercionException> {
                 MAPPER.readValue<Map<UByte, UByte>>(makeSrc(-1))
             }
         }
@@ -48,14 +48,14 @@ internal class UnsignedNumbersOnKeyTest {
 
         @Test
         fun overflow() {
-            assertThrows(InputCoercionException::class.java) {
+            assertThrows<InputCoercionException> {
                 MAPPER.readValue<Map<UShort, UShort>>(makeSrc(UShort.MAX_VALUE.toInt() + 1))
             }
         }
 
         @Test
         fun underflow() {
-            assertThrows(InputCoercionException::class.java) {
+            assertThrows<InputCoercionException> {
                 MAPPER.readValue<Map<UShort, UShort>>(makeSrc(-1))
             }
         }
@@ -72,14 +72,14 @@ internal class UnsignedNumbersOnKeyTest {
 
         @Test
         fun overflow() {
-            assertThrows(InputCoercionException::class.java) {
+            assertThrows<InputCoercionException> {
                 MAPPER.readValue<Map<UInt, UInt>>(makeSrc(UInt.MAX_VALUE.toLong() + 1L))
             }
         }
 
         @Test
         fun underflow() {
-            assertThrows(InputCoercionException::class.java) {
+            assertThrows<InputCoercionException> {
                 MAPPER.readValue<Map<UInt, UInt>>(makeSrc(-1L))
             }
         }
@@ -96,14 +96,14 @@ internal class UnsignedNumbersOnKeyTest {
 
         @Test
         fun overflow() {
-            assertThrows(InputCoercionException::class.java) {
+            assertThrows<InputCoercionException> {
                 MAPPER.readValue<Map<ULong, ULong>>(makeSrc(BigInteger(ULong.MAX_VALUE.toString()) + BigInteger.ONE))
             }
         }
 
         @Test
         fun underflow() {
-            assertThrows(InputCoercionException::class.java) {
+            assertThrows<InputCoercionException> {
                 MAPPER.readValue<Map<ULong, ULong>>(makeSrc(BigInteger.valueOf(-1L)))
             }
         }

@@ -11,47 +11,55 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.junit.Ignore
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 
 class Github464 {
-    class UnboxTest {
-        object NullValueClassKeySerializer : StdSerializer<ValueClass>(ValueClass::class.java) {
-            override fun serialize(value: ValueClass?, gen: JsonGenerator, provider: SerializerProvider) {
-                gen.writeFieldName("null-key")
-            }
+    object NullValueClassKeySerializer : StdSerializer<ValueClass>(ValueClass::class.java) {
+        override fun serialize(value: ValueClass?, gen: JsonGenerator, provider: SerializerProvider) {
+            gen.writeFieldName("null-key")
         }
+    }
 
-        interface IValue
-        @JvmInline
-        value class ValueClass(val value: Int?) : IValue
-        data class WrapperClass(val inlineField: ValueClass)
+    interface IValue
+    @JvmInline
+    value class ValueClass(val value: Int?) : IValue
+    data class WrapperClass(val inlineField: ValueClass)
 
-        abstract class AbstractGetter<T> {
-            abstract val qux: T
+    abstract class AbstractGetter<T> {
+        abstract val qux: T
 
-            fun <T> getPlugh() = qux
+        fun <T> getPlugh() = qux
+    }
+    interface IGetter<T> {
+        val quux: T
+
+        fun <T> getXyzzy() = quux
+    }
+
+    class Poko(
+        val foo: ValueClass,
+        val bar: ValueClass?,
+        val baz: IValue,
+        override val qux: ValueClass,
+        override val quux: ValueClass,
+        val corge: Collection<ValueClass?>,
+        val grault: Array<ValueClass?>,
+        val garply: WrapperClass,
+        val waldo: WrapperClass?,
+        val fred: Map<ValueClass, ValueClass?>
+    ) : AbstractGetter<ValueClass>(), IGetter<ValueClass>
+
+    object NullValueSerializer : StdSerializer<Any>(Any::class.java) {
+        override fun serialize(value: Any?, gen: JsonGenerator, provider: SerializerProvider) {
+            gen.writeString("null-value")
         }
-        interface IGetter<T> {
-            val quux: T
+    }
 
-            fun <T> getXyzzy() = quux
-        }
-
-
-        class Poko(
-            val foo: ValueClass,
-            val bar: ValueClass?,
-            val baz: IValue,
-            override val qux: ValueClass,
-            override val quux: ValueClass,
-            val corge: Collection<ValueClass?>,
-            val grault: Array<ValueClass?>,
-            val garply: WrapperClass,
-            val waldo: WrapperClass?,
-            val fred: Map<ValueClass, ValueClass?>
-        ) : AbstractGetter<ValueClass>(), IGetter<ValueClass>
+    @Nested
+    inner class UnboxTest {
 
         private val zeroValue = ValueClass(0)
         private val oneValue = ValueClass(1)
@@ -102,12 +110,6 @@ class Github464 {
                 """.trimIndent(),
                 writer.writeValueAsString(target)
             )
-        }
-
-        object NullValueSerializer : StdSerializer<Any>(Any::class.java) {
-            override fun serialize(value: Any?, gen: JsonGenerator, provider: SerializerProvider) {
-                gen.writeString("null-value")
-            }
         }
 
         @Test
@@ -177,7 +179,7 @@ class Github464 {
         // Currently, there is a situation where the serialization results are different depending on the registration order of the modules.
         // This problem is not addressed because the serializer registered by the user has priority over Extensions.kt,
         // since KotlinModule is basically registered first.
-        @Ignore
+        @Disabled
         @Test
         fun priorityTest() {
             val km = KotlinModule.Builder().build()

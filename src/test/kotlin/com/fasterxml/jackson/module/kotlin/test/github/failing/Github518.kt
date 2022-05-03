@@ -6,8 +6,8 @@ import com.fasterxml.jackson.module.kotlin.jsonMapper
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.test.expectFailure
-import kotlin.test.assertSame
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertSame
+import org.junit.jupiter.api.Test
 
 /**
  * An empty object should be deserialized as *the* Unit instance for a nullable Unit reference Type.

@@ -1,11 +1,12 @@
 package com.fasterxml.jackson.module.kotlin.test.github
 
 import com.fasterxml.jackson.module.kotlin.*
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class TestGithub15 {
-    @Test fun testEnumConstructorWithParm() {
+    @Test
+    fun testEnumConstructorWithParm() {
         val one = jacksonObjectMapper().readValue("\"ONE\"", TestEnum::class.java)
         assertEquals(TestEnum.ONE, one)
         val two = jacksonObjectMapper().readValue("\"TWO\"", TestEnum::class.java)

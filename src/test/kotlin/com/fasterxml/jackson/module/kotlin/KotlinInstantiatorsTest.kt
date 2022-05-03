@@ -1,8 +1,10 @@
 package com.fasterxml.jackson.module.kotlin
 
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
-import org.junit.Assert.*
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class KotlinInstantiatorsTest {
     private val mapper = jacksonObjectMapper()
@@ -54,7 +56,7 @@ class KotlinInstantiatorsTest {
             mapper.constructType(DefaultClass::class.java)
         ) {}
 
-        assertThrows(IllegalStateException::class.java) {
+        assertThrows<IllegalStateException> {
             kotlinInstantiators.findValueInstantiator(
                 deserConfig,
                 deserConfig.introspect(mapper.constructType(TestClass::class.java)),

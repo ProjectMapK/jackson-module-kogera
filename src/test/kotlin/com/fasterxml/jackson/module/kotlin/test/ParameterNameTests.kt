@@ -6,16 +6,14 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.*
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.fail
+import org.junit.jupiter.api.Test
 import java.io.StringWriter
 import java.util.*
 import kotlin.properties.Delegates
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
-import kotlin.test.fail
 
 class TestJacksonWithKotlin {
 
@@ -33,11 +31,11 @@ class TestJacksonWithKotlin {
             wrongNameField: Boolean = wrongName,
             createDtField: Date = createdDt
         ) {
-            assertThat(nameField, equalTo("Frank"))
-            assertThat(ageField, equalTo(30))
-            assertThat(addressField, equalTo("something here"))
-            assertThat(wrongNameField, equalTo(true))
-            assertThat(createDtField, equalTo(Date(1477419948000)))
+            assertEquals("Frank", nameField)
+            assertEquals(30, ageField)
+            assertEquals("something here", addressField)
+            assertEquals(true, wrongNameField)
+            assertEquals(Date(1477419948000), createDtField)
         }
     }
 
@@ -67,7 +65,8 @@ class TestJacksonWithKotlin {
         override var createdDt: Date = Date()
     }
 
-    @Test fun NoFailWithDefaultAndSpecificConstructor() {
+    @Test
+    fun NoFailWithDefaultAndSpecificConstructor() {
         val stateObj = normalCasedMapper.readValue<DefaultAndSpecificConstructor>(normalCasedJson)
         stateObj.validate()
     }
@@ -111,7 +110,7 @@ class TestJacksonWithKotlin {
         val test1out = StringWriter()
         normalCasedMapper.writeValue(test1out, stateObj)
 
-        assertThat(test1out.getBuffer().toString(), equalTo(normalCasedJson))
+        assertEquals(normalCasedJson, test1out.getBuffer().toString())
     }
 
     // ==================
@@ -131,7 +130,7 @@ class TestJacksonWithKotlin {
         stateObj.validate()
 
         val test1out = normalCasedMapper.writeValueAsString(stateObj)
-        assertThat(test1out, equalTo(normalCasedJson))
+        assertEquals(normalCasedJson, test1out)
     }
 
     // ==================
@@ -196,7 +195,7 @@ class TestJacksonWithKotlin {
         stateObj.validate()
 
         val test1out = pascalCasedMapper.writeValueAsString(stateObj)
-        assertThat(test1out, equalTo(pascalCasedJson))
+        assertEquals(pascalCasedJson, test1out)
     }
 
 
@@ -228,7 +227,7 @@ class TestJacksonWithKotlin {
     @Test fun findingFactoryMethod() {
         val stateObj = normalCasedMapper.readValue(normalCasedJson, StateObjectWithFactory::class.java)
         stateObj.validate()
-        assertThat(stateObj.factoryUsed, equalTo(true))
+        assertEquals(true, stateObj.factoryUsed)
     }
 
     private class StateObjectWithFactoryNoParamAnnotations(
@@ -287,7 +286,7 @@ class TestJacksonWithKotlin {
     @Test fun findingFactoryMethod3() {
         val stateObj = normalCasedMapper.readValue(normalCasedJson, StateObjectWithFactoryOnNamedCompanion::class.java)
         stateObj.validate()
-        assertThat(stateObj.factoryUsed, equalTo(true))
+        assertTrue(stateObj.factoryUsed)
     }
 
     // GH #14 failing due to this enum type

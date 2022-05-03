@@ -3,8 +3,8 @@ package com.fasterxml.jackson.module.kotlin.test.github
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class TestGithub356 {
     private val mapper = jacksonObjectMapper()
@@ -13,7 +13,7 @@ class TestGithub356 {
     fun deserializeInlineClass() {
         assertEquals(
             ClassWithInlineMember(InlineClass("bar")),
-            mapper.readValue("""{"inlineClassProperty":"bar"}""")
+            mapper.readValue<ClassWithInlineMember>("""{"inlineClassProperty":"bar"}""")
         )
     }
 
@@ -29,7 +29,7 @@ class TestGithub356 {
     fun deserializeValueClass() {
         assertEquals(
             ClassWithValueMember(ValueClass("bar")),
-            mapper.readValue("""{"valueClassProperty":"bar"}""")
+            mapper.readValue<ClassWithValueMember>("""{"valueClassProperty":"bar"}""")
         )
     }
 

@@ -7,9 +7,8 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import com.fasterxml.jackson.module.kotlin.test.expectFailure
-import com.fasterxml.jackson.module.kotlin.test.github.TestGithub153.MyPojo
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class TestGithub153 {
     @JacksonXmlRootElement(localName = "MyPojo")

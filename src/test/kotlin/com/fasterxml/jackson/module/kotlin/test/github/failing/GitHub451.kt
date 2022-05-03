@@ -1,10 +1,10 @@
 package com.fasterxml.jackson.module.kotlin.test.github.failing
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.test.expectFailure
-import org.junit.ComparisonFailure
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.opentest4j.AssertionFailedError
 
 class GitHub451 {
     data class Target(
@@ -25,7 +25,8 @@ class GitHub451 {
 
         val src = Target("a", "b")
         val json = mapper.writeValueAsString(src)
-        expectFailure<ComparisonFailure>("GitHub #451 has been fixed!") {
+
+        assertThrows<AssertionFailedError>("GitHub #451 has been fixed!") {
             assertEquals(expected, json)
         }
     }

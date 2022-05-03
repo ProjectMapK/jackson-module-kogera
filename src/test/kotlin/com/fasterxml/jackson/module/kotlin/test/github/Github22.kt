@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class TestGithub22 {
     class StringValue constructor(s: String) {
@@ -18,7 +18,8 @@ class TestGithub22 {
         @JsonValue override fun toString() = s
     }
 
-    @Test fun testJsonValueNoMatchingMemberWithConstructor() {
+    @Test
+    fun testJsonValueNoMatchingMemberWithConstructor() {
         val expectedJson = "\"test\""
         val expectedObj = StringValue("test")
 

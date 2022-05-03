@@ -2,9 +2,8 @@ package com.fasterxml.jackson.module.kotlin.test
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.junit.Test
-import kotlin.test.assertEquals
-
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class TestSequenceDeserializer {
     data class Data(val value: Sequence<String>)

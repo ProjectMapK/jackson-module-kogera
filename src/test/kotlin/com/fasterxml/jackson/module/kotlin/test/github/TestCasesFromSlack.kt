@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.*
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class TestCasesFromSlack1 {
     data class Host @JsonCreator constructor(
@@ -25,7 +25,8 @@ class TestCasesFromSlack1 {
         going("rsvp.going"), maybe("rsvp.maybe"), interested("rsvp.interested")
     }
 
-    @Test fun testCzarSpringThing1() {
+    @Test
+    fun testCzarSpringThing1() {
         ObjectMapper().readValue<Event>("""
            {"host":{"id":"host123","name":"A Czar"},"activity":"Kotlin Programming","invited":[{"id":"Guest1","name":"Mr Kotlin","rsvp": "going"}]}
         """)

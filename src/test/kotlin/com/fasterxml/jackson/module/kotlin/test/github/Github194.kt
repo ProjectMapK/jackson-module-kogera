@@ -3,9 +3,9 @@ package com.fasterxml.jackson.module.kotlin.test.github
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import java.util.UUID
-import kotlin.test.assertEquals
 
 class TestGithub194 {
     val id: UUID = UUID.fromString("149800a6-7855-4e09-9185-02e442da8013")

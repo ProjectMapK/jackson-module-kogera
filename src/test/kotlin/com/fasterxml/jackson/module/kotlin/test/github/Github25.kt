@@ -3,9 +3,9 @@ package com.fasterxml.jackson.module.kotlin.test.github
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.module.kotlin.*
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import kotlin.properties.Delegates
-import kotlin.test.assertEquals
 
 class TestGithub25 {
     @JsonPropertyOrder(alphabetic = true)
@@ -24,7 +24,8 @@ class TestGithub25 {
         }
     }
 
-    @Test fun testSerWithDelegates() {
+    @Test
+    fun testSerWithDelegates() {
         val json = jacksonObjectMapper().writeValueAsString(SomethingWithDelegates(linkedMapOf("otherData1" to "1", "otherData2" to "2", "otherData3" to "3"))
                 .withOtherData("exists"))
         assertEquals("""{"data":{"otherData1":"1","otherData2":"2","otherData3":"3"},"changeable":"starting value","name":"fred","somethingNotNull":"exists"}""", json)

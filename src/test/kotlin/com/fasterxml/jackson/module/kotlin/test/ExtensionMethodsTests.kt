@@ -10,17 +10,17 @@ import com.fasterxml.jackson.module.kotlin.minusAssign
 import com.fasterxml.jackson.module.kotlin.plusAssign
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.treeToValue
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
-class TestExtensionMethods {
+private class TestExtensionMethods {
     val mapper: ObjectMapper = jacksonObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, false)
 
     data class BasicPerson(val name: String, val age: Int)
 
-    @Test fun testAllInferenceForms() {
+    @Test
+    fun testAllInferenceForms() {
         val json = """{"name":"John Smith","age":30}"""
 
         val inferRightSide = mapper.readValue<BasicPerson>(json)
@@ -29,9 +29,9 @@ class TestExtensionMethods {
 
         val expectedPerson = BasicPerson("John Smith", 30)
 
-        assertThat(inferRightSide, equalTo(expectedPerson))
-        assertThat(inferLeftSide, equalTo(expectedPerson))
-        assertThat(person, equalTo(expectedPerson))
+        assertEquals(expectedPerson, inferRightSide)
+        assertEquals(expectedPerson, inferLeftSide)
+        assertEquals(expectedPerson, person)
     }
 
     data class MyData(val a: String, val b: Int)
@@ -39,7 +39,7 @@ class TestExtensionMethods {
     @Test fun testStackOverflow33368328() {
         val jsonStr = """[{"a": "value1", "b": 1}, {"a": "value2", "b": 2}]"""
         val myList: List<MyData> = mapper.readValue(jsonStr)
-        assertThat(myList, equalTo(listOf(MyData("value1", 1), MyData("value2", 2))))
+        assertEquals(listOf(MyData("value1", 1), MyData("value2", 2)), myList)
     }
 
     @Test fun testOperatorFunExtensions() {
@@ -52,8 +52,8 @@ class TestExtensionMethods {
         objectNode -= "foo1"
         objectNode -= listOf("foo2")
 
-        assertThat("foo1" !in objectNode, `is`(true))
-        assertThat("foo3" in objectNode, `is`(true))
+        assertTrue("foo1" !in objectNode)
+        assertTrue("foo3" in objectNode)
 
         val arrayNode = factory.arrayNode()
         arrayNode += "foo"
@@ -62,10 +62,10 @@ class TestExtensionMethods {
         arrayNode += 1.0
         arrayNode += "bar".toByteArray()
 
-        assertThat(arrayNode.size(), `is`(5))
+        assertEquals(5, arrayNode.size())
 
         (4 downTo 0).forEach { arrayNode -= it }
-        assertThat(arrayNode.size(), `is`(0))
+        assertEquals(0, arrayNode.size())
     }
 
     @Test fun noTypeErasure(){
@@ -74,12 +74,12 @@ class TestExtensionMethods {
         val tree = mapper.readTree(source)
 
         val readValueResult: List<Person> = mapper.readValue(source)
-        assertThat(readValueResult, `is`(listOf(Person("Neo"))))
+        assertEquals(listOf(Person("Neo")), readValueResult)
 
         val treeToValueResult: List<Person> = mapper.treeToValue(tree)
-        assertThat(treeToValueResult, `is`(listOf(Person("Neo"))))
+        assertEquals(listOf(Person("Neo")), treeToValueResult)
 
         val convertValueResult: List<Person> = mapper.convertValue(tree)
-        assertThat(convertValueResult, `is`(listOf(Person("Neo"))))
+        assertEquals(listOf(Person("Neo")), convertValueResult)
     }
 }

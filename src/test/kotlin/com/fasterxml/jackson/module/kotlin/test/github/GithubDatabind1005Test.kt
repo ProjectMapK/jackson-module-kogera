@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class TestGithubDatabind1005 {
 
@@ -16,7 +16,8 @@ class TestGithubDatabind1005 {
         val age: Int = age
     }
 
-    @Test fun testSyntheticGeneratedConstructorIsIgnored() {
+    @Test
+    fun testSyntheticGeneratedConstructorIsIgnored() {
         ObjectMapper().readValue<Something>("""{"name":"fred","age":99}""")
     }
 }

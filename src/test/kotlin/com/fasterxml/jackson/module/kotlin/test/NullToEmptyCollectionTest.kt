@@ -3,8 +3,8 @@ package com.fasterxml.jackson.module.kotlin.test
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.NullToEmptyCollection
 import com.fasterxml.jackson.module.kotlin.kotlinModule
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class TestNullToEmptyCollection {
 
@@ -19,8 +19,8 @@ class TestNullToEmptyCollection {
     @Test
     fun shouldMapNullValuesToEmpty() {
         val mapper = createMapper()
-        assertEquals(emptyList(), mapper.readValue("{}", TestClass::class.java).foo)
-        assertEquals(emptyList(), mapper.readValue("""{"foo": null}""", TestClass::class.java).foo)
+        assertEquals(emptyList<Int>(), mapper.readValue("{}", TestClass::class.java).foo)
+        assertEquals(emptyList<Int>(), mapper.readValue("""{"foo": null}""", TestClass::class.java).foo)
 
     }
 

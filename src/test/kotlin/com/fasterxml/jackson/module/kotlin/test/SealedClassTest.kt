@@ -7,9 +7,9 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.test.SealedClassTest.SuperClass.B
-import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 class SealedClassTest {
     private val mapper = jacksonObjectMapper()
@@ -50,8 +50,7 @@ class SealedClassTest {
     fun sealedClassWithoutTypeDiscriminator() {
         val serializedSingle = """{"request":"single"}"""
         val single = mapper.readValue(serializedSingle, SealedRequest::class.java)
-        assertTrue(single is SealedRequest.SingleRequest)
-        assertEquals("single", single.request)
+        assertEquals("single", (single as? SealedRequest.SingleRequest)?.request)
     }
 
     /**
@@ -61,8 +60,7 @@ class SealedClassTest {
     fun sealedClassWithoutTypeDiscriminatorList() {
         val serializedBatch = """[{"request":"first"},{"request":"second"}]"""
         expectFailure<MismatchedInputException>("Deserializing a list using deduction is fixed!") {
-            val batch = mapper.readValue(serializedBatch, SealedRequest::class.java)
-            assertTrue(batch is SealedRequest.BatchRequest)
+            val batch = mapper.readValue(serializedBatch, SealedRequest::class.java) as SealedRequest.BatchRequest
             assertEquals(2, batch.requests.size)
             assertEquals("first", batch.requests[0].request)
             assertEquals("second", batch.requests[1].request)

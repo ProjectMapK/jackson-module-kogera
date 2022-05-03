@@ -5,10 +5,9 @@ import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.junit.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
-
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 class TestPropertyRequiredness {
 
@@ -33,7 +32,8 @@ class TestPropertyRequiredness {
         fun setL(value: TestParamClass? = TestParamClass()): Unit {}
     }
 
-    @Test fun shouldHandleFalseFailOnNullForPrimitives() {
+    @Test
+    fun shouldHandleFalseFailOnNullForPrimitives() {
         val mapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
         val testClass = TestClass::class.java
         "a".isOptionalForDeserializationOf(testClass, mapper)
@@ -160,27 +160,31 @@ class TestPropertyRequiredness {
     }
 
     private fun String.isRequiredForSerializationOf(type: Class<*>, mapper: ObjectMapper) {
-        assertTrue("Property $this should be required for serialization!"){
-            introspectSerialization(type, mapper).isRequired(this)
-        }
+        assertTrue(
+            introspectSerialization(type, mapper).isRequired(this),
+            "Property $this should be required for serialization!"
+        )
     }
 
     private fun String.isRequiredForDeserializationOf(type: Class<*>, mapper: ObjectMapper) {
-        assertTrue("Property $this should be required for deserialization!"){
-            introspectDeserialization(type, mapper).isRequired(this)
-        }
+        assertTrue(
+            introspectDeserialization(type, mapper).isRequired(this),
+            "Property $this should be required for deserialization!"
+        )
     }
 
     private fun String.isOptionalForSerializationOf(type: Class<*>, mapper: ObjectMapper) {
-        assertFalse("Property $this should be optional for serialization!"){
-            introspectSerialization(type, mapper).isRequired(this)
-        }
+        assertFalse(
+            introspectSerialization(type, mapper).isRequired(this),
+            "Property $this should be optional for serialization!"
+        )
     }
 
     private fun String.isOptionalForDeserializationOf(type: Class<*>, mapper: ObjectMapper) {
-        assertFalse("Property $this should be optional for deserialization of ${type.simpleName}!"){
-            introspectDeserialization(type, mapper).isRequired(this)
-        }
+        assertFalse(
+            introspectDeserialization(type, mapper).isRequired(this),
+            "Property $this should be optional for deserialization of ${type.simpleName}!"
+        )
     }
 
     private fun introspectSerialization(type: Class<*>, mapper: ObjectMapper): BeanDescription =

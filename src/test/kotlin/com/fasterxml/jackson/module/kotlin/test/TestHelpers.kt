@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.kotlin.test
 
-import kotlin.test.fail
+import org.junit.jupiter.api.Assertions.fail
 
 /**
  * Expect a block to throw an exception.  If a different type of exception is thrown or no
@@ -33,5 +33,5 @@ inline fun <reified T : Throwable> expectFailure(
         return
     }
 
-    fail(fixMessage)
+    fail<Nothing>(fixMessage)
 }

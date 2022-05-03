@@ -26,13 +26,21 @@ dependencies {
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations
     implementation("com.fasterxml.jackson.core:jackson-annotations")
 
+    // test libs
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+
+    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 }
 
 kotlin {
     // TODO: enable explicitApi
     // explicitApi()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 tasks {

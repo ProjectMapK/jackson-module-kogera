@@ -1,8 +1,8 @@
 package com.fasterxml.jackson.module.kotlin.test
 
-import org.junit.Assert.assertThrows
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class TestHelpersTest {
     @Test
@@ -14,7 +14,7 @@ class TestHelpersTest {
 
     @Test
     fun expectFailure_AnotherExceptionThrown() {
-        val throwable = assertThrows(AssertionError::class.java) {
+        val throwable = assertThrows<AssertionError> {
             expectFailure<AssertionError>("This will not be printed") {
                 throw Exception("This is not expected")
             }
@@ -26,7 +26,7 @@ class TestHelpersTest {
     @Test
     fun expectFailure_NoExceptionThrown() {
         val fixMessage = "Test will fail with this message"
-        val throwable = assertThrows(AssertionError::class.java) {
+        val throwable = assertThrows<AssertionError> {
             expectFailure<AssertionError>(fixMessage) {
                 // Do nothing
             }

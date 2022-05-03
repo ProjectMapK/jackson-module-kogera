@@ -2,13 +2,14 @@ package com.fasterxml.jackson.module.kotlin.test.github
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 data class ClassWithPrimitivesWithDefaults(val i: Int = 5, val x: Int)
 
 class TestGithub26 {
-    @Test fun testConstructorWithPrimitiveTypesDefaultedExplicitlyAndImplicitly() {
+    @Test
+    fun testConstructorWithPrimitiveTypesDefaultedExplicitlyAndImplicitly() {
         val check1: ClassWithPrimitivesWithDefaults = jacksonObjectMapper().readValue("""{"i":3,"x":2}""")
         assertEquals(3, check1.i)
         assertEquals(2, check1.x)

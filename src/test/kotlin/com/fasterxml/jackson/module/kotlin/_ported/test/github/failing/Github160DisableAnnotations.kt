@@ -1,0 +1,22 @@
+package com.fasterxml.jackson.module.kotlin._ported.test.github.failing
+
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.databind.exc.MismatchedInputException
+import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin._ported.test.expectFailure
+import org.junit.jupiter.api.Test
+
+class TestGithub160 {
+    data class DataClass(val blah: String)
+
+    @Test
+    fun dataClass() {
+        val mapper = jacksonMapperBuilder()
+            .configure(MapperFeature.USE_ANNOTATIONS, false)
+            .build()
+        expectFailure<MismatchedInputException>("GitHub #160 has been fixed!") {
+            mapper.readValue<DataClass>("""{"blah":"blah"}""")
+        }
+    }
+}

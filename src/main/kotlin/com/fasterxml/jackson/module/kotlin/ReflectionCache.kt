@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMember
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.introspect.AnnotatedWithParams
 import com.fasterxml.jackson.databind.util.LRUMap
+import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ConstructorValueCreator
+import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.MethodValueCreator
+import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueCreator
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 import kotlin.reflect.KClass

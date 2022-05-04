@@ -8,6 +8,12 @@ import com.fasterxml.jackson.module.kotlin.KotlinFeature.NullToEmptyMap
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.StrictNullChecks
 import com.fasterxml.jackson.module.kotlin.SingletonSupport.CANONICALIZE
 import com.fasterxml.jackson.module.kotlin.SingletonSupport.DISABLED
+import com.fasterxml.jackson.module.kotlin.deser.deserializers.KotlinDeserializers
+import com.fasterxml.jackson.module.kotlin.deser.deserializers.KotlinKeyDeserializers
+import com.fasterxml.jackson.module.kotlin.deser.singleton_support.KotlinBeanDeserializerModifier
+import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.KotlinInstantiators
+import com.fasterxml.jackson.module.kotlin.ser.serializers.KotlinKeySerializers
+import com.fasterxml.jackson.module.kotlin.ser.serializers.KotlinSerializers
 import java.util.*
 import kotlin.reflect.KClass
 

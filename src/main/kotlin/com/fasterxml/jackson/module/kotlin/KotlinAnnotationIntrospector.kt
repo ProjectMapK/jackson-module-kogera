@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.introspect.*
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
+import com.fasterxml.jackson.module.kotlin.ser.serializers.ValueClassBoxSerializer
+import com.fasterxml.jackson.module.kotlin.ser.serializers.ValueClassStaticJsonValueSerializer
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -91,7 +93,10 @@ internal class KotlinAnnotationIntrospector(private val context: Module.SetupCon
                     val innerClazz = getter.returnType
 
                     ValueClassStaticJsonValueSerializer.createdOrNull(outerClazz, innerClazz)
-                        ?: @Suppress("UNCHECKED_CAST") ValueClassBoxSerializer(outerClazz, innerClazz)
+                        ?: @Suppress("UNCHECKED_CAST") (ValueClassBoxSerializer(
+        outerClazz,
+        innerClazz
+    ))
                 }
         }
         // Ignore the case of AnnotatedField, because JvmField cannot be set in the field of value class.

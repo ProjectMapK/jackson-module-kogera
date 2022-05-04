@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.kotlin
+package com.fasterxml.jackson.module.kotlin.ser.serializers
 
 import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.core.JsonGenerator
@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.SerializationConfig
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
+import com.fasterxml.jackson.module.kotlin.isUnboxableValueClass
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.math.BigInteger

@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.kotlin
+package com.fasterxml.jackson.module.kotlin.deser.deserializers
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken.VALUE_NUMBER_INT
@@ -10,6 +10,10 @@ import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.module.kotlin.asUByte
+import com.fasterxml.jackson.module.kotlin.asUInt
+import com.fasterxml.jackson.module.kotlin.asULong
+import com.fasterxml.jackson.module.kotlin.asUShort
 
 object SequenceDeserializer : StdDeserializer<Sequence<*>>(Sequence::class.java) {
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Sequence<*> {

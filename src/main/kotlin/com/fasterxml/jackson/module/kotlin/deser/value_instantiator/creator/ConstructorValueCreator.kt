@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.kotlin
+package com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator
 
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.isAccessible

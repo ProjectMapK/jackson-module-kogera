@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.kotlin
+package com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator
 
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.MapperFeature
@@ -8,7 +8,7 @@ import kotlin.reflect.full.valueParameters
 
 /**
  * A class that abstracts the creation of instances by calling KFunction.
- * @see KotlinValueInstantiator
+ * @see com.fasterxml.jackson.module.kotlin.deser.value_instantiator
  */
 internal sealed class ValueCreator<T> {
     /**

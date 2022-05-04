@@ -1,10 +1,14 @@
-package com.fasterxml.jackson.module.kotlin
+package com.fasterxml.jackson.module.kotlin.deser.deserializers
 
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.exc.InputCoercionException
 import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer
 import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializers
+import com.fasterxml.jackson.module.kotlin.asUByte
+import com.fasterxml.jackson.module.kotlin.asUInt
+import com.fasterxml.jackson.module.kotlin.asULong
+import com.fasterxml.jackson.module.kotlin.asUShort
 
 // The reason why key is treated as nullable is to match the tentative behavior of StdKeyDeserializer.
 // If StdKeyDeserializer is modified, need to modify this too.

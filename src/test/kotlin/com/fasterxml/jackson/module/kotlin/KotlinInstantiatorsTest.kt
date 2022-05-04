@@ -1,6 +1,8 @@
 package com.fasterxml.jackson.module.kotlin
 
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
+import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.KotlinInstantiators
+import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.KotlinValueInstantiator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

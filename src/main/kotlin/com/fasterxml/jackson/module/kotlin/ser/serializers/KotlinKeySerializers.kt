@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.kotlin
+package com.fasterxml.jackson.module.kotlin.ser.serializers
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.BeanDescription
@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.SerializationConfig
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
+import com.fasterxml.jackson.module.kotlin.isUnboxableValueClass
 
 internal object ValueClassUnboxKeySerializer : StdSerializer<Any>(Any::class.java) {
     override fun serialize(value: Any, gen: JsonGenerator, provider: SerializerProvider) {

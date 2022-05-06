@@ -1,3 +1,13 @@
+# Packaging
+There are three types of tests in `jacksom-module-kogera`: unit tests, integration tests, and tests ported from `jackson-module-kotlin`.
+These are placed in the following packages respectively.
+
+- unit tests: (package in which the test target is located)
+- integration tests: `_integration`
+- ported tests: `_ported`
+
+Do not create new tests in the `_ported` package.
+
 # Failing tests
 
 These are tests for filed issues on GitHub that have not been fixed. Failing tests are good to

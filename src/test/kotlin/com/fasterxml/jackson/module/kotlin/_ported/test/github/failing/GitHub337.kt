@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.MapperFeature.SORT_PROPERTIES_ALPHABETICALLY
 import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
+import com.fasterxml.jackson.module.kotlin.testPrettyWriter
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -16,7 +17,7 @@ class TestGitHub337 {
         .configure(SORT_PROPERTIES_ALPHABETICALLY, true)
         .build()
         .setSerializationInclusion(JsonInclude.Include.ALWAYS)
-    private val writer = mapper.writerWithDefaultPrettyPrinter()
+    private val writer = mapper.testPrettyWriter()
 
     @Test
     @Disabled

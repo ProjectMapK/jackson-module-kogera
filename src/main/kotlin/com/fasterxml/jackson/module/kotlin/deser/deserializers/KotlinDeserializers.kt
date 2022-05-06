@@ -91,13 +91,13 @@ internal class KotlinDeserializers : Deserializers.Base() {
         config: DeserializationConfig?,
         beanDesc: BeanDescription?
     ): JsonDeserializer<*>? {
-        return when {
-            type.rawClass == Sequence::class.java -> SequenceDeserializer
-            type.rawClass == Regex::class.java -> RegexDeserializer
-            type.rawClass == UByte::class.java -> UByteDeserializer
-            type.rawClass == UShort::class.java -> UShortDeserializer
-            type.rawClass == UInt::class.java -> UIntDeserializer
-            type.rawClass == ULong::class.java -> ULongDeserializer
+        return when (type.rawClass) {
+            Sequence::class.java -> SequenceDeserializer
+            Regex::class.java -> RegexDeserializer
+            UByte::class.java -> UByteDeserializer
+            UShort::class.java -> UShortDeserializer
+            UInt::class.java -> UIntDeserializer
+            ULong::class.java -> ULongDeserializer
             else -> null
         }
     }

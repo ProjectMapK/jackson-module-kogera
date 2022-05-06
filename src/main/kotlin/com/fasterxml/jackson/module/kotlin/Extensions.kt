@@ -59,37 +59,37 @@ inline fun <reified T> ObjectReader.readValueTyped(jp: JsonParser): T = readValu
 inline fun <reified T> ObjectReader.readValuesTyped(jp: JsonParser): Iterator<T> = readValues(jp, jacksonTypeRef<T>())
 inline fun <reified T> ObjectReader.treeToValue(n: TreeNode): T? = readValue(this.treeAsTokens(n), jacksonTypeRef<T>())
 
-operator fun ArrayNode.plus(element: Boolean) = Unit.apply { add(element) }
-operator fun ArrayNode.plus(element: Short) = Unit.apply { add(element) }
-operator fun ArrayNode.plus(element: Int) = Unit.apply { add(element) }
-operator fun ArrayNode.plus(element: Long) = Unit.apply { add(element) }
-operator fun ArrayNode.plus(element: Float) = Unit.apply { add(element) }
-operator fun ArrayNode.plus(element: Double) = Unit.apply { add(element) }
-operator fun ArrayNode.plus(element: BigDecimal) = Unit.apply { add(element) }
-operator fun ArrayNode.plus(element: BigInteger) = Unit.apply { add(element) }
-operator fun ArrayNode.plus(element: String) = Unit.apply { add(element) }
-operator fun ArrayNode.plus(element: ByteArray) = Unit.apply { add(element) }
-operator fun ArrayNode.plus(element: JsonNode) = Unit.apply { add(element) }
-operator fun ArrayNode.plus(elements: ArrayNode) = Unit.apply { addAll(elements) }
-operator fun ArrayNode.plusAssign(element: Boolean) = Unit.apply { add(element) }
-operator fun ArrayNode.plusAssign(element: Short) = Unit.apply { add(element) }
-operator fun ArrayNode.plusAssign(element: Int) = Unit.apply { add(element) }
-operator fun ArrayNode.plusAssign(element: Long) = Unit.apply { add(element) }
-operator fun ArrayNode.plusAssign(element: Float) = Unit.apply { add(element) }
-operator fun ArrayNode.plusAssign(element: Double) = Unit.apply { add(element) }
-operator fun ArrayNode.plusAssign(element: BigDecimal) = Unit.apply { add(element) }
-operator fun ArrayNode.plusAssign(element: BigInteger) = Unit.apply { add(element) }
-operator fun ArrayNode.plusAssign(element: String) = Unit.apply { add(element) }
-operator fun ArrayNode.plusAssign(element: ByteArray) = Unit.apply { add(element) }
-operator fun ArrayNode.plusAssign(element: JsonNode) = Unit.apply { add(element) }
-operator fun ArrayNode.plusAssign(elements: ArrayNode) = Unit.apply { addAll(elements) }
-operator fun ArrayNode.minus(index: Int) = Unit.apply { remove(index) }
-operator fun ArrayNode.minusAssign(index: Int) = Unit.apply { remove(index) }
+operator fun ArrayNode.plus(element: Boolean) { add(element) }
+operator fun ArrayNode.plus(element: Short) { add(element) }
+operator fun ArrayNode.plus(element: Int) { add(element) }
+operator fun ArrayNode.plus(element: Long) { add(element) }
+operator fun ArrayNode.plus(element: Float) { add(element) }
+operator fun ArrayNode.plus(element: Double) { add(element) }
+operator fun ArrayNode.plus(element: BigDecimal) { add(element) }
+operator fun ArrayNode.plus(element: BigInteger) { add(element) }
+operator fun ArrayNode.plus(element: String) { add(element) }
+operator fun ArrayNode.plus(element: ByteArray) { add(element) }
+operator fun ArrayNode.plus(element: JsonNode) { add(element) }
+operator fun ArrayNode.plus(elements: ArrayNode) { addAll(elements) }
+operator fun ArrayNode.plusAssign(element: Boolean) { add(element) }
+operator fun ArrayNode.plusAssign(element: Short) { add(element) }
+operator fun ArrayNode.plusAssign(element: Int) { add(element) }
+operator fun ArrayNode.plusAssign(element: Long) { add(element) }
+operator fun ArrayNode.plusAssign(element: Float) { add(element) }
+operator fun ArrayNode.plusAssign(element: Double) { add(element) }
+operator fun ArrayNode.plusAssign(element: BigDecimal) { add(element) }
+operator fun ArrayNode.plusAssign(element: BigInteger) { add(element) }
+operator fun ArrayNode.plusAssign(element: String) { add(element) }
+operator fun ArrayNode.plusAssign(element: ByteArray) { add(element) }
+operator fun ArrayNode.plusAssign(element: JsonNode) { add(element) }
+operator fun ArrayNode.plusAssign(elements: ArrayNode) { addAll(elements) }
+operator fun ArrayNode.minus(index: Int) { remove(index) }
+operator fun ArrayNode.minusAssign(index: Int) { remove(index) }
 
-operator fun ObjectNode.minus(field: String) = Unit.apply { remove(field) }
-operator fun ObjectNode.minus(fields: Collection<String>) = Unit.apply { remove(fields) }
-operator fun ObjectNode.minusAssign(field: String) = Unit.apply { remove(field) }
-operator fun ObjectNode.minusAssign(fields: Collection<String>) = Unit.apply { remove(fields) }
+operator fun ObjectNode.minus(field: String) { remove(field) }
+operator fun ObjectNode.minus(fields: Collection<String>) { remove(fields) }
+operator fun ObjectNode.minusAssign(field: String) { remove(field) }
+operator fun ObjectNode.minusAssign(fields: Collection<String>) { remove(fields) }
 
 operator fun JsonNode.contains(field: String) = has(field)
 operator fun JsonNode.contains(index: Int) = has(index)

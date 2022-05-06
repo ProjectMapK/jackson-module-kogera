@@ -92,7 +92,7 @@ internal class KotlinDeserializers : Deserializers.Base() {
         beanDesc: BeanDescription?
     ): JsonDeserializer<*>? {
         return when {
-            type.isInterface && type.rawClass == Sequence::class.java -> SequenceDeserializer
+            type.rawClass == Sequence::class.java -> SequenceDeserializer
             type.rawClass == Regex::class.java -> RegexDeserializer
             type.rawClass == UByte::class.java -> UByteDeserializer
             type.rawClass == UShort::class.java -> UShortDeserializer

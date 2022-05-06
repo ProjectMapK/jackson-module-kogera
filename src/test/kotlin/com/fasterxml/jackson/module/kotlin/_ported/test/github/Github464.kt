@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.testPrettyWriter
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
@@ -83,7 +84,7 @@ class Github464 {
             @Suppress("UNCHECKED_CAST")
             val writer: ObjectWriter = jacksonObjectMapper()
                 .apply { serializerProvider.setNullKeySerializer(NullValueClassKeySerializer as JsonSerializer<Any?>) }
-                .writerWithDefaultPrettyPrinter()
+                .testPrettyWriter()
 
             assertEquals(
                 """
@@ -119,7 +120,7 @@ class Github464 {
                 .apply {
                     serializerProvider.setNullKeySerializer(NullValueClassKeySerializer as JsonSerializer<Any?>)
                     serializerProvider.setNullValueSerializer(NullValueSerializer)
-                }.writerWithDefaultPrettyPrinter()
+                }.testPrettyWriter()
 
             assertEquals(
                 """

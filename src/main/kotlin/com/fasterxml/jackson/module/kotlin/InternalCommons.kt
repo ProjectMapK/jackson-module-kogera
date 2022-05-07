@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import java.util.*
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
+import kotlin.reflect.jvm.jvmErasure
 
 internal fun JsonMappingException.wrapWithPath(refFrom: Any?, refFieldName: String) = JsonMappingException.wrapWithPath(this, refFrom, refFieldName)
 internal fun JsonMappingException.wrapWithPath(refFrom: Any?, index: Int) = JsonMappingException.wrapWithPath(this, refFrom, index)
@@ -39,3 +41,5 @@ internal fun Int.toBitSet(): BitSet {
 // The JvmInline annotation can be added to Java classes,
 // so the isKotlinClass decision is necessary (the order is preferable in terms of possible frequency).
 internal fun Class<*>.isUnboxableValueClass() = annotations.any { it is JvmInline } && this.isKotlinClass()
+
+internal fun KType.erasedType(): Class<out Any> = this.jvmErasure.java

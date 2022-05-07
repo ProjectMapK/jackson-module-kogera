@@ -3,11 +3,14 @@ package com.fasterxml.jackson.module.kotlin
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.MappingIterator
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ObjectReader
 import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import java.io.File
@@ -16,6 +19,7 @@ import java.io.Reader
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.net.URL
+import kotlin.reflect.KClass
 
 fun kotlinModule(initializer: KotlinModule.Builder.() -> Unit = {}): KotlinModule {
     val builder = KotlinModule.Builder()
@@ -87,3 +91,17 @@ operator fun ObjectNode.minusAssign(fields: Collection<String>) { remove(fields)
 
 operator fun JsonNode.contains(field: String) = has(field)
 operator fun JsonNode.contains(index: Int) = has(index)
+
+public fun <T : Any> SimpleModule.addSerializer(
+    kClass: KClass<T>, serializer: JsonSerializer<T>
+): SimpleModule = this.apply {
+    kClass.javaPrimitiveType?.let { addSerializer(it, serializer) }
+    addSerializer(kClass.javaObjectType, serializer)
+}
+
+public fun <T : Any> SimpleModule.addDeserializer(
+    kClass: KClass<T>, deserializer: JsonDeserializer<T>
+): SimpleModule = this.apply {
+    kClass.javaPrimitiveType?.let { addDeserializer(it, deserializer) }
+    addDeserializer(kClass.javaObjectType, deserializer)
+}

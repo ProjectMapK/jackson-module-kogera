@@ -1,26 +1,12 @@
 package com.fasterxml.jackson.module.kotlin
 
-import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonMappingException
-import com.fasterxml.jackson.databind.JsonSerializer
-import com.fasterxml.jackson.databind.module.SimpleModule
 import java.util.*
-import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
 
 internal fun JsonMappingException.wrapWithPath(refFrom: Any?, refFieldName: String) = JsonMappingException.wrapWithPath(this, refFrom, refFieldName)
 internal fun JsonMappingException.wrapWithPath(refFrom: Any?, index: Int) = JsonMappingException.wrapWithPath(this, refFrom, index)
-
-inline fun <reified T : Any> SimpleModule.addSerializer(kClass: KClass<T>, serializer: JsonSerializer<T>) = this.apply {
-    addSerializer(kClass.java, serializer)
-    addSerializer(kClass.javaObjectType, serializer)
-}
-
-inline fun <reified T : Any> SimpleModule.addDeserializer(kClass: KClass<T>, deserializer: JsonDeserializer<T>) = this.apply {
-    addDeserializer(kClass.java, deserializer)
-    addDeserializer(kClass.javaObjectType, deserializer)
-}
 
 internal fun Int.toBitSet(): BitSet {
     var i = this

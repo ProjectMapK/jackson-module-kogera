@@ -1,64 +1,31 @@
 package com.fasterxml.jackson.module.kotlin.deser.deserializers
 
-import com.fasterxml.jackson.core.JsonToken
-import com.fasterxml.jackson.core.exc.InputCoercionException
 import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer
 import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializers
-import com.fasterxml.jackson.module.kotlin.asUByte
-import com.fasterxml.jackson.module.kotlin.asUInt
-import com.fasterxml.jackson.module.kotlin.asULong
-import com.fasterxml.jackson.module.kotlin.asUShort
+import java.math.BigInteger
 
 // The reason why key is treated as nullable is to match the tentative behavior of StdKeyDeserializer.
 // If StdKeyDeserializer is modified, need to modify this too.
 
 internal object UByteKeyDeserializer : StdKeyDeserializer(TYPE_SHORT, UByte::class.java) {
-    override fun deserializeKey(key: String?, ctxt: DeserializationContext): UByte? = super.deserializeKey(key, ctxt)
-        ?.let {
-            (it as Short).asUByte() ?: throw InputCoercionException(
-                null,
-                "Numeric value (${key}) out of range of UByte (0 - ${UByte.MAX_VALUE}).",
-                JsonToken.VALUE_NUMBER_INT,
-                UByte::class.java
-            )
-        }
+    override fun deserializeKey(key: String?, ctxt: DeserializationContext): UByte? =
+        key?.let { UByteChecker.readWithRangeCheck(null, _parseInt(it)) }
 }
 
 internal object UShortKeyDeserializer : StdKeyDeserializer(TYPE_INT, UShort::class.java) {
-    override fun deserializeKey(key: String?, ctxt: DeserializationContext): UShort? = super.deserializeKey(key, ctxt)
-        ?.let {
-            (it as Int).asUShort() ?: throw InputCoercionException(
-                null,
-                "Numeric value (${key}) out of range of UShort (0 - ${UShort.MAX_VALUE}).",
-                JsonToken.VALUE_NUMBER_INT,
-                UShort::class.java
-            )
-        }
+    override fun deserializeKey(key: String?, ctxt: DeserializationContext): UShort? =
+        key?.let { UShortChecker.readWithRangeCheck(null, _parseInt(it)) }
 }
 
 internal object UIntKeyDeserializer : StdKeyDeserializer(TYPE_LONG, UInt::class.java) {
-    override fun deserializeKey(key: String?, ctxt: DeserializationContext): UInt? = super.deserializeKey(key, ctxt)
-        ?.let {
-            (it as Long).asUInt() ?: throw InputCoercionException(
-                null,
-                "Numeric value (${key}) out of range of UInt (0 - ${UInt.MAX_VALUE}).",
-                JsonToken.VALUE_NUMBER_INT,
-                UInt::class.java
-            )
-        }
+    override fun deserializeKey(key: String?, ctxt: DeserializationContext): UInt? =
+        key?.let { UIntChecker.readWithRangeCheck(null, _parseLong(it)) }
 }
 
-// kind parameter is dummy.
-internal object ULongKeyDeserializer : StdKeyDeserializer(TYPE_LONG, ULong::class.java) {
-    override fun deserializeKey(key: String?, ctxt: DeserializationContext): ULong? = key?.let {
-        it.toBigInteger().asULong() ?: throw InputCoercionException(
-            null,
-            "Numeric value (${key}) out of range of ULong (0 - ${ULong.MAX_VALUE}).",
-            JsonToken.VALUE_NUMBER_INT,
-            ULong::class.java
-        )
-    }
+internal object ULongKeyDeserializer : StdKeyDeserializer(-1, ULong::class.java) {
+    override fun deserializeKey(key: String?, ctxt: DeserializationContext): ULong? =
+        key?.let { ULongChecker.readWithRangeCheck(null, BigInteger(it)) }
 }
 
 internal object KotlinKeyDeserializers : StdKeyDeserializers() {

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
 import com.fasterxml.jackson.module.kotlin.isKotlinClass
 
 // [module-kotlin#225]: keep Kotlin singletons as singletons
-object KotlinBeanDeserializerModifier : BeanDeserializerModifier() {
+internal object KotlinBeanDeserializerModifier : BeanDeserializerModifier() {
     override fun modifyDeserializer(
         config: DeserializationConfig,
         beanDesc: BeanDescription,
@@ -15,17 +15,11 @@ object KotlinBeanDeserializerModifier : BeanDeserializerModifier() {
     ): JsonDeserializer<out Any> {
         val modifiedFromParent = super.modifyDeserializer(config, beanDesc, deserializer)
 
-        val objectSingletonInstance = objectSingletonInstance(beanDesc.beanClass)
-        return if (objectSingletonInstance != null) {
-            KotlinObjectSingletonDeserializer(objectSingletonInstance, modifiedFromParent)
-        } else {
-            modifiedFromParent
-        }
+        return objectSingletonInstance(beanDesc.beanClass)
+            ?.let { KotlinObjectSingletonDeserializer(it, modifiedFromParent) }
+            ?: modifiedFromParent
     }
 }
 
-private fun objectSingletonInstance(beanClass: Class<*>): Any? = if (!beanClass.isKotlinClass()) {
-    null
-} else {
-    beanClass.kotlin.objectInstance
-}
+private fun objectSingletonInstance(beanClass: Class<*>): Any? = beanClass.takeIf { beanClass.isKotlinClass() }
+    ?.let { it.kotlin.objectInstance }

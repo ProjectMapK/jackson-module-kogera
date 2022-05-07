@@ -1,60 +1,84 @@
 package com.fasterxml.jackson.module.kotlin._ported.test
 
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.addDeserializer
 import com.fasterxml.jackson.module.kotlin.addSerializer
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import org.junit.jupiter.api.Assertions.assertEquals
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
-import java.math.RoundingMode
 
 private class KClassSerializerDeserializerTest {
-    val objectMapper = jacksonObjectMapper()
-        .registerModule(SimpleModule()
-            .addSerializer(Double::class, RoundingSerializer())
-            .addDeserializer(Double::class, RoundingDeserializer()))
+    @Nested
+    inner class AddDeserializerTest {
+        val module = mockk<SimpleModule> {
+            every { addDeserializer(any<Class<*>>(), any()) } returns this
+        }
 
-    @Test
-    fun `test custom serializer expecting object serialized with rounding serializer applied`() {
-        val jsonString = objectMapper.writeValueAsString(TestDoubleData(nonNullVal = 1.5567, nullVal = 1.5678))
-        val testResult = objectMapper.readValue(jsonString, TestDoubleData::class.java)
-        assertEquals(1.56, testResult.nonNullVal)
-        assertEquals(1.57, testResult.nullVal)
+        @Test
+        fun primitiveType() {
+            val mockDeserializer: JsonDeserializer<Double> = mockk()
+            module.addDeserializer(Double::class, mockDeserializer)
+
+            verify(exactly = 1) { module.addDeserializer(Double::class.javaPrimitiveType, mockDeserializer) }
+            verify(exactly = 1) { module.addDeserializer(Double::class.javaObjectType, mockDeserializer) }
+        }
+
+        @Test
+        fun objectType() {
+            val mockDeserializer: JsonDeserializer<Any> = mockk()
+            module.addDeserializer(Any::class, mockDeserializer)
+
+            verify(exactly = 1) { module.addDeserializer(Any::class.javaObjectType, mockDeserializer) }
+            confirmVerified(module)
+        }
+
+        @Test
+        @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+        fun wrapperType() {
+            val mockDeserializer: JsonDeserializer<Integer> = mockk()
+            module.addDeserializer(Integer::class, mockDeserializer)
+
+            verify(exactly = 1) { module.addDeserializer(Integer::class.javaPrimitiveType, mockDeserializer) }
+            verify(exactly = 1) { module.addDeserializer(Integer::class.javaObjectType, mockDeserializer) }
+        }
     }
 
-    @Test
-    fun `test custom deserializer expecting object deserialized with rounding deserializer applied`() {
-        val testResult = objectMapper.readValue<TestDoubleData>("""
-            {
-                "nonNullVal":1.5567,
-                "nullVal":1.5678
-            }
-        """.trimIndent())
-        assertEquals(1.56, testResult.nonNullVal)
-        assertEquals(1.57, testResult.nullVal)
-    }
-}
+    @Nested
+    inner class AddSerializerTest {
+        val module = mockk<SimpleModule> {
+            every { addSerializer(any<Class<*>>(), any()) } returns this
+        }
 
-data class TestDoubleData(
-    val nonNullVal: Double,
-    val nullVal: Double?
-)
+        @Test
+        fun primitiveType() {
+            val mockSerializer: JsonSerializer<Double> = mockk()
+            module.addSerializer(Double::class, mockSerializer)
 
-class RoundingSerializer : JsonSerializer<Double>() {
-    override fun serialize(value: Double?, gen: JsonGenerator?, serializers: SerializerProvider?) {
-        value?.let { gen?.writeNumber(BigDecimal(it).setScale(2, RoundingMode.HALF_UP)) }
-    }
-}
+            verify(exactly = 1) { module.addSerializer(Double::class.javaPrimitiveType, mockSerializer) }
+            verify(exactly = 1) { module.addSerializer(Double::class.javaObjectType, mockSerializer) }
+        }
 
-class RoundingDeserializer : JsonDeserializer<Double>() {
-    override fun deserialize(p: JsonParser?, ctxt: DeserializationContext?): Double {
-        return BigDecimal(p?.valueAsString)
-            .setScale(2, RoundingMode.HALF_UP)
-            .toDouble()
+        @Test
+        fun objectType() {
+            val mockSerializer: JsonSerializer<Any> = mockk()
+            module.addSerializer(Any::class, mockSerializer)
+
+            verify(exactly = 1) { module.addSerializer(Any::class.javaObjectType, mockSerializer) }
+            confirmVerified(module)
+        }
+
+        @Test
+        @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+        fun wrapperType() {
+            val mockSerializer: JsonSerializer<Integer> = mockk()
+            module.addSerializer(Integer::class, mockSerializer)
+
+            verify(exactly = 1) { module.addSerializer(Integer::class.javaPrimitiveType, mockSerializer) }
+            verify(exactly = 1) { module.addSerializer(Integer::class.javaObjectType, mockSerializer) }
+        }
     }
 }

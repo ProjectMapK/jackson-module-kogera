@@ -1,9 +1,8 @@
-package com.fasterxml.jackson.module.kotlin._ported.test
+package com.fasterxml.jackson.module.kotlin
 
-import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.module.kotlin.addDeserializer
-import com.fasterxml.jackson.module.kotlin.addSerializer
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -11,7 +10,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-private class KClassSerializerDeserializerTest {
+class ExtensionsTest {
     @Nested
     inner class AddDeserializerTest {
         val module = mockk<SimpleModule> {

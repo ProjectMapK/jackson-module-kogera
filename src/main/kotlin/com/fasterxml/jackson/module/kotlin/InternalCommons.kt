@@ -11,7 +11,7 @@ internal fun JsonMappingException.wrapWithPath(refFrom: Any?, index: Int) = Json
 internal fun Int.toBitSet(): BitSet {
     var i = this
     var index = 0
-    val bits = BitSet(32)
+    val bits = BitSet(Int.SIZE_BITS)
     while (i != 0) {
         if (i % 2 != 0) {
             bits.set(index)

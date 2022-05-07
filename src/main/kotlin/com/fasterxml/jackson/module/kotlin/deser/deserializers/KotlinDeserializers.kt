@@ -1,8 +1,6 @@
 package com.fasterxml.jackson.module.kotlin.deser.deserializers
 
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonToken.VALUE_NUMBER_INT
-import com.fasterxml.jackson.core.exc.InputCoercionException
 import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.DeserializationContext
@@ -10,10 +8,6 @@ import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import com.fasterxml.jackson.module.kotlin.asUByte
-import com.fasterxml.jackson.module.kotlin.asUInt
-import com.fasterxml.jackson.module.kotlin.asULong
-import com.fasterxml.jackson.module.kotlin.asUShort
 
 object SequenceDeserializer : StdDeserializer<Sequence<*>>(Sequence::class.java) {
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Sequence<*> {
@@ -45,44 +39,24 @@ object RegexDeserializer : StdDeserializer<Regex>(Regex::class.java) {
     }
 }
 
-object UByteDeserializer : StdDeserializer<UByte>(UByte::class.java) {
+internal object UByteDeserializer : StdDeserializer<UByte>(UByte::class.java) {
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext) =
-        p.shortValue.asUByte() ?: throw InputCoercionException(
-            p,
-            "Numeric value (${p.text}) out of range of UByte (0 - ${UByte.MAX_VALUE}).",
-            VALUE_NUMBER_INT,
-            UByte::class.java
-        )
+        UByteChecker.readWithRangeCheck(p, p.intValue)
 }
 
-object UShortDeserializer : StdDeserializer<UShort>(UShort::class.java) {
+internal object UShortDeserializer : StdDeserializer<UShort>(UShort::class.java) {
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext) =
-        p.intValue.asUShort() ?: throw InputCoercionException(
-            p,
-            "Numeric value (${p.text}) out of range of UShort (0 - ${UShort.MAX_VALUE}).",
-            VALUE_NUMBER_INT,
-            UShort::class.java
-        )
+        UShortChecker.readWithRangeCheck(p, p.intValue)
 }
 
-object UIntDeserializer : StdDeserializer<UInt>(UInt::class.java) {
+internal object UIntDeserializer : StdDeserializer<UInt>(UInt::class.java) {
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext) =
-        p.longValue.asUInt() ?: throw InputCoercionException(
-            p,
-            "Numeric value (${p.text}) out of range of UInt (0 - ${UInt.MAX_VALUE}).",
-            VALUE_NUMBER_INT,
-            UInt::class.java
-        )
+        UIntChecker.readWithRangeCheck(p, p.longValue)
 }
 
-object ULongDeserializer : StdDeserializer<ULong>(ULong::class.java) {
+internal object ULongDeserializer : StdDeserializer<ULong>(ULong::class.java) {
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext) =
-        p.bigIntegerValue.asULong() ?: throw InputCoercionException(
-            p,
-            "Numeric value (${p.text}) out of range of ULong (0 - ${ULong.MAX_VALUE}).",
-            VALUE_NUMBER_INT,
-            ULong::class.java
-        )
+        ULongChecker.readWithRangeCheck(p, p.bigIntegerValue)
 }
 
 internal class KotlinDeserializers : Deserializers.Base() {

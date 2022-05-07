@@ -11,7 +11,7 @@ internal fun JsonMappingException.wrapWithPath(refFrom: Any?, index: Int) = Json
 internal fun Int.toBitSet(): BitSet {
     var i = this
     var index = 0
-    val bits = BitSet(32)
+    val bits = BitSet(Int.SIZE_BITS)
     while (i != 0) {
         if (i % 2 != 0) {
             bits.set(index)
@@ -22,10 +22,7 @@ internal fun Int.toBitSet(): BitSet {
     return bits
 }
 
-// In the future, value classes without @JvmInline will be available, and unboxing may not be able to handle it.
-// https://github.com/FasterXML/jackson-module-kotlin/issues/464
-// The JvmInline annotation can be added to Java classes,
-// so the isKotlinClass decision is necessary (the order is preferable in terms of possible frequency).
-internal fun Class<*>.isUnboxableValueClass() = annotations.any { it is JvmInline } && this.isKotlinClass()
+internal fun Class<*>.isKotlinClass(): Boolean = declaredAnnotations.any { it is Metadata }
+internal fun Class<*>.isUnboxableValueClass() = annotations.any { it is JvmInline }
 
 internal fun KType.erasedType(): Class<out Any> = this.jvmErasure.java

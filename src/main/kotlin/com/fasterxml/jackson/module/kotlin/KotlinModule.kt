@@ -17,12 +17,6 @@ import com.fasterxml.jackson.module.kotlin.ser.serializers.KotlinSerializers
 import java.util.*
 import kotlin.reflect.KClass
 
-private const val metadataFqName = "kotlin.Metadata"
-
-fun Class<*>.isKotlinClass(): Boolean {
-    return declaredAnnotations.any { it.annotationClass.java.name == metadataFqName }
-}
-
 /**
  * @param   reflectionCacheSize     Default: 512.  Size, in items, of the caches used for mapping objects.
  * @param   nullToEmptyCollection   Default: false.  Whether to deserialize null values for collection properties as

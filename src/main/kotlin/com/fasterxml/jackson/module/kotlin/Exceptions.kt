@@ -9,8 +9,8 @@ import kotlin.reflect.KParameter
  * Specialized [JsonMappingException] sub-class used to indicate that a mandatory Kotlin constructor
  * parameter was missing or null.
  */
-class MissingKotlinParameterException(
-    val parameter: KParameter,
+public class MissingKotlinParameterException internal constructor(
+    public val parameter: KParameter,
     processor: JsonParser? = null,
     msg: String
 ) : MismatchedInputException(processor, msg)

@@ -14,29 +14,29 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.math.BigInteger
 
-object SequenceSerializer : StdSerializer<Sequence<*>>(Sequence::class.java) {
+internal object SequenceSerializer : StdSerializer<Sequence<*>>(Sequence::class.java) {
     override fun serialize(value: Sequence<*>, gen: JsonGenerator, provider: SerializerProvider) {
         val materializedList = value.toList()
         provider.defaultSerializeValue(materializedList, gen)
     }
 }
 
-object UByteSerializer : StdSerializer<UByte>(UByte::class.java) {
+internal object UByteSerializer : StdSerializer<UByte>(UByte::class.java) {
     override fun serialize(value: UByte, gen: JsonGenerator, provider: SerializerProvider) =
         gen.writeNumber(value.toShort())
 }
 
-object UShortSerializer : StdSerializer<UShort>(UShort::class.java) {
+internal object UShortSerializer : StdSerializer<UShort>(UShort::class.java) {
     override fun serialize(value: UShort, gen: JsonGenerator, provider: SerializerProvider) =
         gen.writeNumber(value.toInt())
 }
 
-object UIntSerializer : StdSerializer<UInt>(UInt::class.java) {
+internal object UIntSerializer : StdSerializer<UInt>(UInt::class.java) {
     override fun serialize(value: UInt, gen: JsonGenerator, provider: SerializerProvider) =
         gen.writeNumber(value.toLong())
 }
 
-object ULongSerializer : StdSerializer<ULong>(ULong::class.java) {
+internal object ULongSerializer : StdSerializer<ULong>(ULong::class.java) {
     override fun serialize(value: ULong, gen: JsonGenerator, provider: SerializerProvider) {
         val longValue = value.toLong()
         when {
@@ -50,7 +50,7 @@ object ULongSerializer : StdSerializer<ULong>(ULong::class.java) {
 private fun Class<*>.getStaticJsonValueGetter(): Method? = this.declaredMethods
     .find { method -> Modifier.isStatic(method.modifiers) && method.annotations.any { it is JsonValue } }
 
-object ValueClassUnboxSerializer : StdSerializer<Any>(Any::class.java) {
+internal object ValueClassUnboxSerializer : StdSerializer<Any>(Any::class.java) {
     override fun serialize(value: Any, gen: JsonGenerator, provider: SerializerProvider) {
         val unboxed = value::class.java.getMethod("unbox-impl").invoke(value)
 

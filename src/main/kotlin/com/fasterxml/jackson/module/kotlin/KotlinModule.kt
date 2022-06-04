@@ -5,9 +5,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.NullIsSameAsDefault
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.NullToEmptyCollection
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.NullToEmptyMap
+import com.fasterxml.jackson.module.kotlin.KotlinFeature.SingletonSupport
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.StrictNullChecks
-import com.fasterxml.jackson.module.kotlin.SingletonSupport.CANONICALIZE
-import com.fasterxml.jackson.module.kotlin.SingletonSupport.DISABLED
 import com.fasterxml.jackson.module.kotlin.deser.deserializers.KotlinDeserializers
 import com.fasterxml.jackson.module.kotlin.deser.deserializers.KotlinKeyDeserializers
 import com.fasterxml.jackson.module.kotlin.deser.singleton_support.KotlinBeanDeserializerModifier
@@ -33,22 +32,19 @@ import kotlin.reflect.KClass
  *                                      protects against this but has significant performance impact.
  */
 public class KotlinModule private constructor(
-    public val reflectionCacheSize: Int = 512,
-    public val nullToEmptyCollection: Boolean = false,
-    public val nullToEmptyMap: Boolean = false,
-    public val nullIsSameAsDefault: Boolean = false,
-    public val singletonSupport: SingletonSupport = DISABLED,
-    public val strictNullChecks: Boolean = false
+    public val reflectionCacheSize: Int,
+    public val nullToEmptyCollection: Boolean,
+    public val nullToEmptyMap: Boolean,
+    public val nullIsSameAsDefault: Boolean,
+    public val singletonSupport: Boolean,
+    public val strictNullChecks: Boolean
 ) : SimpleModule(KotlinModule::class.java.name /* TODO: add Version parameter */) {
     private constructor(builder: Builder) : this(
         builder.reflectionCacheSize,
         builder.isEnabled(NullToEmptyCollection),
         builder.isEnabled(NullToEmptyMap),
         builder.isEnabled(NullIsSameAsDefault),
-        when {
-            builder.isEnabled(KotlinFeature.SingletonSupport) -> CANONICALIZE
-            else -> DISABLED
-        },
+        builder.isEnabled(SingletonSupport),
         builder.isEnabled(StrictNullChecks)
     )
 
@@ -69,11 +65,8 @@ public class KotlinModule private constructor(
 
         context.addValueInstantiators(KotlinInstantiators(cache, nullToEmptyCollection, nullToEmptyMap, nullIsSameAsDefault, strictNullChecks))
 
-        when (singletonSupport) {
-            DISABLED -> Unit
-            CANONICALIZE -> {
-                context.addBeanDeserializerModifier(KotlinBeanDeserializerModifier)
-            }
+        if (singletonSupport) {
+            context.addBeanDeserializerModifier(KotlinBeanDeserializerModifier)
         }
 
         context.insertAnnotationIntrospector(KotlinAnnotationIntrospector(context, cache, nullToEmptyCollection, nullToEmptyMap, nullIsSameAsDefault))

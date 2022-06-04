@@ -32,13 +32,13 @@ import kotlin.reflect.KClass
  *                                      (e.g. List<String>) may contain null values after deserialization.  Enabling it
  *                                      protects against this but has significant performance impact.
  */
-class KotlinModule private constructor(
-    val reflectionCacheSize: Int = 512,
-    val nullToEmptyCollection: Boolean = false,
-    val nullToEmptyMap: Boolean = false,
-    val nullIsSameAsDefault: Boolean = false,
-    val singletonSupport: SingletonSupport = DISABLED,
-    val strictNullChecks: Boolean = false
+public class KotlinModule private constructor(
+    public val reflectionCacheSize: Int = 512,
+    public val nullToEmptyCollection: Boolean = false,
+    public val nullToEmptyMap: Boolean = false,
+    public val nullIsSameAsDefault: Boolean = false,
+    public val singletonSupport: SingletonSupport = DISABLED,
+    public val strictNullChecks: Boolean = false
 ) : SimpleModule(KotlinModule::class.java.name /* TODO: add Version parameter */) {
     private constructor(builder: Builder) : this(
         builder.reflectionCacheSize,
@@ -52,8 +52,8 @@ class KotlinModule private constructor(
         builder.isEnabled(StrictNullChecks)
     )
 
-    companion object {
-        const val serialVersionUID = 1L
+    public companion object {
+        private const val serialVersionUID = 1L
     }
 
     private val ignoredClassesForImplyingJsonCreator = emptySet<KClass<*>>()
@@ -88,34 +88,34 @@ class KotlinModule private constructor(
         context.setMixInAnnotations(ClosedRange::class.java, ClosedRangeMixin::class.java)
     }
 
-    class Builder {
-        var reflectionCacheSize: Int = 512
+    public class Builder {
+        public var reflectionCacheSize: Int = 512
             private set
 
         private val bitSet: BitSet = KotlinFeature.defaults
 
-        fun withReflectionCacheSize(reflectionCacheSize: Int): Builder = apply {
+        public fun withReflectionCacheSize(reflectionCacheSize: Int): Builder = apply {
             this.reflectionCacheSize = reflectionCacheSize
         }
 
-        fun enable(feature: KotlinFeature): Builder = apply {
+        public fun enable(feature: KotlinFeature): Builder = apply {
             bitSet.or(feature.bitSet)
         }
 
-        fun disable(feature: KotlinFeature): Builder = apply {
+        public fun disable(feature: KotlinFeature): Builder = apply {
             bitSet.andNot(feature.bitSet)
         }
 
-        fun configure(feature: KotlinFeature, enabled: Boolean): Builder =
+        public fun configure(feature: KotlinFeature, enabled: Boolean): Builder =
             when {
                 enabled -> enable(feature)
                 else -> disable(feature)
             }
 
-        fun isEnabled(feature: KotlinFeature): Boolean =
+        public fun isEnabled(feature: KotlinFeature): Boolean =
             bitSet.intersects(feature.bitSet)
 
-        fun build(): KotlinModule =
+        public fun build(): KotlinModule =
             KotlinModule(this)
     }
 }

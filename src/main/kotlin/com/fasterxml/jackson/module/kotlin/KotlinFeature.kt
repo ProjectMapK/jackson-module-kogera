@@ -5,7 +5,7 @@ import java.util.BitSet
 /**
  * @see KotlinModule.Builder
  */
-enum class KotlinFeature(private val enabledByDefault: Boolean) {
+public enum class KotlinFeature(private val enabledByDefault: Boolean) {
     /**
      * This feature represents whether to deserialize `null` values for collection properties as empty collections.
      */
@@ -45,7 +45,7 @@ enum class KotlinFeature(private val enabledByDefault: Boolean) {
 
     internal val bitSet: BitSet = (1 shl ordinal).toBitSet()
 
-    companion object {
+    public companion object {
         internal val defaults
             get() = values().fold(BitSet(Int.SIZE_BITS)) { acc, cur ->
                 acc.apply { if (cur.enabledByDefault) this.or(cur.bitSet) }

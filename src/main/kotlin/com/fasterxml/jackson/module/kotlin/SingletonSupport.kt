@@ -3,7 +3,7 @@ package com.fasterxml.jackson.module.kotlin
 /**
  * Special handling for singletons.
  */
-enum class SingletonSupport {
+public enum class SingletonSupport {
     // No special handling of singletons (pre-2.10 behavior)
     //      Each time a Singleton object is deserialized a new instance is created.
     DISABLED,

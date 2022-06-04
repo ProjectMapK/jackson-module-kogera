@@ -36,8 +36,7 @@ dependencies {
 }
 
 kotlin {
-    // TODO: enable explicitApi
-    // explicitApi()
+    explicitApi()
 }
 
 java {

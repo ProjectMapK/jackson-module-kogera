@@ -34,7 +34,7 @@ class TestCasesFromSlack1 {
     )
 
     enum class RSVP(val nameKey: String) {
-        going("rsvp.going"), maybe("rsvp.maybe"), interested("rsvp.interested")
+        Going("rsvp.going"), Maybe("rsvp.maybe"), Interested("rsvp.interested")
     }
 
     @Test
@@ -68,11 +68,11 @@ class TestCasesFromSlack2 {
     data class Guest constructor(
         val id: String,
         val name: String,
-        var rsvp: RSVP = RSVP.going
+        var rsvp: RSVP = RSVP.Going
     )
 
     enum class RSVP(val nameKey: String) {
-        going("rsvp.going"), maybe("rsvp.maybe"), interested("rsvp.interested")
+        Going("rsvp.going"), Maybe("rsvp.maybe"), Interested("rsvp.interested")
     }
 
     @Test fun testCzarSpringThing2() {

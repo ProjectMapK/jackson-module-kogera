@@ -41,13 +41,13 @@ class TestCasesFromSlack1 {
     fun testCzarSpringThing1() {
         ObjectMapper().readValue<Event>(
             """
-           {"host":{"id":"host123","name":"A Czar"},"activity":"Kotlin Programming","invited":[{"id":"Guest1","name":"Mr Kotlin","rsvp": "going"}]}
+           {"host":{"id":"host123","name":"A Czar"},"activity":"Kotlin Programming","invited":[{"id":"Guest1","name":"Mr Kotlin","rsvp": "Going"}]}
         """
         )
 
         jacksonObjectMapper().readValue<Event>(
             """
-           {"host":{"id":"host123","name":"A Czar"},"activity":"Kotlin Programming","invited":[{"id":"Guest1","name":"Mr Kotlin","rsvp": "going"}]}
+           {"host":{"id":"host123","name":"A Czar"},"activity":"Kotlin Programming","invited":[{"id":"Guest1","name":"Mr Kotlin","rsvp": "Going"}]}
         """
         )
     }
@@ -78,7 +78,7 @@ class TestCasesFromSlack2 {
     @Test fun testCzarSpringThing2() {
         jacksonObjectMapper().readValue<Event>(
             """
-           {"host":{"id":"host123","name":"A Czar"},"activity":"Kotlin Programming","invited":[{"id":"Guest1","name":"Mr Kotlin","rsvp": "going"}]}
+           {"host":{"id":"host123","name":"A Czar"},"activity":"Kotlin Programming","invited":[{"id":"Guest1","name":"Mr Kotlin","rsvp": "Going"}]}
         """
         )
     }

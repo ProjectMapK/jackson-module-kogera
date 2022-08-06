@@ -38,9 +38,13 @@ class TestGithub179 {
 
     private class MyEnumsContainer(@JsonProperty("myEnums") val myEnums: MyEnums)
 
-    private class Strings @JsonCreator(mode = JsonCreator.Mode.DELEGATING) constructor(val values: List<String>)
+    private class Strings
+    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+    constructor(val values: List<String>)
 
-    private class MyEnums @JsonCreator(mode = JsonCreator.Mode.DELEGATING) constructor(val values: List<MyEnum>)
+    private class MyEnums
+    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+    constructor(val values: List<MyEnum>)
 
     private enum class MyEnum {
         @JsonProperty("first")

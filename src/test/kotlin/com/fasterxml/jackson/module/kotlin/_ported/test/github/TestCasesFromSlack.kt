@@ -3,7 +3,8 @@ package com.fasterxml.jackson.module.kotlin._ported.test.github
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.*
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Test
 
 class TestCasesFromSlack1 {
@@ -33,20 +34,20 @@ class TestCasesFromSlack1 {
     )
 
     enum class RSVP(val nameKey: String) {
-        going("rsvp.going"), maybe("rsvp.maybe"), interested("rsvp.interested")
+        Going("rsvp.going"), Maybe("rsvp.maybe"), Interested("rsvp.interested")
     }
 
     @Test
     fun testCzarSpringThing1() {
         ObjectMapper().readValue<Event>(
             """
-           {"host":{"id":"host123","name":"A Czar"},"activity":"Kotlin Programming","invited":[{"id":"Guest1","name":"Mr Kotlin","rsvp": "going"}]}
+           {"host":{"id":"host123","name":"A Czar"},"activity":"Kotlin Programming","invited":[{"id":"Guest1","name":"Mr Kotlin","rsvp": "Going"}]}
         """
         )
 
         jacksonObjectMapper().readValue<Event>(
             """
-           {"host":{"id":"host123","name":"A Czar"},"activity":"Kotlin Programming","invited":[{"id":"Guest1","name":"Mr Kotlin","rsvp": "going"}]}
+           {"host":{"id":"host123","name":"A Czar"},"activity":"Kotlin Programming","invited":[{"id":"Guest1","name":"Mr Kotlin","rsvp": "Going"}]}
         """
         )
     }
@@ -67,17 +68,17 @@ class TestCasesFromSlack2 {
     data class Guest constructor(
         val id: String,
         val name: String,
-        var rsvp: RSVP = RSVP.going
+        var rsvp: RSVP = RSVP.Going
     )
 
     enum class RSVP(val nameKey: String) {
-        going("rsvp.going"), maybe("rsvp.maybe"), interested("rsvp.interested")
+        Going("rsvp.going"), Maybe("rsvp.maybe"), Interested("rsvp.interested")
     }
 
     @Test fun testCzarSpringThing2() {
         jacksonObjectMapper().readValue<Event>(
             """
-           {"host":{"id":"host123","name":"A Czar"},"activity":"Kotlin Programming","invited":[{"id":"Guest1","name":"Mr Kotlin","rsvp": "going"}]}
+           {"host":{"id":"host123","name":"A Czar"},"activity":"Kotlin Programming","invited":[{"id":"Guest1","name":"Mr Kotlin","rsvp": "Going"}]}
         """
         )
     }

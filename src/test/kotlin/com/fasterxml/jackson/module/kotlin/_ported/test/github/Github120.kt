@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class TestGithub120 {
-    data class Foo @JsonCreator(mode = JsonCreator.Mode.DELEGATING) constructor(
+    data class Foo
+    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+    constructor(
         @JsonValue
         val value: Long
     )

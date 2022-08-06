@@ -19,20 +19,18 @@ class TestGithub239 {
 
         @JsonTypeName("b")
         data class B(var otherField: String = "") : Github239Either()
-
     }
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
     @JsonSubTypes(
-            JsonSubTypes.Type(Github239EitherCustomized.A::class, name = "a"),
-            JsonSubTypes.Type(Github239EitherCustomized.B::class, name = "b")
+        JsonSubTypes.Type(Github239EitherCustomized.A::class, name = "a"),
+        JsonSubTypes.Type(Github239EitherCustomized.B::class, name = "b")
     )
     sealed class Github239EitherCustomized {
 
         data class A(var field: String = "") : Github239EitherCustomized()
 
         data class B(var otherField: String = "") : Github239EitherCustomized()
-
     }
 
     val json = """[
@@ -51,23 +49,19 @@ class TestGithub239 {
 
     @Test
     fun test_implicit_subclasses() {
-
         val array = mapper.readValue<Array<Github239Either>>(json)
 
         assertEquals(2, array.size)
         assertEquals(Github239Either.A("value"), array[0])
         assertEquals(Github239Either.B("1234"), array[1])
-
     }
 
     @Test
     fun test_explicit_subclasses() {
-
         val array = mapper.readValue<Array<Github239EitherCustomized>>(json)
 
         assertEquals(2, array.size)
         assertEquals(Github239EitherCustomized.A("value"), array[0])
         assertEquals(Github239EitherCustomized.B("1234"), array[1])
-
     }
 }

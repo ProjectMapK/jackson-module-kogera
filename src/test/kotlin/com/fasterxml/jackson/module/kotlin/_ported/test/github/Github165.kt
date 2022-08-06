@@ -11,23 +11,21 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class TestGithub165 {
-    class Github165KotlinTest(@JsonProperty("name") var showName: String)
-    {
-        var yearSetterCalled: Boolean = false;
-        var nameSetterCalled: Boolean = false;
+    class Github165KotlinTest(@JsonProperty("name") var showName: String) {
+        var yearSetterCalled: Boolean = false
+        var nameSetterCalled: Boolean = false
 
-        @JsonProperty("year") lateinit var showYear: String
+        @JsonProperty("year")
+        lateinit var showYear: String
 
         @JsonSetter("year")
-        fun setYear(value: String)
-        {
+        fun setYear(value: String) {
             yearSetterCalled = true
             this.showYear = value
         }
 
         @JsonSetter("name")
-        fun setName(value: String)
-        {
+        fun setName(value: String) {
             nameSetterCalled = true
             this.showName = value
         }

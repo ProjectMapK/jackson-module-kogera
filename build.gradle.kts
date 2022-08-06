@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "1.7.0-RC2"
+    kotlin("jvm") version "1.7.10"
     java
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("org.jmailen.kotlinter") version "3.11.1"
 }
 
 group = "com.fasterxml.jackson"
@@ -11,15 +11,10 @@ repositories {
     mavenCentral()
 }
 
-dependencyManagement {
-    imports {
-        mavenBom("com.fasterxml.jackson:jackson-bom:2.13.2")
-    }
-}
-
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.13.3"))
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     implementation("com.fasterxml.jackson.core:jackson-databind")
@@ -27,10 +22,10 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations")
 
     // test libs
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     // https://mvnrepository.com/artifact/io.mockk/mockk
-    testImplementation("io.mockk:mockk:1.12.4")
+    testImplementation("io.mockk:mockk:1.12.5")
 
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 }

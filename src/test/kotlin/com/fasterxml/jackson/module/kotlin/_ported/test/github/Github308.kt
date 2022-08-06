@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test
 class TestGithub308 {
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class TestDto(
-            @JsonIgnore
-            var id: Long? = null,
-            var cityId: Int? = null
+        @JsonIgnore
+        var id: Long? = null,
+        var cityId: Int? = null
     ) {
         @JsonProperty("id")
         private fun unpackId(idObj: Int?) {

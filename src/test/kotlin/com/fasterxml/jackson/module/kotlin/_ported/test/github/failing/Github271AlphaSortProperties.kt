@@ -1,13 +1,13 @@
 package com.fasterxml.jackson.module.kotlin._ported.test.github.failing
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin._ported.test.expectFailure
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class TestGithub271 {
-    @JsonPropertyOrder(alphabetic=true)
+    @JsonPropertyOrder(alphabetic = true)
     data class Foo(val a: String, val c: String) {
         val b = "b"
     }

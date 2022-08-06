@@ -65,7 +65,8 @@ internal object ValueClassUnboxSerializer : StdSerializer<Any>(Any::class.java) 
 
 internal sealed class ValueClassSerializer<T : Any>(t: Class<T>) : StdSerializer<T>(t) {
     class StaticJsonValue<T : Any>(
-        t: Class<T>, private val staticJsonValueGetter: Method
+        t: Class<T>,
+        private val staticJsonValueGetter: Method
     ) : ValueClassSerializer<T>(t) {
         private val unboxMethod: Method = t.getMethod("unbox-impl")
 
@@ -116,7 +117,8 @@ internal class KotlinSerializers : Serializers.Base() {
 // so this class will not work properly when added to the Serializers
 // (it is configured from KotlinAnnotationIntrospector.findSerializer).
 internal class ValueClassBoxSerializer<T : Any>(
-    private val outerClazz: Class<out Any>, innerClazz: Class<T>
+    private val outerClazz: Class<out Any>,
+    innerClazz: Class<T>
 ) : StdSerializer<T>(innerClazz) {
     private val boxMethod = outerClazz.getMethod("box-impl", innerClazz)
 

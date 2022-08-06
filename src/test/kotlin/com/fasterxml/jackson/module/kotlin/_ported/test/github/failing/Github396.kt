@@ -2,8 +2,8 @@ package com.fasterxml.jackson.module.kotlin._ported.test.github.failing
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.fasterxml.jackson.module.kotlin._ported.test.expectFailure
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

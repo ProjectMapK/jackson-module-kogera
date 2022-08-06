@@ -32,8 +32,9 @@ class TestIteratorSubclass {
     }
 
     class Company(
-            val name: String,
-            @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN") @JsonSerialize(`as` = java.util.Iterator::class) val people: KotlinPersonIterator
+        val name: String,
+        @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN") @JsonSerialize(`as` = java.util.Iterator::class)
+        val people: KotlinPersonIterator
     )
 
     @Test
@@ -44,5 +45,4 @@ class TestIteratorSubclass {
         val kotlinJson = mapper.writeValueAsString(company)
         assertEquals(expectedJson, kotlinJson)
     }
-
 }

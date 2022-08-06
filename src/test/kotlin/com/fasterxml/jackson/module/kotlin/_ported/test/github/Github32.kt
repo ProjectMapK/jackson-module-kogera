@@ -11,23 +11,27 @@ import org.junit.jupiter.api.assertThrows
 private class TestGithub32 {
     @Test
     fun `valid mandatory data class constructor param`() {
-        jacksonObjectMapper().readValue<Person>("""
+        jacksonObjectMapper().readValue<Person>(
+            """
         {
             "firstName": "James",
             "lastName": "Bond"
         }
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     @Test fun `missing mandatory data class constructor param`() {
         val thrown = assertThrows<MissingKotlinParameterException>(
             "MissingKotlinParameterException with missing `firstName` parameter"
         ) {
-            jacksonObjectMapper().readValue<Person>("""
+            jacksonObjectMapper().readValue<Person>(
+                """
                 {
                     "lastName": "Bond"
                 }
-            """.trimIndent())
+                """.trimIndent()
+            )
         }
 
         assertEquals(::Person.parameters[0], thrown.parameter)
@@ -38,12 +42,14 @@ private class TestGithub32 {
 
     @Test fun `null mandatory data class constructor param`() {
         val thrown = assertThrows<MissingKotlinParameterException> {
-            jacksonObjectMapper().readValue<Person>("""
+            jacksonObjectMapper().readValue<Person>(
+                """
             {
                 "firstName": null,
                 "lastName": "Bond"
             }
-            """.trimIndent())
+                """.trimIndent()
+            )
         }
 
         assertEquals(::Person.parameters[0], thrown.parameter)
@@ -61,7 +67,7 @@ private class TestGithub32 {
                     "lastName": "Bond"
                 }
             }
-            """.trimIndent()
+                """.trimIndent()
             )
         }
 
@@ -92,7 +98,8 @@ private class TestGithub32 {
 
     @Test fun `missing mandatory constructor param - nested in class with List arg constructor`() {
         val thrown = assertThrows<MissingKotlinParameterException> {
-            jacksonObjectMapper().readValue<Crowd>("""
+            jacksonObjectMapper().readValue<Crowd>(
+                """
             {
                 "people": [
                     {
@@ -102,7 +109,8 @@ private class TestGithub32 {
                     }
                 ]
             }
-            """.trimIndent())
+                """.trimIndent()
+            )
         }
 
         assertEquals(::Person.parameters[0], thrown.parameter)
@@ -110,9 +118,7 @@ private class TestGithub32 {
         assertEquals(7, thrown.location?.lineNr)
         assertEquals(9, thrown.location?.columnNr)
     }
-
 }
-
 
 private data class Person(val firstName: String, val lastName: String)
 
@@ -121,7 +127,6 @@ private data class WrapperWithArgsContructor(val person: Person)
 private data class WrapperWithDefaultContructor(val person: Person? = null)
 
 private data class Crowd(val people: List<Person>)
-
 
 // private fun missingFirstNameParameter() = missingConstructorParam(::Person.parameters[0])
 

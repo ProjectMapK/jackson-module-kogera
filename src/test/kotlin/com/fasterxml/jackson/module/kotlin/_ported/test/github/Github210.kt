@@ -25,7 +25,7 @@ class TestGithub210 {
         mapper.readValue<ExampleFail2>(happyJson)
 
         // the following used to fail on stringItem being missing, the KotlinValueInstantiator is confused
-        mapper.readValue<ExampleFail1>(troubleJson)       // fail {"regexItem":{"pattern":"test","options":[]},"stringItem":"hello"}
-        mapper.readValue<ExampleFail2>(troubleJson)       // fail {"regexItem":{"pattern":"test","options":[]},"stringItem":"hello"}
+        mapper.readValue<ExampleFail1>(troubleJson) // fail {"regexItem":{"pattern":"test","options":[]},"stringItem":"hello"}
+        mapper.readValue<ExampleFail2>(troubleJson) // fail {"regexItem":{"pattern":"test","options":[]},"stringItem":"hello"}
     }
 }

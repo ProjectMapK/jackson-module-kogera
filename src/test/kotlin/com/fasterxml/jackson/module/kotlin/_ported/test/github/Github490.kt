@@ -12,8 +12,8 @@ class TestGithub490 {
     val mapper = jacksonObjectMapper()
     val value: DataClassWithAllNullableParams = mapper.readValue(
         "{" +
-                "\"jsonNodeValueWithNullAsDefaultProvidedNull\":null, " +
-                "\"jsonNodeValueProvidedNull\":null}"
+            "\"jsonNodeValueWithNullAsDefaultProvidedNull\":null, " +
+            "\"jsonNodeValueProvidedNull\":null}"
     )
 
     @Test

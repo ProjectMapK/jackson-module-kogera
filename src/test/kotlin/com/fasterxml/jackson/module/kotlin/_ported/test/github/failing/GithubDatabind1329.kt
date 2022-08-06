@@ -3,9 +3,9 @@ package com.fasterxml.jackson.module.kotlin._ported.test.github.failing
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
+import com.fasterxml.jackson.module.kotlin._ported.test.expectFailure
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin._ported.test.expectFailure
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
@@ -18,13 +18,14 @@ class GithubDatabind1329 {
     fun testPolymorphicWithEnum() {
         val mapper = jacksonObjectMapper()
         val invite = mapper.readValue<Invite>(
-                """|{
+            """|{
                    |  "kind": "CONTACT",
                    |  "kindForMapper": "CONTACT",
                    |  "to": {
                    |    "name": "Foo"
                    |  }
-                   |}""".trimMargin()
+                   |}
+            """.trimMargin()
         )
 
         assertEquals(InviteKind.CONTACT, invite.kind)
@@ -37,26 +38,26 @@ class GithubDatabind1329 {
 
     data class Invite(
         val kind: InviteKind,
-            // workaround for https://github.com/FasterXML/jackson-databind/issues/999 (should be fixed in 2.8.x)
+        // workaround for https://github.com/FasterXML/jackson-databind/issues/999 (should be fixed in 2.8.x)
         val kindForMapper: String? = null,
         @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXTERNAL_PROPERTY, property = "kindForMapper", visible = false)
-            @JsonSubTypes(
-                    JsonSubTypes.Type(InviteToContact::class),
-                    JsonSubTypes.Type(InviteToUser::class)
-            )
-            val to: InviteTo
+        @JsonSubTypes(
+            JsonSubTypes.Type(InviteToContact::class),
+            JsonSubTypes.Type(InviteToUser::class)
+        )
+        val to: InviteTo
     )
 
     interface InviteTo
 
     @JsonTypeName("CONTACT")
     data class InviteToContact(
-            val name: String? = null
+        val name: String? = null
     ) : InviteTo
 
     @JsonTypeName("USER")
     data class InviteToUser(
-            val user: String
+        val user: String
     ) : InviteTo
 
     enum class InviteKind {

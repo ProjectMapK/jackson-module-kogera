@@ -21,7 +21,6 @@ class TestGithub167 {
         jacksonObjectMapper().writeValueAsString(samObjectSynthetic)
     }
 
-
     @Test
     fun withoutKotlinExtension() {
         ObjectMapper().writeValueAsString(samObject)

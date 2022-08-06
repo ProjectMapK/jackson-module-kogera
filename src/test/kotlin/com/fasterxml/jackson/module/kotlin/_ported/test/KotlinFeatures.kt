@@ -26,7 +26,7 @@ private class TestM11Changes {
         val expectedPerson = Class_With_One_Constructor("John Smith", 30)
 
         val actualJson = mapper.writeValueAsString(expectedPerson)
-        val newPerson  = mapper.readValue<Class_With_One_Constructor>(actualJson)
+        val newPerson = mapper.readValue<Class_With_One_Constructor>(actualJson)
 
         assertEquals(expectedJson, actualJson)
         assertEquals(expectedPerson.name, newPerson.name)
@@ -41,7 +41,7 @@ private class TestM11Changes {
         val expectedPerson = Class_Data_Annotation_With_One_Constructor("John Smith", 30)
 
         val actualJson = mapper.writeValueAsString(expectedPerson)
-        val newPerson  = mapper.readValue<Class_Data_Annotation_With_One_Constructor>(actualJson)
+        val newPerson = mapper.readValue<Class_Data_Annotation_With_One_Constructor>(actualJson)
 
         assertEquals(expectedJson, actualJson)
         assertEquals(expectedPerson, newPerson)
@@ -56,12 +56,11 @@ private class TestM11Changes {
 
     @Test
     fun testDataClass_Init_Constructor() {
-
         val expectedJson = """{"name":"John Smith","age":30,"otherThing":"franky"}"""
         val expectedPerson = Class_With_Init_Constructor("John Smith", 30)
 
         val actualJson = mapper.writeValueAsString(expectedPerson)
-        val newPerson  = mapper.readValue<Class_With_Init_Constructor>(actualJson)
+        val newPerson = mapper.readValue<Class_With_Init_Constructor>(actualJson)
 
         assertEquals(expectedJson, actualJson)
         assertEquals(expectedPerson, newPerson)
@@ -76,12 +75,11 @@ private class TestM11Changes {
 
     @Test
     fun testDataClass_Init_Constructor_And_Ignored_Property() {
-
         val expectedJson = """{"name":"John Smith","age":30}"""
         val expectedPerson = Class_With_Init_Constructor_And_Ignored_Property("John Smith", 30)
 
         val actualJson = mapper.writeValueAsString(expectedPerson)
-        val newPerson  = mapper.readValue<Class_With_Init_Constructor_And_Ignored_Property>(actualJson)
+        val newPerson = mapper.readValue<Class_With_Init_Constructor_And_Ignored_Property>(actualJson)
 
         assertEquals(expectedJson, actualJson)
         assertEquals(expectedPerson, newPerson)
@@ -93,12 +91,11 @@ private class TestM11Changes {
 
     @Test
     fun testDataClass_With_No_Field_Parameters_But_Field_Declared_Inside_initialized_from_parameter() {
-
         val expectedJson = """{"name":"John Smith","age":30}"""
         val expectedPerson = Class_With_No_Field_Parameters_But_Field_Declared_Inside_initialized_from_parameter("John Smith", 30)
 
         val actualJson = mapper.writeValueAsString(expectedPerson)
-        val newPerson  = mapper.readValue<Class_With_No_Field_Parameters_But_Field_Declared_Inside_initialized_from_parameter>(actualJson)
+        val newPerson = mapper.readValue<Class_With_No_Field_Parameters_But_Field_Declared_Inside_initialized_from_parameter>(actualJson)
 
         assertEquals(expectedJson, actualJson)
         assertEquals(expectedPerson.name, newPerson.name)
@@ -109,38 +106,34 @@ private class TestM11Changes {
         val name: String
         val age: Int
         constructor(name: String, age: Int) {
-           this.name = name
+            this.name = name
             this.age = age
         }
     }
 
     @Test fun testDataClass_WithOnlySecondaryConstructor() {
-
         val expectedJson = """{"name":"John Smith","age":30}"""
         val expectedPerson = ClassFor_testDataClass_WithOnlySecondaryConstructor("John Smith", 30)
 
         val actualJson = mapper.writeValueAsString(expectedPerson)
-        val newPerson  = mapper.readValue<ClassFor_testDataClass_WithOnlySecondaryConstructor>(actualJson)
+        val newPerson = mapper.readValue<ClassFor_testDataClass_WithOnlySecondaryConstructor>(actualJson)
 
         assertEquals(expectedJson, actualJson)
         assertEquals(expectedPerson.name, newPerson.name)
         assertEquals(expectedPerson.age, newPerson.age)
     }
 
-
     private class Class_WithPrimaryAndSecondaryConstructor(val name: String, val age: Int) {
         constructor(nameAndAge: String) : this(nameAndAge.substringBefore(':'), nameAndAge.substringAfter(':').toInt()) {
-
         }
     }
 
     @Test fun testDataClass_WithPrimaryAndSecondaryConstructor() {
-
         val expectedJson = """{"name":"John Smith","age":30}"""
         val expectedPerson = Class_WithPrimaryAndSecondaryConstructor("John Smith", 30)
 
         val actualJson = mapper.writeValueAsString(expectedPerson)
-        val newPerson  = mapper.readValue<Class_WithPrimaryAndSecondaryConstructor>(actualJson)
+        val newPerson = mapper.readValue<Class_WithPrimaryAndSecondaryConstructor>(actualJson)
 
         assertEquals(expectedJson, actualJson)
         assertEquals(expectedPerson.name, newPerson.name)
@@ -150,13 +143,13 @@ private class TestM11Changes {
     private class Class_WithPrimaryAndSecondaryConstructorAnnotated(name: String) {
         val name: String = name
         var age: Int = 0
+
         @JsonCreator constructor(name: String, age: Int) : this(name) {
             this.age = age
         }
     }
 
     @Test fun testDataClass_WithPrimaryAndSecondaryConstructorBothCouldBeUsedToDeserialize() {
-
         val expectedJson = """{"name":"John Smith","age":30}"""
         val expectedPerson = Class_WithPrimaryAndSecondaryConstructorAnnotated("John Smith", 30)
 
@@ -175,8 +168,9 @@ private class TestM11Changes {
     }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    class Class_WithPartialFieldsInConstructor(val name: String, @JsonProperty("age") val years: Int)    {
-        @JsonProperty("address") var primaryAddress: String = ""
+    class Class_WithPartialFieldsInConstructor(val name: String, @JsonProperty("age") val years: Int) {
+        @JsonProperty("address")
+        var primaryAddress: String = ""
         var phone: String by Delegates.notNull()
     }
 
@@ -200,7 +194,7 @@ private class TestM11Changes {
         try {
             person.phone
             fail("While person can be deserialized without a phone, phone must be set before attempting to access it")
-        } catch(e: IllegalStateException) { // expected
+        } catch (e: IllegalStateException) { // expected
         }
     }
 

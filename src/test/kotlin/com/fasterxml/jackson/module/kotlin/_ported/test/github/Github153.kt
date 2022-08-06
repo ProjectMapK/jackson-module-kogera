@@ -5,8 +5,8 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
-import com.fasterxml.jackson.module.kotlin.kotlinModule
 import com.fasterxml.jackson.module.kotlin._ported.test.expectFailure
+import com.fasterxml.jackson.module.kotlin.kotlinModule
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -24,15 +24,15 @@ class TestGithub153 {
     }
 
     @JacksonXmlRootElement(localName = "MyPojo")
-    data class MyDataPojo (
-            @JacksonXmlElementWrapper(localName = "elements")
-            @JacksonXmlProperty(localName = "element")
-            val elements : List<MyDataElement>
+    data class MyDataPojo(
+        @JacksonXmlElementWrapper(localName = "elements")
+        @JacksonXmlProperty(localName = "element")
+        val elements: List<MyDataElement>
     )
 
-    data class MyDataElement (
-            @JacksonXmlProperty(localName = "value", isAttribute = true)
-            var value: String
+    data class MyDataElement(
+        @JacksonXmlProperty(localName = "value", isAttribute = true)
+        var value: String
     )
 
     val xml = """<MyPojo><elements><element value="e1"/></elements></MyPojo>"""
@@ -52,8 +52,8 @@ class TestGithub153 {
         assertEquals(xml, xmlFromPojo)
     }
 
-    @Test
     // Conflict between the annotations that is not current resolvable.
+    @Test
     fun test_data_class() {
         expectFailure<InvalidDefinitionException>("Problem with conflicting annotations related to #153 has been fixed!") {
             // I create a pojo from the xml using the data classes

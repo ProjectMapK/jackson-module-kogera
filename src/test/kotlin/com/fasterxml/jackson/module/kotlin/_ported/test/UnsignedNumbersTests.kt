@@ -42,7 +42,7 @@ internal class UnsignedNumbersTests {
     @Test
     fun `test UShort overflow`() {
         val json = mapper.writeValueAsString(UShort.MAX_VALUE + 1u)
-        assertThrows<InputCoercionException> {  mapper.readValue<UShort>(json) }
+        assertThrows<InputCoercionException> { mapper.readValue<UShort>(json) }
     }
 
     @Test

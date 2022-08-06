@@ -17,16 +17,16 @@ import java.util.*
 import kotlin.reflect.KClass
 
 /**
- * @param   reflectionCacheSize     Default: 512.  Size, in items, of the caches used for mapping objects.
- * @param   nullToEmptyCollection   Default: false.  Whether to deserialize null values for collection properties as
+ * @param reflectionCacheSize     Default: 512.  Size, in items, of the caches used for mapping objects.
+ * @param nullToEmptyCollection   Default: false.  Whether to deserialize null values for collection properties as
  *                                      empty collections.
- * @param   nullToEmptyMap          Default: false.  Whether to deserialize null values for a map property to an empty
+ * @param nullToEmptyMap          Default: false.  Whether to deserialize null values for a map property to an empty
  *                                      map object.
- * @param   nullIsSameAsDefault     Default false.  Whether to treat null values as absent when deserializing, thereby
+ * @param nullIsSameAsDefault     Default false.  Whether to treat null values as absent when deserializing, thereby
  *                                      using the default value provided in Kotlin.
- * @param   singletonSupport        Default: DISABLED.  Mode for singleton handling.
+ * @param singletonSupport        Default: DISABLED.  Mode for singleton handling.
  *                                      See {@link com.fasterxml.jackson.module.kotlin.SingletonSupport label}
- * @param   strictNullChecks        Default: false.  Whether to check deserialized collections.  With this disabled,
+ * @param strictNullChecks        Default: false.  Whether to check deserialized collections.  With this disabled,
  *                                      the default, collections which are typed to disallow null members
  *                                      (e.g. List<String>) may contain null values after deserialization.  Enabling it
  *                                      protects against this but has significant performance impact.

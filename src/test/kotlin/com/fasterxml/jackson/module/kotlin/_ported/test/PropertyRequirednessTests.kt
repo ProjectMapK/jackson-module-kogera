@@ -15,10 +15,10 @@ class TestPropertyRequiredness {
 
     @Suppress("UNUSED_PARAMETER")
     private class TestClass {
-        fun setA(value: Int): Unit {}
-        fun setB(value: Int = 5): Unit {}
-        fun setC(value: Int?): Unit {}
-        fun setD(value: Int? = 5): Unit {}
+        fun setA(value: Int) {}
+        fun setB(value: Int = 5) {}
+        fun setC(value: Int?) {}
+        fun setD(value: Int? = 5) {}
 
         fun getE(): Int = 5
         fun getF(): Int? = 5
@@ -26,10 +26,10 @@ class TestPropertyRequiredness {
         val g: Int = 5
         val h: Int? = 5
 
-        fun setI(value: TestParamClass): Unit {}
-        fun setJ(value: TestParamClass = TestParamClass()): Unit {}
-        fun setK(value: TestParamClass?): Unit {}
-        fun setL(value: TestParamClass? = TestParamClass()): Unit {}
+        fun setI(value: TestParamClass) {}
+        fun setJ(value: TestParamClass = TestParamClass()) {}
+        fun setK(value: TestParamClass?) {}
+        fun setL(value: TestParamClass? = TestParamClass()) {}
     }
 
     @Test
@@ -188,11 +188,11 @@ class TestPropertyRequiredness {
     }
 
     private fun introspectSerialization(type: Class<*>, mapper: ObjectMapper): BeanDescription =
-            mapper.serializationConfig.introspect(mapper.serializationConfig.constructType(type))
+        mapper.serializationConfig.introspect(mapper.serializationConfig.constructType(type))
 
     private fun introspectDeserialization(type: Class<*>, mapper: ObjectMapper): BeanDescription =
-            mapper.deserializationConfig.introspect(mapper.deserializationConfig.constructType(type))
+        mapper.deserializationConfig.introspect(mapper.deserializationConfig.constructType(type))
 
     private fun BeanDescription.isRequired(propertyName: String): Boolean =
-            this.findProperties().find { it.name == propertyName }!!.isRequired
+        this.findProperties().find { it.name == propertyName }!!.isRequired
 }

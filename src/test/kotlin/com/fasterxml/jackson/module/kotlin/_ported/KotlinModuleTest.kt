@@ -6,8 +6,6 @@ import com.fasterxml.jackson.module.kotlin.KotlinFeature.NullToEmptyMap
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.SingletonSupport
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.StrictNullChecks
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.SingletonSupport.CANONICALIZE
-import com.fasterxml.jackson.module.kotlin.SingletonSupport.DISABLED
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -25,7 +23,7 @@ class KotlinModuleTest {
         assertFalse(module.nullToEmptyCollection)
         assertFalse(module.nullToEmptyMap)
         assertFalse(module.nullIsSameAsDefault)
-        assertEquals(module.singletonSupport, DISABLED)
+        assertEquals(module.singletonSupport, false)
         assertFalse(module.strictNullChecks)
     }
 
@@ -37,7 +35,7 @@ class KotlinModuleTest {
         assertFalse(module.nullToEmptyCollection)
         assertFalse(module.nullToEmptyMap)
         assertFalse(module.nullIsSameAsDefault)
-        assertEquals(DISABLED, module.singletonSupport)
+        assertEquals(false, module.singletonSupport)
         assertFalse(module.strictNullChecks)
     }
 
@@ -56,7 +54,7 @@ class KotlinModuleTest {
         assertTrue(module.nullToEmptyCollection)
         assertTrue(module.nullToEmptyMap)
         assertTrue(module.nullIsSameAsDefault)
-        assertEquals(CANONICALIZE, module.singletonSupport)
+        assertEquals(true, module.singletonSupport)
         assertTrue(module.strictNullChecks)
     }
 
@@ -93,7 +91,7 @@ class KotlinModuleTest {
             enable(SingletonSupport)
         }.build()
 
-        assertEquals(CANONICALIZE, module.singletonSupport)
+        assertEquals(true, module.singletonSupport)
     }
 
     @Test

@@ -28,11 +28,12 @@ internal sealed class ValueCreator<T> {
 
     /**
      * Checking process to see if access from context is possible.
-     * @throws  IllegalAccessException
+     * @throws IllegalAccessException
      */
     fun checkAccessibility(ctxt: DeserializationContext) {
         if ((!accessible && ctxt.config.isEnabled(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS)) ||
-            (accessible && ctxt.config.isEnabled(MapperFeature.OVERRIDE_PUBLIC_ACCESS_MODIFIERS))) {
+            (accessible && ctxt.config.isEnabled(MapperFeature.OVERRIDE_PUBLIC_ACCESS_MODIFIERS))
+        ) {
             return
         }
 

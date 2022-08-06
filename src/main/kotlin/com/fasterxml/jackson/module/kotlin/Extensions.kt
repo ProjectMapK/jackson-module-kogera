@@ -38,7 +38,7 @@ public fun jacksonMapperBuilder(): JsonMapper.Builder = JsonMapper.builder().add
 
 public fun ObjectMapper.registerKotlinModule(): ObjectMapper = this.registerModule(kotlinModule())
 
-public inline fun <reified T> jacksonTypeRef(): TypeReference<T> = object: TypeReference<T>() {}
+public inline fun <reified T> jacksonTypeRef(): TypeReference<T> = object : TypeReference<T>() {}
 
 public inline fun <reified T> ObjectMapper.readValue(jp: JsonParser): T = readValue(jp, jacksonTypeRef<T>())
 public inline fun <reified T> ObjectMapper.readValues(jp: JsonParser): MappingIterator<T> = readValues(jp, jacksonTypeRef<T>())
@@ -93,14 +93,16 @@ public operator fun JsonNode.contains(field: String): Boolean = has(field)
 public operator fun JsonNode.contains(index: Int): Boolean = has(index)
 
 public fun <T : Any> SimpleModule.addSerializer(
-    kClass: KClass<T>, serializer: JsonSerializer<T>
+    kClass: KClass<T>,
+    serializer: JsonSerializer<T>
 ): SimpleModule = this.apply {
     kClass.javaPrimitiveType?.let { addSerializer(it, serializer) }
     addSerializer(kClass.javaObjectType, serializer)
 }
 
 public fun <T : Any> SimpleModule.addDeserializer(
-    kClass: KClass<T>, deserializer: JsonDeserializer<T>
+    kClass: KClass<T>,
+    deserializer: JsonDeserializer<T>
 ): SimpleModule = this.apply {
     kClass.javaPrimitiveType?.let { addDeserializer(it, deserializer) }
     addDeserializer(kClass.javaObjectType, deserializer)

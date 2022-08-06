@@ -46,9 +46,11 @@ internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule, val c
     // (see https://kotlinlang.org/docs/reference/java-to-kotlin-interop.html and
     //  https://github.com/FasterXML/jackson-databind/issues/2527
     //  for details)
-    override fun findRenameByField(config: MapperConfig<*>,
-                                   field: AnnotatedField,
-                                   implName: PropertyName): PropertyName? {
+    override fun findRenameByField(
+        config: MapperConfig<*>,
+        field: AnnotatedField,
+        implName: PropertyName
+    ): PropertyName? {
         val origSimple = implName.simpleName
         if (field.declaringClass.isKotlinClass() && origSimple.startsWith("is")) {
             val mangledName: String? = BeanUtil.stdManglePropertyName(origSimple, 2)
@@ -93,10 +95,11 @@ internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule, val c
     }
 
     override fun hasCreatorAnnotation(member: Annotated): Boolean =
-        if (member is AnnotatedConstructor && member.isKotlinConstructorWithParameters())
+        if (member is AnnotatedConstructor && member.isKotlinConstructorWithParameters()) {
             cache.checkConstructorIsCreatorAnnotated(member) { hasCreatorAnnotation(it) }
-        else
+        } else {
             false
+        }
 
     @Suppress("UNCHECKED_CAST")
     private fun findKotlinParameterName(param: AnnotatedParameter): String? {
@@ -105,9 +108,7 @@ internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule, val c
             if (member is Constructor<*>) {
                 val ctor = (member as Constructor<Any>)
                 val ctorParmCount = ctor.parameterTypes.size
-                val ktorParmCount = try { ctor.kotlinFunction?.parameters?.size ?: 0 }
-                catch (ex: KotlinReflectionInternalError) { 0 }
-                catch (ex: UnsupportedOperationException) { 0 }
+                val ktorParmCount = try { ctor.kotlinFunction?.parameters?.size ?: 0 } catch (ex: KotlinReflectionInternalError) { 0 } catch (ex: UnsupportedOperationException) { 0 }
                 if (ktorParmCount > 0 && ktorParmCount == ctorParmCount) {
                     ctor.kotlinFunction?.parameters?.get(param.index)?.name
                 } else {
@@ -142,9 +143,9 @@ private fun AnnotatedConstructor.isKotlinConstructorWithParameters(): Boolean =
     parameterCount > 0 && declaringClass.isKotlinClass() && !declaringClass.isEnum
 
 private fun KFunction<*>.isPossibleSingleString(propertyNames: Set<String>): Boolean = parameters.size == 1 &&
-        parameters[0].name !in propertyNames &&
-        parameters[0].type.javaType == String::class.java &&
-        !parameters[0].hasAnnotation<JsonProperty>()
+    parameters[0].name !in propertyNames &&
+    parameters[0].type.javaType == String::class.java &&
+    !parameters[0].hasAnnotation<JsonProperty>()
 
 private fun Collection<KFunction<*>>.filterOutSingleStringCallables(propertyNames: Set<String>): Collection<KFunction<*>> =
     this.filter { !it.isPossibleSingleString(propertyNames) }

@@ -13,15 +13,15 @@ class TestGithub269 {
     data class Bar(val thing: Regex)
 
     data class Goo(
-            @JsonSerialize(using = ToStringSerializer::class)
-            val myPattern: Regex
+        @JsonSerialize(using = ToStringSerializer::class)
+        val myPattern: Regex
     ) {
         constructor(strPattern: String) : this(Regex(strPattern))
     }
 
     data class Zoo(
-            @JsonSerialize(using = ToStringSerializer::class)
-            val myPattern: Regex
+        @JsonSerialize(using = ToStringSerializer::class)
+        val myPattern: Regex
     ) {
         @JsonCreator
         constructor(strPattern: String) : this(Regex(strPattern))

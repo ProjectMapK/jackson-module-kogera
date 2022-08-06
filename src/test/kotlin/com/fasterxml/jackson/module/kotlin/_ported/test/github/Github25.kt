@@ -11,10 +11,14 @@ class TestGithub25 {
     @JsonPropertyOrder(alphabetic = true)
     class SomethingWithDelegates(val data: MutableMap<String, String> = hashMapOf()) {
         val name: String by lazy { "fred" }
+
         @get:JsonIgnore val ignoreMe: String by lazy { "ignored" }
         var changeable: String = "starting value"
+
         @get:JsonIgnore var otherData1: String by data
+
         @get:JsonIgnore var otherData2: String by data
+
         @get:JsonIgnore val otherData3: String by data
         var somethingNotNull: String by Delegates.notNull()
 
@@ -28,7 +32,8 @@ class TestGithub25 {
     fun testSerWithDelegates() {
         val json = jacksonObjectMapper().writeValueAsString(
             SomethingWithDelegates(linkedMapOf("otherData1" to "1", "otherData2" to "2", "otherData3" to "3"))
-                .withOtherData("exists"))
+                .withOtherData("exists")
+        )
         assertEquals("""{"data":{"otherData1":"1","otherData2":"2","otherData3":"3"},"changeable":"starting value","name":"fred","somethingNotNull":"exists"}""", json)
     }
 
@@ -43,5 +48,4 @@ class TestGithub25 {
         assertEquals("3", obj.otherData3)
         assertEquals("exists", obj.somethingNotNull)
     }
-
 }

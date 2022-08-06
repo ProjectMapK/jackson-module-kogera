@@ -14,9 +14,10 @@ class TestGithub101_JacksonInjectTest {
         val contextualValue = UUID.randomUUID()
         assertEquals(
             SomeDatum("test", contextualValue),
-                mapper.readerFor(SomeDatum::class.java)
-                        .with(InjectableValues.Std(mapOf("context" to contextualValue)))
-                        .readValue("""{ "value": "test" }"""))
+            mapper.readerFor(SomeDatum::class.java)
+                .with(InjectableValues.Std(mapOf("context" to contextualValue)))
+                .readValue("""{ "value": "test" }""")
+        )
     }
 
     data class SomeDatum(val value: String, @JacksonInject("context") val contextualValue: UUID)

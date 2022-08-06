@@ -14,7 +14,10 @@ class GitHub530 {
     value class ValueParamGetterAnnotated(@get:JsonValue val value: Int)
 
     @JvmInline
-    value class ValueParamFieldAnnotated(@JvmField @field:JsonValue val value: Int)
+    value class ValueParamFieldAnnotated(
+        @JvmField @field:JsonValue
+        val value: Int
+    )
 
     @JvmInline
     value class PropertyWithOverriddenGetter(val value: Int) {

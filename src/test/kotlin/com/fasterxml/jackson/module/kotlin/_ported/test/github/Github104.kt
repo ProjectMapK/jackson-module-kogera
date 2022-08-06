@@ -10,7 +10,6 @@ class TestGithub104 {
     class SubClass(name: String) : SuperClass(name)
     // note this would fail if the constructor parameter is not named the same as the property
 
-
     @Test
     fun testIt() {
         val objectMapper = jacksonObjectMapper()

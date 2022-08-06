@@ -28,7 +28,6 @@ class TestGithub22 {
 
         val actualObj = jacksonObjectMapper().readValue<StringValue>("\"test\"")
         assertEquals(expectedObj.other, actualObj.other)
-
     }
 
     @Test fun testJsonValue2DataClassIgnoredMemberInConstructor() {
@@ -40,6 +39,5 @@ class TestGithub22 {
 
         val actualObj = jacksonObjectMapper().readValue<StringValue2>("\"test\"")
         assertEquals(expectedObj, actualObj)
-
     }
 }

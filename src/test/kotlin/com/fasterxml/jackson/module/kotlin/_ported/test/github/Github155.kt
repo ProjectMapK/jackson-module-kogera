@@ -10,13 +10,15 @@ class TestGithub155 {
         @JsonProperty("name") val name: String,
         @JsonProperty("age") val age: Int = 0,
         @JsonProperty("country") val country: String = "whatever",
-        @JsonProperty("city") val city: String = "nada")
+        @JsonProperty("city") val city: String = "nada"
+    )
 
     @Test
     fun testGithub155() {
-        jacksonObjectMapper().readValue<Foo>("""
+        jacksonObjectMapper().readValue<Foo>(
+            """
             {"name":"fred","age":12,"country":"Libertad","city":"Northville"}
-        """.trimIndent())
-
+            """.trimIndent()
+        )
     }
 }

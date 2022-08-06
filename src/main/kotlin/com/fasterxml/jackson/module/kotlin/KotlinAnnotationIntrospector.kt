@@ -24,12 +24,13 @@ import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.*
 
-
-internal class KotlinAnnotationIntrospector(private val context: Module.SetupContext,
-                                            private val cache: ReflectionCache,
-                                            private val nullToEmptyCollection: Boolean,
-                                            private val nullToEmptyMap: Boolean,
-                                            private val nullIsSameAsDefault: Boolean) : NopAnnotationIntrospector() {
+internal class KotlinAnnotationIntrospector(
+    private val context: Module.SetupContext,
+    private val cache: ReflectionCache,
+    private val nullToEmptyCollection: Boolean,
+    private val nullToEmptyMap: Boolean,
+    private val nullIsSameAsDefault: Boolean
+) : NopAnnotationIntrospector() {
 
     // TODO: implement nullIsSameAsDefault flag, which represents when TRUE that if something has a default value, it can be passed a null to default it
     //       this likely impacts this class to be accurate about what COULD be considered required
@@ -56,7 +57,6 @@ internal class KotlinAnnotationIntrospector(private val context: Module.SetupCon
     }
 
     override fun findCreatorAnnotation(config: MapperConfig<*>, a: Annotated): JsonCreator.Mode? {
-
         // TODO: possible work around for JsonValue class that requires the class constructor to have the JsonCreator(Mode.DELEGATED) set?
         // since we infer the creator at times for these methods, the wrong mode could be implied.
 
@@ -93,10 +93,12 @@ internal class KotlinAnnotationIntrospector(private val context: Module.SetupCon
                     val innerClazz = getter.returnType
 
                     ValueClassStaticJsonValueSerializer.createdOrNull(outerClazz, innerClazz)
-                        ?: @Suppress("UNCHECKED_CAST") (ValueClassBoxSerializer(
-        outerClazz,
-        innerClazz
-    ))
+                        ?: @Suppress("UNCHECKED_CAST") (
+                            ValueClassBoxSerializer(
+                                outerClazz,
+                                innerClazz
+                            )
+                            )
                 }
         }
         // Ignore the case of AnnotatedField, because JvmField cannot be set in the field of value class.
@@ -121,7 +123,7 @@ internal class KotlinAnnotationIntrospector(private val context: Module.SetupCon
 
     private fun AnnotatedField.hasRequiredMarker(): Boolean? {
         val byAnnotation = (member as Field).isRequiredByAnnotation()
-        val byNullability =  (member as Field).kotlinProperty?.returnType?.isRequired()
+        val byNullability = (member as Field).kotlinProperty?.returnType?.isRequired()
 
         return requiredAnnotationOrNullability(byAnnotation, byNullability)
     }
@@ -141,7 +143,7 @@ internal class KotlinAnnotationIntrospector(private val context: Module.SetupCon
     }
 
     private fun Method.isRequiredByAnnotation(): Boolean? {
-       return (this.annotations.firstOrNull { it.annotationClass.java == JsonProperty::class.java } as? JsonProperty)?.required
+        return (this.annotations.firstOrNull { it.annotationClass.java == JsonProperty::class.java } as? JsonProperty)?.required
     }
 
     // Since Kotlin's property has the same Type for each field, getter, and setter,
@@ -183,8 +185,8 @@ internal class KotlinAnnotationIntrospector(private val context: Module.SetupCon
 
         val byNullability = when (member) {
             is Constructor<*> -> member.kotlinFunction?.isConstructorParameterRequired(index)
-            is Method         -> member.kotlinFunction?.isMethodParameterRequired(index)
-            else              -> null
+            is Method -> member.kotlinFunction?.isMethodParameterRequired(index)
+            else -> null
         }
 
         return requiredAnnotationOrNullability(byAnnotation, byNullability)
@@ -195,7 +197,7 @@ internal class KotlinAnnotationIntrospector(private val context: Module.SetupCon
     }
 
     private fun KFunction<*>.isMethodParameterRequired(index: Int): Boolean {
-        return isParameterRequired(index+1)
+        return isParameterRequired(index + 1)
     }
 
     private fun KFunction<*>.isParameterRequired(index: Int): Boolean {
@@ -208,7 +210,7 @@ internal class KotlinAnnotationIntrospector(private val context: Module.SetupCon
         }
 
         return !paramType.isMarkedNullable && !param.isOptional &&
-                !(isPrimitive && !context.isEnabled(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES))
+            !(isPrimitive && !context.isEnabled(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES))
     }
 
     private fun KType.isRequired(): Boolean = !isMarkedNullable

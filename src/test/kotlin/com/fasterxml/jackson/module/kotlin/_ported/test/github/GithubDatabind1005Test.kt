@@ -10,8 +10,10 @@ class TestGithubDatabind1005 {
 
     // make a class seem kinda like a Java class, but with a second generated constructor
     // this is Ugly Kotlin but is making it easier for Java people to see and debug.
-    class Something @JsonCreator constructor(@JsonProperty("name") name: String,
-                                             @JsonProperty("age") age: Int = 0) { // default value causes synthetic constructor to be generated
+    class Something @JsonCreator constructor(
+        @JsonProperty("name") name: String,
+        @JsonProperty("age") age: Int = 0
+    ) { // default value causes synthetic constructor to be generated
         val name: String = name
         val age: Int = age
     }

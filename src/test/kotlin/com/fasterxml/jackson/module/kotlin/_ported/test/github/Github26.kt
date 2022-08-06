@@ -21,7 +21,5 @@ class TestGithub26 {
         val check3: ClassWithPrimitivesWithDefaults = jacksonObjectMapper().readValue("""{"i": 2}""")
         assertEquals(2, check3.i)
         assertEquals(0, check3.x)
-
     }
-
 }

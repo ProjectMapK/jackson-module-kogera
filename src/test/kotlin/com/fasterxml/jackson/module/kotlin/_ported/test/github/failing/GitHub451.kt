@@ -13,6 +13,7 @@ class GitHub451 {
         val bazQux: String
     ) {
         fun `getQuux-corge`(): String = `foo-bar`
+
         @JvmName("getGrault-graply")
         fun getGraultGraply(): String = bazQux
     }

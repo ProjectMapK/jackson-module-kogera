@@ -17,8 +17,8 @@ import org.junit.jupiter.api.Assertions.fail
  * @param block         The block to execute
  */
 inline fun <reified T : Throwable> expectFailure(
-        fixMessage: String,
-        block: () -> Unit
+    fixMessage: String,
+    block: () -> Unit
 ) {
     try {
         block()

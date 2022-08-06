@@ -32,11 +32,15 @@ class TestGithub124 {
         override fun toString() = "NonSerializable"
     }
 
-    data class Foo(@JsonProperty("name") val name: String,
-                   @JsonIgnore val query: NonSerializable,
-                   @JsonProperty("query") val rawQuery: String) {
+    data class Foo(
+        @JsonProperty("name") val name: String,
+        @JsonIgnore val query: NonSerializable,
+        @JsonProperty("query") val rawQuery: String
+    ) {
         @JsonCreator
-        constructor(@JsonProperty("name") name: String,
-                    @JsonProperty("query") rawQuery: String): this(name, NonSerializable(rawQuery), rawQuery)
+        constructor(
+            @JsonProperty("name") name: String,
+            @JsonProperty("query") rawQuery: String
+        ) : this(name, NonSerializable(rawQuery), rawQuery)
     }
 }

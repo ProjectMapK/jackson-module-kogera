@@ -3,9 +3,9 @@ package com.fasterxml.jackson.module.kotlin._ported.test.github
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.module.kotlin._ported.test.expectFailure
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin._ported.test.expectFailure
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -41,16 +41,18 @@ class TestGithub27 {
 
     private data class ClassWithListOfInt(val samples: List<Int>)
 
-    @Test
     // Would be hard to look into generics of every possible type of collection or generic object to check nullability of each item, maybe only possible for simple known collections
+    @Test
     fun testListOfInt() {
         val json = """{"samples":[1, null]}"""
         val stateObj = mapper.readValue<ClassWithListOfInt>(json)
         expectFailure<NullPointerException>("Problem with nullable generics related to #27 has been fixed!") {
-            assertTrue(stateObj.samples.none {
-                @Suppress("SENSELESS_COMPARISON")
-                (it == null)
-            })
+            assertTrue(
+                stateObj.samples.none {
+                    @Suppress("SENSELESS_COMPARISON")
+                    (it == null)
+                }
+            )
             fail("")
         }
     }
@@ -61,8 +63,10 @@ class TestGithub27 {
     }
 
     // TODO:  this would get tougher to nullable check, tough problem to solve
-    class ClassWithNonNullableT<T>(val something: T,
-                                   val listSomething: List<T>,
-                                   val mapOfListOfSomething: Map<String, List<T>>,
-                                   val innerSomething: ClassWithNonNullableT<T>?)
+    class ClassWithNonNullableT<T>(
+        val something: T,
+        val listSomething: List<T>,
+        val mapOfListOfSomething: Map<String, List<T>>,
+        val innerSomething: ClassWithNonNullableT<T>?
+    )
 }

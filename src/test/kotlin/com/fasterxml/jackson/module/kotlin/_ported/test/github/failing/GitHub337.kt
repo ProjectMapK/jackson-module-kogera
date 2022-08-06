@@ -32,7 +32,8 @@ class TestGitHub337 {
         {
           "isBooleanField" : true,
           "isIntField" : 9
-        }""".trimIndent()
+        }
+        """.trimIndent()
         assertEquals(expected, writer.writeValueAsString(problematic))
     }
 
@@ -49,7 +50,8 @@ class TestGitHub337 {
         {
           "isBooleanField" : true,
           "isIntField" : 9
-        }""".trimIndent()
+        }
+        """.trimIndent()
         assertEquals(expected, writer.writeValueAsString(problematic))
     }
 
@@ -65,7 +67,8 @@ class TestGitHub337 {
         {
           "isBooleanField" : true,
           "isIntField" : 9
-        }""".trimIndent()
+        }
+        """.trimIndent()
         assertEquals(expected, writer.writeValueAsString(problematic))
     }
 }

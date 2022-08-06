@@ -21,11 +21,10 @@ class TestGithub207 {
         }
 
         override fun hashCode(): Int =
-                value.hashCode()
+            value.hashCode()
 
         override fun toString(): String =
-                value
-
+            value
     }
 
     class ExtendedWrapper(value: String) : Wrapper(value)
@@ -79,5 +78,4 @@ class TestGithub207 {
         // then
         assertEquals("\"foo\"", serialized)
     }
-
 }

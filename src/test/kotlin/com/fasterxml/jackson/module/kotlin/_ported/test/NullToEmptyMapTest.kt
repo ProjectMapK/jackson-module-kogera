@@ -21,7 +21,6 @@ class TestNullToEmptyMap {
         val mapper = createMapper()
         assertEquals(emptyMap<String, Int>(), mapper.readValue("{}", TestClass::class.java).foo)
         assertEquals(emptyMap<String, Int>(), mapper.readValue("""{"foo": null}""", TestClass::class.java).foo)
-
     }
 
     private fun createMapper(): ObjectMapper {

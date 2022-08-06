@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class TestGithub158 {
-    enum class SampleImpl constructor(override val value: String): Sample {
+    enum class SampleImpl constructor(override val value: String) : Sample {
         One("oney"),
         Two("twoey")
     }

@@ -25,6 +25,7 @@ class Github464 {
     }
 
     interface IValue
+
     @JvmInline
     value class ValueClass(val value: Int?) : IValue
     data class WrapperClass(val inlineField: ValueClass)

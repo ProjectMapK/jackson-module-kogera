@@ -16,11 +16,13 @@ class TestGithub42_FailOnNullForPrimitives {
 
     @Test
     fun `optional primitive parameter defaulted if not in json when FAIL_ON_NULL_FOR_PRIMITIVES is true`() {
-        val actualObj: OptionalIntRequiredBoolean = mapper.readValue("""
+        val actualObj: OptionalIntRequiredBoolean = mapper.readValue(
+            """
         {
             "reqBool": false
         }
-        """)
+        """
+        )
 
         assertEquals(OptionalIntRequiredBoolean(reqBool = false), actualObj)
     }
@@ -32,12 +34,14 @@ class TestGithub42_FailOnNullForPrimitives {
     }
 
     @Test fun `optional parameter has json value if provided when FAIL_ON_NULL_FOR_PRIMITIVES is true`() {
-        val actualObj: OptionalIntRequiredBoolean = mapper.readValue("""
+        val actualObj: OptionalIntRequiredBoolean = mapper.readValue(
+            """
         {
             "optInt": 3,
             "reqBool": true
         }
-        """)
+        """
+        )
 
         assertEquals(OptionalIntRequiredBoolean(3, true), actualObj)
     }

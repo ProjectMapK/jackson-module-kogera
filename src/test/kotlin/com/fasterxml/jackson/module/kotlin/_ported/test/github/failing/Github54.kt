@@ -3,9 +3,9 @@ package com.fasterxml.jackson.module.kotlin._ported.test.github.failing
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import com.fasterxml.jackson.databind.deser.UnresolvedForwardReference
+import com.fasterxml.jackson.module.kotlin._ported.test.expectFailure
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin._ported.test.expectFailure
 import org.junit.jupiter.api.Test
 
 class TestGithub54 {
@@ -24,7 +24,6 @@ class TestGithub54 {
         expectFailure<UnresolvedForwardReference>("GitHub #54 has been fixed!") {
             mapper.readValue<Entity1>(json)
         }
-
     }
 }
 

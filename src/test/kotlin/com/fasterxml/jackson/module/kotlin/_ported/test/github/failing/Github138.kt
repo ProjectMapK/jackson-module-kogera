@@ -6,20 +6,20 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
+import com.fasterxml.jackson.module.kotlin._ported.test.expectFailure
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import com.fasterxml.jackson.module.kotlin._ported.test.expectFailure
 import org.junit.jupiter.api.Test
 
 class TestGithub138 {
     @JacksonXmlRootElement(localName = "sms")
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Sms(
-            @JacksonXmlProperty(localName = "Phone", isAttribute = true)
-            val phone: String?,
+        @JacksonXmlProperty(localName = "Phone", isAttribute = true)
+        val phone: String?,
 
-            @JacksonXmlText
-            val text: String? = ""
+        @JacksonXmlText
+        val text: String? = ""
     )
 
     @Test

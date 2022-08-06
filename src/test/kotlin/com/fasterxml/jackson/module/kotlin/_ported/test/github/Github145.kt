@@ -84,7 +84,7 @@ class TestGithub145 {
         ) {
             @JsonCreator
             constructor(preNameAndLastName: String) :
-                    this(preNameAndLastName.substringBefore(","), preNameAndLastName.substringAfter(","))
+                this(preNameAndLastName.substringBefore(","), preNameAndLastName.substringAfter(","))
         }
 
         val person5String = objectMapper.readValue<Person5>(""""TestPreName,TestLastname"""")

@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.7.10"
     java
+    id("org.jmailen.kotlinter") version "3.11.1"
 }
 
 group = "com.fasterxml.jackson"

@@ -37,7 +37,7 @@ class TestSequenceDeserializer {
     fun testSerializeEmptySequence() {
         val sequence = listOf<String>().asSequence()
         val data = Data(sequence)
-        val objectMapper =  jacksonObjectMapper()
+        val objectMapper = jacksonObjectMapper()
         val result = objectMapper.writeValueAsString(data)
         assertEquals("{\"value\":[]}", result)
     }

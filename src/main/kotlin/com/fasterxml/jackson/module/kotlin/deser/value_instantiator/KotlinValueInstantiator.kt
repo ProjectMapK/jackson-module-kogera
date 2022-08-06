@@ -9,10 +9,10 @@ import com.fasterxml.jackson.databind.deser.ValueInstantiators
 import com.fasterxml.jackson.databind.deser.impl.NullsAsEmptyProvider
 import com.fasterxml.jackson.databind.deser.impl.PropertyValueBuffer
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
-import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ConstructorValueCreator
-import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.MethodValueCreator
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.ReflectionCache
+import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ConstructorValueCreator
+import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.MethodValueCreator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueCreator
 import com.fasterxml.jackson.module.kotlin.isKotlinClass
 import com.fasterxml.jackson.module.kotlin.wrapWithPath
@@ -71,7 +71,7 @@ internal class KotlinValueInstantiator(
                 }
                 tempParamVal
             } else {
-                if(paramDef.type.isMarkedNullable) {
+                if (paramDef.type.isMarkedNullable) {
                     // do not try to create any object if it is nullable and the value is missing
                     null
                 } else {
@@ -87,7 +87,8 @@ internal class KotlinValueInstantiator(
             val isGenericTypeVar = paramDef.type.javaType is TypeVariable<*>
             val isMissingAndRequired = paramVal == null && isMissing && jsonProp.isRequired
             if (isMissingAndRequired ||
-                (!isGenericTypeVar && paramVal == null && !paramDef.type.isMarkedNullable)) {
+                (!isGenericTypeVar && paramVal == null && !paramDef.type.isMarkedNullable)
+            ) {
                 throw MissingKotlinParameterException(
                     parameter = paramDef,
                     processor = ctxt.parser,
@@ -141,7 +142,6 @@ internal class KotlinValueInstantiator(
             }
             valueCreator.callBy(callableParametersByName)
         }
-
     }
 
     private fun KParameter.isPrimitive(): Boolean {

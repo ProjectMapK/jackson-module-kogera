@@ -66,7 +66,7 @@ class TestJacksonWithKotlinBuiltins {
         assertEquals(expected, stateObj)
     }
 
-    private data class GenericParametersClass<A, B: Any>(val one: A, val two: B)
+    private data class GenericParametersClass<A, B : Any>(val one: A, val two: B)
     private data class GenericParameterConsumer(val thing: GenericParametersClass<String?, Int>)
 
     @Test fun testGenericParametersInConstructor() {

@@ -21,13 +21,15 @@ class TestGithub194 {
     }
 
     @JsonIdentityInfo(
-            property = "id",
-            scope = WithIdentity::class,
-            generator = ObjectIdGenerators.PropertyGenerator::class
+        property = "id",
+        scope = WithIdentity::class,
+        generator = ObjectIdGenerators.PropertyGenerator::class
     )
-    class WithIdentity(val id: UUID,
-                       val idString: String = id.toString(),
-                       val name: String)
+    class WithIdentity(
+        val id: UUID,
+        val idString: String = id.toString(),
+        val name: String
+    )
 
     @Test
     fun testIdentityInfo_WithDefaultId() {
@@ -39,11 +41,13 @@ class TestGithub194 {
     }
 
     @JsonIdentityInfo(
-            property = "id",
-            scope = WithIdentityAndDefaultId::class,
-            generator = ObjectIdGenerators.PropertyGenerator::class
+        property = "id",
+        scope = WithIdentityAndDefaultId::class,
+        generator = ObjectIdGenerators.PropertyGenerator::class
     )
-    class WithIdentityAndDefaultId(val id: UUID,
-                                   val idString: String = id.toString(),
-                                   val name: String)
+    class WithIdentityAndDefaultId(
+        val id: UUID,
+        val idString: String = id.toString(),
+        val name: String
+    )
 }

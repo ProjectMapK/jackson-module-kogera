@@ -21,14 +21,16 @@ class TestGithub179 {
     @Test
     fun embeddedListOfStrings() {
         val stringsContainer = objectMapper.readValue<StringsContainer>(
-                """{ "strings" : [ "first", "second" ] }""")
+            """{ "strings" : [ "first", "second" ] }"""
+        )
         assertEquals(stringsContainer.strings.values, listOf("first", "second"))
     }
 
     @Test
     fun embeddedListOfEnums() {
         val myEnumsContainer = objectMapper.readValue<MyEnumsContainer>(
-                """{ "myEnums" : [ "first", "second" ] }""")
+            """{ "myEnums" : [ "first", "second" ] }"""
+        )
         assertEquals(myEnumsContainer.myEnums.values, listOf(MyEnum.FIRST, MyEnum.SECOND))
     }
 
@@ -36,12 +38,15 @@ class TestGithub179 {
 
     private class MyEnumsContainer(@JsonProperty("myEnums") val myEnums: MyEnums)
 
-    private class Strings @JsonCreator(mode = JsonCreator.Mode.DELEGATING) constructor(val values : List<String>)
+    private class Strings @JsonCreator(mode = JsonCreator.Mode.DELEGATING) constructor(val values: List<String>)
 
-    private class MyEnums @JsonCreator(mode = JsonCreator.Mode.DELEGATING) constructor(val values : List<MyEnum>)
+    private class MyEnums @JsonCreator(mode = JsonCreator.Mode.DELEGATING) constructor(val values: List<MyEnum>)
 
     private enum class MyEnum {
-        @JsonProperty("first") FIRST,
-        @JsonProperty("second") SECOND
+        @JsonProperty("first")
+        FIRST,
+
+        @JsonProperty("second")
+        SECOND
     }
 }

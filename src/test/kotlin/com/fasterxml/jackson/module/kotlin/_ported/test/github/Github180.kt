@@ -13,13 +13,12 @@ class TestGithub180 {
             @JvmStatic
             @JsonCreator
             fun create(
-                    @JsonProperty("instantName") instantName: String?,
-                    @JsonProperty("someInt") someInt: Int?
+                @JsonProperty("instantName") instantName: String?,
+                @JsonProperty("someInt") someInt: Int?
             ): TestClass {
                 return TestClass(instantName, someInt)
             }
         }
-
     }
 
     @Test

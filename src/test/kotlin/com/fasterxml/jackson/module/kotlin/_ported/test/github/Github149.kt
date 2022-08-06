@@ -66,16 +66,17 @@ class TestGithub149 {
 
     )
 
-    data class Color (
+    data class Color(
         val id: Long,
-        val code: String) {
+        val code: String
+    ) {
 
         @JsonBackReference
         lateinit var car: Car
     }
 
     @Test
-    fun testGithub129(){
+    fun testGithub129() {
         val mapper = jacksonObjectMapper()
         val c = Car(id = 100)
         val color = Color(id = 100, code = "#FFFFF").apply { car = c }

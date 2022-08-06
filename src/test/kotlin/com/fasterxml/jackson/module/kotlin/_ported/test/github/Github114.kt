@@ -45,9 +45,14 @@ class TestGithub114 {
         companion object {
             @JsonCreator
             @JvmStatic
-            fun parse(@JsonProperty("id") id: String,
-                      @JsonProperty("name") name: String? = null) = Obj(id, name
-                    ?: "yes")
+            fun parse(
+                @JsonProperty("id") id: String,
+                @JsonProperty("name") name: String? = null
+            ) = Obj(
+                id,
+                name
+                    ?: "yes"
+            )
         }
     }
 

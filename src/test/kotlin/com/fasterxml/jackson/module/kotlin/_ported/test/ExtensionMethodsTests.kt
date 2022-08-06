@@ -68,7 +68,7 @@ private class TestExtensionMethods {
         assertEquals(0, arrayNode.size())
     }
 
-    @Test fun noTypeErasure(){
+    @Test fun noTypeErasure() {
         data class Person(val name: String)
         val source = """[ { "name" : "Neo" } ]"""
         val tree = mapper.readTree(source)

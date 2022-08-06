@@ -16,7 +16,8 @@ class TestGithub46 {
         val data: TestData = mapper.readValue(json)
         assertEquals(
             TestData(true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true),
-                data)
+            data
+        )
         val rejson = mapper.writeValueAsString(data)
 
         // then
@@ -26,47 +27,48 @@ class TestGithub46 {
     @Test fun byReflectionDo32() {
         val constructor = TestData::class.primaryConstructor!!
         val data = constructor.callBy(
-                constructor.parameters.map {
-                    it to true
-                }.toMap()
+            constructor.parameters.map {
+                it to true
+            }.toMap()
         )
         assertEquals(
             TestData(true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true),
-                data)
+            data
+        )
     }
 
     data class TestData(
-            var prop1: Boolean = false,
-            var prop2: Boolean = false,
-            var prop3: Boolean = false,
-            var prop4: Boolean = false,
-            var prop5: Boolean = false,
-            var prop6: Boolean = false,
-            var prop7: Boolean = false,
-            var prop8: Boolean = false,
-            var prop9: Boolean = false,
-            var prop10: Boolean = false,
-            var prop11: Boolean = false,
-            var prop12: Boolean = false,
-            var prop13: Boolean = false,
-            var prop14: Boolean = false,
-            var prop15: Boolean = false,
-            var prop16: Boolean = false,
-            var prop17: Boolean = false,
-            var prop18: Boolean = false,
-            var prop19: Boolean = false,
-            var prop20: Boolean = false,
-            var prop21: Boolean = false,
-            var prop22: Boolean = false,
-            var prop23: Boolean = false,
-            var prop24: Boolean = false,
-            var prop25: Boolean = false,
-            var prop26: Boolean = false,
-            var prop27: Boolean = false,
-            var prop28: Boolean = false,
-            var prop29: Boolean = false,
-            var prop30: Boolean = false,
-            var prop31: Boolean = false,
-            var prop32: Boolean = false
+        var prop1: Boolean = false,
+        var prop2: Boolean = false,
+        var prop3: Boolean = false,
+        var prop4: Boolean = false,
+        var prop5: Boolean = false,
+        var prop6: Boolean = false,
+        var prop7: Boolean = false,
+        var prop8: Boolean = false,
+        var prop9: Boolean = false,
+        var prop10: Boolean = false,
+        var prop11: Boolean = false,
+        var prop12: Boolean = false,
+        var prop13: Boolean = false,
+        var prop14: Boolean = false,
+        var prop15: Boolean = false,
+        var prop16: Boolean = false,
+        var prop17: Boolean = false,
+        var prop18: Boolean = false,
+        var prop19: Boolean = false,
+        var prop20: Boolean = false,
+        var prop21: Boolean = false,
+        var prop22: Boolean = false,
+        var prop23: Boolean = false,
+        var prop24: Boolean = false,
+        var prop25: Boolean = false,
+        var prop26: Boolean = false,
+        var prop27: Boolean = false,
+        var prop28: Boolean = false,
+        var prop29: Boolean = false,
+        var prop30: Boolean = false,
+        var prop31: Boolean = false,
+        var prop32: Boolean = false
     )
 }

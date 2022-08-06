@@ -43,14 +43,13 @@ class TestJacksonWithKotlin {
     private val pascalCasedJson = """{"Name":"Frank","Age":30,"PrimaryAddress":"something here","Renamed":true,"CreatedDt":"2016-10-25T18:25:48.000+00:00"}"""
 
     private val normalCasedMapper = jacksonObjectMapper()
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-            .configure(SerializationFeature.INDENT_OUTPUT, false)
-
+        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+        .configure(SerializationFeature.INDENT_OUTPUT, false)
 
     private val pascalCasedMapper = jacksonObjectMapper()
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-            .configure(SerializationFeature.INDENT_OUTPUT, false)
-            .setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE)
+        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+        .configure(SerializationFeature.INDENT_OUTPUT, false)
+        .setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE)
 
     // ==================
 
@@ -156,7 +155,8 @@ class TestJacksonWithKotlin {
         override val age: Int,
         override val primaryAddress: String
     ) : TestFields {
-        @JsonProperty("renamed") override var wrongName: Boolean = false
+        @JsonProperty("renamed")
+        override var wrongName: Boolean = false
         override var createdDt: Date by Delegates.notNull()
     }
 
@@ -198,7 +198,6 @@ class TestJacksonWithKotlin {
         assertEquals(pascalCasedJson, test1out)
     }
 
-
     // ==================
 
     private class StateObjectWithFactory private constructor(
@@ -210,7 +209,8 @@ class TestJacksonWithKotlin {
     ) : TestFields {
         var factoryUsed: Boolean = false
         companion object {
-            @JvmStatic @JsonCreator fun create(
+            @JvmStatic @JsonCreator
+            fun create(
                 @JsonProperty("name") nameThing: String,
                 @JsonProperty("age") age: Int,
                 @JsonProperty("primaryAddress") primaryAddress: String,
@@ -238,7 +238,8 @@ class TestJacksonWithKotlin {
         val createdDt: Date
     ) {
         companion object {
-            @JvmStatic @JsonCreator fun create(
+            @JvmStatic @JsonCreator
+            fun create(
                 name: String,
                 age: Int,
                 primaryAddress: String,
@@ -253,8 +254,7 @@ class TestJacksonWithKotlin {
     @Test fun findingFactoryMethod2() {
         try {
             normalCasedMapper.readValue(normalCasedJson, StateObjectWithFactoryNoParamAnnotations::class.java)
-        }
-        catch (ex: Exception) {
+        } catch (ex: Exception) {
             ex.printStackTrace()
             fail("Exception not expected")
         }
@@ -269,7 +269,8 @@ class TestJacksonWithKotlin {
     ) : TestFields {
         var factoryUsed: Boolean = false
         private companion object Named {
-            @JvmStatic @JsonCreator fun create(
+            @JvmStatic @JsonCreator
+            fun create(
                 @JsonProperty("name") nameThing: String,
                 @JsonProperty("age") age: Int,
                 @JsonProperty("primaryAddress") primaryAddress: String,
@@ -302,7 +303,8 @@ class TestJacksonWithKotlin {
     }
 
     @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-    @Test fun testFindKotlinClass() {
+    @Test
+    fun testFindKotlinClass() {
         assertFalse(HashMap::class.java.isKotlinClass())
         assertFalse(Object::class.java.isKotlinClass())
         assertFalse(String::class.java.isKotlinClass())
@@ -319,4 +321,3 @@ class TestJacksonWithKotlin {
         assertTrue(Gh14FailureWithEnum::class.java.isKotlinClass())
     }
 }
-

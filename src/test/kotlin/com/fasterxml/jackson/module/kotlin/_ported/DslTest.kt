@@ -68,9 +68,11 @@ class DslTest {
             disable(JsonWriteFeature.QUOTE_FIELD_NAMES)
             configure(JsonReadFeature.ALLOW_SINGLE_QUOTES, true)
 
-            addModule(kotlinModule {
-                enable(NullIsSameAsDefault)
-            })
+            addModule(
+                kotlinModule {
+                    enable(NullIsSameAsDefault)
+                }
+            )
         }
 
         assertNotNull(mapper)

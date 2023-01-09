@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.ReflectionCache
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueCreator
+import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueParameter
 import com.fasterxml.jackson.module.kotlin.isKotlinClass
 import com.fasterxml.jackson.module.kotlin.wrapWithPath
 import kotlin.reflect.KParameter
@@ -25,6 +26,10 @@ internal class KotlinValueInstantiator(
     private val nullIsSameAsDefault: Boolean,
     private val strictNullChecks: Boolean
 ) : StdValueInstantiator(src) {
+    // If the collection type argument cannot be obtained, treat it as nullable
+    // @see com.fasterxml.jackson.module.kotlin._ported.test.StrictNullChecksTest#testListOfGenericWithNullValue
+    private fun ValueParameter.isNullishTypeAt(index: Int) = arguments.getOrNull(index)?.isNullable ?: true
+
     override fun createFromObjectWith(
         ctxt: DeserializationContext,
         props: Array<out SettableBeanProperty>,
@@ -76,11 +81,11 @@ internal class KotlinValueInstantiator(
                 // If an error occurs, Argument.name is always non-null
                 // @see com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.Argument
                 when {
-                    paramVal is Collection<*> && !paramDef.arguments[0].isNullable && paramVal.any { it == null } ->
+                    paramVal is Collection<*> && !paramDef.isNullishTypeAt(0) && paramVal.any { it == null } ->
                         "collection" to paramDef.arguments[0].name!!
-                    paramVal is Array<*> && !paramDef.arguments[0].isNullable && paramVal.any { it == null } ->
+                    paramVal is Array<*> && !paramDef.isNullishTypeAt(0) && paramVal.any { it == null } ->
                         "array" to paramDef.arguments[0].name!!
-                    paramVal is Map<*, *> && !paramDef.arguments[1].isNullable && paramVal.values.any { it == null } ->
+                    paramVal is Map<*, *> && !paramDef.isNullishTypeAt(1) && paramVal.values.any { it == null } ->
                         "map" to paramDef.arguments[1].name!!
                     else -> null
                 }?.let { (paramType, itemType) ->

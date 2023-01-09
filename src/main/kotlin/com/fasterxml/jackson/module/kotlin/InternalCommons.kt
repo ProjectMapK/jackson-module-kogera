@@ -3,10 +3,12 @@ package com.fasterxml.jackson.module.kotlin
 import com.fasterxml.jackson.databind.JsonMappingException
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmValueParameter
+import kotlinx.metadata.jvm.JvmFieldSignature
 import kotlinx.metadata.jvm.JvmMethodSignature
 import kotlinx.metadata.jvm.KotlinClassHeader
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.lang.reflect.Constructor
+import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.util.*
 
@@ -76,6 +78,9 @@ internal fun Constructor<*>.toSignature(): JvmMethodSignature =
 
 internal fun Method.toSignature(): JvmMethodSignature =
     JvmMethodSignature(this.name, parameterTypes.toDescString() + this.returnType.descriptor)
+
+internal fun Field.toSignature(): JvmFieldSignature =
+    JvmFieldSignature(this.name, this.type.descriptor)
 
 internal fun List<KmValueParameter>.hasVarargParam(): Boolean =
     lastOrNull()?.let { it.varargElementType != null } ?: false

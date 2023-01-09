@@ -65,8 +65,8 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
             val constructor = _withArgsCreator.annotated as Constructor<Any>
 
             javaConstructorToValueCreator.get(constructor)
-                ?: kotlinFromJava(constructor)?.let {
-                    val value = ConstructorValueCreator(it)
+                ?: run {
+                    val value = ConstructorValueCreator(constructor)
                     javaConstructorToValueCreator.putIfAbsent(constructor, value) ?: value
                 }
         }
@@ -74,8 +74,8 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
             val method = _withArgsCreator.annotated as Method
 
             javaMethodToValueCreator.get(method)
-                ?: kotlinFromJava(method)?.let {
-                    val value = MethodValueCreator.of(it)
+                ?: kotlin.run {
+                    val value = MethodValueCreator<Any?>(method)
                     javaMethodToValueCreator.putIfAbsent(method, value) ?: value
                 }
         }

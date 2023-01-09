@@ -30,10 +30,10 @@ internal fun Int.toBitSet(): BitSet {
 internal fun Class<*>.isKotlinClass(): Boolean = declaredAnnotations.any { it is Metadata }
 internal fun Class<*>.isUnboxableValueClass() = annotations.any { it is JvmInline }
 
-internal fun Class<*>.toKmClass(): KmClass = annotations
+internal fun Class<*>.toKmClass(): KmClass? = annotations
     .filterIsInstance<Metadata>()
-    .first()
-    .let {
+    .firstOrNull()
+    ?.let {
         KotlinClassMetadata.read(
             KotlinClassHeader(
                 it.kind,
@@ -45,7 +45,7 @@ internal fun Class<*>.toKmClass(): KmClass = annotations
                 it.extraInt
             )
         ) as KotlinClassMetadata.Class
-    }.toKmClass()
+    }?.toKmClass()
 
 private val primitiveClassToDesc by lazy {
     mapOf(

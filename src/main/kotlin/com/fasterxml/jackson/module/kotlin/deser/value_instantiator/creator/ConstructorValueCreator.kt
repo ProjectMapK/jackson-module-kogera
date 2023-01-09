@@ -22,7 +22,7 @@ internal class ConstructorValueCreator<T : Any>(private val constructor: Constru
         // To prevent the call from failing, save the initial value and then rewrite the flag.
         if (!isAccessible) constructor.isAccessible = true
 
-        val declaringKmClass: KmClass = declaringClass.toKmClass()
+        val declaringKmClass: KmClass = declaringClass.toKmClass()!!
 
         val constructorParameters = constructor.toSignature().desc.let { desc ->
             // Compare only desc for performance

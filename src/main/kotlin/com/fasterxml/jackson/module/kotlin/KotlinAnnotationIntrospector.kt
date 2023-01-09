@@ -15,18 +15,18 @@ import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.fasterxml.jackson.module.kotlin.ser.serializers.ValueClassBoxSerializer
 import com.fasterxml.jackson.module.kotlin.ser.serializers.ValueClassStaticJsonValueSerializer
+import kotlinx.metadata.KmClassifier
+import kotlinx.metadata.jvm.getterSignature
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
-import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaGetter
 import kotlin.reflect.jvm.javaSetter
 import kotlin.reflect.jvm.javaType
@@ -81,34 +81,29 @@ internal class KotlinAnnotationIntrospector(
                 // it will be serialized properly without doing anything.
                 if (this.returnType.isUnboxableValueClass()) return null
             }
+            val getterSignature = getter.toSignature()
 
-            val kotlinProperty = getter
-                .declaringClass
-                .kotlin
-                .let {
-                    // KotlinReflectionInternalError is raised in GitHub167 test,
-                    // but it looks like an edge case, so it is ignored.
-                    try {
-                        it.memberProperties
-                    } catch (e: Error) {
-                        null
-                    }
-                }?.find { it.javaGetter == getter }
+            val kotlinProperty =
+                getter.declaringClass.toKmClass()?.properties?.find { it.getterSignature == getterSignature }
 
-            (kotlinProperty?.returnType?.classifier as? KClass<*>)
-                ?.takeIf { it.isValue }
-                ?.java
-                ?.let { outerClazz ->
-                    val innerClazz = getter.returnType
-
-                    ValueClassStaticJsonValueSerializer.createdOrNull(outerClazz, innerClazz)
-                        ?: @Suppress("UNCHECKED_CAST") (
-                            ValueClassBoxSerializer(
-                                outerClazz,
-                                innerClazz
-                            )
-                            )
+            (kotlinProperty?.returnType?.classifier as? KmClassifier.Class)?.let { classifier ->
+                // Since there was no way to directly determine whether returnType is a value class or not,
+                // Class is restored and processed.
+                // If the cost of this process is significant, consider caching it.
+                runCatching {
+                    // Kotlin-specific types such as kotlin.String will cause an error,
+                    // but value classes will not cause an error, so ignore them
+                    Class.forName(classifier.name.replace(".", "$").replace("/", "."))
                 }
+                    .getOrNull()
+                    ?.takeIf { it.annotations.any { ann -> ann is JvmInline } }
+                    ?.let { outerClazz ->
+                        val innerClazz = getter.returnType
+
+                        ValueClassStaticJsonValueSerializer.createdOrNull(outerClazz, innerClazz)
+                            ?: @Suppress("UNCHECKED_CAST") (ValueClassBoxSerializer(outerClazz, innerClazz))
+                    }
+            }
         }
         // Ignore the case of AnnotatedField, because JvmField cannot be set in the field of value class.
         else -> null
@@ -227,4 +222,11 @@ internal class KotlinAnnotationIntrospector(
     companion object {
         val UNIT_TYPE: KType = Unit::class.createType()
     }
+}
+
+@JvmInline
+private value class VC(val v: Int)
+
+internal fun main() {
+    val vc = VC::class.java.toKmClass()
 }

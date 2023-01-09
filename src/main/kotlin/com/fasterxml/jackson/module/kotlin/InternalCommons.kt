@@ -9,8 +9,6 @@ import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 import java.util.*
-import kotlin.reflect.KType
-import kotlin.reflect.jvm.jvmErasure
 
 internal fun JsonMappingException.wrapWithPath(refFrom: Any?, refFieldName: String) = JsonMappingException.wrapWithPath(this, refFrom, refFieldName)
 internal fun JsonMappingException.wrapWithPath(refFrom: Any?, index: Int) = JsonMappingException.wrapWithPath(this, refFrom, index)
@@ -31,8 +29,6 @@ internal fun Int.toBitSet(): BitSet {
 
 internal fun Class<*>.isKotlinClass(): Boolean = declaredAnnotations.any { it is Metadata }
 internal fun Class<*>.isUnboxableValueClass() = annotations.any { it is JvmInline }
-
-internal fun KType.erasedType(): Class<out Any> = this.jvmErasure.java
 
 internal fun Class<*>.toKmClass(): KmClass = annotations
     .filterIsInstance<Metadata>()

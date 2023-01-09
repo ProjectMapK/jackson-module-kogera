@@ -15,8 +15,6 @@ import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.Valu
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueParameter
 import com.fasterxml.jackson.module.kotlin.isKotlinClass
 import com.fasterxml.jackson.module.kotlin.wrapWithPath
-import kotlin.reflect.KParameter
-import kotlin.reflect.jvm.javaType
 
 internal class KotlinValueInstantiator(
     src: StdValueInstantiator,
@@ -102,13 +100,6 @@ internal class KotlinValueInstantiator(
 
         valueCreator.checkAccessibility(ctxt)
         return valueCreator.callBy(bucket)
-    }
-
-    private fun KParameter.isPrimitive(): Boolean {
-        return when (val javaType = type.javaType) {
-            is Class<*> -> javaType.isPrimitive
-            else -> false
-        }
     }
 
     private fun SettableBeanProperty.hasInjectableValueId(): Boolean = injectableValueId != null

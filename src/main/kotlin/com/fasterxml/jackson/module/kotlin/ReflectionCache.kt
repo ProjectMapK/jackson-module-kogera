@@ -37,21 +37,16 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
 
     private val javaClassToKotlin = LRUMap<Class<Any>, KClass<Any>>(reflectionCacheSize, reflectionCacheSize)
     private val javaConstructorToKotlin = LRUMap<Constructor<Any>, KFunction<Any>>(reflectionCacheSize, reflectionCacheSize)
-    private val javaMethodToKotlin = LRUMap<Method, KFunction<*>>(reflectionCacheSize, reflectionCacheSize)
     private val javaConstructorToValueCreator = LRUMap<Constructor<Any>, ConstructorValueCreator<*>>(reflectionCacheSize, reflectionCacheSize)
     private val javaMethodToValueCreator = LRUMap<Method, MethodValueCreator<*>>(reflectionCacheSize, reflectionCacheSize)
     private val javaConstructorIsCreatorAnnotated = LRUMap<AnnotatedConstructor, Boolean>(reflectionCacheSize, reflectionCacheSize)
     private val javaMemberIsRequired = LRUMap<AnnotatedMember, BooleanTriState?>(reflectionCacheSize, reflectionCacheSize)
-    private val kotlinGeneratedMethod = LRUMap<AnnotatedMethod, Boolean>(reflectionCacheSize, reflectionCacheSize)
 
     fun kotlinFromJava(key: Class<Any>): KClass<Any> = javaClassToKotlin.get(key)
         ?: key.kotlin.let { javaClassToKotlin.putIfAbsent(key, it) ?: it }
 
     fun kotlinFromJava(key: Constructor<Any>): KFunction<Any>? = javaConstructorToKotlin.get(key)
         ?: key.kotlinFunction?.let { javaConstructorToKotlin.putIfAbsent(key, it) ?: it }
-
-    fun kotlinFromJava(key: Method): KFunction<*>? = javaMethodToKotlin.get(key)
-        ?: key.kotlinFunction?.let { javaMethodToKotlin.putIfAbsent(key, it) ?: it }
 
     /**
      * return null if...
@@ -87,7 +82,4 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
 
     fun javaMemberIsRequired(key: AnnotatedMember, calc: (AnnotatedMember) -> Boolean?): Boolean? = javaMemberIsRequired.get(key)?.value
         ?: calc(key).let { javaMemberIsRequired.putIfAbsent(key, BooleanTriState.fromBoolean(it))?.value ?: it }
-
-    fun isKotlinGeneratedMethod(key: AnnotatedMethod, calc: (AnnotatedMethod) -> Boolean): Boolean = kotlinGeneratedMethod.get(key)
-        ?: calc(key).let { kotlinGeneratedMethod.putIfAbsent(key, it) ?: it }
 }

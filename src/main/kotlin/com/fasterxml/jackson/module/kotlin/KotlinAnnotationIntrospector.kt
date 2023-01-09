@@ -15,20 +15,18 @@ import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.fasterxml.jackson.module.kotlin.ser.serializers.ValueClassBoxSerializer
 import com.fasterxml.jackson.module.kotlin.ser.serializers.ValueClassStaticJsonValueSerializer
+import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClassifier
+import kotlinx.metadata.KmProperty
 import kotlinx.metadata.jvm.getterSignature
+import kotlinx.metadata.jvm.setterSignature
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
-import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.jvm.javaGetter
-import kotlin.reflect.jvm.javaSetter
 import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.kotlinFunction
 import kotlin.reflect.jvm.kotlinProperty
@@ -150,9 +148,7 @@ internal class KotlinAnnotationIntrospector(
         return (this.annotations.firstOrNull { it.annotationClass.java == JsonProperty::class.java } as? JsonProperty)?.required
     }
 
-    // Since Kotlin's property has the same Type for each field, getter, and setter,
-    // nullability can be determined from the returnType of KProperty.
-    private fun KProperty1<*, *>.isRequiredByNullability() = returnType.isRequired()
+    private fun KmProperty.isRequiredByNullability(): Boolean = !Flag.Type.IS_NULLABLE(this.returnType.flags)
 
     // This could be a setter or a getter of a class property or
     // a setter-like/getter-like method.
@@ -160,10 +156,11 @@ internal class KotlinAnnotationIntrospector(
         ?: this.member.getRequiredMarkerFromAccessorLikeMethod()
 
     private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(): Boolean? {
-        member.declaringClass.kotlin.declaredMemberProperties.forEach { kProperty ->
-            if (kProperty.javaGetter == this.member || (kProperty as? KMutableProperty1)?.javaSetter == this.member) {
+        val memberSignature = member.toSignature()
+        member.declaringClass.toKmClass()?.properties?.forEach { kmProperty ->
+            if (kmProperty.getterSignature == memberSignature || kmProperty.setterSignature == memberSignature) {
                 val byAnnotation = this.member.isRequiredByAnnotation()
-                val byNullability = kProperty.isRequiredByNullability()
+                val byNullability = kmProperty.isRequiredByNullability()
                 return requiredAnnotationOrNullability(byAnnotation, byNullability)
             }
         }

@@ -29,14 +29,20 @@ internal sealed class ValueCreator<T> {
 
     fun generateBucket(): ArgumentBucket = bucketGenerator.generate()
 
+    private val accessibilityChecker: (DeserializationContext) -> Boolean by lazy {
+        return@lazy if (isAccessible) {
+            { ctxt -> ctxt.config.isEnabled(MapperFeature.OVERRIDE_PUBLIC_ACCESS_MODIFIERS) }
+        } else {
+            { ctxt -> ctxt.config.isEnabled(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS) }
+        }
+    }
+
     /**
      * Checking process to see if access from context is possible.
      * @throws IllegalAccessException
      */
     fun checkAccessibility(ctxt: DeserializationContext) {
-        if ((!isAccessible && ctxt.config.isEnabled(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS)) ||
-            (isAccessible && ctxt.config.isEnabled(MapperFeature.OVERRIDE_PUBLIC_ACCESS_MODIFIERS))
-        ) {
+        if (accessibilityChecker(ctxt)) {
             return
         }
 

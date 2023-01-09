@@ -3,7 +3,6 @@ package com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator
 import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmType
-import kotlinx.metadata.KmTypeParameter
 import kotlinx.metadata.KmTypeProjection
 import kotlinx.metadata.KmValueParameter
 

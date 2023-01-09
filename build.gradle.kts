@@ -14,6 +14,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
+    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0")
     implementation(platform("com.fasterxml.jackson:jackson-bom:2.13.3"))
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind

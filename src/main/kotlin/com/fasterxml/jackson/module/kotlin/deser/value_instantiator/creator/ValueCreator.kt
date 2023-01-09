@@ -2,9 +2,8 @@ package com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator
 
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.MapperFeature
-import kotlin.reflect.KFunction
-import kotlin.reflect.KParameter
-import kotlin.reflect.full.valueParameters
+import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.ArgumentBucket
+import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.BucketGenerator
 
 /**
  * A class that abstracts the creation of instances by calling KFunction.
@@ -12,36 +11,46 @@ import kotlin.reflect.full.valueParameters
  */
 internal sealed class ValueCreator<T> {
     /**
-     * Function to be call.
-     */
-    protected abstract val callable: KFunction<T>
-
-    /**
      * Initial value for accessibility by reflection.
      */
-    protected abstract val accessible: Boolean
+    protected abstract val isAccessible: Boolean
+
+    /**
+     * Function name for error output
+     */
+    protected abstract val callableName: String
 
     /**
      * ValueParameters of the KFunction to be called.
      */
-    val valueParameters: List<KParameter> by lazy { callable.valueParameters }
+    abstract val valueParameters: List<ValueParameter>
+
+    protected abstract val bucketGenerator: BucketGenerator
+
+    fun generateBucket(): ArgumentBucket = bucketGenerator.generate()
+
+    private val accessibilityChecker: (DeserializationContext) -> Boolean by lazy {
+        return@lazy if (isAccessible) {
+            { ctxt -> ctxt.config.isEnabled(MapperFeature.OVERRIDE_PUBLIC_ACCESS_MODIFIERS) }
+        } else {
+            { ctxt -> ctxt.config.isEnabled(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS) }
+        }
+    }
 
     /**
      * Checking process to see if access from context is possible.
      * @throws IllegalAccessException
      */
     fun checkAccessibility(ctxt: DeserializationContext) {
-        if ((!accessible && ctxt.config.isEnabled(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS)) ||
-            (accessible && ctxt.config.isEnabled(MapperFeature.OVERRIDE_PUBLIC_ACCESS_MODIFIERS))
-        ) {
+        if (accessibilityChecker(ctxt)) {
             return
         }
 
-        throw IllegalAccessException("Cannot access to function or companion object instance, target: $callable")
+        throw IllegalAccessException("Cannot access to function, target: $callableName")
     }
 
     /**
      * Function call with default values enabled.
      */
-    fun callBy(args: Map<KParameter, Any?>): T = callable.callBy(args)
+    abstract fun callBy(args: ArgumentBucket): T
 }

@@ -11,14 +11,11 @@ import com.fasterxml.jackson.databind.deser.impl.PropertyValueBuffer
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.ReflectionCache
-import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ConstructorValueCreator
-import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.MethodValueCreator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueCreator
+import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueParameter
 import com.fasterxml.jackson.module.kotlin.isKotlinClass
 import com.fasterxml.jackson.module.kotlin.wrapWithPath
-import java.lang.reflect.TypeVariable
 import kotlin.reflect.KParameter
-import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
 
 internal class KotlinValueInstantiator(
@@ -29,6 +26,10 @@ internal class KotlinValueInstantiator(
     private val nullIsSameAsDefault: Boolean,
     private val strictNullChecks: Boolean
 ) : StdValueInstantiator(src) {
+    // If the collection type argument cannot be obtained, treat it as nullable
+    // @see com.fasterxml.jackson.module.kotlin._ported.test.StrictNullChecksTest#testListOfGenericWithNullValue
+    private fun ValueParameter.isNullishTypeAt(index: Int) = arguments.getOrNull(index)?.isNullable ?: true
+
     override fun createFromObjectWith(
         ctxt: DeserializationContext,
         props: Array<out SettableBeanProperty>,
@@ -37,24 +38,7 @@ internal class KotlinValueInstantiator(
         val valueCreator: ValueCreator<*> = cache.valueCreatorFromJava(_withArgsCreator)
             ?: return super.createFromObjectWith(ctxt, props, buffer)
 
-        val propCount: Int
-        var numCallableParameters: Int
-        val callableParameters: Array<KParameter?>
-        val jsonParamValueList: Array<Any?>
-
-        if (valueCreator is MethodValueCreator) {
-            propCount = props.size + 1
-            numCallableParameters = 1
-            callableParameters = arrayOfNulls<KParameter>(propCount)
-                .apply { this[0] = valueCreator.instanceParameter }
-            jsonParamValueList = arrayOfNulls<Any>(propCount)
-                .apply { this[0] = valueCreator.companionObjectInstance }
-        } else {
-            propCount = props.size
-            numCallableParameters = 0
-            callableParameters = arrayOfNulls(propCount)
-            jsonParamValueList = arrayOfNulls(propCount)
-        }
+        val bucket = valueCreator.generateBucket()
 
         valueCreator.valueParameters.forEachIndexed { idx, paramDef ->
             val jsonProp = props[idx]
@@ -64,14 +48,14 @@ internal class KotlinValueInstantiator(
                 return@forEachIndexed
             }
 
-            var paramVal = if (!isMissing || paramDef.isPrimitive() || jsonProp.hasInjectableValueId()) {
+            var paramVal = if (!isMissing || paramDef.isPrimitive || jsonProp.hasInjectableValueId()) {
                 val tempParamVal = buffer.getParameter(jsonProp)
                 if (nullIsSameAsDefault && tempParamVal == null && paramDef.isOptional) {
                     return@forEachIndexed
                 }
                 tempParamVal
             } else {
-                if (paramDef.type.isMarkedNullable) {
+                if (paramDef.isNullable) {
                     // do not try to create any object if it is nullable and the value is missing
                     null
                 } else {
@@ -84,11 +68,8 @@ internal class KotlinValueInstantiator(
                 paramVal = NullsAsEmptyProvider(jsonProp.valueDeserializer).getNullValue(ctxt)
             }
 
-            val isGenericTypeVar = paramDef.type.javaType is TypeVariable<*>
             val isMissingAndRequired = paramVal == null && isMissing && jsonProp.isRequired
-            if (isMissingAndRequired ||
-                (!isGenericTypeVar && paramVal == null && !paramDef.type.isMarkedNullable)
-            ) {
+            if (isMissingAndRequired || (!paramDef.isGenericType && paramVal == null && !paramDef.isNullable)) {
                 throw MissingKotlinParameterException(
                     parameter = paramDef,
                     processor = ctxt.parser,
@@ -97,24 +78,17 @@ internal class KotlinValueInstantiator(
             }
 
             if (strictNullChecks && paramVal != null) {
-                var paramType: String? = null
-                var itemType: KType? = null
-                if (jsonProp.type.isCollectionLikeType && paramDef.type.arguments.getOrNull(0)?.type?.isMarkedNullable == false && (paramVal as Collection<*>).any { it == null }) {
-                    paramType = "collection"
-                    itemType = paramDef.type.arguments[0].type
-                }
-
-                if (jsonProp.type.isMapLikeType && paramDef.type.arguments.getOrNull(1)?.type?.isMarkedNullable == false && (paramVal as Map<*, *>).any { it.value == null }) {
-                    paramType = "map"
-                    itemType = paramDef.type.arguments[1].type
-                }
-
-                if (jsonProp.type.isArrayType && paramDef.type.arguments.getOrNull(0)?.type?.isMarkedNullable == false && (paramVal as Array<*>).any { it == null }) {
-                    paramType = "array"
-                    itemType = paramDef.type.arguments[0].type
-                }
-
-                if (paramType != null && itemType != null) {
+                // If an error occurs, Argument.name is always non-null
+                // @see com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.Argument
+                when {
+                    paramVal is Collection<*> && !paramDef.isNullishTypeAt(0) && paramVal.any { it == null } ->
+                        "collection" to paramDef.arguments[0].name!!
+                    paramVal is Array<*> && !paramDef.isNullishTypeAt(0) && paramVal.any { it == null } ->
+                        "array" to paramDef.arguments[0].name!!
+                    paramVal is Map<*, *> && !paramDef.isNullishTypeAt(1) && paramVal.values.any { it == null } ->
+                        "map" to paramDef.arguments[1].name!!
+                    else -> null
+                }?.let { (paramType, itemType) ->
                     throw MissingKotlinParameterException(
                         parameter = paramDef,
                         processor = ctxt.parser,
@@ -123,25 +97,11 @@ internal class KotlinValueInstantiator(
                 }
             }
 
-            jsonParamValueList[numCallableParameters] = paramVal
-            callableParameters[numCallableParameters] = paramDef
-            numCallableParameters++
+            bucket[idx] = paramVal
         }
 
-        return if (numCallableParameters == jsonParamValueList.size && valueCreator is ConstructorValueCreator) {
-            // we didn't do anything special with default parameters, do a normal call
-            super.createFromObjectWith(ctxt, jsonParamValueList)
-        } else {
-            valueCreator.checkAccessibility(ctxt)
-
-            val callableParametersByName = linkedMapOf<KParameter, Any?>()
-            callableParameters.mapIndexed { idx, paramDef ->
-                if (paramDef != null) {
-                    callableParametersByName[paramDef] = jsonParamValueList[idx]
-                }
-            }
-            valueCreator.callBy(callableParametersByName)
-        }
+        valueCreator.checkAccessibility(ctxt)
+        return valueCreator.callBy(bucket)
     }
 
     private fun KParameter.isPrimitive(): Boolean {

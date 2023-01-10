@@ -12,19 +12,17 @@ import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.setterSignature
+import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.KParameter
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
-import kotlin.reflect.jvm.internal.KotlinReflectionInternalError
 import kotlin.reflect.jvm.javaType
-import kotlin.reflect.jvm.kotlinFunction
 
 internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule, val cache: ReflectionCache, val ignoredClassesForImplyingJsonCreator: Set<KClass<*>>) : NopAnnotationIntrospector() {
     // since 2.4
@@ -110,37 +108,27 @@ internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule, val c
 
     @Suppress("UNCHECKED_CAST")
     private fun findKotlinParameterName(param: AnnotatedParameter): String? {
-        return if (param.declaringClass.isKotlinClass()) {
-            val member = param.owner.member
-            if (member is Constructor<*>) {
-                val ctor = (member as Constructor<Any>)
-                val ctorParmCount = ctor.parameterTypes.size
-                val ktorParmCount = try { ctor.kotlinFunction?.parameters?.size ?: 0 } catch (ex: KotlinReflectionInternalError) { 0 } catch (ex: UnsupportedOperationException) { 0 }
-                if (ktorParmCount > 0 && ktorParmCount == ctorParmCount) {
-                    ctor.kotlinFunction?.parameters?.get(param.index)?.name
-                } else {
-                    null
-                }
-            } else if (member is Method) {
-                try {
-                    val temp = member.kotlinFunction
+        val declaringClass = param.declaringClass
 
-                    val firstParamKind = temp?.parameters?.firstOrNull()?.kind
-                    val idx = if (firstParamKind != KParameter.Kind.VALUE) param.index + 1 else param.index
-                    val parmCount = temp?.parameters?.size ?: 0
-                    if (parmCount > idx) {
-                        temp?.parameters?.get(idx)?.name
-                    } else {
-                        null
-                    }
-                } catch (ex: KotlinReflectionInternalError) {
-                    null
+        return declaringClass.toKmClass()?.let { kmClass ->
+            when (val member = param.owner.member) {
+                is Constructor<*> -> {
+                    val signature = member.toSignature()
+
+                    kmClass.constructors.find { it.signature?.desc == signature.desc }
+                        ?.let { it.valueParameters[param.index].name }
                 }
-            } else {
-                null
+                is Method -> {
+                    val companionKmClass = declaringClass.getDeclaredField(kmClass.companionObject!!)
+                        .type
+                        .toKmClass()!!
+                    val signature = member.toSignature()
+
+                    companionKmClass.functions.find { it.signature == signature }
+                        ?.let { it.valueParameters[param.index].name }
+                }
+                else -> null
             }
-        } else {
-            null
         }
     }
 }

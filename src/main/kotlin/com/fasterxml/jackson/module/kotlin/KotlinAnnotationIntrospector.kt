@@ -130,13 +130,10 @@ internal class KotlinAnnotationIntrospector(
         ?.let { it as JsonProperty }
         ?.required
 
-    private fun requiredAnnotationOrNullability(byAnnotation: Boolean?, byNullability: Boolean?): Boolean? {
-        if (byAnnotation != null && byNullability != null) {
-            return byAnnotation || byNullability
-        } else if (byNullability != null) {
-            return byNullability
-        }
-        return byAnnotation
+    private fun requiredAnnotationOrNullability(byAnnotation: Boolean?, byNullability: Boolean?): Boolean? = when {
+        byAnnotation != null && byNullability != null -> byAnnotation || byNullability
+        byNullability != null -> byNullability
+        else -> byAnnotation
     }
 
     private fun Method.isRequiredByAnnotation(): Boolean? {

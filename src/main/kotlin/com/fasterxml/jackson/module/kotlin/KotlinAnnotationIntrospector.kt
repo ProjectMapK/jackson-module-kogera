@@ -37,7 +37,8 @@ internal class KotlinAnnotationIntrospector(
     private val nullIsSameAsDefault: Boolean
 ) : NopAnnotationIntrospector() {
 
-    // TODO: implement nullIsSameAsDefault flag, which represents when TRUE that if something has a default value, it can be passed a null to default it
+    // TODO: implement nullIsSameAsDefault flag, which represents when TRUE that if something has a default value,
+    //       it can be passed a null to default it
     //       this likely impacts this class to be accurate about what COULD be considered required
 
     override fun hasRequiredMarker(m: AnnotatedMember): Boolean? {
@@ -59,14 +60,6 @@ internal class KotlinAnnotationIntrospector(
             }
         }
         return hasRequired
-    }
-
-    override fun findCreatorAnnotation(config: MapperConfig<*>, a: Annotated): JsonCreator.Mode? {
-        // TODO: possible work around for JsonValue class that requires the class constructor to have the JsonCreator(Mode.DELEGATED) set?
-        // since we infer the creator at times for these methods, the wrong mode could be implied.
-
-        // findCreatorBinding used to be a clearer way to set this, but we need to set the mode here to disambugiate the intent of the constructor
-        return super.findCreatorAnnotation(config, a)
     }
 
     // Find a serializer to handle the case where the getter returns an unboxed value from the value class.

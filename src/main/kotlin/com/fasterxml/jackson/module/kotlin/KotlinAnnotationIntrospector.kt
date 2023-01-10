@@ -18,6 +18,7 @@ import com.fasterxml.jackson.module.kotlin.ser.serializers.ValueClassStaticJsonV
 import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmProperty
+import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.setterSignature
 import java.lang.reflect.AccessibleObject
@@ -29,7 +30,6 @@ import kotlin.reflect.KType
 import kotlin.reflect.full.createType
 import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.kotlinFunction
-import kotlin.reflect.jvm.kotlinProperty
 
 internal class KotlinAnnotationIntrospector(
     private val context: Module.SetupContext,
@@ -124,8 +124,14 @@ internal class KotlinAnnotationIntrospector(
         }
 
     private fun AnnotatedField.hasRequiredMarker(): Boolean? {
-        val byAnnotation = (member as Field).isRequiredByAnnotation()
-        val byNullability = (member as Field).kotlinProperty?.returnType?.isRequired()
+        val member = member as Field
+
+        val byAnnotation = member.isRequiredByAnnotation()
+        val fieldSignature = member.toSignature()
+        val byNullability = member.declaringClass.toKmClass()
+            ?.properties
+            ?.find { it.fieldSignature == fieldSignature }
+            ?.let { !Flag.Type.IS_NULLABLE(it.returnType.flags) }
 
         return requiredAnnotationOrNullability(byAnnotation, byNullability)
     }
@@ -219,11 +225,4 @@ internal class KotlinAnnotationIntrospector(
     companion object {
         val UNIT_TYPE: KType = Unit::class.createType()
     }
-}
-
-@JvmInline
-private value class VC(val v: Int)
-
-internal fun main() {
-    val vc = VC::class.java.toKmClass()
 }

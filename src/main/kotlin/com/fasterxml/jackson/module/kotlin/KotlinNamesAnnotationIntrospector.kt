@@ -24,7 +24,7 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.javaType
 
-internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule, val cache: ReflectionCache, val ignoredClassesForImplyingJsonCreator: Set<KClass<*>>) : NopAnnotationIntrospector() {
+internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule, val cache: ReflectionCache) : NopAnnotationIntrospector() {
     // since 2.4
     override fun findImplicitPropertyName(member: AnnotatedMember): String? = when (member) {
         is AnnotatedMethod -> member.annotated.declaringClass.toKmClass()?.let { kmClass ->
@@ -71,7 +71,6 @@ internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule, val c
         // don't add a JsonCreator to any constructor if one is declared already
 
         val kClass = cache.kotlinFromJava(member.declaringClass as Class<Any>)
-            .apply { if (this in ignoredClassesForImplyingJsonCreator) return false }
         val kConstructor = cache.kotlinFromJava(member.annotated as Constructor<Any>) ?: return false
 
         // TODO:  should we do this check or not?  It could cause failures if we miss another way a property could be set

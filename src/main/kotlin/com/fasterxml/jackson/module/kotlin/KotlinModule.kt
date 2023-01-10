@@ -14,7 +14,6 @@ import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.KotlinInstan
 import com.fasterxml.jackson.module.kotlin.ser.serializers.KotlinKeySerializers
 import com.fasterxml.jackson.module.kotlin.ser.serializers.KotlinSerializers
 import java.util.*
-import kotlin.reflect.KClass
 
 /**
  * @param reflectionCacheSize     Default: 512.  Size, in items, of the caches used for mapping objects.
@@ -52,8 +51,6 @@ public class KotlinModule private constructor(
         private const val serialVersionUID = 1L
     }
 
-    private val ignoredClassesForImplyingJsonCreator = emptySet<KClass<*>>()
-
     override fun setupModule(context: SetupContext) {
         super.setupModule(context)
 
@@ -70,7 +67,7 @@ public class KotlinModule private constructor(
         }
 
         context.insertAnnotationIntrospector(KotlinAnnotationIntrospector(context, cache, nullToEmptyCollection, nullToEmptyMap, nullIsSameAsDefault))
-        context.appendAnnotationIntrospector(KotlinNamesAnnotationIntrospector(this, cache, ignoredClassesForImplyingJsonCreator))
+        context.appendAnnotationIntrospector(KotlinNamesAnnotationIntrospector(this, cache))
 
         context.addDeserializers(KotlinDeserializers())
         context.addKeyDeserializers(KotlinKeyDeserializers)

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.MapperFeature.SORT_PROPERTIES_ALPHABETICAL
 import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
 import com.fasterxml.jackson.module.kotlin.testPrettyWriter
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 /**

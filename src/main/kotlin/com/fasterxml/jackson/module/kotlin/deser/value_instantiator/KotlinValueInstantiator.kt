@@ -76,11 +76,9 @@ internal class KotlinValueInstantiator(
             }
 
             var paramVal = if (!isMissing || paramDef.isPrimitive || jsonProp.hasInjectableValueId()) {
-                val tempParamVal = buffer.getParameter(jsonProp)
-                if (nullIsSameAsDefault && tempParamVal == null && paramDef.isOptional) {
-                    return@forEachIndexed
+                buffer.getParameter(jsonProp).apply {
+                    if (nullIsSameAsDefault && this == null && paramDef.isOptional) return@forEachIndexed
                 }
-                tempParamVal
             } else {
                 if (paramDef.isNullable) {
                     // do not try to create any object if it is nullable and the value is missing

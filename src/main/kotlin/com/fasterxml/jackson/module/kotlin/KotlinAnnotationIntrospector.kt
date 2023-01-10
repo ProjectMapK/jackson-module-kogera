@@ -26,8 +26,6 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
-import kotlin.reflect.KType
-import kotlin.reflect.full.createType
 import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.kotlinFunction
 
@@ -159,7 +157,6 @@ internal class KotlinAnnotationIntrospector(
     // This could be a setter or a getter of a class property or
     // a setter-like/getter-like method.
     private fun AnnotatedMethod.hasRequiredMarker(): Boolean? = this.getRequiredMarkerFromCorrespondingAccessor()
-        ?: this.member.getRequiredMarkerFromAccessorLikeMethod()
 
     private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(): Boolean? {
         val memberSignature = member.toSignature()
@@ -172,17 +169,6 @@ internal class KotlinAnnotationIntrospector(
         }
         return null
     }
-
-    // Is the member method a regular method of the data class or
-    private fun Method.getRequiredMarkerFromAccessorLikeMethod(): Boolean? = this.kotlinFunction?.let { method ->
-        val byAnnotation = this.isRequiredByAnnotation()
-        return when {
-            method.isSetterLike() -> requiredAnnotationOrNullability(byAnnotation, method.isMethodParameterRequired(0))
-            else -> null
-        }
-    }
-
-    private fun KFunction<*>.isSetterLike(): Boolean = parameters.size == 2 && returnType == UNIT_TYPE
 
     private fun AnnotatedParameter.hasRequiredMarker(): Boolean? {
         val member = this.member
@@ -216,9 +202,5 @@ internal class KotlinAnnotationIntrospector(
 
         return !paramType.isMarkedNullable && !param.isOptional &&
             !(isPrimitive && !context.isEnabled(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES))
-    }
-
-    companion object {
-        val UNIT_TYPE: KType = Unit::class.createType()
     }
 }

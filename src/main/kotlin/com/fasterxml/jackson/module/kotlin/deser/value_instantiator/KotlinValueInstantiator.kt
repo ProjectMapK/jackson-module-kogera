@@ -91,20 +91,24 @@ internal class KotlinValueInstantiator(
                 }
             }
 
-            if (paramVal == null && jsonProp.type.requireEmptyValue()) {
-                paramVal = NullsAsEmptyProvider(jsonProp.valueDeserializer).getNullValue(ctxt)
+            if (paramVal == null) {
+                if (jsonProp.type.requireEmptyValue()) {
+                    paramVal = NullsAsEmptyProvider(jsonProp.valueDeserializer).getNullValue(ctxt)
+                } else {
+                    val isMissingAndRequired = isMissing && jsonProp.isRequired
+                    if (isMissingAndRequired || (!paramDef.isGenericType && !paramDef.isNullable)) {
+                        throw MissingKotlinParameterException(
+                            parameter = paramDef,
+                            processor = ctxt.parser,
+                            msg = "Instantiation of $valueTypeDesc value failed for JSON property ${jsonProp.name} " +
+                                "due to missing (therefore NULL) value for creator parameter ${paramDef.name} " +
+                                "which is a non-nullable type"
+                        ).wrapWithPath(this.valueClass, jsonProp.name)
+                    }
+                }
+            } else {
+                if (strictNullChecks) strictNullCheck(ctxt, jsonProp, paramDef, paramVal)
             }
-
-            val isMissingAndRequired = paramVal == null && isMissing && jsonProp.isRequired
-            if (isMissingAndRequired || (!paramDef.isGenericType && paramVal == null && !paramDef.isNullable)) {
-                throw MissingKotlinParameterException(
-                    parameter = paramDef,
-                    processor = ctxt.parser,
-                    msg = "Instantiation of ${this.valueTypeDesc} value failed for JSON property ${jsonProp.name} due to missing (therefore NULL) value for creator parameter ${paramDef.name} which is a non-nullable type"
-                ).wrapWithPath(this.valueClass, jsonProp.name)
-            }
-
-            if (strictNullChecks && paramVal != null) strictNullCheck(ctxt, jsonProp, paramDef, paramVal)
 
             bucket[idx] = paramVal
         }

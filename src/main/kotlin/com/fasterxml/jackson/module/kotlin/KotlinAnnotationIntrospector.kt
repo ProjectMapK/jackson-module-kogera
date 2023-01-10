@@ -1,10 +1,8 @@
 package com.fasterxml.jackson.module.kotlin
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.Module
-import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.introspect.Annotated
 import com.fasterxml.jackson.databind.introspect.AnnotatedField
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember
@@ -23,7 +21,6 @@ import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.setterSignature
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Constructor
-import java.lang.reflect.Field
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaType
@@ -37,7 +34,8 @@ internal class KotlinAnnotationIntrospector(
     private val nullIsSameAsDefault: Boolean
 ) : NopAnnotationIntrospector() {
 
-    // TODO: implement nullIsSameAsDefault flag, which represents when TRUE that if something has a default value, it can be passed a null to default it
+    // TODO: implement nullIsSameAsDefault flag, which represents when TRUE that if something has a default value,
+    //       it can be passed a null to default it
     //       this likely impacts this class to be accurate about what COULD be considered required
 
     override fun hasRequiredMarker(m: AnnotatedMember): Boolean? {
@@ -48,7 +46,7 @@ internal class KotlinAnnotationIntrospector(
                     nullToEmptyMap && m.type.isMapLikeType -> false
                     m.member.declaringClass.isKotlinClass() -> when (m) {
                         is AnnotatedField -> m.hasRequiredMarker()
-                        is AnnotatedMethod -> m.hasRequiredMarker()
+                        is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor()
                         is AnnotatedParameter -> m.hasRequiredMarker()
                         else -> null
                     }
@@ -59,14 +57,6 @@ internal class KotlinAnnotationIntrospector(
             }
         }
         return hasRequired
-    }
-
-    override fun findCreatorAnnotation(config: MapperConfig<*>, a: Annotated): JsonCreator.Mode? {
-        // TODO: possible work around for JsonValue class that requires the class constructor to have the JsonCreator(Mode.DELEGATED) set?
-        // since we infer the creator at times for these methods, the wrong mode could be implied.
-
-        // findCreatorBinding used to be a clearer way to set this, but we need to set the mode here to disambugiate the intent of the constructor
-        return super.findCreatorAnnotation(config, a)
     }
 
     // Find a serializer to handle the case where the getter returns an unboxed value from the value class.
@@ -122,7 +112,7 @@ internal class KotlinAnnotationIntrospector(
         }
 
     private fun AnnotatedField.hasRequiredMarker(): Boolean? {
-        val member = member as Field
+        val member = annotated
 
         val byAnnotation = member.isRequiredByAnnotation()
         val fieldSignature = member.toSignature()
@@ -135,28 +125,17 @@ internal class KotlinAnnotationIntrospector(
     }
 
     private fun AccessibleObject.isRequiredByAnnotation(): Boolean? = annotations
-        ?.firstOrNull { it.annotationClass == JsonProperty::class }
-        ?.let { it as JsonProperty }
+        .filterIsInstance<JsonProperty>()
+        .firstOrNull()
         ?.required
 
-    private fun requiredAnnotationOrNullability(byAnnotation: Boolean?, byNullability: Boolean?): Boolean? {
-        if (byAnnotation != null && byNullability != null) {
-            return byAnnotation || byNullability
-        } else if (byNullability != null) {
-            return byNullability
-        }
-        return byAnnotation
-    }
-
-    private fun Method.isRequiredByAnnotation(): Boolean? {
-        return (this.annotations.firstOrNull { it.annotationClass.java == JsonProperty::class.java } as? JsonProperty)?.required
+    private fun requiredAnnotationOrNullability(byAnnotation: Boolean?, byNullability: Boolean?): Boolean? = when {
+        byAnnotation != null && byNullability != null -> byAnnotation || byNullability
+        byNullability != null -> byNullability
+        else -> byAnnotation
     }
 
     private fun KmProperty.isRequiredByNullability(): Boolean = !Flag.Type.IS_NULLABLE(this.returnType.flags)
-
-    // This could be a setter or a getter of a class property or
-    // a setter-like/getter-like method.
-    private fun AnnotatedMethod.hasRequiredMarker(): Boolean? = this.getRequiredMarkerFromCorrespondingAccessor()
 
     private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(): Boolean? {
         val memberSignature = member.toSignature()

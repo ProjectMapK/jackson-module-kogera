@@ -3,6 +3,7 @@ package com.fasterxml.jackson.module.kotlin.deser.value_instantiator
 import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty
 import com.fasterxml.jackson.databind.deser.ValueInstantiator
 import com.fasterxml.jackson.databind.deser.ValueInstantiators
@@ -28,6 +29,34 @@ internal class KotlinValueInstantiator(
     // @see com.fasterxml.jackson.module.kotlin._ported.test.StrictNullChecksTest#testListOfGenericWithNullValue
     private fun ValueParameter.isNullishTypeAt(index: Int) = arguments.getOrNull(index)?.isNullable ?: true
 
+    private fun JavaType.requireEmptyValue() =
+        (nullToEmptyCollection && this.isCollectionLikeType) || (nullToEmptyMap && this.isMapLikeType)
+
+    private fun strictNullCheck(
+        ctxt: DeserializationContext,
+        jsonProp: SettableBeanProperty,
+        paramDef: ValueParameter,
+        paramVal: Any
+    ) {
+        // If an error occurs, Argument.name is always non-null
+        // @see com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.Argument
+        when {
+            paramVal is Collection<*> && !paramDef.isNullishTypeAt(0) && paramVal.any { it == null } ->
+                "collection" to paramDef.arguments[0].name!!
+            paramVal is Array<*> && !paramDef.isNullishTypeAt(0) && paramVal.any { it == null } ->
+                "array" to paramDef.arguments[0].name!!
+            paramVal is Map<*, *> && !paramDef.isNullishTypeAt(1) && paramVal.values.any { it == null } ->
+                "map" to paramDef.arguments[1].name!!
+            else -> null
+        }?.let { (paramType, itemType) ->
+            throw MissingKotlinParameterException(
+                parameter = paramDef,
+                processor = ctxt.parser,
+                msg = "Instantiation of $itemType $paramType failed for JSON property ${jsonProp.name} due to null value in a $paramType that does not allow null values"
+            ).wrapWithPath(this.valueClass, jsonProp.name)
+        }
+    }
+
     override fun createFromObjectWith(
         ctxt: DeserializationContext,
         props: Array<out SettableBeanProperty>,
@@ -47,11 +76,9 @@ internal class KotlinValueInstantiator(
             }
 
             var paramVal = if (!isMissing || paramDef.isPrimitive || jsonProp.hasInjectableValueId()) {
-                val tempParamVal = buffer.getParameter(jsonProp)
-                if (nullIsSameAsDefault && tempParamVal == null && paramDef.isOptional) {
-                    return@forEachIndexed
+                buffer.getParameter(jsonProp).apply {
+                    if (nullIsSameAsDefault && this == null && paramDef.isOptional) return@forEachIndexed
                 }
-                tempParamVal
             } else {
                 if (paramDef.isNullable) {
                     // do not try to create any object if it is nullable and the value is missing
@@ -62,37 +89,23 @@ internal class KotlinValueInstantiator(
                 }
             }
 
-            if (paramVal == null && ((nullToEmptyCollection && jsonProp.type.isCollectionLikeType) || (nullToEmptyMap && jsonProp.type.isMapLikeType))) {
-                paramVal = NullsAsEmptyProvider(jsonProp.valueDeserializer).getNullValue(ctxt)
-            }
-
-            val isMissingAndRequired = paramVal == null && isMissing && jsonProp.isRequired
-            if (isMissingAndRequired || (!paramDef.isGenericType && paramVal == null && !paramDef.isNullable)) {
-                throw MissingKotlinParameterException(
-                    parameter = paramDef,
-                    processor = ctxt.parser,
-                    msg = "Instantiation of ${this.valueTypeDesc} value failed for JSON property ${jsonProp.name} due to missing (therefore NULL) value for creator parameter ${paramDef.name} which is a non-nullable type"
-                ).wrapWithPath(this.valueClass, jsonProp.name)
-            }
-
-            if (strictNullChecks && paramVal != null) {
-                // If an error occurs, Argument.name is always non-null
-                // @see com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.Argument
-                when {
-                    paramVal is Collection<*> && !paramDef.isNullishTypeAt(0) && paramVal.any { it == null } ->
-                        "collection" to paramDef.arguments[0].name!!
-                    paramVal is Array<*> && !paramDef.isNullishTypeAt(0) && paramVal.any { it == null } ->
-                        "array" to paramDef.arguments[0].name!!
-                    paramVal is Map<*, *> && !paramDef.isNullishTypeAt(1) && paramVal.values.any { it == null } ->
-                        "map" to paramDef.arguments[1].name!!
-                    else -> null
-                }?.let { (paramType, itemType) ->
-                    throw MissingKotlinParameterException(
-                        parameter = paramDef,
-                        processor = ctxt.parser,
-                        msg = "Instantiation of $itemType $paramType failed for JSON property ${jsonProp.name} due to null value in a $paramType that does not allow null values"
-                    ).wrapWithPath(this.valueClass, jsonProp.name)
+            if (paramVal == null) {
+                if (jsonProp.type.requireEmptyValue()) {
+                    paramVal = NullsAsEmptyProvider(jsonProp.valueDeserializer).getNullValue(ctxt)
+                } else {
+                    val isMissingAndRequired = isMissing && jsonProp.isRequired
+                    if (isMissingAndRequired || (!paramDef.isGenericType && !paramDef.isNullable)) {
+                        throw MissingKotlinParameterException(
+                            parameter = paramDef,
+                            processor = ctxt.parser,
+                            msg = "Instantiation of $valueTypeDesc value failed for JSON property ${jsonProp.name} " +
+                                "due to missing (therefore NULL) value for creator parameter ${paramDef.name} " +
+                                "which is a non-nullable type"
+                        ).wrapWithPath(this.valueClass, jsonProp.name)
+                    }
                 }
+            } else {
+                if (strictNullChecks) strictNullCheck(ctxt, jsonProp, paramDef, paramVal)
             }
 
             bucket[idx] = paramVal

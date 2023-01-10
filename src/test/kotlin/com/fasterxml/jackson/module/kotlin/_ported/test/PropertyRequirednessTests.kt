@@ -85,7 +85,9 @@ class TestPropertyRequiredness {
         val f: TestParamClass?,
         val g: TestParamClass = TestParamClass(),
         val h: TestParamClass? = TestParamClass(),
-        @JsonProperty("x", required = true) val x: Int?, // TODO: either error in test case with this not being on the property getter, or error in introspection not seeing this on the constructor parameter
+        // TODO: either error in test case with this not being on the property getter,
+        //       or error in introspection not seeing this on the constructor parameter
+        @JsonProperty("x", required = true) val x: Int?,
         @get:JsonProperty("z", required = true) val z: Int
     )
 

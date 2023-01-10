@@ -3,6 +3,7 @@ package com.fasterxml.jackson.module.kotlin.deser.value_instantiator
 import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty
 import com.fasterxml.jackson.databind.deser.ValueInstantiator
 import com.fasterxml.jackson.databind.deser.ValueInstantiators
@@ -27,6 +28,9 @@ internal class KotlinValueInstantiator(
     // If the collection type argument cannot be obtained, treat it as nullable
     // @see com.fasterxml.jackson.module.kotlin._ported.test.StrictNullChecksTest#testListOfGenericWithNullValue
     private fun ValueParameter.isNullishTypeAt(index: Int) = arguments.getOrNull(index)?.isNullable ?: true
+
+    private fun JavaType.requireEmptyValue() =
+        (nullToEmptyCollection && this.isCollectionLikeType) || (nullToEmptyMap && this.isMapLikeType)
 
     private fun strictNullCheck(
         ctxt: DeserializationContext,
@@ -87,7 +91,7 @@ internal class KotlinValueInstantiator(
                 }
             }
 
-            if (paramVal == null && ((nullToEmptyCollection && jsonProp.type.isCollectionLikeType) || (nullToEmptyMap && jsonProp.type.isMapLikeType))) {
+            if (paramVal == null && jsonProp.type.requireEmptyValue()) {
                 paramVal = NullsAsEmptyProvider(jsonProp.valueDeserializer).getNullValue(ctxt)
             }
 

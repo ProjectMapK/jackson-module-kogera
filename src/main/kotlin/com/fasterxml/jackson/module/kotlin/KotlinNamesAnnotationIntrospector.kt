@@ -2,8 +2,6 @@ package com.fasterxml.jackson.module.kotlin
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.PropertyName
-import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.introspect.Annotated
 import com.fasterxml.jackson.databind.introspect.AnnotatedConstructor
 import com.fasterxml.jackson.databind.introspect.AnnotatedField
@@ -11,10 +9,10 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMember
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
-import com.fasterxml.jackson.databind.util.BeanUtil
+import kotlinx.metadata.jvm.fieldSignature
+import kotlinx.metadata.jvm.getterSignature
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
-import java.util.Locale
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -30,35 +28,18 @@ import kotlin.reflect.jvm.kotlinFunction
 internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule, val cache: ReflectionCache, val ignoredClassesForImplyingJsonCreator: Set<KClass<*>>) : NopAnnotationIntrospector() {
     // since 2.4
     override fun findImplicitPropertyName(member: AnnotatedMember): String? = when (member) {
-        is AnnotatedMethod -> if (member.name.contains('-') && member.parameterCount == 0) {
-            when {
-                member.name.startsWith("get") -> member.name.substringAfter("get")
-                member.name.startsWith("is") -> member.name.substringAfter("is")
-                else -> null
-            }?.replaceFirstChar { it.lowercase(Locale.getDefault()) }?.substringBefore('-')
-        } else null
+        is AnnotatedMethod -> member.annotated.declaringClass.toKmClass()?.let { kmClass ->
+            val methodSignature = member.annotated.toSignature()
+
+            kmClass.properties.find { it.getterSignature == methodSignature }?.name
+        }
+        is AnnotatedField -> member.annotated.declaringClass.toKmClass()?.let { kmClass ->
+            val fieldSignature = member.annotated.toSignature()
+
+            kmClass.properties.find { it.fieldSignature == fieldSignature }?.name
+        }
         is AnnotatedParameter -> findKotlinParameterName(member)
         else -> null
-    }
-
-    // since 2.11: support Kotlin's way of handling "isXxx" backed properties where
-    // logical property name needs to remain "isXxx" and not become "xxx" as with Java Beans
-    // (see https://kotlinlang.org/docs/reference/java-to-kotlin-interop.html and
-    //  https://github.com/FasterXML/jackson-databind/issues/2527
-    //  for details)
-    override fun findRenameByField(
-        config: MapperConfig<*>,
-        field: AnnotatedField,
-        implName: PropertyName
-    ): PropertyName? {
-        val origSimple = implName.simpleName
-        if (field.declaringClass.isKotlinClass() && origSimple.startsWith("is")) {
-            val mangledName: String? = BeanUtil.stdManglePropertyName(origSimple, 2)
-            if ((mangledName != null) && !mangledName.equals(origSimple)) {
-                return PropertyName.construct(mangledName)
-            }
-        }
-        return null
     }
 
     @Suppress("UNCHECKED_CAST")

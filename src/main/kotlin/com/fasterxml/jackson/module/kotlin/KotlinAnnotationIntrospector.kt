@@ -21,7 +21,6 @@ import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.setterSignature
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Constructor
-import java.lang.reflect.Field
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaType
@@ -47,7 +46,7 @@ internal class KotlinAnnotationIntrospector(
                     nullToEmptyMap && m.type.isMapLikeType -> false
                     m.member.declaringClass.isKotlinClass() -> when (m) {
                         is AnnotatedField -> m.hasRequiredMarker()
-                        is AnnotatedMethod -> m.hasRequiredMarker()
+                        is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor()
                         is AnnotatedParameter -> m.hasRequiredMarker()
                         else -> null
                     }
@@ -113,7 +112,7 @@ internal class KotlinAnnotationIntrospector(
         }
 
     private fun AnnotatedField.hasRequiredMarker(): Boolean? {
-        val member = member as Field
+        val member = annotated
 
         val byAnnotation = member.isRequiredByAnnotation()
         val fieldSignature = member.toSignature()
@@ -137,10 +136,6 @@ internal class KotlinAnnotationIntrospector(
     }
 
     private fun KmProperty.isRequiredByNullability(): Boolean = !Flag.Type.IS_NULLABLE(this.returnType.flags)
-
-    // This could be a setter or a getter of a class property or
-    // a setter-like/getter-like method.
-    private fun AnnotatedMethod.hasRequiredMarker(): Boolean? = this.getRequiredMarkerFromCorrespondingAccessor()
 
     private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(): Boolean? {
         val memberSignature = member.toSignature()

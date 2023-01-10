@@ -42,6 +42,23 @@ internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule, val c
         else -> null
     }
 
+    // If it is not a property on Kotlin, it is not used to serialization
+    override fun findPropertyAccess(ann: Annotated): JsonProperty.Access? = when (ann) {
+        is AnnotatedMethod ->
+            ann.annotated
+                .takeIf { it.parameters.isEmpty() } // Ignore target is only getter
+                ?.let { method ->
+                    method.declaringClass.toKmClass()?.let { kmClass ->
+                        val methodSignature = method.toSignature()
+
+                        JsonProperty.Access.WRITE_ONLY.takeIf {
+                            kmClass.properties.none { it.getterSignature == methodSignature }
+                        }
+                    }
+                }
+        else -> null
+    }
+
     @Suppress("UNCHECKED_CAST")
     private fun hasCreatorAnnotation(member: AnnotatedConstructor): Boolean {
         // don't add a JsonCreator to any constructor if one is declared already

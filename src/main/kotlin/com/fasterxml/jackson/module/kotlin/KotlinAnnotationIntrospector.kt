@@ -126,18 +126,14 @@ internal class KotlinAnnotationIntrospector(
     }
 
     private fun AccessibleObject.isRequiredByAnnotation(): Boolean? = annotations
-        ?.firstOrNull { it.annotationClass == JsonProperty::class }
-        ?.let { it as JsonProperty }
+        .filterIsInstance<JsonProperty>()
+        .firstOrNull()
         ?.required
 
     private fun requiredAnnotationOrNullability(byAnnotation: Boolean?, byNullability: Boolean?): Boolean? = when {
         byAnnotation != null && byNullability != null -> byAnnotation || byNullability
         byNullability != null -> byNullability
         else -> byAnnotation
-    }
-
-    private fun Method.isRequiredByAnnotation(): Boolean? {
-        return (this.annotations.firstOrNull { it.annotationClass.java == JsonProperty::class.java } as? JsonProperty)?.required
     }
 
     private fun KmProperty.isRequiredByNullability(): Boolean = !Flag.Type.IS_NULLABLE(this.returnType.flags)

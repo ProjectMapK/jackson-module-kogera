@@ -20,7 +20,6 @@ class TestGitHub337 {
     private val writer = mapper.testPrettyWriter()
 
     @Test
-    @Disabled
     fun test_ClassWithIsFields() {
         data class ClassWithIsFields(
             val isBooleanField: Boolean,
@@ -38,7 +37,6 @@ class TestGitHub337 {
     }
 
     @Test
-    @Disabled
     fun test_AnnotatedClassWithIsFields() {
         data class ClassWithIsFields(
             @JsonProperty("isBooleanField") val isBooleanField: Boolean,

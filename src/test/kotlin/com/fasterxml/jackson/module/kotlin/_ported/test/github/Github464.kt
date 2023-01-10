@@ -33,12 +33,12 @@ class Github464 {
     abstract class AbstractGetter<T> {
         abstract val qux: T
 
-        fun <T> getPlugh() = qux
+        val plugh: T get() = qux
     }
     interface IGetter<T> {
         val quux: T
 
-        fun <T> getXyzzy() = quux
+        val xyzzy: T get() = quux
     }
 
     class Poko(

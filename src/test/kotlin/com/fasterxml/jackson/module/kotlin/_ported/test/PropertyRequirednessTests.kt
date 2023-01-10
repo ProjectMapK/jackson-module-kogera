@@ -41,7 +41,7 @@ class TestPropertyRequiredness {
         "c".isOptionalForDeserializationOf(testClass, mapper)
         "d".isOptionalForDeserializationOf(testClass, mapper)
 
-        "e".isRequiredForSerializationOf(testClass, mapper)
+        "e".isOptionalForSerializationOf(testClass, mapper)
         "f".isOptionalForSerializationOf(testClass, mapper)
 
         "g".isRequiredForDeserializationOf(testClass, mapper)

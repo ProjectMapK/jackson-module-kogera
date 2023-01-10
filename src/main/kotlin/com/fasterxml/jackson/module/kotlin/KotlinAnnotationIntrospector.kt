@@ -177,13 +177,11 @@ internal class KotlinAnnotationIntrospector(
     private fun Method.getRequiredMarkerFromAccessorLikeMethod(): Boolean? = this.kotlinFunction?.let { method ->
         val byAnnotation = this.isRequiredByAnnotation()
         return when {
-            method.isGetterLike() -> requiredAnnotationOrNullability(byAnnotation, method.returnType.isRequired())
             method.isSetterLike() -> requiredAnnotationOrNullability(byAnnotation, method.isMethodParameterRequired(0))
             else -> null
         }
     }
 
-    private fun KFunction<*>.isGetterLike(): Boolean = parameters.size == 1
     private fun KFunction<*>.isSetterLike(): Boolean = parameters.size == 2 && returnType == UNIT_TYPE
 
     private fun AnnotatedParameter.hasRequiredMarker(): Boolean? {
@@ -219,8 +217,6 @@ internal class KotlinAnnotationIntrospector(
         return !paramType.isMarkedNullable && !param.isOptional &&
             !(isPrimitive && !context.isEnabled(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES))
     }
-
-    private fun KType.isRequired(): Boolean = !isMarkedNullable
 
     companion object {
         val UNIT_TYPE: KType = Unit::class.createType()

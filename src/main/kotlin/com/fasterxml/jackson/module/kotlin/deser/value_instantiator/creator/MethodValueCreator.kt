@@ -23,7 +23,7 @@ internal class MethodValueCreator<T>(private val method: Method) : ValueCreator<
 
     init {
         val declaringClass = method.declaringClass
-        companionField = declaringClass.getDeclaredField(declaringClass.toKmClass().companionObject!!)
+        companionField = declaringClass.getDeclaredField(declaringClass.toKmClass()!!.companionObject!!)
 
         // region: about accessibility
         isAccessible = method.isAccessible && companionField.isAccessible
@@ -35,7 +35,7 @@ internal class MethodValueCreator<T>(private val method: Method) : ValueCreator<
 
         // region: read kotlin metadata information
         companionObjectClass = companionField.type
-        val companionKmClass: KmClass = companionObjectClass.toKmClass()
+        val companionKmClass: KmClass = companionObjectClass.toKmClass()!!
         val kmFunction: KmFunction = run {
             val signature = method.toSignature()
             companionKmClass.functions.first { signature == it.signature }

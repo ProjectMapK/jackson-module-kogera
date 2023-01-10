@@ -3,14 +3,14 @@ package com.fasterxml.jackson.module.kotlin
 import com.fasterxml.jackson.databind.JsonMappingException
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmValueParameter
+import kotlinx.metadata.jvm.JvmFieldSignature
 import kotlinx.metadata.jvm.JvmMethodSignature
 import kotlinx.metadata.jvm.KotlinClassHeader
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.lang.reflect.Constructor
+import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.util.*
-import kotlin.reflect.KType
-import kotlin.reflect.jvm.jvmErasure
 
 internal fun JsonMappingException.wrapWithPath(refFrom: Any?, refFieldName: String) = JsonMappingException.wrapWithPath(this, refFrom, refFieldName)
 internal fun JsonMappingException.wrapWithPath(refFrom: Any?, index: Int) = JsonMappingException.wrapWithPath(this, refFrom, index)
@@ -32,12 +32,10 @@ internal fun Int.toBitSet(): BitSet {
 internal fun Class<*>.isKotlinClass(): Boolean = declaredAnnotations.any { it is Metadata }
 internal fun Class<*>.isUnboxableValueClass() = annotations.any { it is JvmInline }
 
-internal fun KType.erasedType(): Class<out Any> = this.jvmErasure.java
-
-internal fun Class<*>.toKmClass(): KmClass = annotations
+internal fun Class<*>.toKmClass(): KmClass? = annotations
     .filterIsInstance<Metadata>()
-    .first()
-    .let {
+    .firstOrNull()
+    ?.let {
         KotlinClassMetadata.read(
             KotlinClassHeader(
                 it.kind,
@@ -49,7 +47,7 @@ internal fun Class<*>.toKmClass(): KmClass = annotations
                 it.extraInt
             )
         ) as KotlinClassMetadata.Class
-    }.toKmClass()
+    }?.toKmClass()
 
 private val primitiveClassToDesc by lazy {
     mapOf(
@@ -80,6 +78,9 @@ internal fun Constructor<*>.toSignature(): JvmMethodSignature =
 
 internal fun Method.toSignature(): JvmMethodSignature =
     JvmMethodSignature(this.name, parameterTypes.toDescString() + this.returnType.descriptor)
+
+internal fun Field.toSignature(): JvmFieldSignature =
+    JvmFieldSignature(this.name, this.type.descriptor)
 
 internal fun List<KmValueParameter>.hasVarargParam(): Boolean =
     lastOrNull()?.let { it.varargElementType != null } ?: false

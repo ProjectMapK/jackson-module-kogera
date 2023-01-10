@@ -19,12 +19,10 @@ import kotlinx.metadata.KmProperty
 import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.setterSignature
+import kotlinx.metadata.jvm.signature
 import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
-import kotlin.reflect.KFunction
-import kotlin.reflect.jvm.javaType
-import kotlin.reflect.jvm.kotlinFunction
 
 internal class KotlinAnnotationIntrospector(
     private val context: Module.SetupContext,
@@ -150,36 +148,36 @@ internal class KotlinAnnotationIntrospector(
     }
 
     private fun AnnotatedParameter.hasRequiredMarker(): Boolean? {
-        val member = this.member
         val byAnnotation = this.getAnnotation(JsonProperty::class.java)?.required
+        val byNullability: Boolean? = member.declaringClass.toKmClass()?.let { kmClass ->
+            when (val member = member) {
+                is Constructor<*> -> {
+                    val signature = member.toSignature()
+                    val paramDef = kmClass.constructors.find { it.signature?.desc == signature.desc }
+                        ?.let { it.valueParameters[index] }
+                        ?: return@let null
 
-        val byNullability = when (member) {
-            is Constructor<*> -> member.kotlinFunction?.isConstructorParameterRequired(index)
-            is Method -> member.kotlinFunction?.isMethodParameterRequired(index)
-            else -> null
+                    paramDef to member.parameterTypes[index]
+                }
+                is Method -> {
+                    val signature = member.toSignature()
+                    val paramDef = kmClass.functions.find { it.signature == signature }
+                        ?.let { it.valueParameters[index] }
+                        ?: return@let null
+
+                    paramDef to member.parameterTypes[index]
+                }
+                else -> null
+            }?.let { (paramDef, paramType) ->
+                val isPrimitive = paramType.isPrimitive
+                val isOptional = Flag.ValueParameter.DECLARES_DEFAULT_VALUE(paramDef.flags)
+                val isMarkedNullable = Flag.Type.IS_NULLABLE(paramDef.type.flags)
+
+                !isMarkedNullable && !isOptional &&
+                    !(isPrimitive && !context.isEnabled(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES))
+            }
         }
 
         return requiredAnnotationOrNullability(byAnnotation, byNullability)
-    }
-
-    private fun KFunction<*>.isConstructorParameterRequired(index: Int): Boolean {
-        return isParameterRequired(index)
-    }
-
-    private fun KFunction<*>.isMethodParameterRequired(index: Int): Boolean {
-        return isParameterRequired(index + 1)
-    }
-
-    private fun KFunction<*>.isParameterRequired(index: Int): Boolean {
-        val param = parameters[index]
-        val paramType = param.type
-        val javaType = paramType.javaType
-        val isPrimitive = when (javaType) {
-            is Class<*> -> javaType.isPrimitive
-            else -> false
-        }
-
-        return !paramType.isMarkedNullable && !param.isOptional &&
-            !(isPrimitive && !context.isEnabled(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES))
     }
 }

@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.kotlin._ported.test.github
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonSetter
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.test.github._ported.Github165JavaTest
@@ -15,20 +15,21 @@ class TestGithub165 {
         var yearSetterCalled: Boolean = false
         var nameSetterCalled: Boolean = false
 
-        @JsonProperty("year")
-        lateinit var showYear: String
+        var showYear: String? = null
+            @JsonProperty("year")
+            set(value) {
+                yearSetterCalled = true
+                field = value
+            }
 
-        @JsonSetter("year")
-        fun setYear(value: String) {
-            yearSetterCalled = true
-            this.showYear = value
-        }
+        var name: String
+            @JsonIgnore get() = showName // Why define get: https://youtrack.jetbrains.com/issue/KT-6519
 
-        @JsonSetter("name")
-        fun setName(value: String) {
-            nameSetterCalled = true
-            this.showName = value
-        }
+            @JsonProperty("name")
+            set(value) {
+                nameSetterCalled = true
+                this.showName = value
+            }
     }
 
     @Test

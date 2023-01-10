@@ -50,7 +50,7 @@ class TestPropertyRequiredness {
         "h".isOptionalForSerializationOf(testClass, mapper)
         "h".isOptionalForDeserializationOf(testClass, mapper)
 
-        "i".isRequiredForDeserializationOf(testClass, mapper)
+        "i".isOptionalForDeserializationOf(testClass, mapper)
         "j".isOptionalForDeserializationOf(testClass, mapper)
         "k".isOptionalForDeserializationOf(testClass, mapper)
         "l".isOptionalForDeserializationOf(testClass, mapper)
@@ -59,7 +59,7 @@ class TestPropertyRequiredness {
     @Test fun shouldHandleTrueFailOnNullForPrimitives() {
         val mapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, true)
         val testClass = TestClass::class.java
-        "a".isRequiredForDeserializationOf(testClass, mapper)
+        "a".isOptionalForDeserializationOf(testClass, mapper)
         "b".isOptionalForDeserializationOf(testClass, mapper)
         "c".isOptionalForDeserializationOf(testClass, mapper)
         "d".isOptionalForDeserializationOf(testClass, mapper)
@@ -68,7 +68,7 @@ class TestPropertyRequiredness {
 
         "h".isOptionalForDeserializationOf(testClass, mapper)
 
-        "i".isRequiredForDeserializationOf(testClass, mapper)
+        "i".isOptionalForDeserializationOf(testClass, mapper)
         "j".isOptionalForDeserializationOf(testClass, mapper)
         "k".isOptionalForDeserializationOf(testClass, mapper)
         "l".isOptionalForDeserializationOf(testClass, mapper)
@@ -194,5 +194,5 @@ class TestPropertyRequiredness {
         mapper.deserializationConfig.introspect(mapper.deserializationConfig.constructType(type))
 
     private fun BeanDescription.isRequired(propertyName: String): Boolean =
-        this.findProperties().find { it.name == propertyName }!!.isRequired
+        this.findProperties().find { it.name == propertyName }?.isRequired ?: false
 }

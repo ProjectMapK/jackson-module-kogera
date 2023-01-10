@@ -17,10 +17,11 @@ class TestGithub308 {
         var id: Long? = null,
         var cityId: Int? = null
     ) {
-        @JsonProperty("id")
-        private fun unpackId(idObj: Int?) {
-            cityId = idObj
-        }
+        private var unpackId: Int?
+            get() = cityId // Why define get: https://youtrack.jetbrains.com/issue/KT-6519
+
+            @JsonProperty("id")
+            set(value) { cityId = value }
     }
 
     @Test

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.getterSignature
+import kotlinx.metadata.jvm.setterSignature
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
@@ -58,6 +59,14 @@ internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule, val c
                 }
         else -> null
     }
+
+    override fun hasIgnoreMarker(m: AnnotatedMember): Boolean = (m as? AnnotatedMethod)?.member
+        ?.takeIf { it.parameters.size == 1 /* && it.returnType == Void::class.java */ }
+        ?.let { it.declaringClass.toKmClass() }
+        ?.let { kmClass ->
+            val methodSignature = m.annotated.toSignature()
+            kmClass.properties.none { it.setterSignature == methodSignature }
+        } ?: false
 
     @Suppress("UNCHECKED_CAST")
     private fun hasCreatorAnnotation(member: AnnotatedConstructor): Boolean {

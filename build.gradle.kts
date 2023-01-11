@@ -23,10 +23,10 @@ dependencies {
 
     // test libs
     testImplementation(kotlin("reflect"))
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    // https://mvnrepository.com/artifact/io.mockk/mockk
-    testImplementation("io.mockk:mockk:1.12.5")
+    testImplementation("io.mockk:mockk:1.13.3")
 
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 }

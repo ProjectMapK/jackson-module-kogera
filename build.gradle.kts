@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.fasterxml.jackson"
-version = "2.13.2-SNAPSHOT"
+version = "2.14.1-SNAPSHOT"
 
 repositories {
     mavenCentral()

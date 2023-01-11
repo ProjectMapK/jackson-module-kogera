@@ -33,7 +33,8 @@ class TestIteratorSubclass {
 
     class Company(
         val name: String,
-        @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN") @JsonSerialize(`as` = java.util.Iterator::class)
+        @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+        @JsonSerialize(`as` = java.util.Iterator::class)
         val people: KotlinPersonIterator
     )
 

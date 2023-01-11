@@ -9,27 +9,35 @@ import org.junit.jupiter.api.Test
 
 class TestCasesFromSlack1 {
     data class Host @JsonCreator constructor(
-        @param:JsonProperty("id") @get:JsonProperty("id")
+        @param:JsonProperty("id")
+        @get:JsonProperty("id")
         val id: String,
-        @param:JsonProperty("name") @get:JsonProperty("name")
+        @param:JsonProperty("name")
+        @get:JsonProperty("name")
         val name: String
     )
 
     data class Event @JsonCreator constructor(
-        @param:JsonProperty("host") @get:JsonProperty("host")
+        @param:JsonProperty("host")
+        @get:JsonProperty("host")
         val host: Host,
-        @param:JsonProperty("activity") @get:JsonProperty("activity")
+        @param:JsonProperty("activity")
+        @get:JsonProperty("activity")
         val activity: String,
-        @param:JsonProperty("invited") @get:JsonProperty("invited")
+        @param:JsonProperty("invited")
+        @get:JsonProperty("invited")
         val invited: List<Guest>
     )
 
     data class Guest @JsonCreator constructor(
-        @param:JsonProperty("id") @get:JsonProperty("id")
+        @param:JsonProperty("id")
+        @get:JsonProperty("id")
         val id: String,
-        @param:JsonProperty("name") @get:JsonProperty("name")
+        @param:JsonProperty("name")
+        @get:JsonProperty("name")
         val name: String,
-        @param:JsonProperty("rsvp") @get:JsonProperty("rsvp")
+        @param:JsonProperty("rsvp")
+        @get:JsonProperty("rsvp")
         var rsvp: RSVP
     )
 

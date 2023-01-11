@@ -85,7 +85,7 @@ internal class KotlinAnnotationIntrospector(
                         val innerClazz = getter.returnType
 
                         ValueClassStaticJsonValueSerializer.createdOrNull(outerClazz, innerClazz)
-                            ?: @Suppress("UNCHECKED_CAST") (ValueClassBoxSerializer(outerClazz, innerClazz))
+                            ?: ValueClassBoxSerializer(outerClazz, innerClazz)
                     }
             }
         }

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 class TestGithub148 {
     enum class CorrectType {
         TYPEA,
-        TYPEB,
+        TYPEB
     }
 
     enum class IncorrectType {

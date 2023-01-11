@@ -1,11 +1,11 @@
 plugins {
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "1.7.20"
     java
-    id("org.jmailen.kotlinter") version "3.11.1"
+    id("org.jmailen.kotlinter") version "3.13.0"
 }
 
 group = "com.fasterxml.jackson"
-version = "2.13.2-SNAPSHOT"
+version = "2.14.1-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -14,7 +14,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0")
-    implementation(platform("com.fasterxml.jackson:jackson-bom:2.13.3"))
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.14.1"))
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     implementation("com.fasterxml.jackson.core:jackson-databind")
@@ -23,10 +23,10 @@ dependencies {
 
     // test libs
     testImplementation(kotlin("reflect"))
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    // https://mvnrepository.com/artifact/io.mockk/mockk
-    testImplementation("io.mockk:mockk:1.12.5")
+    testImplementation("io.mockk:mockk:1.13.3")
 
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 }

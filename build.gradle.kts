@@ -13,7 +13,6 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation(kotlin("reflect"))
     implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0")
     implementation(platform("com.fasterxml.jackson:jackson-bom:2.13.3"))
 
@@ -23,6 +22,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations")
 
     // test libs
+    testImplementation(kotlin("reflect"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     // https://mvnrepository.com/artifact/io.mockk/mockk

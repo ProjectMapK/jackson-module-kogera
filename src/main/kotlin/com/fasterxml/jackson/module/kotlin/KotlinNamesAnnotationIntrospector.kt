@@ -43,45 +43,6 @@ internal class KotlinNamesAnnotationIntrospector constructor(
         else -> null
     }
 
-    // If it is not a property on Kotlin, it is not used to serialization
-    override fun findPropertyAccess(ann: Annotated): JsonProperty.Access? = when (ann) {
-        is AnnotatedMethod ->
-            ann.annotated
-                .takeIf { it.parameters.isEmpty() } // Ignore target is only getter
-                ?.let { method ->
-                    method.declaringClass.toKmClass()?.let { kmClass ->
-                        val methodSignature = method.toSignature()
-
-                        JsonProperty.Access.WRITE_ONLY.takeIf {
-                            kmClass.properties.none { it.getterSignature == methodSignature }
-                        }
-                    }
-                }
-        else -> null
-    }
-
-    override fun hasIgnoreMarker(m: AnnotatedMember): Boolean = (m as? AnnotatedMethod)?.member
-        ?.takeIf { it.parameters.size == 1 /* && it.returnType == Void::class.java */ }
-        ?.let { it.declaringClass.toKmClass() }
-        ?.let { kmClass ->
-            val methodSignature = m.annotated.toSignature()
-            kmClass.properties.none { it.setterSignature == methodSignature }
-        } ?: false
-
-    override fun findCreatorAnnotation(config: MapperConfig<*>, ann: Annotated): JsonCreator.Mode? {
-        (ann as? AnnotatedConstructor)?.takeIf { 0 < it.parameterCount } ?: return null
-
-        val declaringClass = ann.declaringClass
-        val kmClass = declaringClass
-            ?.takeIf { !it.isEnum }
-            ?.toKmClass()
-            ?: return null
-
-        return JsonCreator.Mode.DEFAULT
-            .takeIf { ann.annotated.isPrimarilyConstructorOf(kmClass) && !hasCreator(declaringClass, kmClass) }
-    }
-
-    @Suppress("UNCHECKED_CAST")
     private fun findKotlinParameterName(param: AnnotatedParameter): String? {
         val declaringClass = param.declaringClass
 
@@ -105,6 +66,44 @@ internal class KotlinNamesAnnotationIntrospector constructor(
                 else -> null
             }
         }
+    }
+
+    // If it is not a property on Kotlin, it is not used to serialization
+    override fun findPropertyAccess(ann: Annotated): JsonProperty.Access? = when (ann) {
+        is AnnotatedMethod ->
+            ann.annotated
+                .takeIf { it.parameters.isEmpty() } // Ignore target is only getter
+                ?.let { method ->
+                    method.declaringClass.toKmClass()?.let { kmClass ->
+                        val methodSignature = method.toSignature()
+
+                        JsonProperty.Access.WRITE_ONLY.takeIf {
+                            kmClass.properties.none { it.getterSignature == methodSignature }
+                        }
+                    }
+                }
+        else -> null
+    }
+
+    override fun hasIgnoreMarker(m: AnnotatedMember): Boolean = (m as? AnnotatedMethod)?.member
+        ?.takeIf { it.parameters.size == 1 }
+        ?.let { it.declaringClass.toKmClass() }
+        ?.let { kmClass ->
+            val methodSignature = m.annotated.toSignature()
+            kmClass.properties.none { it.setterSignature == methodSignature }
+        } ?: false
+
+    override fun findCreatorAnnotation(config: MapperConfig<*>, ann: Annotated): JsonCreator.Mode? {
+        (ann as? AnnotatedConstructor)?.takeIf { 0 < it.parameterCount } ?: return null
+
+        val declaringClass = ann.declaringClass
+        val kmClass = declaringClass
+            ?.takeIf { !it.isEnum }
+            ?.toKmClass()
+            ?: return null
+
+        return JsonCreator.Mode.DEFAULT
+            .takeIf { ann.annotated.isPrimarilyConstructorOf(kmClass) && !hasCreator(declaringClass, kmClass) }
     }
 }
 

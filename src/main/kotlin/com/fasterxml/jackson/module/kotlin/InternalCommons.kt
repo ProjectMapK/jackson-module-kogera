@@ -88,3 +88,7 @@ internal fun List<KmValueParameter>.hasVarargParam(): Boolean =
 internal val defaultConstructorMarker: Class<*> by lazy {
     Class.forName("kotlin.jvm.internal.DefaultConstructorMarker")
 }
+
+// Kotlin-specific types such as kotlin.String will result in an error,
+// but are ignored because they do not result in errors in internal use cases.
+internal fun String.reconstructClass(): Class<*> = Class.forName(this.replace(".", "$").replace("/", "."))

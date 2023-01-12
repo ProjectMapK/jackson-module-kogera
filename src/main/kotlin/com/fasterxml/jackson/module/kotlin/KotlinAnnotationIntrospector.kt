@@ -76,11 +76,7 @@ internal class KotlinAnnotationIntrospector(
                 // Since there was no way to directly determine whether returnType is a value class or not,
                 // Class is restored and processed.
                 // If the cost of this process is significant, consider caching it.
-                runCatching {
-                    // Kotlin-specific types such as kotlin.String will cause an error,
-                    // but value classes will not cause an error, so ignore them
-                    Class.forName(classifier.name.replace(".", "$").replace("/", "."))
-                }
+                runCatching { classifier.name.reconstructClass() }
                     .getOrNull()
                     ?.takeIf { it.annotations.any { ann -> ann is JvmInline } }
                     ?.let { outerClazz ->

@@ -29,56 +29,50 @@ internal class KotlinNamesAnnotationIntrospector constructor(
     val cache: ReflectionCache
 ) : NopAnnotationIntrospector() {
     // since 2.4
-    override fun findImplicitPropertyName(member: AnnotatedMember): String? = when (member) {
-        is AnnotatedMethod -> member.annotated.declaringClass.toKmClass()?.let { kmClass ->
-            val methodSignature = member.annotated.toSignature()
-
-            kmClass.properties.find { it.getterSignature == methodSignature }?.name
+    override fun findImplicitPropertyName(
+        member: AnnotatedMember
+    ): String? = member.declaringClass.toKmClass()?.let { kmClass ->
+        when (member) {
+            is AnnotatedMethod -> {
+                val methodSignature = member.annotated.toSignature()
+                kmClass.properties.find { it.getterSignature == methodSignature }?.name
+            }
+            is AnnotatedField -> {
+                val fieldSignature = member.annotated.toSignature()
+                kmClass.properties.find { it.fieldSignature == fieldSignature }?.name
+            }
+            is AnnotatedParameter -> findKotlinParameterName(member, kmClass)
+            else -> null
         }
-        is AnnotatedField -> member.annotated.declaringClass.toKmClass()?.let { kmClass ->
-            val fieldSignature = member.annotated.toSignature()
-
-            kmClass.properties.find { it.fieldSignature == fieldSignature }?.name
-        }
-        is AnnotatedParameter -> findKotlinParameterName(member)
-        else -> null
     }
 
-    // Input is assumed to be a factory function or property setter
-    private fun findKotlinFunctionParameterName(
+    private fun findKotlinFactoryParameterName(
         declaringClass: Class<*>,
         kmClass: KmClass,
         member: Method,
         index: Int
-    ) = if (Modifier.isStatic(member.modifiers)) {
-        kmClass.companionObject?.let { companion ->
-            val companionKmClass = declaringClass.getDeclaredField(companion)
-                .type
-                .toKmClass()!!
-            val signature = member.toSignature()
-
-            companionKmClass.functions.find { it.signature == signature }
-                ?.let { it.valueParameters[index].name }
-        }
-    } else {
+    ) = kmClass.companionObject?.takeIf { _ -> Modifier.isStatic(member.modifiers) }?.let { companion ->
+        val companionKmClass = declaringClass.getDeclaredField(companion)
+            .type
+            .toKmClass()!!
         val signature = member.toSignature()
-        kmClass.properties.find { it.setterSignature == signature }?.name
+
+        companionKmClass.functions.find { it.signature == signature }
+            ?.let { it.valueParameters[index].name }
     }
 
-    private fun findKotlinParameterName(param: AnnotatedParameter): String? {
+    private fun findKotlinParameterName(param: AnnotatedParameter, kmClass: KmClass): String? {
         val declaringClass = param.declaringClass
 
-        return declaringClass.toKmClass()?.let { kmClass ->
-            when (val member = param.owner.member) {
-                is Constructor<*> -> {
-                    val signature = member.toSignature()
+        return when (val member = param.owner.member) {
+            is Constructor<*> -> {
+                val signature = member.toSignature()
 
-                    kmClass.constructors.find { it.signature?.desc == signature.desc }
-                        ?.let { it.valueParameters[param.index].name }
-                }
-                is Method -> findKotlinFunctionParameterName(declaringClass, kmClass, member, param.index)
-                else -> null
+                kmClass.constructors.find { it.signature?.desc == signature.desc }
+                    ?.let { it.valueParameters[param.index].name }
             }
+            is Method -> findKotlinFactoryParameterName(declaringClass, kmClass, member, param.index)
+            else -> null
         }
     }
 

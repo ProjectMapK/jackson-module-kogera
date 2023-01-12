@@ -26,7 +26,9 @@ internal object RegexDeserializer : StdDeserializer<Regex>(Regex::class.java) {
             val options = if (node.has("options")) {
                 val optionsNode = node.get("options")
                 if (!optionsNode.isArray) {
-                    throw IllegalStateException("Expected an array of strings for RegexOptions, but type was ${node.nodeType}")
+                    throw IllegalStateException(
+                        "Expected an array of strings for RegexOptions, but type was ${node.nodeType}"
+                    )
                 }
                 optionsNode.elements().asSequence().map { RegexOption.valueOf(it.asText()) }.toSet()
             } else {
@@ -34,7 +36,9 @@ internal object RegexDeserializer : StdDeserializer<Regex>(Regex::class.java) {
             }
             return Regex(pattern, options)
         } else {
-            throw IllegalStateException("Expected a string or an object to deserialize a Regex, but type was ${node.nodeType}")
+            throw IllegalStateException(
+                "Expected a string or an object to deserialize a Regex, but type was ${node.nodeType}"
+            )
         }
     }
 }

@@ -46,19 +46,18 @@ internal class MethodValueCreator<T>(private val method: Method) : ValueCreator<
         // endregion
     }
 
-    private val defaultCaller: (args: Array<Any?>) -> T by lazy {
-        val maskSize = (method.parameters.size + Integer.SIZE - 1) / Integer.SIZE
+    private val defaultCaller: (args: ArgumentBucket) -> T by lazy {
+        val valueParameterSize = method.parameterTypes.size
+        val maskSize = (valueParameterSize + Integer.SIZE - 1) / Integer.SIZE
         val defaultTypes = method.parameterTypes.let { parameterTypes ->
-            val parameterSize = parameterTypes.size
-
             // companion object instance(1) + parameterSize + maskSize + marker(1)
-            val temp = arrayOfNulls<Class<*>>(1 + parameterSize + maskSize + 1)
+            val temp = arrayOfNulls<Class<*>>(1 + valueParameterSize + maskSize + 1)
             temp[0] = companionObjectClass // companion object
             parameterTypes.copyInto(temp, 1) // parameter types
-            for (i in (parameterSize + 1)..(parameterSize + maskSize)) { // masks
+            for (i in (valueParameterSize + 1)..(valueParameterSize + maskSize)) { // masks
                 temp[i] = Int::class.javaPrimitiveType
             }
-            temp[parameterSize + maskSize + 1] = Object::class.java // maker
+            temp[valueParameterSize + maskSize + 1] = Object::class.java // maker
             temp
         }
         val defaultMethod = companionObjectClass.getDeclaredMethod("${callableName}\$default", *defaultTypes)
@@ -66,20 +65,23 @@ internal class MethodValueCreator<T>(private val method: Method) : ValueCreator<
         val companionObject = companionField.get(null)
 
         return@lazy {
-            val actualArgs = arrayOfNulls<Any?>(it.size + 1)
-            actualArgs[0] = companionObject
-            it.copyInto(actualArgs, 1)
+            val defaultArgs = arrayOfNulls<Any?>(defaultTypes.size)
+            defaultArgs[0] = companionObject
+            it.arguments.copyInto(defaultArgs, 1)
+            for (i in 0 until maskSize) {
+                defaultArgs[i + valueParameterSize + 1] = it.masks[i]
+            }
 
             @Suppress("UNCHECKED_CAST")
-            defaultMethod.invoke(null, *actualArgs) as T
+            defaultMethod.invoke(null, *defaultArgs) as T
         }
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun callBy(args: ArgumentBucket): T = if (args.isFullInitialized) {
         // It calls static method for simplicity, and is a little slower in terms of speed.
-        method.invoke(null, *args.getArgs())
+        method.invoke(null, *args.arguments)
     } else {
-        defaultCaller(args.getDefaultArgs())
+        defaultCaller(args)
     } as T
 }

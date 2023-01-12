@@ -55,18 +55,24 @@ public class KotlinModule private constructor(
         super.setupModule(context)
 
         if (!context.isEnabled(MapperFeature.USE_ANNOTATIONS)) {
-            throw IllegalStateException("The Jackson Kotlin module requires USE_ANNOTATIONS to be true or it cannot function")
+            throw IllegalStateException(
+                "The Jackson Kotlin module requires USE_ANNOTATIONS to be true or it cannot function"
+            )
         }
 
         val cache = ReflectionCache(reflectionCacheSize)
 
-        context.addValueInstantiators(KotlinInstantiators(cache, nullToEmptyCollection, nullToEmptyMap, nullIsSameAsDefault, strictNullChecks))
+        context.addValueInstantiators(
+            KotlinInstantiators(cache, nullToEmptyCollection, nullToEmptyMap, nullIsSameAsDefault, strictNullChecks)
+        )
 
         if (singletonSupport) {
             context.addBeanDeserializerModifier(KotlinBeanDeserializerModifier)
         }
 
-        context.insertAnnotationIntrospector(KotlinAnnotationIntrospector(context, cache, nullToEmptyCollection, nullToEmptyMap, nullIsSameAsDefault))
+        context.insertAnnotationIntrospector(
+            KotlinAnnotationIntrospector(context, cache, nullToEmptyCollection, nullToEmptyMap, nullIsSameAsDefault)
+        )
         context.appendAnnotationIntrospector(KotlinNamesAnnotationIntrospector(this, cache))
 
         context.addDeserializers(KotlinDeserializers())

@@ -41,7 +41,8 @@ public fun ObjectMapper.registerKotlinModule(): ObjectMapper = this.registerModu
 public inline fun <reified T> jacksonTypeRef(): TypeReference<T> = object : TypeReference<T>() {}
 
 public inline fun <reified T> ObjectMapper.readValue(jp: JsonParser): T = readValue(jp, jacksonTypeRef<T>())
-public inline fun <reified T> ObjectMapper.readValues(jp: JsonParser): MappingIterator<T> = readValues(jp, jacksonTypeRef<T>())
+public inline fun <reified T> ObjectMapper.readValues(jp: JsonParser): MappingIterator<T> =
+    readValues(jp, jacksonTypeRef<T>())
 
 public inline fun <reified T> ObjectMapper.readValue(src: File): T = readValue(src, jacksonTypeRef<T>())
 public inline fun <reified T> ObjectMapper.readValue(src: URL): T = readValue(src, jacksonTypeRef<T>())
@@ -50,12 +51,15 @@ public inline fun <reified T> ObjectMapper.readValue(src: Reader): T = readValue
 public inline fun <reified T> ObjectMapper.readValue(src: InputStream): T = readValue(src, jacksonTypeRef<T>())
 public inline fun <reified T> ObjectMapper.readValue(src: ByteArray): T = readValue(src, jacksonTypeRef<T>())
 
-public inline fun <reified T> ObjectMapper.treeToValue(n: TreeNode): T = readValue(this.treeAsTokens(n), jacksonTypeRef<T>())
+public inline fun <reified T> ObjectMapper.treeToValue(n: TreeNode): T =
+    readValue(this.treeAsTokens(n), jacksonTypeRef<T>())
 public inline fun <reified T> ObjectMapper.convertValue(from: Any): T = convertValue(from, jacksonTypeRef<T>())
 
 public inline fun <reified T> ObjectReader.readValueTyped(jp: JsonParser): T = readValue(jp, jacksonTypeRef<T>())
-public inline fun <reified T> ObjectReader.readValuesTyped(jp: JsonParser): Iterator<T> = readValues(jp, jacksonTypeRef<T>())
-public inline fun <reified T> ObjectReader.treeToValue(n: TreeNode): T? = readValue(this.treeAsTokens(n), jacksonTypeRef<T>())
+public inline fun <reified T> ObjectReader.readValuesTyped(jp: JsonParser): Iterator<T> =
+    readValues(jp, jacksonTypeRef<T>())
+public inline fun <reified T> ObjectReader.treeToValue(n: TreeNode): T? =
+    readValue(this.treeAsTokens(n), jacksonTypeRef<T>())
 
 public operator fun ArrayNode.plus(element: Boolean) { add(element) }
 public operator fun ArrayNode.plus(element: Short) { add(element) }

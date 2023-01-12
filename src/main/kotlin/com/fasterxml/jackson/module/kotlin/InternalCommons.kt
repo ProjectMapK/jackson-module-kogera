@@ -12,8 +12,8 @@ import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.util.*
 
-internal fun JsonMappingException.wrapWithPath(refFrom: Any?, refFieldName: String) = JsonMappingException.wrapWithPath(this, refFrom, refFieldName)
-internal fun JsonMappingException.wrapWithPath(refFrom: Any?, index: Int) = JsonMappingException.wrapWithPath(this, refFrom, index)
+internal fun JsonMappingException.wrapWithPath(refFrom: Any?, refFieldName: String) =
+    JsonMappingException.wrapWithPath(this, refFrom, refFieldName)
 
 internal fun Int.toBitSet(): BitSet {
     var i = this

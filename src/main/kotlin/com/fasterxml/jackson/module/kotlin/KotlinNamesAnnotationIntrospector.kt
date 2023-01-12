@@ -22,6 +22,7 @@ import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 
 internal class KotlinNamesAnnotationIntrospector constructor(
     val module: KotlinModule,
@@ -85,8 +86,9 @@ internal class KotlinNamesAnnotationIntrospector constructor(
         else -> null
     }
 
+    // Ignored during deserialization if not a property
     override fun hasIgnoreMarker(m: AnnotatedMember): Boolean = (m as? AnnotatedMethod)?.member
-        ?.takeIf { it.parameters.size == 1 }
+        ?.takeIf { it.parameters.size == 1 && !Modifier.isStatic(it.modifiers) }
         ?.let { it.declaringClass.toKmClass() }
         ?.let { kmClass ->
             val methodSignature = m.annotated.toSignature()

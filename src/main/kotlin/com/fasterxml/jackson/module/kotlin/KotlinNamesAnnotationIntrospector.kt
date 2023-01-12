@@ -22,6 +22,7 @@ import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 
 internal class KotlinNamesAnnotationIntrospector constructor(
     val module: KotlinModule,
@@ -43,6 +44,27 @@ internal class KotlinNamesAnnotationIntrospector constructor(
         else -> null
     }
 
+    // Input is assumed to be a factory function or property setter
+    private fun findKotlinFunctionParameterName(
+        declaringClass: Class<*>,
+        kmClass: KmClass,
+        member: Method,
+        index: Int
+    ) = if (Modifier.isStatic(member.modifiers)) {
+        kmClass.companionObject?.let { companion ->
+            val companionKmClass = declaringClass.getDeclaredField(companion)
+                .type
+                .toKmClass()!!
+            val signature = member.toSignature()
+
+            companionKmClass.functions.find { it.signature == signature }
+                ?.let { it.valueParameters[index].name }
+        }
+    } else {
+        val signature = member.toSignature()
+        kmClass.properties.find { it.setterSignature == signature }?.name
+    }
+
     private fun findKotlinParameterName(param: AnnotatedParameter): String? {
         val declaringClass = param.declaringClass
 
@@ -54,15 +76,7 @@ internal class KotlinNamesAnnotationIntrospector constructor(
                     kmClass.constructors.find { it.signature?.desc == signature.desc }
                         ?.let { it.valueParameters[param.index].name }
                 }
-                is Method -> {
-                    val companionKmClass = declaringClass.getDeclaredField(kmClass.companionObject!!)
-                        .type
-                        .toKmClass()!!
-                    val signature = member.toSignature()
-
-                    companionKmClass.functions.find { it.signature == signature }
-                        ?.let { it.valueParameters[param.index].name }
-                }
+                is Method -> findKotlinFunctionParameterName(declaringClass, kmClass, member, param.index)
                 else -> null
             }
         }
@@ -85,8 +99,9 @@ internal class KotlinNamesAnnotationIntrospector constructor(
         else -> null
     }
 
+    // Ignored during deserialization if not a property
     override fun hasIgnoreMarker(m: AnnotatedMember): Boolean = (m as? AnnotatedMethod)?.member
-        ?.takeIf { it.parameters.size == 1 }
+        ?.takeIf { it.parameters.size == 1 && !Modifier.isStatic(it.modifiers) }
         ?.let { it.declaringClass.toKmClass() }
         ?.let { kmClass ->
             val methodSignature = m.annotated.toSignature()

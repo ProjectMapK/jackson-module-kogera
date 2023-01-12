@@ -29,7 +29,6 @@ internal fun Int.toBitSet(): BitSet {
     return bits
 }
 
-internal fun Class<*>.isKotlinClass(): Boolean = declaredAnnotations.any { it is Metadata }
 internal fun Class<*>.isUnboxableValueClass() = annotations.any { it is JvmInline }
 
 internal fun Class<*>.toKmClass(): KmClass? = annotations

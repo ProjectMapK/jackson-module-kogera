@@ -14,7 +14,6 @@ import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.ReflectionCache
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueCreator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueParameter
-import com.fasterxml.jackson.module.kotlin.isKotlinClass
 import com.fasterxml.jackson.module.kotlin.wrapWithPath
 
 internal class KotlinValueInstantiator(
@@ -130,7 +129,7 @@ internal class KotlinInstantiators(
         beanDescriptor: BeanDescription,
         defaultInstantiator: ValueInstantiator
     ): ValueInstantiator {
-        return if (beanDescriptor.beanClass.isKotlinClass()) {
+        return if (beanDescriptor.beanClass.declaredAnnotations.any { it is Metadata }) {
             if (defaultInstantiator::class == StdValueInstantiator::class) {
                 KotlinValueInstantiator(
                     defaultInstantiator as StdValueInstantiator,

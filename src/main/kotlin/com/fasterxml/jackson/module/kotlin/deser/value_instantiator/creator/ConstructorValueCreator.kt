@@ -53,7 +53,7 @@ internal class ConstructorValueCreator<T : Any>(private val constructor: Constru
     }
 
     override fun callBy(args: ArgumentBucket): T = if (args.isFullInitialized) {
-        constructor.newInstance(*args.arguments)
+        SpreadWrapper.newInstance(constructor, args.arguments)
     } else {
         val valueParameterSize = args.valueParameterSize
         val maskSize = args.masks.size
@@ -64,6 +64,6 @@ internal class ConstructorValueCreator<T : Any>(private val constructor: Constru
             defaultArgs[i + valueParameterSize] = args.masks[i]
         }
 
-        defaultConstructor.newInstance(*defaultArgs)
+        SpreadWrapper.newInstance(defaultConstructor, defaultArgs)
     }
 }

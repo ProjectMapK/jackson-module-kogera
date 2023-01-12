@@ -73,14 +73,14 @@ internal class MethodValueCreator<T>(private val method: Method) : ValueCreator<
             }
 
             @Suppress("UNCHECKED_CAST")
-            defaultMethod.invoke(null, *defaultArgs) as T
+            SpreadWrapper.invoke(defaultMethod, null, defaultArgs) as T
         }
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun callBy(args: ArgumentBucket): T = if (args.isFullInitialized) {
         // It calls static method for simplicity, and is a little slower in terms of speed.
-        method.invoke(null, *args.arguments)
+        SpreadWrapper.invoke(method, null, args.arguments)
     } else {
         defaultCaller(args)
     } as T

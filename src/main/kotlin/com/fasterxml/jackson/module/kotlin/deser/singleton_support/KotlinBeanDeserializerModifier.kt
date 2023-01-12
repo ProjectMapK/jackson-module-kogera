@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
-import com.fasterxml.jackson.module.kotlin.isKotlinClass
+import com.fasterxml.jackson.module.kotlin.toKmClass
+import kotlinx.metadata.Flag
 
 // [module-kotlin#225]: keep Kotlin singletons as singletons
 internal object KotlinBeanDeserializerModifier : BeanDeserializerModifier() {
@@ -21,5 +22,11 @@ internal object KotlinBeanDeserializerModifier : BeanDeserializerModifier() {
     }
 }
 
-private fun objectSingletonInstance(beanClass: Class<*>): Any? = beanClass.takeIf { beanClass.isKotlinClass() }
-    ?.let { it.kotlin.objectInstance }
+private fun objectSingletonInstance(beanClass: Class<*>): Any? = beanClass.toKmClass()?.let {
+    // It is not assumed that the companion object is the target
+    if (Flag.Class.IS_OBJECT(it.flags) && !Flag.Class.IS_COMPANION_OBJECT(it.flags)) {
+        beanClass.getDeclaredField("INSTANCE").get(null)
+    } else {
+        null
+    }
+}

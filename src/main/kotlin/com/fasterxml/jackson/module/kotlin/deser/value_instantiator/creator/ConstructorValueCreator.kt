@@ -3,6 +3,7 @@ package com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator
 import com.fasterxml.jackson.module.kotlin.defaultConstructorMarker
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.ArgumentBucket
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.BucketGenerator
+import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.calcMaskSize
 import com.fasterxml.jackson.module.kotlin.hasVarargParam
 import com.fasterxml.jackson.module.kotlin.toKmClass
 import com.fasterxml.jackson.module.kotlin.toSignature
@@ -34,7 +35,7 @@ internal class ConstructorValueCreator<T : Any>(private val constructor: Constru
     }
 
     private val defaultConstructor: Constructor<T> by lazy {
-        val maskSize = (constructor.parameters.size + Integer.SIZE - 1) / Integer.SIZE
+        val maskSize = calcMaskSize(constructor.parameters.size)
 
         val defaultTypes = constructor.parameterTypes.let {
             val parameterSize = it.size

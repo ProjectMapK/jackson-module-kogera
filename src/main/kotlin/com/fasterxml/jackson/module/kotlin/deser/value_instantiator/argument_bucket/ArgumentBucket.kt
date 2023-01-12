@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket
 
+import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.calcMaskSize
 import java.lang.reflect.Array as ReflectArray
 
 private fun defaultPrimitiveValue(type: Class<*>): Any = when (type) {
@@ -28,7 +29,7 @@ internal class BucketGenerator(
         // Set values of primitive arguments to the boxed default values (such as 0, 0.0, false) instead of nulls.
         parameterTypes[i].takeIf { it.isPrimitive }?.let { defaultPrimitiveValue(it) }
     }
-    private val originalMasks: IntArray = IntArray((parameterTypes.size + Integer.SIZE - 1) / Integer.SIZE) { 0xFFFF }
+    private val originalMasks: IntArray = IntArray(calcMaskSize(parameterTypes.size)) { 0xFFFF }
 
     init {
         if (hasVarargParam) {

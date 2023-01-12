@@ -2,6 +2,7 @@ package com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator
 
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.ArgumentBucket
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.BucketGenerator
+import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.calcMaskSize
 import com.fasterxml.jackson.module.kotlin.hasVarargParam
 import com.fasterxml.jackson.module.kotlin.toKmClass
 import com.fasterxml.jackson.module.kotlin.toSignature
@@ -46,9 +47,9 @@ internal class MethodValueCreator<T>(private val method: Method) : ValueCreator<
         // endregion
     }
 
-    private val defaultCaller: (args: ArgumentBucket) -> T by lazy {
+    private val defaultCaller: (args: ArgumentBucket) -> Any? by lazy {
         val valueParameterSize = method.parameterTypes.size
-        val maskSize = (valueParameterSize + Integer.SIZE - 1) / Integer.SIZE
+        val maskSize = calcMaskSize(valueParameterSize)
         val defaultTypes = method.parameterTypes.let { parameterTypes ->
             // companion object instance(1) + parameterSize + maskSize + marker(1)
             val temp = arrayOfNulls<Class<*>>(1 + valueParameterSize + maskSize + 1)
@@ -72,8 +73,7 @@ internal class MethodValueCreator<T>(private val method: Method) : ValueCreator<
                 defaultArgs[i + valueParameterSize + 1] = it.masks[i]
             }
 
-            @Suppress("UNCHECKED_CAST")
-            SpreadWrapper.invoke(defaultMethod, null, defaultArgs) as T
+            SpreadWrapper.invoke(defaultMethod, null, defaultArgs)
         }
     }
 

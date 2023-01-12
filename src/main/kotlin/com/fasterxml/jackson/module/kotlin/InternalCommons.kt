@@ -29,7 +29,6 @@ internal fun Int.toBitSet(): BitSet {
     return bits
 }
 
-internal fun Class<*>.isKotlinClass(): Boolean = declaredAnnotations.any { it is Metadata }
 internal fun Class<*>.isUnboxableValueClass() = annotations.any { it is JvmInline }
 
 internal fun Class<*>.toKmClass(): KmClass? = annotations
@@ -88,3 +87,7 @@ internal fun List<KmValueParameter>.hasVarargParam(): Boolean =
 internal val defaultConstructorMarker: Class<*> by lazy {
     Class.forName("kotlin.jvm.internal.DefaultConstructorMarker")
 }
+
+// Kotlin-specific types such as kotlin.String will result in an error,
+// but are ignored because they do not result in errors in internal use cases.
+internal fun String.reconstructClass(): Class<*> = Class.forName(this.replace(".", "$").replace("/", "."))

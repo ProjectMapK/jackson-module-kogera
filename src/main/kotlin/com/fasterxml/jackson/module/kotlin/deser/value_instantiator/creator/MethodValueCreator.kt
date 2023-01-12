@@ -47,7 +47,7 @@ internal class MethodValueCreator<T>(private val method: Method) : ValueCreator<
         // endregion
     }
 
-    private val defaultCaller: (args: ArgumentBucket) -> T by lazy {
+    private val defaultCaller: (args: ArgumentBucket) -> Any? by lazy {
         val valueParameterSize = method.parameterTypes.size
         val maskSize = calcMaskSize(valueParameterSize)
         val defaultTypes = method.parameterTypes.let { parameterTypes ->
@@ -73,8 +73,7 @@ internal class MethodValueCreator<T>(private val method: Method) : ValueCreator<
                 defaultArgs[i + valueParameterSize + 1] = it.masks[i]
             }
 
-            @Suppress("UNCHECKED_CAST")
-            SpreadWrapper.invoke(defaultMethod, null, defaultArgs) as T
+            SpreadWrapper.invoke(defaultMethod, null, defaultArgs)
         }
     }
 

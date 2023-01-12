@@ -24,38 +24,28 @@ internal class BucketGenerator(
     hasVarargParam: Boolean
 ) {
     private val valueParameterSize: Int = parameterTypes.size
-    private val originalAbsentArgs: Array<Any?>
+    private val originalAbsentArgs: Array<Any?> = Array(valueParameterSize) { i ->
+        // Set values of primitive arguments to the boxed default values (such as 0, 0.0, false) instead of nulls.
+        parameterTypes[i].takeIf { it.isPrimitive }?.let { defaultPrimitiveValue(it) }
+    }
+    private val originalMasks: IntArray = IntArray((parameterTypes.size + Integer.SIZE - 1) / Integer.SIZE) { 0xFFFF }
 
     init {
-        val maskSize = (parameterTypes.size + Integer.SIZE - 1) / Integer.SIZE
-
-        // Array containing the actual function arguments, masks, and +1 for DefaultConstructorMarker or MethodHandle.
-        originalAbsentArgs = arrayOfNulls<Any?>(valueParameterSize + maskSize + 1)
-
-        // Set values of primitive arguments to the boxed default values (such as 0, 0.0, false) instead of nulls.
-        parameterTypes.forEachIndexed { i, clazz ->
-            if (clazz.isPrimitive) {
-                originalAbsentArgs[i] = defaultPrimitiveValue(clazz)
-            }
-        }
-
         if (hasVarargParam) {
             // vararg argument is always at the end of the arguments.
             val i = valueParameterSize - 1
             originalAbsentArgs[i] = defaultEmptyArray(parameterTypes[i])
         }
-
-        for (i in 0 until maskSize) {
-            originalAbsentArgs[valueParameterSize + i] = -1
-        }
     }
 
-    fun generate(): ArgumentBucket = ArgumentBucket(valueParameterSize, originalAbsentArgs.clone())
+    fun generate(): ArgumentBucket =
+        ArgumentBucket(valueParameterSize, originalAbsentArgs.clone(), originalMasks.clone())
 }
 
 internal class ArgumentBucket(
-    private val valueParameterSize: Int,
-    private val arguments: Array<Any?>
+    val valueParameterSize: Int,
+    val arguments: Array<Any?>,
+    val masks: IntArray
 ) {
     companion object {
         // List of Int with only 1 bit enabled.
@@ -68,14 +58,11 @@ internal class ArgumentBucket(
         // Since there is no multiple initialization in the use case, the key check is omitted.
         arguments[index] = arg
 
-        val maskIndex = valueParameterSize + (index / Integer.SIZE)
-        arguments[maskIndex] = (arguments[maskIndex] as Int) and BIT_FLAGS[index % Integer.SIZE]
+        val maskIndex = index / Integer.SIZE
+        masks[maskIndex] = masks[maskIndex] and BIT_FLAGS[index % Integer.SIZE]
 
         count++
     }
 
     val isFullInitialized: Boolean get() = count == valueParameterSize
-
-    fun getArgs(): Array<Any?> = arguments.copyOf(valueParameterSize)
-    fun getDefaultArgs(): Array<Any?> = arguments
 }

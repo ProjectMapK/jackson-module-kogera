@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.kotlin
 
 import com.fasterxml.jackson.databind.introspect.AnnotatedConstructor
-import com.fasterxml.jackson.databind.introspect.AnnotatedMember
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.introspect.AnnotatedWithParams
 import com.fasterxml.jackson.databind.util.LRUMap
@@ -12,40 +11,14 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 
 internal class ReflectionCache(reflectionCacheSize: Int) {
-    sealed class BooleanTriState(val value: Boolean?) {
-        class True : BooleanTriState(true)
-        class False : BooleanTriState(false)
-        class Empty : BooleanTriState(null)
+    private val javaConstructorToValueCreator =
+        LRUMap<Constructor<*>, ConstructorValueCreator<*>>(reflectionCacheSize, reflectionCacheSize)
+    private val javaMethodToValueCreator =
+        LRUMap<Method, MethodValueCreator<*>>(reflectionCacheSize, reflectionCacheSize)
 
-        companion object {
-            private val TRUE = True()
-            private val FALSE = False()
-            private val EMPTY = Empty()
-
-            fun fromBoolean(value: Boolean?): BooleanTriState {
-                return when (value) {
-                    null -> EMPTY
-                    true -> TRUE
-                    false -> FALSE
-                }
-            }
-        }
-    }
-
-    private val javaConstructorToValueCreator = LRUMap<Constructor<Any>, ConstructorValueCreator<*>>(reflectionCacheSize, reflectionCacheSize)
-    private val javaMethodToValueCreator = LRUMap<Method, MethodValueCreator<*>>(reflectionCacheSize, reflectionCacheSize)
-    private val javaMemberIsRequired = LRUMap<AnnotatedMember, BooleanTriState?>(reflectionCacheSize, reflectionCacheSize)
-
-    /**
-     * return null if...
-     * - can't get kotlinFunction
-     * - contains extensionReceiverParameter
-     * - instance parameter is not companion object or can't get
-     */
-    @Suppress("UNCHECKED_CAST")
-    fun valueCreatorFromJava(_withArgsCreator: AnnotatedWithParams): ValueCreator<*>? = when (_withArgsCreator) {
+    fun valueCreatorFromJava(withArgsCreator: AnnotatedWithParams): ValueCreator<*> = when (withArgsCreator) {
         is AnnotatedConstructor -> {
-            val constructor = _withArgsCreator.annotated as Constructor<Any>
+            val constructor = withArgsCreator.annotated
 
             javaConstructorToValueCreator.get(constructor)
                 ?: run {
@@ -54,7 +27,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
                 }
         }
         is AnnotatedMethod -> {
-            val method = _withArgsCreator.annotated as Method
+            val method = withArgsCreator.annotated as Method
 
             javaMethodToValueCreator.get(method)
                 ?: kotlin.run {
@@ -62,9 +35,9 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
                     javaMethodToValueCreator.putIfAbsent(method, value) ?: value
                 }
         }
-        else -> throw IllegalStateException("Expected a constructor or method to create a Kotlin object, instead found ${_withArgsCreator.annotated.javaClass.name}")
+        else -> throw IllegalStateException(
+            "Expected a constructor or method to create a Kotlin object," +
+                " instead found ${withArgsCreator.annotated.javaClass.name}"
+        )
     } // we cannot reflect this method so do the default Java-ish behavior
-
-    fun javaMemberIsRequired(key: AnnotatedMember, calc: (AnnotatedMember) -> Boolean?): Boolean? = javaMemberIsRequired.get(key)?.value
-        ?: calc(key).let { javaMemberIsRequired.putIfAbsent(key, BooleanTriState.fromBoolean(it))?.value ?: it }
 }

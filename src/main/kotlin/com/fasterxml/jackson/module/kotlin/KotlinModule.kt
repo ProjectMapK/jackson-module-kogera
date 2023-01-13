@@ -71,9 +71,9 @@ public class KotlinModule private constructor(
         }
 
         context.insertAnnotationIntrospector(
-            KotlinAnnotationIntrospector(context, cache, nullToEmptyCollection, nullToEmptyMap, nullIsSameAsDefault)
+            KotlinAnnotationIntrospector(context, nullToEmptyCollection, nullToEmptyMap)
         )
-        context.appendAnnotationIntrospector(KotlinNamesAnnotationIntrospector(this, cache))
+        context.appendAnnotationIntrospector(KotlinNamesAnnotationIntrospector(this))
 
         context.addDeserializers(KotlinDeserializers())
         context.addKeyDeserializers(KotlinKeyDeserializers)

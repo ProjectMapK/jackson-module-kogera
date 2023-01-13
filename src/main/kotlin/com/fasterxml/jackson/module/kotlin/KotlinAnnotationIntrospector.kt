@@ -27,36 +27,29 @@ import java.lang.reflect.Method
 
 internal class KotlinAnnotationIntrospector(
     private val context: Module.SetupContext,
-    private val cache: ReflectionCache,
     private val nullToEmptyCollection: Boolean,
-    private val nullToEmptyMap: Boolean,
-    private val nullIsSameAsDefault: Boolean
+    private val nullToEmptyMap: Boolean
 ) : NopAnnotationIntrospector() {
 
     // TODO: implement nullIsSameAsDefault flag, which represents when TRUE that if something has a default value,
     //       it can be passed a null to default it
     //       this likely impacts this class to be accurate about what COULD be considered required
 
-    override fun hasRequiredMarker(m: AnnotatedMember): Boolean? {
-        val hasRequired = cache.javaMemberIsRequired(m) {
-            try {
-                when {
-                    nullToEmptyCollection && m.type.isCollectionLikeType -> false
-                    nullToEmptyMap && m.type.isMapLikeType -> false
-                    else -> m.member.declaringClass.toKmClass()?.let {
-                        when (m) {
-                            is AnnotatedField -> m.hasRequiredMarker(it)
-                            is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(it)
-                            is AnnotatedParameter -> m.hasRequiredMarker(it)
-                            else -> null
-                        }
-                    }
+    override fun hasRequiredMarker(m: AnnotatedMember): Boolean? = try {
+        when {
+            nullToEmptyCollection && m.type.isCollectionLikeType -> false
+            nullToEmptyMap && m.type.isMapLikeType -> false
+            else -> m.member.declaringClass.toKmClass()?.let {
+                when (m) {
+                    is AnnotatedField -> m.hasRequiredMarker(it)
+                    is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(it)
+                    is AnnotatedParameter -> m.hasRequiredMarker(it)
+                    else -> null
                 }
-            } catch (ex: UnsupportedOperationException) {
-                null
             }
         }
-        return hasRequired
+    } catch (ex: UnsupportedOperationException) {
+        null
     }
 
     // Find a serializer to handle the case where the getter returns an unboxed value from the value class.

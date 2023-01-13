@@ -24,10 +24,7 @@ import java.lang.reflect.Executable
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
-internal class KotlinNamesAnnotationIntrospector constructor(
-    val module: KotlinModule,
-    val cache: ReflectionCache
-) : NopAnnotationIntrospector() {
+internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule) : NopAnnotationIntrospector() {
     // since 2.4
     override fun findImplicitPropertyName(
         member: AnnotatedMember

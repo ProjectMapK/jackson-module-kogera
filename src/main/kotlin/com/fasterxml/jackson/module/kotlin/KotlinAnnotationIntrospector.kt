@@ -27,10 +27,8 @@ import java.lang.reflect.Method
 
 internal class KotlinAnnotationIntrospector(
     private val context: Module.SetupContext,
-    private val cache: ReflectionCache,
     private val nullToEmptyCollection: Boolean,
-    private val nullToEmptyMap: Boolean,
-    private val nullIsSameAsDefault: Boolean
+    private val nullToEmptyMap: Boolean
 ) : NopAnnotationIntrospector() {
 
     // TODO: implement nullIsSameAsDefault flag, which represents when TRUE that if something has a default value,

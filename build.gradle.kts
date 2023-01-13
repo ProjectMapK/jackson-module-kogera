@@ -1,5 +1,5 @@
 plugins {
-    id("maven-publish") // for JitPack
+    `maven-publish` // for JitPack
     kotlin("jvm") version "1.7.21"
     java
     id("org.jmailen.kotlinter") version "3.13.0"
@@ -52,5 +52,13 @@ kotlinter {
 tasks {
     test {
         useJUnitPlatform()
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
     }
 }

@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.7.20"
+    kotlin("jvm") version "1.7.21"
     java
     id("org.jmailen.kotlinter") version "3.13.0"
 }
@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.6.0")
     implementation(platform("com.fasterxml.jackson:jackson-bom:2.14.1"))
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind

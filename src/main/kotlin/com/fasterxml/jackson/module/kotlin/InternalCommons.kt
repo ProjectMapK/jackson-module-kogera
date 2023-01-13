@@ -5,7 +5,6 @@ import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmValueParameter
 import kotlinx.metadata.jvm.JvmFieldSignature
 import kotlinx.metadata.jvm.JvmMethodSignature
-import kotlinx.metadata.jvm.KotlinClassHeader
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -34,19 +33,8 @@ internal fun Class<*>.isUnboxableValueClass() = annotations.any { it is JvmInlin
 internal fun Class<*>.toKmClass(): KmClass? = annotations
     .filterIsInstance<Metadata>()
     .firstOrNull()
-    ?.let {
-        KotlinClassMetadata.read(
-            KotlinClassHeader(
-                it.kind,
-                it.metadataVersion,
-                it.data1,
-                it.data2,
-                it.extraString,
-                it.packageName,
-                it.extraInt
-            )
-        ) as KotlinClassMetadata.Class
-    }?.toKmClass()
+    ?.let { KotlinClassMetadata.read(it) as KotlinClassMetadata.Class }
+    ?.toKmClass()
 
 private val primitiveClassToDesc by lazy {
     mapOf(

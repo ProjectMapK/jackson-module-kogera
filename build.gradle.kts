@@ -15,12 +15,10 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.6.0")
-    implementation(platform("com.fasterxml.jackson:jackson-bom:2.14.1"))
 
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    implementation("com.fasterxml.jackson.core:jackson-databind")
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations
-    implementation("com.fasterxml.jackson.core:jackson-annotations")
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.14.1"))
+    api("com.fasterxml.jackson.core:jackson-databind")
+    api("com.fasterxml.jackson.core:jackson-annotations")
 
     // test libs
     testImplementation(kotlin("reflect"))

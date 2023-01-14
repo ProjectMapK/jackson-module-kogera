@@ -7,10 +7,14 @@ import com.fasterxml.jackson.databind.util.LRUMap
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ConstructorValueCreator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.MethodValueCreator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueCreator
-import java.lang.reflect.Method
+import kotlinx.metadata.KmClass
+import java.lang.reflect.Executable
+import java.util.Optional
 
 internal class ReflectionCache(reflectionCacheSize: Int) {
-    private val creatorCache: LRUMap<Any, ValueCreator<*>>
+    // This cache is used for both serialization and deserialization, so reserve a larger size from the start.
+    private val classCache = LRUMap<Class<*>, Optional<KmClass>>(reflectionCacheSize, reflectionCacheSize)
+    private val creatorCache: LRUMap<Executable, ValueCreator<*>>
 
     init {
         // The current default value of reflectionCacheSize is 512.
@@ -24,34 +28,46 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
         } else {
             reflectionCacheSize
         }
+        creatorCache = LRUMap(initialEntries, reflectionCacheSize)
+    }
 
-        creatorCache = LRUMap<Any, ValueCreator<*>>(initialEntries, reflectionCacheSize)
+    fun getKmClass(clazz: Class<*>): KmClass? {
+        val optional = classCache.get(clazz)
+
+        return if (optional != null) {
+            optional
+        } else {
+            val value = Optional.ofNullable(clazz.toKmClass())
+            (classCache.putIfAbsent(clazz, value) ?: value)
+        }.orElse(null)
     }
 
     /**
      * return null if declaringClass is not kotlin class
      */
     fun valueCreatorFromJava(withArgsCreator: AnnotatedWithParams): ValueCreator<*>? {
-        val kmClass = withArgsCreator.declaringClass.toKmClass() ?: return null
-
         return when (withArgsCreator) {
             is AnnotatedConstructor -> {
                 val constructor = withArgsCreator.annotated
 
                 creatorCache.get(constructor)
                     ?: run {
-                        val value = ConstructorValueCreator(constructor, kmClass)
-                        creatorCache.putIfAbsent(constructor, value) ?: value
+                        getKmClass(withArgsCreator.declaringClass)?.let {
+                            val value = ConstructorValueCreator(constructor, it)
+                            creatorCache.putIfAbsent(constructor, value) ?: value
+                        }
                     }
             }
 
             is AnnotatedMethod -> {
-                val method = withArgsCreator.annotated as Method
+                val method = withArgsCreator.annotated
 
                 creatorCache.get(method)
                     ?: run {
-                        val value = MethodValueCreator<Any?>(method, kmClass)
-                        creatorCache.putIfAbsent(method, value) ?: value
+                        getKmClass(withArgsCreator.declaringClass)?.let {
+                            val value = MethodValueCreator<Any?>(method, it)
+                            creatorCache.putIfAbsent(method, value) ?: value
+                        }
                     }
             }
 

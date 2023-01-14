@@ -7,10 +7,10 @@ import com.fasterxml.jackson.databind.util.LRUMap
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ConstructorValueCreator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.MethodValueCreator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueCreator
-import java.lang.reflect.Method
+import java.lang.reflect.Executable
 
 internal class ReflectionCache(reflectionCacheSize: Int) {
-    private val creatorCache: LRUMap<Any, ValueCreator<*>>
+    private val creatorCache: LRUMap<Executable, ValueCreator<*>>
 
     init {
         // The current default value of reflectionCacheSize is 512.
@@ -24,34 +24,35 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
         } else {
             reflectionCacheSize
         }
-
-        creatorCache = LRUMap<Any, ValueCreator<*>>(initialEntries, reflectionCacheSize)
+        creatorCache = LRUMap(initialEntries, reflectionCacheSize)
     }
 
     /**
      * return null if declaringClass is not kotlin class
      */
     fun valueCreatorFromJava(withArgsCreator: AnnotatedWithParams): ValueCreator<*>? {
-        val kmClass = withArgsCreator.declaringClass.toKmClass() ?: return null
-
         return when (withArgsCreator) {
             is AnnotatedConstructor -> {
                 val constructor = withArgsCreator.annotated
 
                 creatorCache.get(constructor)
                     ?: run {
-                        val value = ConstructorValueCreator(constructor, kmClass)
-                        creatorCache.putIfAbsent(constructor, value) ?: value
+                        withArgsCreator.declaringClass.toKmClass()?.let {
+                            val value = ConstructorValueCreator(constructor, it)
+                            creatorCache.putIfAbsent(constructor, value) ?: value
+                        }
                     }
             }
 
             is AnnotatedMethod -> {
-                val method = withArgsCreator.annotated as Method
+                val method = withArgsCreator.annotated
 
                 creatorCache.get(method)
                     ?: run {
-                        val value = MethodValueCreator<Any?>(method, kmClass)
-                        creatorCache.putIfAbsent(method, value) ?: value
+                        withArgsCreator.declaringClass.toKmClass()?.let {
+                            val value = MethodValueCreator<Any?>(method, it)
+                            creatorCache.putIfAbsent(method, value) ?: value
+                        }
                     }
             }
 

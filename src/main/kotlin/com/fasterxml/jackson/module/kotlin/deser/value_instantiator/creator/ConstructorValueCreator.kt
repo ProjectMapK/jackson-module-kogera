@@ -5,13 +5,15 @@ import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_buc
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.BucketGenerator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.calcMaskSize
 import com.fasterxml.jackson.module.kotlin.hasVarargParam
-import com.fasterxml.jackson.module.kotlin.toKmClass
 import com.fasterxml.jackson.module.kotlin.toSignature
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
 
-internal class ConstructorValueCreator<T : Any>(private val constructor: Constructor<T>) : ValueCreator<T>() {
+internal class ConstructorValueCreator<T : Any>(
+    private val constructor: Constructor<T>,
+    declaringKmClass: KmClass
+) : ValueCreator<T>() {
     private val declaringClass: Class<T> = constructor.declaringClass
 
     override val isAccessible: Boolean = constructor.isAccessible
@@ -22,8 +24,6 @@ internal class ConstructorValueCreator<T : Any>(private val constructor: Constru
     init {
         // To prevent the call from failing, save the initial value and then rewrite the flag.
         if (!isAccessible) constructor.isAccessible = true
-
-        val declaringKmClass: KmClass = declaringClass.toKmClass()!!
 
         val constructorParameters = constructor.toSignature().desc.let { desc ->
             // Compare only desc for performance

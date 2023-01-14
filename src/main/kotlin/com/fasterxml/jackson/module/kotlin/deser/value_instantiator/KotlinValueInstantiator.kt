@@ -62,6 +62,7 @@ internal class KotlinValueInstantiator(
         buffer: PropertyValueBuffer
     ): Any? {
         val valueCreator: ValueCreator<*> = cache.valueCreatorFromJava(_withArgsCreator)
+            ?: return super.createFromObjectWith(ctxt, props, buffer)
 
         val bucket = valueCreator.generateBucket()
 

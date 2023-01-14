@@ -30,13 +30,15 @@ import java.util.*
  *                                      (e.g. List<String>) may contain null values after deserialization.  Enabling it
  *                                      protects against this but has significant performance impact.
  */
+// Do not delete default arguments,
+// as this will cause an error during initialization by Spring's Jackson2ObjectMapperBuilder.
 public class KotlinModule private constructor(
-    public val reflectionCacheSize: Int,
-    public val nullToEmptyCollection: Boolean,
-    public val nullToEmptyMap: Boolean,
-    public val nullIsSameAsDefault: Boolean,
-    public val singletonSupport: Boolean,
-    public val strictNullChecks: Boolean
+    public val reflectionCacheSize: Int = Builder.reflectionCacheSizeDefault,
+    public val nullToEmptyCollection: Boolean = NullToEmptyCollection.enabledByDefault,
+    public val nullToEmptyMap: Boolean = NullToEmptyMap.enabledByDefault,
+    public val nullIsSameAsDefault: Boolean = NullIsSameAsDefault.enabledByDefault,
+    public val singletonSupport: Boolean = SingletonSupport.enabledByDefault,
+    public val strictNullChecks: Boolean = StrictNullChecks.enabledByDefault
 ) : SimpleModule(KotlinModule::class.java.name /* TODO: add Version parameter */) {
     private constructor(builder: Builder) : this(
         builder.reflectionCacheSize,
@@ -85,7 +87,11 @@ public class KotlinModule private constructor(
     }
 
     public class Builder {
-        public var reflectionCacheSize: Int = 512
+        public companion object {
+            internal const val reflectionCacheSizeDefault = 512
+        }
+
+        public var reflectionCacheSize: Int = reflectionCacheSizeDefault
             private set
 
         private val bitSet: BitSet = KotlinFeature.defaults

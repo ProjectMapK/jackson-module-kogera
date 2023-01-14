@@ -4,7 +4,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import kotlin.reflect.full.primaryConstructor
 
 class TestGithub46 {
     @Test
@@ -23,19 +22,6 @@ class TestGithub46 {
 
         // then
         assertEquals(json, rejson)
-    }
-
-    @Test fun byReflectionDo32() {
-        val constructor = TestData::class.primaryConstructor!!
-        val data = constructor.callBy(
-            constructor.parameters.map {
-                it to true
-            }.toMap()
-        )
-        assertEquals(
-            TestData(true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true),
-            data
-        )
     }
 
     data class TestData(

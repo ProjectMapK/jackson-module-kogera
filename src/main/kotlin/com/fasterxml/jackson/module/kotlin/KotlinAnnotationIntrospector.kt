@@ -28,7 +28,8 @@ import java.lang.reflect.Method
 internal class KotlinAnnotationIntrospector(
     private val context: Module.SetupContext,
     private val nullToEmptyCollection: Boolean,
-    private val nullToEmptyMap: Boolean
+    private val nullToEmptyMap: Boolean,
+    private val cache: ReflectionCache
 ) : NopAnnotationIntrospector() {
 
     // TODO: implement nullIsSameAsDefault flag, which represents when TRUE that if something has a default value,
@@ -39,7 +40,7 @@ internal class KotlinAnnotationIntrospector(
         when {
             nullToEmptyCollection && m.type.isCollectionLikeType -> false
             nullToEmptyMap && m.type.isMapLikeType -> false
-            else -> m.member.declaringClass.toKmClass()?.let {
+            else -> cache.getKmClass(m.member.declaringClass)?.let {
                 when (m) {
                     is AnnotatedField -> m.hasRequiredMarker(it)
                     is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(it)
@@ -62,8 +63,7 @@ internal class KotlinAnnotationIntrospector(
             }
             val getterSignature = getter.toSignature()
 
-            val kotlinProperty =
-                getter.declaringClass.toKmClass()?.properties?.find { it.getterSignature == getterSignature }
+            val kotlinProperty = cache.getKmClass(getter.declaringClass)?.properties?.find { it.getterSignature == getterSignature }
 
             (kotlinProperty?.returnType?.classifier as? KmClassifier.Class)?.let { classifier ->
                 // Since there was no way to directly determine whether returnType is a value class or not,
@@ -91,7 +91,7 @@ internal class KotlinAnnotationIntrospector(
      * Subclasses can be detected automatically for sealed classes, since all possible subclasses are known
      * at compile-time to Kotlin. This makes [com.fasterxml.jackson.annotation.JsonSubTypes] redundant.
      */
-    override fun findSubtypes(a: Annotated): List<NamedType>? = a.rawType.toKmClass()?.let { kmClass ->
+    override fun findSubtypes(a: Annotated): List<NamedType>? = cache.getKmClass(a.rawType)?.let { kmClass ->
         kmClass.sealedSubclasses.map { NamedType(it.reconstructClass()) }.ifEmpty { null }
     }
 

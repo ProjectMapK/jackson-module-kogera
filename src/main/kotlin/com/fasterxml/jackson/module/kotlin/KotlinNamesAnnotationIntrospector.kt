@@ -24,11 +24,14 @@ import java.lang.reflect.Executable
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
-internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule) : NopAnnotationIntrospector() {
+internal class KotlinNamesAnnotationIntrospector(
+    val module: KotlinModule,
+    private val cache: ReflectionCache
+) : NopAnnotationIntrospector() {
     // since 2.4
     override fun findImplicitPropertyName(
         member: AnnotatedMember
-    ): String? = member.declaringClass.toKmClass()?.let { kmClass ->
+    ): String? = cache.getKmClass(member.declaringClass)?.let { kmClass ->
         when (member) {
             is AnnotatedMethod -> {
                 val methodSignature = member.annotated.toSignature()
@@ -51,7 +54,7 @@ internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule) : Nop
     ) = kmClass.companionObject?.takeIf { _ -> Modifier.isStatic(member.modifiers) }?.let { companion ->
         val companionKmClass = declaringClass.getDeclaredField(companion)
             .type
-            .toKmClass()!!
+            .let { cache.getKmClass(it) }!!
         val signature = member.toSignature()
 
         companionKmClass.functions.find { it.signature == signature }
@@ -79,7 +82,7 @@ internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule) : Nop
             ann.annotated
                 .takeIf { it.parameters.isEmpty() } // Ignore target is only getter
                 ?.let { method ->
-                    method.declaringClass.toKmClass()?.let { kmClass ->
+                    cache.getKmClass(method.declaringClass)?.let { kmClass ->
                         val methodSignature = method.toSignature()
 
                         JsonProperty.Access.WRITE_ONLY.takeIf {
@@ -93,7 +96,7 @@ internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule) : Nop
     // Ignored during deserialization if not a property
     override fun hasIgnoreMarker(m: AnnotatedMember): Boolean = (m as? AnnotatedMethod)?.member
         ?.takeIf { it.parameters.size == 1 && !Modifier.isStatic(it.modifiers) }
-        ?.let { it.declaringClass.toKmClass() }
+        ?.let { cache.getKmClass(it.declaringClass) }
         ?.let { kmClass ->
             val methodSignature = m.annotated.toSignature()
             kmClass.properties.none { it.setterSignature == methodSignature }
@@ -105,7 +108,7 @@ internal class KotlinNamesAnnotationIntrospector(val module: KotlinModule) : Nop
         val declaringClass = ann.declaringClass
         val kmClass = declaringClass
             ?.takeIf { !it.isEnum }
-            ?.toKmClass()
+            ?.let { cache.getKmClass(it) }
             ?: return null
 
         return JsonCreator.Mode.DEFAULT

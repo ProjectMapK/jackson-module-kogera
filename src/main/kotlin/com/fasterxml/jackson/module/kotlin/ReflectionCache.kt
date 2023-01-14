@@ -7,9 +7,13 @@ import com.fasterxml.jackson.databind.util.LRUMap
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ConstructorValueCreator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.MethodValueCreator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueCreator
+import kotlinx.metadata.KmClass
 import java.lang.reflect.Executable
+import java.util.Optional
 
 internal class ReflectionCache(reflectionCacheSize: Int) {
+    // This cache is used for both serialization and deserialization, so reserve a larger size from the start.
+    private val classCache = LRUMap<Class<*>, Optional<KmClass>>(reflectionCacheSize, reflectionCacheSize)
     private val creatorCache: LRUMap<Executable, ValueCreator<*>>
 
     init {
@@ -27,6 +31,17 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
         creatorCache = LRUMap(initialEntries, reflectionCacheSize)
     }
 
+    fun getKmClass(clazz: Class<*>): KmClass? {
+        val optional = classCache.get(clazz)
+
+        return if (optional != null) {
+            optional
+        } else {
+            val value = Optional.ofNullable(clazz.toKmClass())
+            (classCache.putIfAbsent(clazz, value) ?: value)
+        }.orElse(null)
+    }
+
     /**
      * return null if declaringClass is not kotlin class
      */
@@ -37,7 +52,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
 
                 creatorCache.get(constructor)
                     ?: run {
-                        withArgsCreator.declaringClass.toKmClass()?.let {
+                        getKmClass(withArgsCreator.declaringClass)?.let {
                             val value = ConstructorValueCreator(constructor, it)
                             creatorCache.putIfAbsent(constructor, value) ?: value
                         }
@@ -49,7 +64,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
 
                 creatorCache.get(method)
                     ?: run {
-                        withArgsCreator.declaringClass.toKmClass()?.let {
+                        getKmClass(withArgsCreator.declaringClass)?.let {
                             val value = MethodValueCreator<Any?>(method, it)
                             creatorCache.putIfAbsent(method, value) ?: value
                         }

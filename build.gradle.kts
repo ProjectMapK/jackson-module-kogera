@@ -20,8 +20,6 @@ dependencies {
     api("com.fasterxml.jackson.core:jackson-annotations:2.14.1")
 
     // test libs
-    testImplementation(kotlin("reflect"))
-
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("io.mockk:mockk:1.13.3")

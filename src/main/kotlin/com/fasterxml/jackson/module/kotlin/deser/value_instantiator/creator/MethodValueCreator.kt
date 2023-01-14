@@ -12,7 +12,7 @@ import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
-internal class MethodValueCreator<T>(private val method: Method) : ValueCreator<T>() {
+internal class MethodValueCreator<T>(private val method: Method, declaringKmClass: KmClass) : ValueCreator<T>() {
     // companion object is always present in the case of a factory function
     private val companionField: Field
     private val companionObjectClass: Class<*>
@@ -24,7 +24,7 @@ internal class MethodValueCreator<T>(private val method: Method) : ValueCreator<
 
     init {
         val declaringClass = method.declaringClass
-        companionField = declaringClass.getDeclaredField(declaringClass.toKmClass()!!.companionObject!!)
+        companionField = declaringClass.getDeclaredField(declaringKmClass.companionObject!!)
 
         // region: about accessibility
         isAccessible = method.isAccessible && companionField.isAccessible

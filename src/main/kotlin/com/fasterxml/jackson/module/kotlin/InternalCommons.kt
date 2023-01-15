@@ -64,7 +64,14 @@ internal val defaultConstructorMarker: Class<*> by lazy {
 internal fun String.reconstructClass(): Class<*> = Class.forName(this.replace(".", "$").replace("/", "."))
 
 internal fun KmClass.findKmConstructor(constructor: Constructor<*>): KmConstructor? {
+    val descHead = constructor.parameterTypes.toDescString()
+    val desc = descHead + "V"
+    // Only constructors that take a value class as an argument have a DefaultConstructorMarker on the Signature.
+    val valueDesc = descHead.dropLast(1) + "Lkotlin/jvm/internal/DefaultConstructorMarker;)V"
+
     // Constructors always have the same name, so only desc is compared
-    val desc = constructor.parameterTypes.toDescString() + "V"
-    return constructors.find { it.signature?.desc == desc }
+    return constructors.find {
+        val targetDesc = it.signature?.desc
+        targetDesc == desc || targetDesc == valueDesc
+    }
 }

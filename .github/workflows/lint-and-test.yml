@@ -2,12 +2,30 @@ name: lint-and-test
 on:
   push:
     branches:
-      - master
+      - main
+    paths:
+      - "gradle/**"
+      - "src/**"
+      - build.gradle.kts
+      - gradle.properties
+      - gradlew
+      - gradlew.bat
+      - settings.gradle.kts
+      - .github/workflows/lint-and-test.yml
   pull_request:
     types:
       - opened
       - synchronize
       - reopened
+    paths:
+      - "gradle/**"
+      - "src/**"
+      - build.gradle.kts
+      - gradle.properties
+      - gradlew
+      - gradlew.bat
+      - settings.gradle.kts
+      - .github/workflows/lint-and-test.yml
 jobs:
   lint-and-test:
     name: lint-and-test

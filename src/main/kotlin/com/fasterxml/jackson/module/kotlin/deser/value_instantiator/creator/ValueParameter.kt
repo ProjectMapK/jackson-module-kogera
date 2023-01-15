@@ -25,6 +25,7 @@ internal class ValueParameter(private val param: KmValueParameter) {
     }
 
     val name: String = param.name
+    val type: KmType = param.type
     val isOptional: Boolean = Flag.ValueParameter.DECLARES_DEFAULT_VALUE(param.flags)
     val isPrimitive: Boolean = Flag.IS_PRIVATE(param.type.flags)
     val isNullable: Boolean = Flag.Type.IS_NULLABLE(param.type.flags)

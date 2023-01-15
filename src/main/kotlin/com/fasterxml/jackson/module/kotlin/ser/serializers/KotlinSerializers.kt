@@ -50,19 +50,6 @@ internal object ULongSerializer : StdSerializer<ULong>(ULong::class.java) {
 private fun Class<*>.getStaticJsonValueGetter(): Method? = this.declaredMethods
     .find { method -> Modifier.isStatic(method.modifiers) && method.annotations.any { it is JsonValue } }
 
-internal object ValueClassUnboxSerializer : StdSerializer<Any>(Any::class.java) {
-    override fun serialize(value: Any, gen: JsonGenerator, provider: SerializerProvider) {
-        val unboxed = value::class.java.getMethod("unbox-impl").invoke(value)
-
-        if (unboxed == null) {
-            provider.findNullValueSerializer(null).serialize(null, gen, provider)
-            return
-        }
-
-        provider.findValueSerializer(unboxed::class.java).serialize(unboxed, gen, provider)
-    }
-}
-
 internal sealed class ValueClassSerializer<T : Any>(t: Class<T>) : StdSerializer<T>(t) {
     class StaticJsonValue<T : Any>(
         t: Class<T>,
@@ -85,9 +72,7 @@ internal sealed class ValueClassSerializer<T : Any>(t: Class<T>) : StdSerializer
         // If create a function with a JsonValue in the value class,
         // it will be compiled as a static method (= cannot be processed properly by Jackson),
         // so use a ValueClassSerializer.StaticJsonValue to handle this.
-        fun from(t: Class<*>): StdSerializer<*> = t.getStaticJsonValueGetter()
-            ?.let { StaticJsonValue(t, it) }
-            ?: ValueClassUnboxSerializer
+        fun createOrNull(t: Class<*>): StdSerializer<*>? = t.getStaticJsonValueGetter()?.let { StaticJsonValue(t, it) }
     }
 }
 
@@ -106,7 +91,7 @@ internal class KotlinSerializers : Serializers.Base() {
             UInt::class.java.isAssignableFrom(rawClass) -> UIntSerializer
             ULong::class.java.isAssignableFrom(rawClass) -> ULongSerializer
             // The priority of Unboxing needs to be lowered so as not to break the serialization of Unsigned Integers.
-            rawClass.isUnboxableValueClass() -> ValueClassSerializer.from(rawClass)
+            rawClass.isUnboxableValueClass() -> ValueClassSerializer.createOrNull(rawClass)
             else -> null
         }
     }

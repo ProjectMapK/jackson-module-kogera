@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JavaType
+import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty
 import com.fasterxml.jackson.databind.deser.ValueInstantiator
 import com.fasterxml.jackson.databind.deser.ValueInstantiators
@@ -14,7 +15,9 @@ import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.ReflectionCache
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueCreator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueParameter
-import com.fasterxml.jackson.module.kotlin.wrapWithPath
+
+private fun JsonMappingException.wrapWithPath(refFrom: Any?, refFieldName: String) =
+    JsonMappingException.wrapWithPath(this, refFrom, refFieldName)
 
 internal class KotlinValueInstantiator(
     src: StdValueInstantiator,

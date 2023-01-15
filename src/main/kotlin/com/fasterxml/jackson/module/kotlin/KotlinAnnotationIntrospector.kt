@@ -136,8 +136,7 @@ internal class KotlinAnnotationIntrospector(
         val byAnnotation = this.getAnnotation(JsonProperty::class.java)?.required
         val byNullability: Boolean? = when (val member = member) {
             is Constructor<*> -> {
-                val signature = member.toSignature()
-                val paramDef = kmClass.constructors.find { it.signature?.desc == signature.desc }
+                val paramDef = kmClass.findKmConstructor(member)
                     ?.let { it.valueParameters[index] }
                     ?: return null
 

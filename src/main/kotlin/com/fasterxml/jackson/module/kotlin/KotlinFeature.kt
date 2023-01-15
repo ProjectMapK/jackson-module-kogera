@@ -2,6 +2,20 @@ package com.fasterxml.jackson.module.kotlin
 
 import java.util.BitSet
 
+private fun Int.toBitSet(): BitSet {
+    var i = this
+    var index = 0
+    val bits = BitSet(Int.SIZE_BITS)
+    while (i != 0) {
+        if (i and 1 != 0) {
+            bits.set(index)
+        }
+        ++index
+        i = i shr 1
+    }
+    return bits
+}
+
 /**
  * @see KotlinModule.Builder
  */

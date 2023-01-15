@@ -1,14 +1,15 @@
 package com.fasterxml.jackson.module.kotlin
 
 import kotlinx.metadata.KmClass
+import kotlinx.metadata.KmConstructor
 import kotlinx.metadata.KmValueParameter
 import kotlinx.metadata.jvm.JvmFieldSignature
 import kotlinx.metadata.jvm.JvmMethodSignature
 import kotlinx.metadata.jvm.KotlinClassMetadata
+import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
-import java.util.*
 
 internal fun Class<*>.isUnboxableValueClass() = annotations.any { it is JvmInline }
 
@@ -61,3 +62,9 @@ internal val defaultConstructorMarker: Class<*> by lazy {
 // Kotlin-specific types such as kotlin.String will result in an error,
 // but are ignored because they do not result in errors in internal use cases.
 internal fun String.reconstructClass(): Class<*> = Class.forName(this.replace(".", "$").replace("/", "."))
+
+internal fun KmClass.findKmConstructor(constructor: Constructor<*>): KmConstructor? {
+    // Constructors always have the same name, so only desc is compared
+    val desc = constructor.parameterTypes.toDescString() + "V"
+    return constructors.find { it.signature?.desc == desc }
+}

@@ -4,10 +4,9 @@ import com.fasterxml.jackson.module.kotlin.defaultConstructorMarker
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.ArgumentBucket
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.BucketGenerator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.calcMaskSize
+import com.fasterxml.jackson.module.kotlin.findKmConstructor
 import com.fasterxml.jackson.module.kotlin.hasVarargParam
-import com.fasterxml.jackson.module.kotlin.toSignature
 import kotlinx.metadata.KmClass
-import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
 
 internal class ConstructorValueCreator<T : Any>(
@@ -25,10 +24,7 @@ internal class ConstructorValueCreator<T : Any>(
         // To prevent the call from failing, save the initial value and then rewrite the flag.
         if (!isAccessible) constructor.isAccessible = true
 
-        val constructorParameters = constructor.toSignature().desc.let { desc ->
-            // Compare only desc for performance
-            declaringKmClass.constructors.first { desc == it.signature?.desc }
-        }.valueParameters
+        val constructorParameters = declaringKmClass.findKmConstructor(constructor)!!.valueParameters
 
         valueParameters = constructorParameters.map { ValueParameter(it) }
         bucketGenerator = BucketGenerator(constructor.parameterTypes.asList(), constructorParameters.hasVarargParam())

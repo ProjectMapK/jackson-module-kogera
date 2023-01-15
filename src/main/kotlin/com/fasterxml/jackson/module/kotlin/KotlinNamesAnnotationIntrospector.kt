@@ -65,12 +65,7 @@ internal class KotlinNamesAnnotationIntrospector(
         val declaringClass = param.declaringClass
 
         return when (val member = param.owner.member) {
-            is Constructor<*> -> {
-                val signature = member.toSignature()
-
-                kmClass.constructors.find { it.signature?.desc == signature.desc }
-                    ?.let { it.valueParameters[param.index].name }
-            }
+            is Constructor<*> -> kmClass.findKmConstructor(member)?.let { it.valueParameters[param.index].name }
             is Method -> findKotlinFactoryParameterName(declaringClass, kmClass, member, param.index)
             else -> null
         }
@@ -116,14 +111,9 @@ internal class KotlinNamesAnnotationIntrospector(
     }
 }
 
-private fun Constructor<*>.isPrimarilyConstructorOf(kmClass: KmClass): Boolean {
-    val signature = this.toSignature()
-
-    return kmClass.constructors
-        .find { it.signature?.desc == signature.desc }
-        ?.let { !Flag.Constructor.IS_SECONDARY(it.flags) || kmClass.constructors.size == 1 }
-        ?: false
-}
+private fun Constructor<*>.isPrimarilyConstructorOf(kmClass: KmClass): Boolean = kmClass.findKmConstructor(this)
+    ?.let { !Flag.Constructor.IS_SECONDARY(it.flags) || kmClass.constructors.size == 1 }
+    ?: false
 
 private fun AnnotatedElement.hasCreatorAnnotation(): Boolean =
     annotations.any { it is JsonCreator && it.mode != JsonCreator.Mode.DISABLED }

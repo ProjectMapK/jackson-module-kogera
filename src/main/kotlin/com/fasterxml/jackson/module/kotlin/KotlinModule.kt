@@ -11,7 +11,6 @@ import com.fasterxml.jackson.module.kotlin.deser.deserializers.KotlinDeserialize
 import com.fasterxml.jackson.module.kotlin.deser.deserializers.KotlinKeyDeserializers
 import com.fasterxml.jackson.module.kotlin.deser.singleton_support.KotlinBeanDeserializerModifier
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.KotlinInstantiators
-import com.fasterxml.jackson.module.kotlin.ser.serializers.KotlinKeySerializers
 import com.fasterxml.jackson.module.kotlin.ser.serializers.KotlinSerializers
 import java.util.*
 
@@ -80,7 +79,6 @@ public class KotlinModule private constructor(
         context.addDeserializers(KotlinDeserializers())
         context.addKeyDeserializers(KotlinKeyDeserializers)
         context.addSerializers(KotlinSerializers())
-        context.addKeySerializers(KotlinKeySerializers())
 
         // ranges
         context.setMixInAnnotations(ClosedRange::class.java, ClosedRangeMixin::class.java)

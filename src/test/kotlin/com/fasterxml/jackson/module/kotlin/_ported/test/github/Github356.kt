@@ -20,7 +20,7 @@ class TestGithub356 {
     @Test
     fun serializeInlineClass() {
         assertEquals(
-            """{"inlineClassProperty":"bar"}""",
+            """{"inlineClassProperty":{"value":"bar"}}""",
             mapper.writeValueAsString(ClassWithInlineMember(InlineClass("bar")))
         )
     }
@@ -36,7 +36,7 @@ class TestGithub356 {
     @Test
     fun serializeValueClass() {
         assertEquals(
-            """{"valueClassProperty":"bar"}""",
+            """{"valueClassProperty":{"value":"bar"}}""",
             mapper.writeValueAsString(ClassWithValueMember(ValueClass("bar")))
         )
     }

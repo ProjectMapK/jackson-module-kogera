@@ -32,7 +32,7 @@ class GitHub524 {
         val bar: HasSerializer = HasSerializer(1),
         val baz: HasSerializer = HasSerializer(null),
         val qux: HasSerializer? = null,
-        // If there is no serializer, it will be unboxed as the existing.
+        // If there is no serializer.
         val quux: NoSerializer = NoSerializer(2)
     )
 
@@ -50,7 +50,9 @@ class GitHub524 {
                   "bar" : "HasSerializer(value=1)",
                   "baz" : "HasSerializer(value=null)",
                   "qux" : null,
-                  "quux" : 2
+                  "quux" : {
+                    "value" : 2
+                  }
                 }
             """.trimIndent(),
             writer.writeValueAsString(Poko())

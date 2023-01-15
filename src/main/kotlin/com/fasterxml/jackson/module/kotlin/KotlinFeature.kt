@@ -7,7 +7,7 @@ private fun Int.toBitSet(): BitSet {
     var index = 0
     val bits = BitSet(Int.SIZE_BITS)
     while (i != 0) {
-        if (i % 2 != 0) {
+        if (i and 1 != 0) {
             bits.set(index)
         }
         ++index

@@ -90,24 +90,46 @@ class Github464 {
             assertEquals(
                 """
                     {
-                      "foo" : 0,
+                      "foo" : {
+                        "value" : 0
+                      },
                       "bar" : null,
-                      "baz" : 0,
-                      "qux" : 0,
-                      "quux" : 0,
-                      "corge" : [ 0, null ],
-                      "grault" : [ 0, null ],
+                      "baz" : {
+                        "value" : 0
+                      },
+                      "qux" : {
+                        "value" : 0
+                      },
+                      "quux" : {
+                        "value" : 0
+                      },
+                      "corge" : [ {
+                        "value" : 0
+                      }, null ],
+                      "grault" : [ {
+                        "value" : 0
+                      }, null ],
                       "garply" : {
-                        "inlineField" : 0
+                        "inlineField" : {
+                          "value" : 0
+                        }
                       },
                       "waldo" : null,
                       "fred" : {
-                        "0" : 0,
+                        "0" : {
+                          "value" : 0
+                        },
                         "1" : null,
-                        "null-key" : null
+                        "null-key" : {
+                          "value" : null
+                        }
                       },
-                      "xyzzy" : 0,
-                      "plugh" : 0
+                      "xyzzy" : {
+                        "value" : 0
+                      },
+                      "plugh" : {
+                        "value" : 0
+                      }
                     }
                 """.trimIndent(),
                 writer.writeValueAsString(target)
@@ -126,24 +148,46 @@ class Github464 {
             assertEquals(
                 """
                     {
-                      "foo" : 0,
+                      "foo" : {
+                        "value" : 0
+                      },
                       "bar" : "null-value",
-                      "baz" : 0,
-                      "qux" : 0,
-                      "quux" : 0,
-                      "corge" : [ 0, "null-value" ],
-                      "grault" : [ 0, "null-value" ],
+                      "baz" : {
+                        "value" : 0
+                      },
+                      "qux" : {
+                        "value" : 0
+                      },
+                      "quux" : {
+                        "value" : 0
+                      },
+                      "corge" : [ {
+                        "value" : 0
+                      }, "null-value" ],
+                      "grault" : [ {
+                        "value" : 0
+                      }, "null-value" ],
                       "garply" : {
-                        "inlineField" : 0
+                        "inlineField" : {
+                          "value" : 0
+                        }
                       },
                       "waldo" : "null-value",
                       "fred" : {
-                        "0" : 0,
+                        "0" : {
+                          "value" : 0
+                        },
                         "1" : "null-value",
-                        "null-key" : "null-value"
+                        "null-key" : {
+                          "value" : "null-value"
+                        }
                       },
-                      "xyzzy" : 0,
-                      "plugh" : 0
+                      "xyzzy" : {
+                        "value" : 0
+                      },
+                      "plugh" : {
+                        "value" : 0
+                      }
                     }
                 """.trimIndent(),
                 writer.writeValueAsString(target)

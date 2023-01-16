@@ -2,10 +2,12 @@ package com.fasterxml.jackson.module.kotlin
 
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmConstructor
+import kotlinx.metadata.KmProperty
 import kotlinx.metadata.KmValueParameter
 import kotlinx.metadata.jvm.JvmFieldSignature
 import kotlinx.metadata.jvm.JvmMethodSignature
 import kotlinx.metadata.jvm.KotlinClassMetadata
+import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -74,4 +76,9 @@ internal fun KmClass.findKmConstructor(constructor: Constructor<*>): KmConstruct
         val targetDesc = it.signature?.desc
         targetDesc == desc || targetDesc == valueDesc
     }
+}
+
+internal fun KmClass.findPropertyByGetter(getter: Method): KmProperty? {
+    val signature = getter.toSignature()
+    return properties.find { it.getterSignature == signature }
 }

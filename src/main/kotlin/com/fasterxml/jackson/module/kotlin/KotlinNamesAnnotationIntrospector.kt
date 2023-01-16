@@ -16,7 +16,6 @@ import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmValueParameter
 import kotlinx.metadata.jvm.fieldSignature
-import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.setterSignature
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.AnnotatedElement
@@ -34,10 +33,7 @@ internal class KotlinNamesAnnotationIntrospector(
         member: AnnotatedMember
     ): String? = cache.getKmClass(member.declaringClass)?.let { kmClass ->
         when (member) {
-            is AnnotatedMethod -> {
-                val methodSignature = member.annotated.toSignature()
-                kmClass.properties.find { it.getterSignature == methodSignature }?.name
-            }
+            is AnnotatedMethod -> kmClass.findPropertyByGetter(member.annotated)?.name
             is AnnotatedField -> {
                 val fieldSignature = member.annotated.toSignature()
                 kmClass.properties.find { it.fieldSignature == fieldSignature }?.name
@@ -79,11 +75,7 @@ internal class KotlinNamesAnnotationIntrospector(
                 .takeIf { it.parameters.isEmpty() } // Ignore target is only getter
                 ?.let { method ->
                     cache.getKmClass(method.declaringClass)?.let { kmClass ->
-                        val methodSignature = method.toSignature()
-
-                        JsonProperty.Access.WRITE_ONLY.takeIf {
-                            kmClass.properties.none { it.getterSignature == methodSignature }
-                        }
+                        JsonProperty.Access.WRITE_ONLY.takeIf { kmClass.findPropertyByGetter(method) == null }
                     }
                 }
         else -> null

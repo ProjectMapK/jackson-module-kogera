@@ -61,9 +61,7 @@ internal class KotlinAnnotationIntrospector(
                 // it will be serialized properly without doing anything.
                 if (this.returnType.isUnboxableValueClass()) return null
             }
-            val getterSignature = getter.toSignature()
-
-            val kotlinProperty = cache.getKmClass(getter.declaringClass)?.properties?.find { it.getterSignature == getterSignature }
+            val kotlinProperty = cache.getKmClass(getter.declaringClass)?.findPropertyByGetter(getter)
 
             (kotlinProperty?.returnType?.classifier as? KmClassifier.Class)?.let { classifier ->
                 // Since there was no way to directly determine whether returnType is a value class or not,

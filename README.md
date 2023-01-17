@@ -13,7 +13,7 @@ This project is experimental, but passes all the tests implemented in `jackson-m
 
 # Features of `jackson-module-kogera`
 The main feature of `jackson-module-kogera` is that it replaces `kotlin-reflect` with `kotlinx.metadata.jvm`.  
-As of `1.7.21`, `kotlin-reflect` is a huge library (3MB), and replacing it with `kotlinx.metadata.jvm` (1MB) makes it lightweight.
+As of `1.7.21`, `kotlin-reflect` is a huge library(3MB), and replacing it with `kotlinx.metadata.jvm`(1MB) makes it lightweight.
 
 Several performance improvements have also been made.
 First, by implementing the equivalent of https://github.com/FasterXML/jackson-module-kotlin/pull/439, deserialization is now up to three times faster, depending on the use case.  
@@ -57,6 +57,9 @@ dependencies {
 ```
 
 ## Migration in existing projects
+**The following descriptions are for the `alpha` version.**  
+**I plan to change the package and module names when I move to the `beta` version(see https://github.com/FasterXML/jackson-module-kotlin/issues/450#issuecomment-1384788717).**
+
 When replacing `jackson-module-kotlin` in an existing project, please replace the dependencies of `jackson-module-kotlin` with `jackson-module-kogera`.  
 Since the package/module name of `jackson-module-kogera` is the same as that of `jackson-module-kotlin`, it is basically possible to migrate by simply replacing dependencies (although there is a possibility of compile errors due to some destructive changes).
 
@@ -71,9 +74,11 @@ Currently this project is in `alpha`.
 After the following features are implemented, this project will be moved to the `beta` version if there is enough demand for it.
 
 - Change serialization behavior of `value class`.
-  - Basically, it should not be `unboxed`, but should behave like a normal class.
+  - ~~Basically, it should not be `unboxed`, but should behave like a normal class.~~ #37
 - Deserialization support for `value class
-- Support for less than `Kotlin 1.6.x` (including grid test building with `CI`)
+  - Partial support is achieved at #40.
+- Support for less than `Kotlin 1.6.x`(including grid test building with `CI`)
+- Rename module and package(see https://github.com/FasterXML/jackson-module-kotlin/issues/450#issuecomment-1384788717).
 
 # About license
 This project is based on `jackson-module-kotlin`, so the license follows `jackson-module-kotlin`.  

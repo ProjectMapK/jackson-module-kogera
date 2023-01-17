@@ -61,9 +61,7 @@ internal class KotlinAnnotationIntrospector(
                 // it will be serialized properly without doing anything.
                 if (this.returnType.isUnboxableValueClass()) return null
             }
-            val getterSignature = getter.toSignature()
-
-            val kotlinProperty = cache.getKmClass(getter.declaringClass)?.properties?.find { it.getterSignature == getterSignature }
+            val kotlinProperty = cache.getKmClass(getter.declaringClass)?.findPropertyByGetter(getter)
 
             (kotlinProperty?.returnType?.classifier as? KmClassifier.Class)?.let { classifier ->
                 // Since there was no way to directly determine whether returnType is a value class or not,
@@ -71,7 +69,7 @@ internal class KotlinAnnotationIntrospector(
                 // If the cost of this process is significant, consider caching it.
                 runCatching { classifier.name.reconstructClass() }
                     .getOrNull()
-                    ?.takeIf { it.annotations.any { ann -> ann is JvmInline } }
+                    ?.takeIf { it.isUnboxableValueClass() }
                     ?.let { outerClazz ->
                         val innerClazz = getter.returnType
 

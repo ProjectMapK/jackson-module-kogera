@@ -69,7 +69,7 @@ internal class KotlinAnnotationIntrospector(
                 // If the cost of this process is significant, consider caching it.
                 runCatching { classifier.name.reconstructClass() }
                     .getOrNull()
-                    ?.takeIf { it.annotations.any { ann -> ann is JvmInline } }
+                    ?.takeIf { it.isUnboxableValueClass() }
                     ?.let { outerClazz ->
                         val innerClazz = getter.returnType
 

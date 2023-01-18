@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMember
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
+import com.fasterxml.jackson.module.kotlin.deser.StrictNullChecksConverter
 import com.fasterxml.jackson.module.kotlin.deser.ValueClassUnboxConverter
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueParameter
 import kotlinx.metadata.Flag
@@ -27,6 +28,7 @@ import java.lang.reflect.Modifier
 
 internal class KotlinNamesAnnotationIntrospector(
     val module: KotlinModule,
+    private val strictNullChecks: Boolean,
     private val cache: ReflectionCache
 ) : NopAnnotationIntrospector() {
     // since 2.4
@@ -110,7 +112,15 @@ internal class KotlinNamesAnnotationIntrospector(
     // returns Converter when the argument on Java is an unboxed value class
     override fun findDeserializationConverter(a: Annotated): Any? = (a as? AnnotatedParameter)?.let { param ->
         getValueParameter(param)?.let { valueParameter ->
-            valueParameter.createValueClassUnboxConverterOrNull(a.rawType)
+            val rawType = a.rawType
+
+            valueParameter.createValueClassUnboxConverterOrNull(rawType) ?: run {
+                if (strictNullChecks) {
+                    valueParameter.createStrictNullChecksConverterOrNull(rawType)
+                } else {
+                    null
+                }
+            }
         }
     }
 }
@@ -121,6 +131,23 @@ private fun ValueParameter.createValueClassUnboxConverterOrNull(rawType: Class<*
             .getOrNull()
             ?.takeIf { it.isUnboxableValueClass() && it != rawType }
             ?.let { ValueClassUnboxConverter(it) }
+    }
+}
+
+// If the collection type argument cannot be obtained, treat it as nullable
+// @see com.fasterxml.jackson.module.kotlin._ported.test.StrictNullChecksTest#testListOfGenericWithNullValue
+private fun ValueParameter.isNullishTypeAt(index: Int) = arguments.getOrNull(index)?.isNullable ?: true
+
+private fun ValueParameter.createStrictNullChecksConverterOrNull(rawType: Class<*>): StrictNullChecksConverter<*>? {
+    @Suppress("UNCHECKED_CAST")
+    return when {
+        Array::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(0) ->
+            StrictNullChecksConverter.ForArray(rawType as Class<Array<*>>, this)
+        Iterable::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(0) ->
+            StrictNullChecksConverter.ForIterable(rawType as Class<Iterable<*>>, this)
+        Map::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(1) ->
+            StrictNullChecksConverter.ForMapValue(rawType as Class<Map<*, *>>, this)
+        else -> null
     }
 }
 

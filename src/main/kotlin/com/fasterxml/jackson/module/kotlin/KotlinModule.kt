@@ -64,7 +64,7 @@ public class KotlinModule private constructor(
         val cache = ReflectionCache(reflectionCacheSize)
 
         context.addValueInstantiators(
-            KotlinInstantiators(cache, nullToEmptyCollection, nullToEmptyMap, nullIsSameAsDefault, strictNullChecks)
+            KotlinInstantiators(cache, nullToEmptyCollection, nullToEmptyMap, nullIsSameAsDefault)
         )
 
         if (singletonSupport) {
@@ -74,7 +74,7 @@ public class KotlinModule private constructor(
         context.insertAnnotationIntrospector(
             KotlinAnnotationIntrospector(context, nullToEmptyCollection, nullToEmptyMap, cache)
         )
-        context.appendAnnotationIntrospector(KotlinNamesAnnotationIntrospector(this, cache))
+        context.appendAnnotationIntrospector(KotlinNamesAnnotationIntrospector(this, strictNullChecks, cache))
 
         context.addDeserializers(KotlinDeserializers())
         context.addKeyDeserializers(KotlinKeyDeserializers)

@@ -26,11 +26,13 @@ internal sealed class StrictNullChecksConverter<T : Any> : Converter<T, T> {
 
     override fun convert(value: T): T {
         getValues(value).forEach {
-            if (it == null) throw MissingKotlinParameterException(
-                valueParameter,
-                null,
-                "A null value was entered for the parameter ${valueParameter.name}."
-            )
+            if (it == null) {
+                throw MissingKotlinParameterException(
+                    valueParameter,
+                    null,
+                    "A null value was entered for the parameter ${valueParameter.name}."
+                )
+            }
         }
 
         return value

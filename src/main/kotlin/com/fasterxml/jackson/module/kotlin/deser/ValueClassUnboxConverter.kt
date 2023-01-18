@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.type.TypeFactory
 import com.fasterxml.jackson.databind.util.Converter
 
-internal class ValueClassUnboxConverter<T>(private val valueClass: Class<T>) : Converter<T, Any?> {
+internal class ValueClassUnboxConverter<T : Any>(private val valueClass: Class<T>) : Converter<T, Any?> {
     private val unboxMethod = valueClass.getDeclaredMethod("unbox-impl").apply {
         if (!this.isAccessible) this.isAccessible = true
     }

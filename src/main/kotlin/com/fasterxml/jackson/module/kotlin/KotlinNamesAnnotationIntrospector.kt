@@ -110,13 +110,17 @@ internal class KotlinNamesAnnotationIntrospector(
     // returns Converter when the argument on Java is an unboxed value class
     override fun findDeserializationConverter(a: Annotated): Any? = (a as? AnnotatedParameter)?.let { param ->
         getValueParameter(param)?.let { valueParameter ->
-            (valueParameter.type.classifier as? KmClassifier.Class)?.let { classifier ->
-                runCatching { classifier.name.reconstructClass() }
-                    .getOrNull()
-                    ?.takeIf { it.isUnboxableValueClass() && it != param.rawType }
-                    ?.let { ValueClassUnboxConverter(it) }
-            }
+            valueParameter.createValueClassUnboxConverterOrNull(a.rawType)
         }
+    }
+}
+
+private fun ValueParameter.createValueClassUnboxConverterOrNull(rawType: Class<*>): ValueClassUnboxConverter<*>? {
+    return (this.type.classifier as? KmClassifier.Class)?.let { classifier ->
+        runCatching { classifier.name.reconstructClass() }
+            .getOrNull()
+            ?.takeIf { it.isUnboxableValueClass() && it != rawType }
+            ?.let { ValueClassUnboxConverter(it) }
     }
 }
 

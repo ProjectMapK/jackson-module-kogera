@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.ReflectionCache
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueCreator
-import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueParameter
 
 private fun JsonMappingException.wrapWithPath(refFrom: Any?, refFieldName: String) =
     JsonMappingException.wrapWithPath(this, refFrom, refFieldName)
@@ -24,40 +23,10 @@ internal class KotlinValueInstantiator(
     private val cache: ReflectionCache,
     private val nullToEmptyCollection: Boolean,
     private val nullToEmptyMap: Boolean,
-    private val nullIsSameAsDefault: Boolean,
-    private val strictNullChecks: Boolean
+    private val nullIsSameAsDefault: Boolean
 ) : StdValueInstantiator(src) {
-    // If the collection type argument cannot be obtained, treat it as nullable
-    // @see com.fasterxml.jackson.module.kotlin._ported.test.StrictNullChecksTest#testListOfGenericWithNullValue
-    private fun ValueParameter.isNullishTypeAt(index: Int) = arguments.getOrNull(index)?.isNullable ?: true
-
     private fun JavaType.requireEmptyValue() =
         (nullToEmptyCollection && this.isCollectionLikeType) || (nullToEmptyMap && this.isMapLikeType)
-
-    private fun strictNullCheck(
-        ctxt: DeserializationContext,
-        jsonProp: SettableBeanProperty,
-        paramDef: ValueParameter,
-        paramVal: Any
-    ) {
-        // If an error occurs, Argument.name is always non-null
-        // @see com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.Argument
-        when {
-            paramVal is Collection<*> && !paramDef.isNullishTypeAt(0) && paramVal.any { it == null } ->
-                "collection" to paramDef.arguments[0].name!!
-            paramVal is Array<*> && !paramDef.isNullishTypeAt(0) && paramVal.any { it == null } ->
-                "array" to paramDef.arguments[0].name!!
-            paramVal is Map<*, *> && !paramDef.isNullishTypeAt(1) && paramVal.values.any { it == null } ->
-                "map" to paramDef.arguments[1].name!!
-            else -> null
-        }?.let { (paramType, itemType) ->
-            throw MissingKotlinParameterException(
-                parameter = paramDef,
-                processor = ctxt.parser,
-                msg = "Instantiation of $itemType $paramType failed for JSON property ${jsonProp.name} due to null value in a $paramType that does not allow null values"
-            ).wrapWithPath(this.valueClass, jsonProp.name)
-        }
-    }
 
     override fun createFromObjectWith(
         ctxt: DeserializationContext,
@@ -106,8 +75,6 @@ internal class KotlinValueInstantiator(
                         ).wrapWithPath(this.valueClass, jsonProp.name)
                     }
                 }
-            } else {
-                if (strictNullChecks) strictNullCheck(ctxt, jsonProp, paramDef, paramVal)
             }
 
             bucket[idx] = paramVal
@@ -124,8 +91,7 @@ internal class KotlinInstantiators(
     private val cache: ReflectionCache,
     private val nullToEmptyCollection: Boolean,
     private val nullToEmptyMap: Boolean,
-    private val nullIsSameAsDefault: Boolean,
-    private val strictNullChecks: Boolean
+    private val nullIsSameAsDefault: Boolean
 ) : ValueInstantiators {
     override fun findValueInstantiator(
         deserConfig: DeserializationConfig,
@@ -139,8 +105,7 @@ internal class KotlinInstantiators(
                     cache,
                     nullToEmptyCollection,
                     nullToEmptyMap,
-                    nullIsSameAsDefault,
-                    strictNullChecks
+                    nullIsSameAsDefault
                 )
             } else {
                 // TODO: return defaultInstantiator and let default method parameters and nullability go unused?

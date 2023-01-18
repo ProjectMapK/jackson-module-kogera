@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import com.fasterxml.jackson.module.kotlin.deser.ValueClassUnboxConverter
+import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueParameter
 import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmClassifier
@@ -103,10 +104,13 @@ internal class KotlinNamesAnnotationIntrospector(
             .takeIf { ann.annotated.isPrimarilyConstructorOf(kmClass) && !hasCreator(declaringClass, kmClass) }
     }
 
+    private fun getValueParameter(a: AnnotatedParameter): ValueParameter? =
+        cache.valueCreatorFromJava(a.owner)?.let { it.valueParameters[a.index] }
+
     // returns Converter when the argument on Java is an unboxed value class
     override fun findDeserializationConverter(a: Annotated): Any? = (a as? AnnotatedParameter)?.let { param ->
-        cache.valueCreatorFromJava(param.owner)?.let { creator ->
-            (creator.valueParameters[param.index].type.classifier as? KmClassifier.Class)?.let { classifier ->
+        getValueParameter(param)?.let { valueParameter ->
+            (valueParameter.type.classifier as? KmClassifier.Class)?.let { classifier ->
                 runCatching { classifier.name.reconstructClass() }
                     .getOrNull()
                     ?.takeIf { it.isUnboxableValueClass() && it != param.rawType }

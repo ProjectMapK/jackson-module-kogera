@@ -53,11 +53,20 @@ internal sealed class StrictNullChecksConverter<T : Any> : Converter<T, T> {
     ) : StrictNullChecksConverter<Array<*>>() {
         override fun getValues(value: Array<*>): Iterator<*> = value.iterator()
     }
+}
 
-    class ForMapValue(
-        override val clazz: Class<Map<*, *>>,
-        override val valueParameter: ValueParameter
-    ) : StrictNullChecksConverter<Map<*, *>>() {
-        override fun getValues(value: Map<*, *>): Iterator<*> = value.values.iterator()
+internal class MapValueStrictNullChecksConverter(
+    private val valueParameter: ValueParameter
+) : StdConverter<Map<*, *>, Map<*, *>>() {
+    override fun convert(value: Map<*, *>): Map<*, *> = value.apply {
+        entries.forEach { (k, v) ->
+            if (v == null) {
+                throw MissingKotlinParameterException(
+                    valueParameter,
+                    null,
+                    "A null value was entered for key $k of the parameter ${valueParameter.name}."
+                )
+            }
+        }
     }
 }

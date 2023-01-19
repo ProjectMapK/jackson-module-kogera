@@ -3,19 +3,18 @@ package com.fasterxml.jackson.module.kotlin.deser
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.type.TypeFactory
 import com.fasterxml.jackson.databind.util.Converter
+import com.fasterxml.jackson.databind.util.StdConverter
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueParameter
 
-internal class ValueClassUnboxConverter<T : Any>(private val valueClass: Class<T>) : Converter<T, Any?> {
+internal class ValueClassUnboxConverter<T : Any>(private val valueClass: Class<T>) : StdConverter<T, Any?>() {
     private val unboxMethod = valueClass.getDeclaredMethod("unbox-impl").apply {
         if (!this.isAccessible) this.isAccessible = true
     }
-    private val outType = unboxMethod.returnType
 
     override fun convert(value: T): Any? = unboxMethod.invoke(value)
 
     override fun getInputType(typeFactory: TypeFactory): JavaType = typeFactory.constructType(valueClass)
-    override fun getOutputType(typeFactory: TypeFactory): JavaType = typeFactory.constructType(outType)
 }
 
 internal sealed class StrictNullChecksConverter<T : Any> : Converter<T, T> {

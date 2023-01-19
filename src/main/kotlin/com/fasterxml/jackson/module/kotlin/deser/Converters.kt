@@ -2,7 +2,6 @@ package com.fasterxml.jackson.module.kotlin.deser
 
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.type.TypeFactory
-import com.fasterxml.jackson.databind.util.Converter
 import com.fasterxml.jackson.databind.util.StdConverter
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueParameter
@@ -17,8 +16,7 @@ internal class ValueClassUnboxConverter<T : Any>(private val valueClass: Class<T
     override fun getInputType(typeFactory: TypeFactory): JavaType = typeFactory.constructType(valueClass)
 }
 
-internal sealed class StrictNullChecksConverter<T : Any> : Converter<T, T> {
-    protected abstract val clazz: Class<T>
+internal sealed class CollectionValueStrictNullChecksConverter<T : Any> : StdConverter<T, T>() {
     protected abstract val valueParameter: ValueParameter
 
     protected abstract fun getValues(value: T): Iterator<*>
@@ -37,20 +35,15 @@ internal sealed class StrictNullChecksConverter<T : Any> : Converter<T, T> {
         return value
     }
 
-    override fun getInputType(typeFactory: TypeFactory): JavaType = typeFactory.constructType(clazz)
-    override fun getOutputType(typeFactory: TypeFactory): JavaType = typeFactory.constructType(clazz)
-
     class ForIterable(
-        override val clazz: Class<Iterable<*>>,
         override val valueParameter: ValueParameter
-    ) : StrictNullChecksConverter<Iterable<*>>() {
+    ) : CollectionValueStrictNullChecksConverter<Iterable<*>>() {
         override fun getValues(value: Iterable<*>): Iterator<*> = value.iterator()
     }
 
     class ForArray(
-        override val clazz: Class<Array<*>>,
         override val valueParameter: ValueParameter
-    ) : StrictNullChecksConverter<Array<*>>() {
+    ) : CollectionValueStrictNullChecksConverter<Array<*>>() {
         override fun getValues(value: Array<*>): Iterator<*> = value.iterator()
     }
 }

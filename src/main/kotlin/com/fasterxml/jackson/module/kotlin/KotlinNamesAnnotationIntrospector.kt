@@ -10,7 +10,9 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMember
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
-import com.fasterxml.jackson.module.kotlin.deser.StrictNullChecksConverter
+import com.fasterxml.jackson.databind.util.Converter
+import com.fasterxml.jackson.module.kotlin.deser.CollectionValueStrictNullChecksConverter
+import com.fasterxml.jackson.module.kotlin.deser.MapValueStrictNullChecksConverter
 import com.fasterxml.jackson.module.kotlin.deser.ValueClassUnboxConverter
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueParameter
 import kotlinx.metadata.Flag
@@ -138,15 +140,15 @@ private fun ValueParameter.createValueClassUnboxConverterOrNull(rawType: Class<*
 // @see com.fasterxml.jackson.module.kotlin._ported.test.StrictNullChecksTest#testListOfGenericWithNullValue
 private fun ValueParameter.isNullishTypeAt(index: Int) = arguments.getOrNull(index)?.isNullable ?: true
 
-private fun ValueParameter.createStrictNullChecksConverterOrNull(rawType: Class<*>): StrictNullChecksConverter<*>? {
+private fun ValueParameter.createStrictNullChecksConverterOrNull(rawType: Class<*>): Converter<*, *>? {
     @Suppress("UNCHECKED_CAST")
     return when {
         Array::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(0) ->
-            StrictNullChecksConverter.ForArray(rawType as Class<Array<*>>, this)
+            CollectionValueStrictNullChecksConverter.ForArray(this)
         Iterable::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(0) ->
-            StrictNullChecksConverter.ForIterable(rawType as Class<Iterable<*>>, this)
+            CollectionValueStrictNullChecksConverter.ForIterable(this)
         Map::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(1) ->
-            StrictNullChecksConverter.ForMapValue(rawType as Class<Map<*, *>>, this)
+            MapValueStrictNullChecksConverter(this)
         else -> null
     }
 }

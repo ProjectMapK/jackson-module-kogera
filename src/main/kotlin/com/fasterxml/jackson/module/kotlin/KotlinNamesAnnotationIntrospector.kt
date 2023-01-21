@@ -140,13 +140,11 @@ internal class KotlinNamesAnnotationIntrospector(
         }
         val kotlinProperty = cache.getKmClass(getter.declaringClass)?.findPropertyByGetter(getter)
 
-        return (kotlinProperty?.returnType?.classifier as? KmClassifier.Class)?.let { classifier ->
-            // Since there was no way to directly determine whether returnType is a value class or not,
-            // Class is restored and processed.
-            // If the cost of this process is significant, consider caching it.
-            runCatching { classifier.name.reconstructClass() }
-                .getOrNull()
-                ?.takeIf { takePredicate(it) }
+        // Since there was no way to directly determine whether returnType is a value class or not,
+        // Class is restored and processed.
+        // If the cost of this process is significant, consider caching it.
+        return kotlinProperty?.returnType?.reconstructClassOrNull()?.let { clazz ->
+            clazz.takeIf(takePredicate)
                 ?.let { ValueClassBoxConverter(getter.returnType, it) }
         }
     }
@@ -163,12 +161,9 @@ internal class KotlinNamesAnnotationIntrospector(
 }
 
 private fun ValueParameter.createValueClassUnboxConverterOrNull(rawType: Class<*>): ValueClassUnboxConverter<*>? {
-    return (this.type.classifier as? KmClassifier.Class)?.let { classifier ->
-        runCatching { classifier.name.reconstructClass() }
-            .getOrNull()
-            ?.takeIf { it.isUnboxableValueClass() && it != rawType }
-            ?.let { ValueClassUnboxConverter(it) }
-    }
+    return type.reconstructClassOrNull()
+        ?.takeIf { it.isUnboxableValueClass() && it != rawType }
+        ?.let { ValueClassUnboxConverter(it) }
 }
 
 // If the collection type argument cannot be obtained, treat it as nullable

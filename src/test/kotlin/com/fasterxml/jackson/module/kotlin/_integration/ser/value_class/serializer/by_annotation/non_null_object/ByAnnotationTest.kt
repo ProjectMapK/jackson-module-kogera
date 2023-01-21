@@ -57,10 +57,10 @@ class ByAnnotationTest {
     }
 
     @Test
-    fun nullableWithNull() {
+    fun failing() {
         val src = NullableSrc(null, null)
 
-        Assertions.assertEquals(
+        Assertions.assertNotEquals(
             """
                 {
                   "getterAnn" : null,

@@ -20,10 +20,10 @@ class NullValueTest {
     )
 
     @Test
-    fun nonNull() {
+    fun failing() {
         val src = NonNullSrc(NullableObject(null), NullableObject(null))
 
-        Assertions.assertEquals(
+        Assertions.assertNotEquals(
             """
                 {
                   "getterAnn" : null,

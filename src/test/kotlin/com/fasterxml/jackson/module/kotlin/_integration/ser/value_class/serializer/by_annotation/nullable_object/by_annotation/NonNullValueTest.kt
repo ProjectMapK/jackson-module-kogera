@@ -26,8 +26,8 @@ class NonNullValueTest {
         Assertions.assertEquals(
             """
                 {
-                  "getterAnn" : "foo",
-                  "fieldAnn" : "bar"
+                  "getterAnn" : "foo-ser",
+                  "fieldAnn" : "bar-ser"
                 }
             """.trimIndent(),
             writer.writeValueAsString(src)
@@ -48,8 +48,8 @@ class NonNullValueTest {
         Assertions.assertEquals(
             """
                 {
-                  "getterAnn" : "foo",
-                  "fieldAnn" : "bar"
+                  "getterAnn" : "foo-ser",
+                  "fieldAnn" : "bar-ser"
                 }
             """.trimIndent(),
             writer.writeValueAsString(src)

@@ -27,8 +27,8 @@ class ByAnnotationTest {
         assertEquals(
             """
                 {
-                  "getterAnn" : 0,
-                  "fieldAnn" : 1
+                  "getterAnn" : 100,
+                  "fieldAnn" : 101
                 }
             """.trimIndent(),
             writer.writeValueAsString(src)
@@ -49,8 +49,8 @@ class ByAnnotationTest {
         assertEquals(
             """
                 {
-                  "getterAnn" : 0,
-                  "fieldAnn" : 1
+                  "getterAnn" : 100,
+                  "fieldAnn" : 101
                 }
             """.trimIndent(),
             writer.writeValueAsString(src)
@@ -87,8 +87,8 @@ class ByAnnotationTest {
         assertNotEquals(
             """
                 {
-                  "nonNull" : 0,
-                  "nullable" : 1
+                  "nonNull" : 100,
+                  "nullable" : 101
                 }
             """.trimIndent(),
             writer.writeValueAsString(src)

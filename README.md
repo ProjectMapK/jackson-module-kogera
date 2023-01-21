@@ -70,7 +70,7 @@ If you find any problems, it would be appreciated if you could share them in an 
 Currently this project is in `alpha`.  
 After the following features are implemented, this project will be moved to the `beta` version if there is enough demand for it.
 
-- Deserialization support for `value class
+- Deserialization support for `value class`
   - Partial support is achieved at [#40](https://github.com/ProjectMapK/jackson-module-kogera/pull/40).
 - Support for less than `Kotlin 1.6.x`(including grid test building with `CI`)
 - Rename module and package(see https://github.com/FasterXML/jackson-module-kotlin/issues/450#issuecomment-1384788717).

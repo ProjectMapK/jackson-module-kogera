@@ -51,7 +51,7 @@ class Github464 {
         val grault: Array<ValueClass?>,
         val garply: WrapperClass,
         val waldo: WrapperClass?,
-        val fred: Map<ValueClass?, ValueClass?>
+        val fred: Map<ValueClass, ValueClass?>
     ) : AbstractGetter<ValueClass>(), IGetter<ValueClass>
 
     object NullValueSerializer : StdSerializer<Any>(Any::class.java) {
@@ -77,7 +77,7 @@ class Github464 {
             grault = arrayOf(zeroValue, null),
             garply = WrapperClass(zeroValue),
             waldo = null,
-            fred = mapOf(zeroValue to zeroValue, oneValue to null, nullValue to nullValue, null to null)
+            fred = mapOf(zeroValue to zeroValue, oneValue to null, nullValue to nullValue)
         )
 
         @Test
@@ -90,47 +90,24 @@ class Github464 {
             assertEquals(
                 """
                     {
-                      "foo" : {
-                        "value" : 0
-                      },
+                      "foo" : 0,
                       "bar" : null,
-                      "baz" : {
-                        "value" : 0
-                      },
-                      "qux" : {
-                        "value" : 0
-                      },
-                      "quux" : {
-                        "value" : 0
-                      },
-                      "corge" : [ {
-                        "value" : 0
-                      }, null ],
-                      "grault" : [ {
-                        "value" : 0
-                      }, null ],
+                      "baz" : 0,
+                      "qux" : 0,
+                      "quux" : 0,
+                      "corge" : [ 0, null ],
+                      "grault" : [ 0, null ],
                       "garply" : {
-                        "inlineField" : {
-                          "value" : 0
-                        }
+                        "inlineField" : 0
                       },
                       "waldo" : null,
                       "fred" : {
-                        "ValueClass(value=0)" : {
-                          "value" : 0
-                        },
-                        "ValueClass(value=1)" : null,
-                        "ValueClass(value=null)" : {
-                          "value" : null
-                        },
+                        "0" : 0,
+                        "1" : null,
                         "null-key" : null
                       },
-                      "xyzzy" : {
-                        "value" : 0
-                      },
-                      "plugh" : {
-                        "value" : 0
-                      }
+                      "xyzzy" : 0,
+                      "plugh" : 0
                     }
                 """.trimIndent(),
                 writer.writeValueAsString(target)
@@ -149,47 +126,24 @@ class Github464 {
             assertEquals(
                 """
                     {
-                      "foo" : {
-                        "value" : 0
-                      },
+                      "foo" : 0,
                       "bar" : "null-value",
-                      "baz" : {
-                        "value" : 0
-                      },
-                      "qux" : {
-                        "value" : 0
-                      },
-                      "quux" : {
-                        "value" : 0
-                      },
-                      "corge" : [ {
-                        "value" : 0
-                      }, "null-value" ],
-                      "grault" : [ {
-                        "value" : 0
-                      }, "null-value" ],
+                      "baz" : 0,
+                      "qux" : 0,
+                      "quux" : 0,
+                      "corge" : [ 0, "null-value" ],
+                      "grault" : [ 0, "null-value" ],
                       "garply" : {
-                        "inlineField" : {
-                          "value" : 0
-                        }
+                        "inlineField" : 0
                       },
                       "waldo" : "null-value",
                       "fred" : {
-                        "ValueClass(value=0)" : {
-                          "value" : 0
-                        },
-                        "ValueClass(value=1)" : "null-value",
-                        "ValueClass(value=null)" : {
-                          "value" : "null-value"
-                        },
+                        "0" : 0,
+                        "1" : "null-value",
                         "null-key" : "null-value"
                       },
-                      "xyzzy" : {
-                        "value" : 0
-                      },
-                      "plugh" : {
-                        "value" : 0
-                      }
+                      "xyzzy" : 0,
+                      "plugh" : 0
                     }
                 """.trimIndent(),
                 writer.writeValueAsString(target)

@@ -73,8 +73,6 @@ If you find any problems, it would be appreciated if you could share them in an 
 Currently this project is in `alpha`.  
 After the following features are implemented, this project will be moved to the `beta` version if there is enough demand for it.
 
-- Change serialization behavior of `value class`.
-  - ~~Basically, it should not be `unboxed`, but should behave like a normal class.~~ [#37](https://github.com/ProjectMapK/jackson-module-kogera/pull/37)
 - Deserialization support for `value class
   - Partial support is achieved at [#40](https://github.com/ProjectMapK/jackson-module-kogera/pull/40).
 - Support for less than `Kotlin 1.6.x`(including grid test building with `CI`)

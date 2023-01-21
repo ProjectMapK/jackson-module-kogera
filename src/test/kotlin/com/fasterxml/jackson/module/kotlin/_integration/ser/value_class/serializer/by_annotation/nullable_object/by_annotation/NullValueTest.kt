@@ -26,8 +26,8 @@ class NullValueTest {
         Assertions.assertNotEquals(
             """
                 {
-                  "getterAnn" : null,
-                  "fieldAnn" : null
+                  "getterAnn" : "NULL",
+                  "fieldAnn" : "NULL"
                 }
             """.trimIndent(),
             writer.writeValueAsString(src)
@@ -48,8 +48,8 @@ class NullValueTest {
         Assertions.assertEquals(
             """
                 {
-                  "getterAnn" : null,
-                  "fieldAnn" : null
+                  "getterAnn" : "NULL",
+                  "fieldAnn" : "NULL"
                 }
             """.trimIndent(),
             writer.writeValueAsString(src)

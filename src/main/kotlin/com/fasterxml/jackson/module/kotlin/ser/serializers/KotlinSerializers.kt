@@ -46,6 +46,21 @@ internal object ULongSerializer : StdSerializer<ULong>(ULong::class.java) {
     }
 }
 
+// In accordance with kotlinx.serialization,
+// value classes are unboxed and serialized if they do not have a specified serializer.
+internal object ValueClassUnboxSerializer : StdSerializer<Any>(Any::class.java) {
+    override fun serialize(value: Any, gen: JsonGenerator, provider: SerializerProvider) {
+        val unboxed = value::class.java.getMethod("unbox-impl").invoke(value)
+
+        if (unboxed == null) {
+            provider.findNullValueSerializer(null).serialize(null, gen, provider)
+            return
+        }
+
+        provider.findValueSerializer(unboxed::class.java).serialize(unboxed, gen, provider)
+    }
+}
+
 // Class must be UnboxableValueClass.
 private fun Class<*>.getStaticJsonValueGetter(): Method? = this.declaredMethods
     .find { method -> Modifier.isStatic(method.modifiers) && method.annotations.any { it is JsonValue } }
@@ -91,6 +106,7 @@ internal class KotlinSerializers : Serializers.Base() {
             ULong::class.java.isAssignableFrom(rawClass) -> ULongSerializer
             // The priority of Unboxing needs to be lowered so as not to break the serialization of Unsigned Integers.
             rawClass.isUnboxableValueClass() -> ValueClassStaticJsonValueSerializer.createOrNull(rawClass)
+                ?: ValueClassUnboxSerializer
             else -> null
         }
     }

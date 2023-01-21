@@ -64,7 +64,7 @@ internal class KotlinAnnotationIntrospector(
         val fieldSignature = member.toSignature()
         val byNullability = kmClass.properties
             .find { it.fieldSignature == fieldSignature }
-            ?.let { !Flag.Type.IS_NULLABLE(it.returnType.flags) }
+            ?.let { !it.returnType.isNullable() }
 
         return requiredAnnotationOrNullability(byAnnotation, byNullability)
     }
@@ -80,7 +80,7 @@ internal class KotlinAnnotationIntrospector(
         else -> byAnnotation
     }
 
-    private fun KmProperty.isRequiredByNullability(): Boolean = !Flag.Type.IS_NULLABLE(this.returnType.flags)
+    private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable()
 
     private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(kmClass: KmClass): Boolean? {
         val memberSignature = member.toSignature()
@@ -116,7 +116,7 @@ internal class KotlinAnnotationIntrospector(
         }?.let { (paramDef, paramType) ->
             val isPrimitive = paramType.isPrimitive
             val isOptional = Flag.ValueParameter.DECLARES_DEFAULT_VALUE(paramDef.flags)
-            val isMarkedNullable = Flag.Type.IS_NULLABLE(paramDef.type.flags)
+            val isMarkedNullable = paramDef.type.isNullable()
 
             !isMarkedNullable && !isOptional &&
                 !(isPrimitive && !context.isEnabled(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES))

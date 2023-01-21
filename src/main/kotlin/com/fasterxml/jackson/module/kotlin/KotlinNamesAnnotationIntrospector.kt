@@ -2,6 +2,7 @@ package com.fasterxml.jackson.module.kotlin
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.introspect.Annotated
 import com.fasterxml.jackson.databind.introspect.AnnotatedConstructor
@@ -128,9 +129,10 @@ internal class KotlinNamesAnnotationIntrospector(
         }
     }
 
-    // Find a converter to handle the case where the getter returns an unboxed value from the value class.
-    override fun findSerializationConverter(a: Annotated): Converter<*, *>? = (a as? AnnotatedMethod)?.let { _ ->
-        val getter = a.member.apply {
+    private fun AnnotatedMethod.findValueClassBoxConverter(
+        takePredicate: (Class<*>) -> Boolean
+    ): ValueClassBoxConverter<*, *>? {
+        val getter = this.member.apply {
             // If the return value of the getter is a value class,
             // it will be serialized properly without doing anything.
             // TODO: Verify the case where a value class encompasses another value class.
@@ -138,19 +140,26 @@ internal class KotlinNamesAnnotationIntrospector(
         }
         val kotlinProperty = cache.getKmClass(getter.declaringClass)?.findPropertyByGetter(getter)
 
-        (kotlinProperty?.returnType?.classifier as? KmClassifier.Class)?.let { classifier ->
+        return (kotlinProperty?.returnType?.classifier as? KmClassifier.Class)?.let { classifier ->
             // Since there was no way to directly determine whether returnType is a value class or not,
             // Class is restored and processed.
             // If the cost of this process is significant, consider caching it.
             runCatching { classifier.name.reconstructClass() }
                 .getOrNull()
-                ?.takeIf { it.isUnboxableValueClass() }
+                ?.takeIf { takePredicate(it) }
                 ?.let { ValueClassBoxConverter(getter.returnType, it) }
         }
     }
 
+    // Find a converter to handle the case where the getter returns an unboxed value from the value class.
+    override fun findSerializationConverter(a: Annotated): Converter<*, *>? = (a as? AnnotatedMethod)
+        ?.let { _ -> a.findValueClassBoxConverter { it.isUnboxableValueClass() } }
+
     // Perform proper serialization even if the value wrapped by the value class is null.
-    override fun findNullSerializer(am: Annotated) = findSerializationConverter(am)?.let { StdDelegatingSerializer(it) }
+    // If value is a non-null object type, it must not be reboxing.
+    override fun findNullSerializer(am: Annotated): JsonSerializer<*>? = (am as? AnnotatedMethod)?.let { _ ->
+        am.findValueClassBoxConverter { it.requireRebox() }?.let { StdDelegatingSerializer(it) }
+    }
 }
 
 private fun ValueParameter.createValueClassUnboxConverterOrNull(rawType: Class<*>): ValueClassUnboxConverter<*>? {
@@ -218,3 +227,8 @@ private fun hasCreator(clazz: Class<*>, kmClass: KmClass): Boolean {
     val propertyNames = kmClass.properties.map { it.name }.toSet()
     return hasCreatorConstructor(clazz, kmClass, propertyNames) || hasCreatorFunction(clazz, kmClass)
 }
+
+// Determine if the `unbox` result of `value class` is `nullable
+// @see KotlinNamesAnnotationIntrospector.findNullSerializer
+private fun Class<*>.requireRebox(): Boolean = isUnboxableValueClass() &&
+    toKmClass()!!.properties.first { it.fieldSignature != null }.returnType.isNullable()

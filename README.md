@@ -26,13 +26,7 @@ In addition, several property-related behaviors have been improved.
 
 ## About intentional destructive changes
 This project makes several disruptive changes to achieve more `Kotlin-like` behavior.  
-In particular, the following points should be noted
-
-- Non `Kotlin` properties are `Ignore` during serialization/deserialization.
-  - i.e. functions with names like `getFoo` are not serialized.
-- Property names in `Kotlin` are used during serialization/deserialization.
-  - i.e. no manipulation of serialization results using `JvmName`.
-- Old options and codes have been removed and some codes have been made private.
+Details are summarized in [KogeraSpecificImplementations](./docs/KogeraSpecificImplementations.md).
 
 # Compatibility
 - `Java 8+`

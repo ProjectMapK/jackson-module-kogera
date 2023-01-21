@@ -17,9 +17,12 @@ As of `1.7.21`, `kotlin-reflect` is a huge library(3MB), and replacing it with `
 
 Several performance improvements have also been made.
 First, by implementing the equivalent of https://github.com/FasterXML/jackson-module-kotlin/pull/439, deserialization is now up to three times faster, depending on the use case.  
-The cache has also been reorganized based on [benchmark results](https://github.com/ProjectMapK/kogera-benchmark) to achieve smaller memory consumption.
+The cache has also been reorganized based on [benchmark results](https://github.com/ProjectMapK/kogera-benchmark) to achieve smaller memory consumption.  
+The performance degradation when the `strictNullChecks` option is enabled is also [greatly reduced](https://github.com/ProjectMapK/jackson-module-kogera/pull/44).
 
 In addition, several property-related behaviors have been improved.
+
+[Here](./docs/FixedIssues.md) is a list of issues that are not resolved in `jackson-module-kotlin` but are or will be resolved in `kogera`.
 
 ## About intentional destructive changes
 This project makes several disruptive changes to achieve more `Kotlin-like` behavior.  

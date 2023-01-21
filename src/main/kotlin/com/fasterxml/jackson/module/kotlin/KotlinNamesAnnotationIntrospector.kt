@@ -133,6 +133,7 @@ internal class KotlinNamesAnnotationIntrospector(
         val getter = a.member.apply {
             // If the return value of the getter is a value class,
             // it will be serialized properly without doing anything.
+            // TODO: Verify the case where a value class encompasses another value class.
             if (this.returnType.isUnboxableValueClass()) return null
         }
         val kotlinProperty = cache.getKmClass(getter.declaringClass)?.findPropertyByGetter(getter)

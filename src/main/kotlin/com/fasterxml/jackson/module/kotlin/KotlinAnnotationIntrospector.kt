@@ -10,12 +10,8 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import com.fasterxml.jackson.databind.jsontype.NamedType
-import com.fasterxml.jackson.databind.ser.std.StdSerializer
-import com.fasterxml.jackson.module.kotlin.ser.serializers.ValueClassBoxSerializer
-import com.fasterxml.jackson.module.kotlin.ser.serializers.ValueClassStaticJsonValueSerializer
 import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClass
-import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmProperty
 import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.getterSignature
@@ -53,38 +49,6 @@ internal class KotlinAnnotationIntrospector(
         null
     }
 
-    // Find a serializer to handle the case where the getter returns an unboxed value from the value class.
-    override fun findSerializer(am: Annotated): StdSerializer<*>? = when (am) {
-        is AnnotatedMethod -> {
-            val getter = am.member.apply {
-                // If the return value of the getter is a value class,
-                // it will be serialized properly without doing anything.
-                if (this.returnType.isUnboxableValueClass()) return null
-            }
-            val kotlinProperty = cache.getKmClass(getter.declaringClass)?.findPropertyByGetter(getter)
-
-            (kotlinProperty?.returnType?.classifier as? KmClassifier.Class)?.let { classifier ->
-                // Since there was no way to directly determine whether returnType is a value class or not,
-                // Class is restored and processed.
-                // If the cost of this process is significant, consider caching it.
-                runCatching { classifier.name.reconstructClass() }
-                    .getOrNull()
-                    ?.takeIf { it.isUnboxableValueClass() }
-                    ?.let { outerClazz ->
-                        val innerClazz = getter.returnType
-
-                        ValueClassStaticJsonValueSerializer.createdOrNull(outerClazz, innerClazz)
-                            ?: ValueClassBoxSerializer(outerClazz, innerClazz)
-                    }
-            }
-        }
-        // Ignore the case of AnnotatedField, because JvmField cannot be set in the field of value class.
-        else -> null
-    }
-
-    // Perform proper serialization even if the value wrapped by the value class is null.
-    override fun findNullSerializer(am: Annotated) = findSerializer(am)
-
     /**
      * Subclasses can be detected automatically for sealed classes, since all possible subclasses are known
      * at compile-time to Kotlin. This makes [com.fasterxml.jackson.annotation.JsonSubTypes] redundant.
@@ -100,7 +64,7 @@ internal class KotlinAnnotationIntrospector(
         val fieldSignature = member.toSignature()
         val byNullability = kmClass.properties
             .find { it.fieldSignature == fieldSignature }
-            ?.let { !Flag.Type.IS_NULLABLE(it.returnType.flags) }
+            ?.let { !it.returnType.isNullable() }
 
         return requiredAnnotationOrNullability(byAnnotation, byNullability)
     }
@@ -116,7 +80,7 @@ internal class KotlinAnnotationIntrospector(
         else -> byAnnotation
     }
 
-    private fun KmProperty.isRequiredByNullability(): Boolean = !Flag.Type.IS_NULLABLE(this.returnType.flags)
+    private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable()
 
     private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(kmClass: KmClass): Boolean? {
         val memberSignature = member.toSignature()
@@ -152,7 +116,7 @@ internal class KotlinAnnotationIntrospector(
         }?.let { (paramDef, paramType) ->
             val isPrimitive = paramType.isPrimitive
             val isOptional = Flag.ValueParameter.DECLARES_DEFAULT_VALUE(paramDef.flags)
-            val isMarkedNullable = Flag.Type.IS_NULLABLE(paramDef.type.flags)
+            val isMarkedNullable = paramDef.type.isNullable()
 
             !isMarkedNullable && !isOptional &&
                 !(isPrimitive && !context.isEnabled(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES))

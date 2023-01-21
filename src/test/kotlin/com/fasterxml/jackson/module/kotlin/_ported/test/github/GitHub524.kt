@@ -9,7 +9,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.testPrettyWriter
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
 
 // Most of the current behavior has been tested on GitHub464, so only serializer-related behavior is tested here.
@@ -61,12 +60,12 @@ class GitHub524 {
 
     class SerializeByAnnotation(@get:JsonSerialize(using = Serializer::class) val foo: HasSerializer = HasSerializer(1))
 
+    // fixed at d56e7189e24828f03cfba9ddd665da55d89bf01e
     @Test
-    fun failing() {
-        val writer = jacksonObjectMapper().writerWithDefaultPrettyPrinter()
+    fun fixed() {
+        val writer = jacksonObjectMapper().testPrettyWriter()
 
-        // JsonSerialize is not working now.
-        assertNotEquals(
+        assertEquals(
             """
                 {
                   "foo" : "HasSerializer(value=1)"

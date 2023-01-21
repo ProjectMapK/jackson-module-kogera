@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator
 
+import com.fasterxml.jackson.module.kotlin.isNullable
 import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmType
@@ -17,7 +18,7 @@ internal class ValueParameter(private val param: KmValueParameter) {
         }
 
         class ArgumentImpl(type: KmType) : Argument {
-            override val isNullable: Boolean = Flag.Type.IS_NULLABLE(type.flags)
+            override val isNullable: Boolean = type.isNullable()
 
             // TODO: Formatting because it is a minimal display about the error content
             override val name: String = type.classifier.toString()
@@ -28,7 +29,7 @@ internal class ValueParameter(private val param: KmValueParameter) {
     val type: KmType = param.type
     val isOptional: Boolean = Flag.ValueParameter.DECLARES_DEFAULT_VALUE(param.flags)
     val isPrimitive: Boolean = Flag.IS_PRIVATE(param.type.flags)
-    val isNullable: Boolean = Flag.Type.IS_NULLABLE(param.type.flags)
+    val isNullable: Boolean = type.isNullable()
     val isGenericType: Boolean = param.type.classifier is KmClassifier.TypeParameter
 
     val arguments: List<Argument> by lazy {

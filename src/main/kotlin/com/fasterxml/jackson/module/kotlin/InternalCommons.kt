@@ -1,8 +1,10 @@
 package com.fasterxml.jackson.module.kotlin
 
+import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmConstructor
 import kotlinx.metadata.KmProperty
+import kotlinx.metadata.KmType
 import kotlinx.metadata.KmValueParameter
 import kotlinx.metadata.jvm.JvmFieldSignature
 import kotlinx.metadata.jvm.JvmMethodSignature
@@ -82,3 +84,5 @@ internal fun KmClass.findPropertyByGetter(getter: Method): KmProperty? {
     val signature = getter.toSignature()
     return properties.find { it.getterSignature == signature }
 }
+
+internal fun KmType.isNullable(): Boolean = Flag.Type.IS_NULLABLE(this.flags)

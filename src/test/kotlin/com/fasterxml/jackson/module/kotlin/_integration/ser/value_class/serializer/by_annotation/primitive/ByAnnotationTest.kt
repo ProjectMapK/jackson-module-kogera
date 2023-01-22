@@ -5,7 +5,6 @@ import com.fasterxml.jackson.module.kotlin._integration.ser.value_class.serializ
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.testPrettyWriter
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
 
 class ByAnnotationTest {
@@ -14,6 +13,8 @@ class ByAnnotationTest {
     }
 
     data class NonNullSrc(
+        @JsonSerialize(using = Primitive.Serializer::class)
+        val paramAnn: Primitive,
         @get:JsonSerialize(using = Primitive.Serializer::class)
         val getterAnn: Primitive,
         @field:JsonSerialize(using = Primitive.Serializer::class)
@@ -22,13 +23,14 @@ class ByAnnotationTest {
 
     @Test
     fun nonNull() {
-        val src = NonNullSrc(Primitive(0), Primitive(1))
+        val src = NonNullSrc(Primitive(0), Primitive(1), Primitive(2))
 
         assertEquals(
             """
                 {
-                  "getterAnn" : 100,
-                  "fieldAnn" : 101
+                  "paramAnn" : 100,
+                  "getterAnn" : 101,
+                  "fieldAnn" : 102
                 }
             """.trimIndent(),
             writer.writeValueAsString(src)
@@ -36,6 +38,8 @@ class ByAnnotationTest {
     }
 
     data class NullableSrc(
+        @JsonSerialize(using = Primitive.Serializer::class)
+        val paramAnn: Primitive?,
         @get:JsonSerialize(using = Primitive.Serializer::class)
         val getterAnn: Primitive?,
         @field:JsonSerialize(using = Primitive.Serializer::class)
@@ -44,13 +48,14 @@ class ByAnnotationTest {
 
     @Test
     fun nullableWithoutNull() {
-        val src = NullableSrc(Primitive(0), Primitive(1))
+        val src = NullableSrc(Primitive(0), Primitive(1), Primitive(2))
 
         assertEquals(
             """
                 {
-                  "getterAnn" : 100,
-                  "fieldAnn" : 101
+                  "paramAnn" : 100,
+                  "getterAnn" : 101,
+                  "fieldAnn" : 102
                 }
             """.trimIndent(),
             writer.writeValueAsString(src)
@@ -59,36 +64,14 @@ class ByAnnotationTest {
 
     @Test
     fun nullableWithNull() {
-        val src = NullableSrc(null, null)
+        val src = NullableSrc(null, null, null)
 
         assertEquals(
             """
                 {
+                  "paramAnn" : null,
                   "getterAnn" : null,
                   "fieldAnn" : null
-                }
-            """.trimIndent(),
-            writer.writeValueAsString(src)
-        )
-    }
-
-    data class Failing(
-        @JsonSerialize(using = Primitive.Serializer::class)
-        val nonNull: Primitive,
-        @JsonSerialize(using = Primitive.Serializer::class)
-        val nullable: Primitive?
-    )
-
-    // #46
-    @Test
-    fun failing() {
-        val src = Failing(Primitive(0), Primitive(1))
-
-        assertNotEquals(
-            """
-                {
-                  "nonNull" : 100,
-                  "nullable" : 101
                 }
             """.trimIndent(),
             writer.writeValueAsString(src)

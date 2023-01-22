@@ -2,6 +2,7 @@ package com.fasterxml.jackson.module.kotlin
 
 import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClass
+import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmConstructor
 import kotlinx.metadata.KmProperty
 import kotlinx.metadata.KmType
@@ -66,6 +67,9 @@ internal val defaultConstructorMarker: Class<*> by lazy {
 // Kotlin-specific types such as kotlin.String will result in an error,
 // but are ignored because they do not result in errors in internal use cases.
 internal fun String.reconstructClass(): Class<*> = Class.forName(this.replace(".", "$").replace("/", "."))
+
+internal fun KmType.reconstructClassOrNull(): Class<*>? = (classifier as? KmClassifier.Class)
+    ?.let { kotlin.runCatching { it.name.reconstructClass() }.getOrNull() }
 
 internal fun KmClass.findKmConstructor(constructor: Constructor<*>): KmConstructor? {
     val descHead = constructor.parameterTypes.toDescString()

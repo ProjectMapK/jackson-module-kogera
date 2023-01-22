@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.kotlin
 
+import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.SerializationConfig
 import com.fasterxml.jackson.databind.introspect.AnnotatedConstructor
@@ -46,6 +47,27 @@ internal object KotlinClassIntrospector : BasicClassIntrospector() {
             ?: _findStdJdkCollectionDesc(config, type)
             ?: run {
                 val coll = collectProperties(config, type, r, true)
+
+                if (type.rawClass.annotations.any { it is Metadata }) {
+                    KotlinBeanDescription(coll)
+                } else {
+                    BasicBeanDescription.forDeserialization(coll)
+                }
+            }
+    }
+
+    override fun forDeserialization(
+        config: DeserializationConfig,
+        type: JavaType,
+        r: MixInResolver
+    ): BasicBeanDescription {
+        // minor optimization: for some JDK types do minimal introspection
+        return _findStdTypeDesc(config, type)
+            // As per [Databind#550], skip full introspection for some of standard
+            // structured types as well
+            ?: _findStdJdkCollectionDesc(config, type)
+            ?: run {
+                val coll = collectProperties(config, type, r, false)
 
                 if (type.rawClass.annotations.any { it is Metadata }) {
                     KotlinBeanDescription(coll)

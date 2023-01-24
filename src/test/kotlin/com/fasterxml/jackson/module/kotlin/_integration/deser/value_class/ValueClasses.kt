@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 @JvmInline
 value class Primitive(val v: Int) {
     class Deserializer : StdDeserializer<Primitive>(Primitive::class.java) {
-        override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Primitive = Primitive(p.intValue)
+        override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Primitive = Primitive(p.intValue + 100)
     }
 }
 
@@ -15,7 +15,7 @@ value class Primitive(val v: Int) {
 value class NonNullObject(val v: String) {
     class Deserializer : StdDeserializer<NonNullObject>(NonNullObject::class.java) {
         override fun deserialize(p: JsonParser, ctxt: DeserializationContext): NonNullObject =
-            NonNullObject(p.valueAsString)
+            NonNullObject(p.valueAsString + "-deser")
     }
 }
 
@@ -26,6 +26,6 @@ value class NullableObject(val v: String?) {
         // override fun getNullValue(ctxt: DeserializationContext): NullableObject = NullableObject(null)
 
         override fun deserialize(p: JsonParser, ctxt: DeserializationContext): NullableObject =
-            NullableObject(p.valueAsString)
+            NullableObject(p.valueAsString + "-deser")
     }
 }

@@ -2,7 +2,6 @@ package com.fasterxml.jackson.module.kotlin._integration.deser.value_class.defau
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.exc.ValueInstantiationException
-import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin._integration.deser.value_class.NullableObject
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -13,12 +12,7 @@ import org.junit.jupiter.api.assertThrows
 
 class NullableObjectTest {
     companion object {
-        val mapper = jacksonObjectMapper().apply {
-            val module = SimpleModule().apply {
-                this.addDeserializer(NullableObject::class.java, NullableObject.Deserializer())
-            }
-            this.registerModule(module)
-        }
+        val mapper = jacksonObjectMapper()
     }
 
     data class ByConstructor(

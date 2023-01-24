@@ -34,7 +34,7 @@ class SpecifiedForObjectMapperTest {
 
     @Test
     fun nonNull() {
-        val expected = Dst(
+        val base = Dst(
             Primitive(1),
             Primitive(2),
             NonNullObject("foo"),
@@ -42,9 +42,17 @@ class SpecifiedForObjectMapperTest {
             NullableObject("baz"),
             NullableObject("qux")
         )
-        val src = mapper.writeValueAsString(expected)
+        val src = mapper.writeValueAsString(base)
         val result = mapper.readValue<Dst>(src)
 
+        val expected = Dst(
+            Primitive(101),
+            Primitive(102),
+            NonNullObject("foo-deser"),
+            NonNullObject("bar-deser"),
+            NullableObject("baz-deser"),
+            NullableObject("qux-deser")
+        )
         assertEquals(expected, result)
     }
 
@@ -61,7 +69,7 @@ class SpecifiedForObjectMapperTest {
 
     @Test
     fun withNull() {
-        val expected = WithoutNoNn(
+        val base = WithoutNoNn(
             Primitive(1),
             null,
             NonNullObject("foo"),
@@ -69,9 +77,17 @@ class SpecifiedForObjectMapperTest {
             // NullableObject(null),
             null
         )
-        val src = mapper.writeValueAsString(expected)
+        val src = mapper.writeValueAsString(base)
         val result = mapper.readValue<WithoutNoNn>(src)
 
+        val expected = WithoutNoNn(
+            Primitive(101),
+            null,
+            NonNullObject("foo-deser"),
+            null,
+            // NullableObject(null),
+            null
+        )
         assertEquals(expected, result)
     }
 

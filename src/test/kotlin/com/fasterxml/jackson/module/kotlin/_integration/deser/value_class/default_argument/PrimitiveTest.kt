@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.kotlin._integration.deser.value_class.default_argument
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin._integration.deser.value_class.Primitive
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -10,12 +9,7 @@ import org.junit.jupiter.api.Test
 
 class PrimitiveTest {
     companion object {
-        val mapper = jacksonObjectMapper().apply {
-            val module = SimpleModule().apply {
-                this.addDeserializer(Primitive::class.java, Primitive.Deserializer())
-            }
-            this.registerModule(module)
-        }
+        val mapper = jacksonObjectMapper()
     }
 
     data class ByConstructor(

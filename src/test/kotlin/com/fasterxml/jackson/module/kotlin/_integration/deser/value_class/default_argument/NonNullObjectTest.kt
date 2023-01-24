@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.kotlin._integration.deser.value_class.default_argument
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin._integration.deser.value_class.NonNullObject
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -10,12 +9,7 @@ import org.junit.jupiter.api.Test
 
 class NonNullObjectTest {
     companion object {
-        val mapper = jacksonObjectMapper().apply {
-            val module = SimpleModule().apply {
-                this.addDeserializer(NonNullObject::class.java, NonNullObject.Deserializer())
-            }
-            this.registerModule(module)
-        }
+        val mapper = jacksonObjectMapper()
     }
 
     data class ByConstructor(

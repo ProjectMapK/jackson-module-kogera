@@ -1,7 +1,10 @@
-package com.fasterxml.jackson.module.kotlin._integration.deser.value_class.deserializer.has_json_value
+package com.fasterxml.jackson.module.kotlin._integration.deser.value_class.deserializer
 
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
+import com.fasterxml.jackson.module.kotlin._integration.deser.value_class.NonNullObject
+import com.fasterxml.jackson.module.kotlin._integration.deser.value_class.NullableObject
+import com.fasterxml.jackson.module.kotlin._integration.deser.value_class.Primitive
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -72,15 +75,15 @@ class SpecifiedForObjectMapperTest {
         assertEquals(expected, result)
     }
 
-    data class Tmp(val noNn: NullableObject)
+    data class Failing(val noNn: NullableObject)
 
     @Test
-    fun temp() {
-        val expected = Tmp(NullableObject(null))
+    fun failing() {
+        val expected = Failing(NullableObject(null))
         val src = mapper.writeValueAsString(expected)
 
         assertThrows<MissingKotlinParameterException>("Kogera #42 is fixed") {
-            val result = mapper.readValue<Tmp>(src)
+            val result = mapper.readValue<Failing>(src)
             assertEquals(expected, result)
         }
     }

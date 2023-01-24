@@ -30,7 +30,7 @@ class NullableObjectTest {
 
     @Test
     fun byConstructorTestFailing() {
-        val ex = assertThrows<ValueInstantiationException> {
+        val ex = assertThrows<ValueInstantiationException>("Kogera #51 fixed") {
             assertEquals(ByConstructor(), mapper.readValue<ByConstructor>("{}"))
         }
         assertTrue(ex.cause is NoSuchMethodException)
@@ -56,7 +56,7 @@ class NullableObjectTest {
 
     @Test
     fun byFactoryTest() {
-        val ex = assertThrows<ValueInstantiationException> {
+        val ex = assertThrows<ValueInstantiationException>("Kogera #51 fixed") {
             assertEquals(ByFactory.creator(), mapper.readValue<ByFactory>("{}"))
         }
         assertTrue(ex.cause is NoSuchMethodException)

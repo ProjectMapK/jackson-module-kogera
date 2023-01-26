@@ -67,6 +67,8 @@ internal object ULongDeserializer : StdDeserializer<ULong>(ULong::class.java) {
 
 internal class ValueClassBoxDeserializer<T : Any>(clazz: Class<T>) : StdDeserializer<T>(clazz) {
     private val boxedType = clazz.getDeclaredMethod("unbox-impl").returnType
+    // Here the PRIMARY constructor is invoked, ignoring visibility.
+    // This behavior is the same as the normal class deserialization by kotlin-module.
     private val constructorImpl: Method = clazz.getDeclaredMethod("constructor-impl", boxedType).apply {
         if (!this.isAccessible) this.isAccessible = true
     }
@@ -77,6 +79,8 @@ internal class ValueClassBoxDeserializer<T : Any>(clazz: Class<T>) : StdDeserial
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): T {
         val input = p.readValueAs(boxedType)
 
+        // To instantiate the value class in the same way as other classes,
+        // it is necessary to call constructor-impl -> box-impl in that order.
         @Suppress("UNCHECKED_CAST")
         return boxMethod.invoke(null, constructorImpl.invoke(null, input)) as T
     }

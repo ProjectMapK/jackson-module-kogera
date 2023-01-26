@@ -67,6 +67,7 @@ internal object ULongDeserializer : StdDeserializer<ULong>(ULong::class.java) {
 
 internal class ValueClassBoxDeserializer<T : Any>(clazz: Class<T>) : StdDeserializer<T>(clazz) {
     private val boxedType = clazz.getDeclaredMethod("unbox-impl").returnType
+
     // Here the PRIMARY constructor is invoked, ignoring visibility.
     // This behavior is the same as the normal class deserialization by kotlin-module.
     private val constructorImpl: Method = clazz.getDeclaredMethod("constructor-impl", boxedType).apply {

@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.module.kotlin.isUnboxableValueClass
+import java.lang.reflect.Method
 
 internal object SequenceDeserializer : StdDeserializer<Sequence<*>>(Sequence::class.java) {
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Sequence<*> {
@@ -63,19 +65,44 @@ internal object ULongDeserializer : StdDeserializer<ULong>(ULong::class.java) {
         ULongChecker.readWithRangeCheck(p, p.bigIntegerValue)
 }
 
+internal class ValueClassBoxDeserializer<T : Any>(clazz: Class<T>) : StdDeserializer<T>(clazz) {
+    private val boxedType = clazz.getDeclaredMethod("unbox-impl").returnType
+
+    // Here the PRIMARY constructor is invoked, ignoring visibility.
+    // This behavior is the same as the normal class deserialization by kotlin-module.
+    private val constructorImpl: Method = clazz.getDeclaredMethod("constructor-impl", boxedType).apply {
+        if (!this.isAccessible) this.isAccessible = true
+    }
+    private val boxMethod: Method = clazz.getDeclaredMethod("box-impl", boxedType).apply {
+        if (!this.isAccessible) this.isAccessible = true
+    }
+
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): T {
+        val input = p.readValueAs(boxedType)
+
+        // To instantiate the value class in the same way as other classes,
+        // it is necessary to call constructor-impl -> box-impl in that order.
+        @Suppress("UNCHECKED_CAST")
+        return boxMethod.invoke(null, constructorImpl.invoke(null, input)) as T
+    }
+}
+
 internal class KotlinDeserializers : Deserializers.Base() {
     override fun findBeanDeserializer(
         type: JavaType,
         config: DeserializationConfig?,
-        beanDesc: BeanDescription?
+        beanDesc: BeanDescription
     ): JsonDeserializer<*>? {
-        return when (type.rawClass) {
-            Sequence::class.java -> SequenceDeserializer
-            Regex::class.java -> RegexDeserializer
-            UByte::class.java -> UByteDeserializer
-            UShort::class.java -> UShortDeserializer
-            UInt::class.java -> UIntDeserializer
-            ULong::class.java -> ULongDeserializer
+        val rawClass = type.rawClass
+
+        return when {
+            rawClass == Sequence::class.java -> SequenceDeserializer
+            rawClass == Regex::class.java -> RegexDeserializer
+            rawClass == UByte::class.java -> UByteDeserializer
+            rawClass == UShort::class.java -> UShortDeserializer
+            rawClass == UInt::class.java -> UIntDeserializer
+            rawClass == ULong::class.java -> ULongDeserializer
+            rawClass.isUnboxableValueClass() -> ValueClassBoxDeserializer(rawClass)
             else -> null
         }
     }

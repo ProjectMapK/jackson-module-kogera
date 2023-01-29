@@ -13,7 +13,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.testPrettyWriter
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
@@ -181,7 +181,6 @@ class Github464 {
         // Currently, there is a situation where the serialization results are different depending on the registration order of the modules.
         // This problem is not addressed because the serializer registered by the user has priority over Extensions.kt,
         // since KotlinModule is basically registered first.
-        @Disabled
         @Test
         fun priorityTest() {
             val km = KotlinModule.Builder().build()
@@ -190,7 +189,7 @@ class Github464 {
 
             // om1(collect) -> """{"1":"2"}"""
             // om2(broken)  -> """{"1":2}"""
-            assertEquals(om1.writeValueAsString(target), om2.writeValueAsString(target))
+            assertNotEquals(om1.writeValueAsString(target), om2.writeValueAsString(target))
         }
     }
 }

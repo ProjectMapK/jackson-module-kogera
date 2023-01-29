@@ -112,7 +112,7 @@ internal class KotlinNamesAnnotationIntrospector(
     }
 
     private fun getValueParameter(a: AnnotatedParameter): ValueParameter? =
-        cache.valueCreatorFromJava(a.owner)?.let { it.valueParameters[a.index] }
+        cache.valueCreatorFromJava(a.owner.annotated as Executable)?.let { it.valueParameters[a.index] }
 
     // returns Converter when the argument on Java is an unboxed value class
     override fun findDeserializationConverter(a: Annotated): Any? = (a as? AnnotatedParameter)?.let { param ->

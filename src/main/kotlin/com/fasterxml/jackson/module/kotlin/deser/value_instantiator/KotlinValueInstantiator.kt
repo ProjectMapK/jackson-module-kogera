@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.ReflectionCache
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueCreator
+import java.lang.reflect.Executable
 
 private fun JsonMappingException.wrapWithPath(refFrom: Any?, refFieldName: String) =
     JsonMappingException.wrapWithPath(this, refFrom, refFieldName)
@@ -33,7 +34,7 @@ internal class KotlinValueInstantiator(
         props: Array<out SettableBeanProperty>,
         buffer: PropertyValueBuffer
     ): Any? {
-        val valueCreator: ValueCreator<*> = cache.valueCreatorFromJava(_withArgsCreator)
+        val valueCreator: ValueCreator<*> = cache.valueCreatorFromJava(_withArgsCreator.annotated as Executable)
             ?: return super.createFromObjectWith(ctxt, props, buffer)
 
         val bucket = valueCreator.generateBucket()

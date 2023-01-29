@@ -1,9 +1,6 @@
-package com.fasterxml.jackson.module.kotlin._integration.deser.value_class.deserializer
+package com.fasterxml.jackson.module.kotlin._integration.deser.value_class
 
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
-import com.fasterxml.jackson.module.kotlin._integration.deser.value_class.NonNullObject
-import com.fasterxml.jackson.module.kotlin._integration.deser.value_class.NullableObject
-import com.fasterxml.jackson.module.kotlin._integration.deser.value_class.Primitive
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Assertions.assertEquals

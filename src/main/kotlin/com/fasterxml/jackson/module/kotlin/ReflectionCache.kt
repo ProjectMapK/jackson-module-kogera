@@ -1,14 +1,13 @@
 package com.fasterxml.jackson.module.kotlin
 
-import com.fasterxml.jackson.databind.introspect.AnnotatedConstructor
-import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
-import com.fasterxml.jackson.databind.introspect.AnnotatedWithParams
 import com.fasterxml.jackson.databind.util.LRUMap
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ConstructorValueCreator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.MethodValueCreator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueCreator
 import kotlinx.metadata.KmClass
+import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
+import java.lang.reflect.Method
 import java.util.Optional
 
 internal class ReflectionCache(reflectionCacheSize: Int) {
@@ -45,36 +44,29 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
     /**
      * return null if declaringClass is not kotlin class
      */
-    fun valueCreatorFromJava(withArgsCreator: AnnotatedWithParams): ValueCreator<*>? {
-        return when (withArgsCreator) {
-            is AnnotatedConstructor -> {
-                val constructor = withArgsCreator.annotated
-
-                creatorCache.get(constructor)
-                    ?: run {
-                        getKmClass(withArgsCreator.declaringClass)?.let {
-                            val value = ConstructorValueCreator(constructor, it)
-                            creatorCache.putIfAbsent(constructor, value) ?: value
-                        }
+    fun valueCreatorFromJava(_creator: Executable): ValueCreator<*>? = when (val creator = _creator) {
+        is Constructor<*> -> {
+            creatorCache.get(creator)
+                ?: run {
+                    getKmClass(creator.declaringClass)?.let {
+                        val value = ConstructorValueCreator(creator, it)
+                        creatorCache.putIfAbsent(creator, value) ?: value
                     }
-            }
-
-            is AnnotatedMethod -> {
-                val method = withArgsCreator.annotated
-
-                creatorCache.get(method)
-                    ?: run {
-                        getKmClass(withArgsCreator.declaringClass)?.let {
-                            val value = MethodValueCreator<Any?>(method, it)
-                            creatorCache.putIfAbsent(method, value) ?: value
-                        }
-                    }
-            }
-
-            else -> throw IllegalStateException(
-                "Expected a constructor or method to create a Kotlin object," +
-                    " instead found ${withArgsCreator.annotated.javaClass.name}"
-            )
+                }
         }
+
+        is Method -> {
+            creatorCache.get(creator)
+                ?: run {
+                    getKmClass(creator.declaringClass)?.let {
+                        val value = MethodValueCreator<Any?>(creator, it)
+                        creatorCache.putIfAbsent(creator, value) ?: value
+                    }
+                }
+        }
+
+        else -> throw IllegalStateException(
+            "Expected a constructor or method to create a Kotlin object, instead found ${creator.javaClass.name}"
+        )
     } // we cannot reflect this method so do the default Java-ish behavior
 }

@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.kotlin.deser.deserializers
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.DeserializationConfig
@@ -87,6 +88,10 @@ internal class ValueClassBoxDeserializer<T : Any>(clazz: Class<T>) : StdDeserial
     }
 }
 
+private fun hasJsonCreator(valueClass: Class<*>): Boolean = valueClass.declaredMethods.any { method ->
+    method.annotations.any { it is JsonCreator && it.mode != JsonCreator.Mode.DISABLED }
+}
+
 internal class KotlinDeserializers : Deserializers.Base() {
     override fun findBeanDeserializer(
         type: JavaType,
@@ -102,7 +107,7 @@ internal class KotlinDeserializers : Deserializers.Base() {
             rawClass == UShort::class.java -> UShortDeserializer
             rawClass == UInt::class.java -> UIntDeserializer
             rawClass == ULong::class.java -> ULongDeserializer
-            rawClass.isUnboxableValueClass() -> ValueClassBoxDeserializer(rawClass)
+            rawClass.isUnboxableValueClass() && !hasJsonCreator(rawClass) -> ValueClassBoxDeserializer(rawClass)
             else -> null
         }
     }

@@ -1,18 +1,18 @@
-package com.fasterxml.jackson.module.kotlin._integration.deser.value_class.deserializer
+package com.fasterxml.jackson.module.kotlin._integration.deser.value_class
 
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
-import com.fasterxml.jackson.module.kotlin._integration.deser.value_class.NonNullObject
-import com.fasterxml.jackson.module.kotlin._integration.deser.value_class.NullableObject
-import com.fasterxml.jackson.module.kotlin._integration.deser.value_class.Primitive
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.lang.reflect.InvocationTargetException
 
 class NoSpecifiedTest {
     companion object {
         val mapper = jacksonObjectMapper()
+        val throwable = IllegalArgumentException("test")
     }
 
     data class Dst(
@@ -38,6 +38,19 @@ class NoSpecifiedTest {
         val result = mapper.readValue<Dst>(src)
 
         assertEquals(expected, result)
+    }
+
+    @JvmInline
+    value class HasCheck(val value: Int) {
+        init {
+            if (value < 0) throw throwable
+        }
+    }
+
+    @Test
+    fun callCheckTest() {
+        val e = assertThrows<InvocationTargetException> { mapper.readValue<HasCheck>("-1") }
+        assertTrue(e.cause === throwable)
     }
 
     // region Kogera42

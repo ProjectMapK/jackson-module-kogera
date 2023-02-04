@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_buc
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.BucketGenerator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.calcMaskSize
 import com.fasterxml.jackson.module.kotlin.findKmConstructor
+import com.fasterxml.jackson.module.kotlin.getDeclaredConstructorBy
 import com.fasterxml.jackson.module.kotlin.hasVarargParam
 import kotlinx.metadata.KmClass
 import java.lang.reflect.Constructor
@@ -34,6 +35,7 @@ internal class ConstructorValueCreator<T : Any>(
     private val defaultConstructor: Constructor<T> by lazy {
         val maskSize = calcMaskSize(constructor.parameters.size)
 
+        @Suppress("UNCHECKED_CAST")
         val defaultTypes = constructor.parameterTypes.let {
             val parameterSize = it.size
             val temp = it.copyOf(parameterSize + maskSize + 1)
@@ -43,9 +45,9 @@ internal class ConstructorValueCreator<T : Any>(
             temp[parameterSize + maskSize] = defaultConstructorMarker
 
             temp
-        }
+        } as Array<Class<*>>
 
-        declaringClass.getDeclaredConstructor(*defaultTypes).apply {
+        declaringClass.getDeclaredConstructorBy(defaultTypes).apply {
             if (!this.isAccessible) this.isAccessible = true
         }
     }

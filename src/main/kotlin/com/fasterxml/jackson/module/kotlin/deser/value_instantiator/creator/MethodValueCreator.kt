@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.call
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.ArgumentBucket
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.BucketGenerator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.calcMaskSize
+import com.fasterxml.jackson.module.kotlin.getDeclaredMethodBy
 import com.fasterxml.jackson.module.kotlin.hasVarargParam
 import com.fasterxml.jackson.module.kotlin.toKmClass
 import com.fasterxml.jackson.module.kotlin.toSignature
@@ -51,6 +52,8 @@ internal class MethodValueCreator<T>(private val method: Method, declaringKmClas
     private val defaultCaller: (args: ArgumentBucket) -> Any? by lazy {
         val valueParameterSize = method.parameterTypes.size
         val maskSize = calcMaskSize(valueParameterSize)
+
+        @Suppress("UNCHECKED_CAST")
         val defaultTypes = method.parameterTypes.let { parameterTypes ->
             // companion object instance(1) + parameterSize + maskSize + marker(1)
             val temp = arrayOfNulls<Class<*>>(1 + valueParameterSize + maskSize + 1)
@@ -61,9 +64,9 @@ internal class MethodValueCreator<T>(private val method: Method, declaringKmClas
             }
             temp[valueParameterSize + maskSize + 1] = Object::class.java // maker
             temp
-        }
-        val defaultMethod = companionObjectClass.getDeclaredMethod("${callableName}\$default", *defaultTypes)
+        } as Array<Class<*>>
 
+        val defaultMethod = companionObjectClass.getDeclaredMethodBy("${callableName}\$default", defaultTypes)
         val companionObject = companionField.get(null)
 
         return@lazy {

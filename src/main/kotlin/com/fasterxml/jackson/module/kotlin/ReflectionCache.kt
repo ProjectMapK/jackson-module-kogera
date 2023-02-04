@@ -51,7 +51,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
     /**
      * return null if declaringClass is not kotlin class
      */
-    fun valueCreatorFromJava(_creator: Executable): ValueCreator<*>? = when (val creator = _creator) {
+    fun valueCreatorFromJava(creator: Executable): ValueCreator<*>? = when (creator) {
         is Constructor<*> -> {
             creatorCache.get(creator)
                 ?: run {

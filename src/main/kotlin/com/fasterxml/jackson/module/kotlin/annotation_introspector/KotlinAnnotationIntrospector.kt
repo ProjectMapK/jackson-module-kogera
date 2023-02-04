@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.kotlin
+package com.fasterxml.jackson.module.kotlin.annotation_introspector
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -10,6 +10,11 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import com.fasterxml.jackson.databind.jsontype.NamedType
+import com.fasterxml.jackson.module.kotlin.ReflectionCache
+import com.fasterxml.jackson.module.kotlin.findKmConstructor
+import com.fasterxml.jackson.module.kotlin.isNullable
+import com.fasterxml.jackson.module.kotlin.reconstructClass
+import com.fasterxml.jackson.module.kotlin.toSignature
 import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmProperty

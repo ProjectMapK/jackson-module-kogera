@@ -7,6 +7,8 @@ import com.fasterxml.jackson.module.kotlin.KotlinFeature.NullToEmptyCollection
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.NullToEmptyMap
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.SingletonSupport
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.StrictNullChecks
+import com.fasterxml.jackson.module.kotlin.annotation_introspector.KotlinAnnotationIntrospector
+import com.fasterxml.jackson.module.kotlin.annotation_introspector.KotlinNamesAnnotationIntrospector
 import com.fasterxml.jackson.module.kotlin.deser.deserializers.KotlinDeserializers
 import com.fasterxml.jackson.module.kotlin.deser.deserializers.KotlinKeyDeserializers
 import com.fasterxml.jackson.module.kotlin.deser.singleton_support.KotlinBeanDeserializerModifier

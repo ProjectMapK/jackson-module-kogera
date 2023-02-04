@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.kotlin
+package com.fasterxml.jackson.module.kotlin.annotation_introspector
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -13,11 +13,20 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer
 import com.fasterxml.jackson.databind.util.Converter
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.ReflectionCache
 import com.fasterxml.jackson.module.kotlin.deser.CollectionValueStrictNullChecksConverter
 import com.fasterxml.jackson.module.kotlin.deser.MapValueStrictNullChecksConverter
 import com.fasterxml.jackson.module.kotlin.deser.ValueClassUnboxConverter
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueParameter
+import com.fasterxml.jackson.module.kotlin.findKmConstructor
+import com.fasterxml.jackson.module.kotlin.findPropertyByGetter
+import com.fasterxml.jackson.module.kotlin.isNullable
+import com.fasterxml.jackson.module.kotlin.isUnboxableValueClass
+import com.fasterxml.jackson.module.kotlin.reconstructClassOrNull
 import com.fasterxml.jackson.module.kotlin.ser.ValueClassBoxConverter
+import com.fasterxml.jackson.module.kotlin.toKmClass
+import com.fasterxml.jackson.module.kotlin.toSignature
 import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmClassifier

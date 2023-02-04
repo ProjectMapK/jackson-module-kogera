@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 abstract class SpreadWrapper {
     private SpreadWrapper() {}
 
+    @NotNull
     static <T> T newInstance(
             @NotNull Constructor<T> constructor,
             @NotNull Object[] initargs
@@ -17,6 +18,7 @@ abstract class SpreadWrapper {
         return constructor.newInstance(initargs);
     }
 
+    @Nullable
     static Object invoke(
             @NotNull Method method,
             @Nullable Object instance,

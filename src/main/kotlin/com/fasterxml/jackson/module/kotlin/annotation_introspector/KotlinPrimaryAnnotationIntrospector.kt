@@ -68,6 +68,8 @@ internal class KotlinPrimaryAnnotationIntrospector(
      * Subclasses can be detected automatically for sealed classes, since all possible subclasses are known
      * at compile-time to Kotlin. This makes [com.fasterxml.jackson.annotation.JsonSubTypes] redundant.
      */
+    // The definition location was not changed from kotlin-module because
+    // the result was the same whether it was defined in Primary or Fallback.
     override fun findSubtypes(a: Annotated): List<NamedType>? = cache.getKmClass(a.rawType)?.let { kmClass ->
         kmClass.sealedSubclasses.map { NamedType(it.reconstructClass()) }.ifEmpty { null }
     }

@@ -17,7 +17,7 @@ private fun AnnotatedConstructor.injectSyntheticAnnotations() {
     val syntheticParams = constructor.parameterTypes.copyOf(constructor.parameterCount + 1)
         .apply { this[constructor.parameterCount] = defaultConstructorMarker } as Array<Class<*>>
     // Try to get syntheticConstructor, and if not, do nothing.
-    val syntheticConstructor = runCatching { declaringClass.getDeclaredConstructor(*syntheticParams) }
+    val syntheticConstructor = runCatching { declaringClass.getDeclaredConstructorBy(syntheticParams) }
         .getOrNull()
         ?: return
 

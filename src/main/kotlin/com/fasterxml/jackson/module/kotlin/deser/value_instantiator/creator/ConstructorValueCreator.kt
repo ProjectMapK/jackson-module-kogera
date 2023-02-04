@@ -1,10 +1,12 @@
 package com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator
 
+import com.fasterxml.jackson.module.kotlin.call
 import com.fasterxml.jackson.module.kotlin.defaultConstructorMarker
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.ArgumentBucket
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.BucketGenerator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.calcMaskSize
 import com.fasterxml.jackson.module.kotlin.findKmConstructor
+import com.fasterxml.jackson.module.kotlin.getDeclaredConstructorBy
 import com.fasterxml.jackson.module.kotlin.hasVarargParam
 import kotlinx.metadata.KmClass
 import java.lang.reflect.Constructor
@@ -33,6 +35,7 @@ internal class ConstructorValueCreator<T : Any>(
     private val defaultConstructor: Constructor<T> by lazy {
         val maskSize = calcMaskSize(constructor.parameters.size)
 
+        @Suppress("UNCHECKED_CAST")
         val defaultTypes = constructor.parameterTypes.let {
             val parameterSize = it.size
             val temp = it.copyOf(parameterSize + maskSize + 1)
@@ -42,15 +45,15 @@ internal class ConstructorValueCreator<T : Any>(
             temp[parameterSize + maskSize] = defaultConstructorMarker
 
             temp
-        }
+        } as Array<Class<*>>
 
-        declaringClass.getDeclaredConstructor(*defaultTypes).apply {
+        declaringClass.getDeclaredConstructorBy(defaultTypes).apply {
             if (!this.isAccessible) this.isAccessible = true
         }
     }
 
     override fun callBy(args: ArgumentBucket): T = if (args.isFullInitialized) {
-        SpreadWrapper.newInstance(constructor, args.arguments)
+        constructor.call(args.arguments)
     } else {
         val valueParameterSize = args.valueParameterSize
         val maskSize = args.masks.size
@@ -61,6 +64,6 @@ internal class ConstructorValueCreator<T : Any>(
             defaultArgs[i + valueParameterSize] = args.masks[i]
         }
 
-        SpreadWrapper.newInstance(defaultConstructor, defaultArgs)
+        defaultConstructor.call(defaultArgs)
     }
 }

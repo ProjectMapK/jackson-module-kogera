@@ -15,7 +15,7 @@ class SpreadWrapper {
         return constructor.newInstance(initargs);
     }
 
-    public static Object invoke(
+    static Object invoke(
             @NotNull Method method,
             @Nullable Object instance,
             @NotNull Object[] args

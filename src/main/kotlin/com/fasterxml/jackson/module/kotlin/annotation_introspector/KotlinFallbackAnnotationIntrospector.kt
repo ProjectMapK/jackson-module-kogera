@@ -40,7 +40,10 @@ import java.lang.reflect.Executable
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
-internal class KotlinNamesAnnotationIntrospector(
+// AnnotationIntrospector to be run after default AnnotationIntrospector
+// (in most cases, JacksonAnnotationIntrospector).
+// Original name: KotlinNamesAnnotationIntrospector
+internal class KotlinFallbackAnnotationIntrospector(
     val module: KotlinModule,
     private val strictNullChecks: Boolean,
     private val cache: ReflectionCache

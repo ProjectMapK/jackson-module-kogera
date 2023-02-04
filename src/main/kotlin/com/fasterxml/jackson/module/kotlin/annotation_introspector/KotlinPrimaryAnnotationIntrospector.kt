@@ -26,7 +26,10 @@ import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 
-internal class KotlinAnnotationIntrospector(
+// AnnotationIntrospector that overrides the behavior of the default AnnotationIntrospector
+// (in most cases, JacksonAnnotationIntrospector).
+// Original name: KotlinAnnotationIntrospector
+internal class KotlinPrimaryAnnotationIntrospector(
     private val context: Module.SetupContext,
     private val nullToEmptyCollection: Boolean,
     private val nullToEmptyMap: Boolean,

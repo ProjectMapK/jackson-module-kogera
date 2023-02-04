@@ -7,6 +7,8 @@ import com.fasterxml.jackson.module.kotlin.KotlinFeature.NullToEmptyCollection
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.NullToEmptyMap
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.SingletonSupport
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.StrictNullChecks
+import com.fasterxml.jackson.module.kotlin.annotation_introspector.KotlinFallbackAnnotationIntrospector
+import com.fasterxml.jackson.module.kotlin.annotation_introspector.KotlinPrimaryAnnotationIntrospector
 import com.fasterxml.jackson.module.kotlin.deser.deserializers.KotlinDeserializers
 import com.fasterxml.jackson.module.kotlin.deser.deserializers.KotlinKeyDeserializers
 import com.fasterxml.jackson.module.kotlin.deser.singleton_support.KotlinBeanDeserializerModifier
@@ -73,9 +75,9 @@ public class KotlinModule private constructor(
         }
 
         context.insertAnnotationIntrospector(
-            KotlinAnnotationIntrospector(context, nullToEmptyCollection, nullToEmptyMap, cache)
+            KotlinPrimaryAnnotationIntrospector(context, nullToEmptyCollection, nullToEmptyMap, cache)
         )
-        context.appendAnnotationIntrospector(KotlinNamesAnnotationIntrospector(this, strictNullChecks, cache))
+        context.appendAnnotationIntrospector(KotlinFallbackAnnotationIntrospector(this, strictNullChecks, cache))
 
         context.setClassIntrospector(KotlinClassIntrospector)
 

@@ -1,11 +1,8 @@
-package com.fasterxml.jackson.module.kotlin
+package com.fasterxml.jackson.module.kotlin.annotation_introspector
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonSerializer
-import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.introspect.Annotated
-import com.fasterxml.jackson.databind.introspect.AnnotatedConstructor
 import com.fasterxml.jackson.databind.introspect.AnnotatedField
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
@@ -13,25 +10,33 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer
 import com.fasterxml.jackson.databind.util.Converter
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.ReflectionCache
 import com.fasterxml.jackson.module.kotlin.deser.CollectionValueStrictNullChecksConverter
 import com.fasterxml.jackson.module.kotlin.deser.MapValueStrictNullChecksConverter
 import com.fasterxml.jackson.module.kotlin.deser.ValueClassUnboxConverter
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueParameter
+import com.fasterxml.jackson.module.kotlin.findKmConstructor
+import com.fasterxml.jackson.module.kotlin.findPropertyByGetter
+import com.fasterxml.jackson.module.kotlin.isNullable
+import com.fasterxml.jackson.module.kotlin.isUnboxableValueClass
+import com.fasterxml.jackson.module.kotlin.reconstructClassOrNull
 import com.fasterxml.jackson.module.kotlin.ser.ValueClassBoxConverter
-import kotlinx.metadata.Flag
+import com.fasterxml.jackson.module.kotlin.toKmClass
+import com.fasterxml.jackson.module.kotlin.toSignature
 import kotlinx.metadata.KmClass
-import kotlinx.metadata.KmClassifier
-import kotlinx.metadata.KmValueParameter
 import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.setterSignature
 import kotlinx.metadata.jvm.signature
-import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
-internal class KotlinNamesAnnotationIntrospector(
+// AnnotationIntrospector to be run after default AnnotationIntrospector
+// (in most cases, JacksonAnnotationIntrospector).
+// Original name: KotlinNamesAnnotationIntrospector
+internal class KotlinFallbackAnnotationIntrospector(
     val module: KotlinModule,
     private val strictNullChecks: Boolean,
     private val cache: ReflectionCache
@@ -97,19 +102,6 @@ internal class KotlinNamesAnnotationIntrospector(
             val methodSignature = m.annotated.toSignature()
             kmClass.properties.none { it.setterSignature == methodSignature }
         } ?: false
-
-    override fun findCreatorAnnotation(config: MapperConfig<*>, ann: Annotated): JsonCreator.Mode? {
-        (ann as? AnnotatedConstructor)?.takeIf { 0 < it.parameterCount } ?: return null
-
-        val declaringClass = ann.declaringClass
-        val kmClass = declaringClass
-            ?.takeIf { !it.isEnum }
-            ?.let { cache.getKmClass(it) }
-            ?: return null
-
-        return JsonCreator.Mode.DEFAULT
-            .takeIf { ann.annotated.isPrimarilyConstructorOf(kmClass) && !hasCreator(declaringClass, kmClass) }
-    }
 
     private fun getValueParameter(a: AnnotatedParameter): ValueParameter? =
         cache.valueCreatorFromJava(a.owner.annotated as Executable)?.let { it.valueParameters[a.index] }
@@ -181,46 +173,6 @@ private fun ValueParameter.createStrictNullChecksConverterOrNull(rawType: Class<
             MapValueStrictNullChecksConverter(this)
         else -> null
     }
-}
-
-private fun Constructor<*>.isPrimarilyConstructorOf(kmClass: KmClass): Boolean = kmClass.findKmConstructor(this)
-    ?.let { !Flag.Constructor.IS_SECONDARY(it.flags) || kmClass.constructors.size == 1 }
-    ?: false
-
-private fun AnnotatedElement.hasCreatorAnnotation(): Boolean =
-    annotations.any { it is JsonCreator && it.mode != JsonCreator.Mode.DISABLED }
-
-private fun KmClassifier.isString(): Boolean = this is KmClassifier.Class && this.name == "kotlin/String"
-
-private fun isPossibleSingleString(
-    kotlinParams: List<KmValueParameter>,
-    javaFunction: Executable,
-    propertyNames: Set<String>
-): Boolean = kotlinParams.size == 1 &&
-    kotlinParams[0].let { it.name !in propertyNames && it.type.classifier.isString() } &&
-    javaFunction.parameters[0].annotations.none { it is JsonProperty }
-
-private fun hasCreatorConstructor(clazz: Class<*>, kmClass: KmClass, propertyNames: Set<String>): Boolean {
-    val kmConstructorMap = kmClass.constructors.associateBy { it.signature?.desc }
-
-    return clazz.constructors.any { constructor ->
-        val kmConstructor = kmConstructorMap[constructor.toSignature().desc] ?: return@any false
-
-        !isPossibleSingleString(kmConstructor.valueParameters, constructor, propertyNames) &&
-            constructor.hasCreatorAnnotation()
-    }
-}
-
-// In the original, `isPossibleSingleString` comparison was disabled,
-// and if enabled, the behavior would have changed, so the comparison is skipped.
-private fun hasCreatorFunction(clazz: Class<*>, kmClass: KmClass): Boolean = kmClass.companionObject
-    ?.let { companion ->
-        clazz.getDeclaredField(companion).type.declaredMethods.any { it.hasCreatorAnnotation() }
-    } ?: false
-
-private fun hasCreator(clazz: Class<*>, kmClass: KmClass): Boolean {
-    val propertyNames = kmClass.properties.map { it.name }.toSet()
-    return hasCreatorConstructor(clazz, kmClass, propertyNames) || hasCreatorFunction(clazz, kmClass)
 }
 
 // Determine if the `unbox` result of `value class` is `nullable

@@ -3,7 +3,6 @@ package com.fasterxml.jackson.module.kotlin.annotation_introspector
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.introspect.Annotated
-import com.fasterxml.jackson.databind.introspect.AnnotatedField
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
@@ -47,10 +46,6 @@ internal class KotlinFallbackAnnotationIntrospector(
     ): String? = cache.getKmClass(member.declaringClass)?.let { kmClass ->
         when (member) {
             is AnnotatedMethod -> kmClass.findPropertyByGetter(member.annotated)?.name
-            is AnnotatedField -> {
-                val fieldSignature = member.annotated.toSignature()
-                kmClass.properties.find { it.fieldSignature == fieldSignature }?.name
-            }
             is AnnotatedParameter -> findKotlinParameterName(member, kmClass)
             else -> null
         }

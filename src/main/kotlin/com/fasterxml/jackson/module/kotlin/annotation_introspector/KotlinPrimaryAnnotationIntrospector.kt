@@ -64,16 +64,6 @@ internal class KotlinPrimaryAnnotationIntrospector(
         null
     }
 
-    /**
-     * Subclasses can be detected automatically for sealed classes, since all possible subclasses are known
-     * at compile-time to Kotlin. This makes [com.fasterxml.jackson.annotation.JsonSubTypes] redundant.
-     */
-    // The definition location was not changed from kotlin-module because
-    // the result was the same whether it was defined in Primary or Fallback.
-    override fun findSubtypes(a: Annotated): List<NamedType>? = cache.getKmClass(a.rawType)?.let { kmClass ->
-        kmClass.sealedSubclasses.map { NamedType(it.reconstructClass()) }.ifEmpty { null }
-    }
-
     private fun AnnotatedField.hasRequiredMarker(kmClass: KmClass): Boolean? {
         val member = annotated
 
@@ -140,6 +130,16 @@ internal class KotlinPrimaryAnnotationIntrospector(
         }
 
         return requiredAnnotationOrNullability(byAnnotation, byNullability)
+    }
+
+    /**
+     * Subclasses can be detected automatically for sealed classes, since all possible subclasses are known
+     * at compile-time to Kotlin. This makes [com.fasterxml.jackson.annotation.JsonSubTypes] redundant.
+     */
+    // The definition location was not changed from kotlin-module because
+    // the result was the same whether it was defined in Primary or Fallback.
+    override fun findSubtypes(a: Annotated): List<NamedType>? = cache.getKmClass(a.rawType)?.let { kmClass ->
+        kmClass.sealedSubclasses.map { NamedType(it.reconstructClass()) }.ifEmpty { null }
     }
 
     // Return Mode.DEFAULT if ann is a Primary Constructor and the condition is satisfied.

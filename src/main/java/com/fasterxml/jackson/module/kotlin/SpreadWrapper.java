@@ -7,7 +7,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-class SpreadWrapper {
+abstract class SpreadWrapper {
+    private SpreadWrapper() {}
+
     static <T> T newInstance(
             @NotNull Constructor<T> constructor,
             @NotNull Object[] initargs

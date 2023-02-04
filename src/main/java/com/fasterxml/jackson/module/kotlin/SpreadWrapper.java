@@ -26,4 +26,21 @@ abstract class SpreadWrapper {
     ) throws InvocationTargetException, IllegalAccessException {
         return method.invoke(instance, args);
     }
+
+    @NotNull
+    static <T> Constructor<T> getDeclaredConstructor(
+            @NotNull Class<T> clazz,
+            @NotNull Class<?>[] parameterTypes
+    ) throws NoSuchMethodException {
+        return clazz.getDeclaredConstructor(parameterTypes);
+    }
+
+    @NotNull
+    static Method getDeclaredMethod(
+            @NotNull Class<?> clazz,
+            @NotNull String name,
+            @NotNull Class<?>[] parameterTypes
+    ) throws NoSuchMethodException {
+        return clazz.getDeclaredMethod(name, parameterTypes);
+    }
 }

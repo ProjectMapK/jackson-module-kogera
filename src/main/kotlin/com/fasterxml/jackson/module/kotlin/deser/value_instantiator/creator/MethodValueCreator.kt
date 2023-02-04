@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator
 
+import com.fasterxml.jackson.module.kotlin.call
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.ArgumentBucket
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.BucketGenerator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.calcMaskSize
@@ -73,14 +74,14 @@ internal class MethodValueCreator<T>(private val method: Method, declaringKmClas
                 defaultArgs[i + valueParameterSize + 1] = it.masks[i]
             }
 
-            SpreadWrapper.invoke(defaultMethod, null, defaultArgs)
+            defaultMethod.call(null, defaultArgs)
         }
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun callBy(args: ArgumentBucket): T = if (args.isFullInitialized) {
         // It calls static method for simplicity, and is a little slower in terms of speed.
-        SpreadWrapper.invoke(method, null, args.arguments)
+        method.call(null, args.arguments)
     } else {
         defaultCaller(args)
     } as T

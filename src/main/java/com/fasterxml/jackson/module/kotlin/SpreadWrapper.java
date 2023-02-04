@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator;
+package com.fasterxml.jackson.module.kotlin;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

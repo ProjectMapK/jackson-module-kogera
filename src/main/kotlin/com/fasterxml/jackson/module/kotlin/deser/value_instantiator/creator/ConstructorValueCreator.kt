@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator
 
+import com.fasterxml.jackson.module.kotlin.call
 import com.fasterxml.jackson.module.kotlin.defaultConstructorMarker
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.ArgumentBucket
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.argument_bucket.BucketGenerator
@@ -50,7 +51,7 @@ internal class ConstructorValueCreator<T : Any>(
     }
 
     override fun callBy(args: ArgumentBucket): T = if (args.isFullInitialized) {
-        SpreadWrapper.newInstance(constructor, args.arguments)
+        constructor.call(args.arguments)
     } else {
         val valueParameterSize = args.valueParameterSize
         val maskSize = args.masks.size
@@ -61,6 +62,6 @@ internal class ConstructorValueCreator<T : Any>(
             defaultArgs[i + valueParameterSize] = args.masks[i]
         }
 
-        SpreadWrapper.newInstance(defaultConstructor, defaultArgs)
+        defaultConstructor.call(defaultArgs)
     }
 }

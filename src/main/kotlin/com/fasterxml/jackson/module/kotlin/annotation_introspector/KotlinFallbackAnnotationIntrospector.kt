@@ -21,7 +21,6 @@ import com.fasterxml.jackson.module.kotlin.isNullable
 import com.fasterxml.jackson.module.kotlin.isUnboxableValueClass
 import com.fasterxml.jackson.module.kotlin.reconstructClassOrNull
 import com.fasterxml.jackson.module.kotlin.ser.ValueClassBoxConverter
-import com.fasterxml.jackson.module.kotlin.toKmClass
 import com.fasterxml.jackson.module.kotlin.toSignature
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.jvm.fieldSignature
@@ -140,6 +139,11 @@ internal class KotlinFallbackAnnotationIntrospector(
     override fun findSerializationConverter(a: Annotated): Converter<*, *>? = (a as? AnnotatedMethod)
         ?.let { _ -> a.findValueClassBoxConverter { it.isUnboxableValueClass() } }
 
+    // Determine if the `unbox` result of `value class` is `nullable
+    // @see findNullSerializer
+    private fun Class<*>.requireRebox(): Boolean = isUnboxableValueClass() &&
+        cache.getKmClass(this)!!.properties.first { it.fieldSignature != null }.returnType.isNullable()
+
     // Perform proper serialization even if the value wrapped by the value class is null.
     // If value is a non-null object type, it must not be reboxing.
     override fun findNullSerializer(am: Annotated): JsonSerializer<*>? = (am as? AnnotatedMethod)?.let { _ ->
@@ -169,8 +173,3 @@ private fun ValueParameter.createStrictNullChecksConverterOrNull(rawType: Class<
         else -> null
     }
 }
-
-// Determine if the `unbox` result of `value class` is `nullable
-// @see KotlinNamesAnnotationIntrospector.findNullSerializer
-private fun Class<*>.requireRebox(): Boolean = isUnboxableValueClass() &&
-    toKmClass()!!.properties.first { it.fieldSignature != null }.returnType.isNullable()

@@ -54,6 +54,7 @@ private fun StringBuilder.appendDescriptor(clazz: Class<*>): StringBuilder = whe
     else -> append("L${clazz.descName()};")
 }
 
+// -> this.joinToString(separator = "", prefix = "(", postfix = ")") { it.descriptor }
 internal fun Array<Class<*>>.toDescBuilder(): StringBuilder = this
     .fold(StringBuilder("(")) { acc, cur -> acc.appendDescriptor(cur) }
     .append(')')

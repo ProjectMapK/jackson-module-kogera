@@ -38,21 +38,39 @@ private val primitiveClassToDesc by lazy {
     )
 }
 
+// -> this.name.replace(".", "/")
+private fun Class<*>.descName(): String {
+    val replaced = name.toCharArray().apply {
+        for (i in indices) {
+            if (this[i] == '.') this[i] = '/'
+        }
+    }
+    return String(replaced)
+}
+
+private fun StringBuilder.appendDescriptor(clazz: Class<*>): StringBuilder = when {
+    clazz.isPrimitive -> append(primitiveClassToDesc.getValue(clazz))
+    clazz.isArray -> append('[').appendDescriptor(clazz.componentType)
+    else -> append("L${clazz.descName()};")
+}
+
+// -> this.joinToString(separator = "", prefix = "(", postfix = ")") { it.descriptor }
+internal fun Array<Class<*>>.toDescBuilder(): StringBuilder = this
+    .fold(StringBuilder("(")) { acc, cur -> acc.appendDescriptor(cur) }
+    .append(')')
+
+internal fun Constructor<*>.toSignature(): JvmMethodSignature =
+    JvmMethodSignature("<init>", parameterTypes.toDescBuilder().append('V').toString())
+
+internal fun Method.toSignature(): JvmMethodSignature =
+    JvmMethodSignature(this.name, parameterTypes.toDescBuilder().appendDescriptor(this.returnType).toString())
+
 private val Class<*>.descriptor: String
     get() = when {
         isPrimitive -> primitiveClassToDesc.getValue(this).toString()
         isArray -> "[${componentType.descriptor}"
-        else -> "L${name.replace('.', '/')};"
+        else -> "L${this.descName()};"
     }
-
-internal fun Array<Class<*>>.toDescString(): String =
-    joinToString(separator = "", prefix = "(", postfix = ")") { it.descriptor }
-
-internal fun Constructor<*>.toSignature(): JvmMethodSignature =
-    JvmMethodSignature("<init>", parameterTypes.toDescString() + "V")
-
-internal fun Method.toSignature(): JvmMethodSignature =
-    JvmMethodSignature(this.name, parameterTypes.toDescString() + this.returnType.descriptor)
 
 internal fun Field.toSignature(): JvmFieldSignature =
     JvmFieldSignature(this.name, this.type.descriptor)
@@ -66,16 +84,38 @@ internal val defaultConstructorMarker: Class<*> by lazy {
 
 // Kotlin-specific types such as kotlin.String will result in an error,
 // but are ignored because they do not result in errors in internal use cases.
-internal fun String.reconstructClass(): Class<*> = Class.forName(this.replace(".", "$").replace("/", "."))
+internal fun String.reconstructClass(): Class<*> {
+    // -> this.replace(".", "$").replace("/", ".")
+    val replaced = this.toCharArray().apply {
+        for (i in indices) {
+            val c = this[i]
+
+            if (c == '.') {
+                this[i] = '$'
+            } else if (c == '/') {
+                this[i] = '.'
+            }
+        }
+    }
+
+    return Class.forName(String(replaced))
+}
 
 internal fun KmType.reconstructClassOrNull(): Class<*>? = (classifier as? KmClassifier.Class)
     ?.let { kotlin.runCatching { it.name.reconstructClass() }.getOrNull() }
 
 internal fun KmClass.findKmConstructor(constructor: Constructor<*>): KmConstructor? {
-    val descHead = constructor.parameterTypes.toDescString()
-    val desc = descHead + "V"
+    val descHead = constructor.parameterTypes.toDescBuilder()
+    val desc = CharArray(descHead.length + 1).apply {
+        descHead.getChars(0, descHead.length, this, 0)
+        this[this.lastIndex] = 'V'
+    }.let { String(it) }
+
     // Only constructors that take a value class as an argument have a DefaultConstructorMarker on the Signature.
-    val valueDesc = descHead.dropLast(1) + "Lkotlin/jvm/internal/DefaultConstructorMarker;)V"
+    val valueDesc = descHead
+        .deleteCharAt(descHead.length - 1)
+        .append("Lkotlin/jvm/internal/DefaultConstructorMarker;)V")
+        .toString()
 
     // Constructors always have the same name, so only desc is compared
     return constructors.find {

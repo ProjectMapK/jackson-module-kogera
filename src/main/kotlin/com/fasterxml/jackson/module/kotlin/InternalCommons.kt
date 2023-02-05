@@ -38,29 +38,28 @@ private val primitiveClassToDesc by lazy {
     )
 }
 
-private val Class<*>.descriptor: String
-    get() = when {
-        isPrimitive -> primitiveClassToDesc.getValue(this).toString()
-        isArray -> "[${componentType.descriptor}"
-        else -> "L${name.replace('.', '/')};"
-    }
-
 private fun StringBuilder.appendDescriptor(clazz: Class<*>): StringBuilder = when {
     clazz.isPrimitive -> append(primitiveClassToDesc.getValue(clazz))
     clazz.isArray -> append('[').appendDescriptor(clazz.componentType)
     else -> append("L${clazz.name.replace('.', '/')};")
 }
 
-internal fun Array<Class<*>>.toDescString(): String = this
+internal fun Array<Class<*>>.toDescBuilder(): StringBuilder = this
     .fold(StringBuilder("(")) { acc, cur -> acc.appendDescriptor(cur) }
     .append(')')
-    .toString()
 
 internal fun Constructor<*>.toSignature(): JvmMethodSignature =
-    JvmMethodSignature("<init>", parameterTypes.toDescString() + "V")
+    JvmMethodSignature("<init>", parameterTypes.toDescBuilder().append('V').toString())
 
 internal fun Method.toSignature(): JvmMethodSignature =
-    JvmMethodSignature(this.name, parameterTypes.toDescString() + this.returnType.descriptor)
+    JvmMethodSignature(this.name, parameterTypes.toDescBuilder().appendDescriptor(this.returnType).toString())
+
+private val Class<*>.descriptor: String
+    get() = when {
+        isPrimitive -> primitiveClassToDesc.getValue(this).toString()
+        isArray -> "[${componentType.descriptor}"
+        else -> "L${name.replace('.', '/')};"
+    }
 
 internal fun Field.toSignature(): JvmFieldSignature =
     JvmFieldSignature(this.name, this.type.descriptor)
@@ -80,10 +79,17 @@ internal fun KmType.reconstructClassOrNull(): Class<*>? = (classifier as? KmClas
     ?.let { kotlin.runCatching { it.name.reconstructClass() }.getOrNull() }
 
 internal fun KmClass.findKmConstructor(constructor: Constructor<*>): KmConstructor? {
-    val descHead = constructor.parameterTypes.toDescString()
-    val desc = descHead + "V"
+    val descHead = constructor.parameterTypes.toDescBuilder()
+    val desc = CharArray(descHead.length + 1).apply {
+        descHead.getChars(0, descHead.length, this, 0)
+        this[this.lastIndex] = 'V'
+    }.let { String(it) }
+
     // Only constructors that take a value class as an argument have a DefaultConstructorMarker on the Signature.
-    val valueDesc = descHead.dropLast(1) + "Lkotlin/jvm/internal/DefaultConstructorMarker;)V"
+    val valueDesc = descHead
+        .deleteCharAt(descHead.length - 1)
+        .append("Lkotlin/jvm/internal/DefaultConstructorMarker;)V")
+        .toString()
 
     // Constructors always have the same name, so only desc is compared
     return constructors.find {

@@ -38,10 +38,20 @@ private val primitiveClassToDesc by lazy {
     )
 }
 
+// -> this.name.replace(".", "/")
+private fun Class<*>.descName(): String {
+    val replaced = name.toCharArray().apply {
+        for (i in indices) {
+            if (this[i] == '.') this[i] = '/'
+        }
+    }
+    return String(replaced)
+}
+
 private fun StringBuilder.appendDescriptor(clazz: Class<*>): StringBuilder = when {
     clazz.isPrimitive -> append(primitiveClassToDesc.getValue(clazz))
     clazz.isArray -> append('[').appendDescriptor(clazz.componentType)
-    else -> append("L${clazz.name.replace('.', '/')};")
+    else -> append("L${clazz.descName()};")
 }
 
 internal fun Array<Class<*>>.toDescBuilder(): StringBuilder = this
@@ -58,7 +68,7 @@ private val Class<*>.descriptor: String
     get() = when {
         isPrimitive -> primitiveClassToDesc.getValue(this).toString()
         isArray -> "[${componentType.descriptor}"
-        else -> "L${name.replace('.', '/')};"
+        else -> "L${this.descName()};"
     }
 
 internal fun Field.toSignature(): JvmFieldSignature =

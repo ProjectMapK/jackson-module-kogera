@@ -73,7 +73,22 @@ internal val defaultConstructorMarker: Class<*> by lazy {
 
 // Kotlin-specific types such as kotlin.String will result in an error,
 // but are ignored because they do not result in errors in internal use cases.
-internal fun String.reconstructClass(): Class<*> = Class.forName(this.replace(".", "$").replace("/", "."))
+internal fun String.reconstructClass(): Class<*> {
+    // -> this.replace(".", "$").replace("/", ".")
+    val replaced = this.toCharArray().apply {
+        for (i in indices) {
+            val c = this[i]
+
+            if (c == '.') {
+                this[i] = '$'
+            } else if (c == '/') {
+                this[i] = '.'
+            }
+        }
+    }
+
+    return Class.forName(String(replaced))
+}
 
 internal fun KmType.reconstructClassOrNull(): Class<*>? = (classifier as? KmClassifier.Class)
     ?.let { kotlin.runCatching { it.name.reconstructClass() }.getOrNull() }

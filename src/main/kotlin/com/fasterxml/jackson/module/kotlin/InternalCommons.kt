@@ -45,8 +45,16 @@ private val Class<*>.descriptor: String
         else -> "L${name.replace('.', '/')};"
     }
 
-internal fun Array<Class<*>>.toDescString(): String =
-    joinToString(separator = "", prefix = "(", postfix = ")") { it.descriptor }
+private fun StringBuilder.appendDescriptor(clazz: Class<*>): StringBuilder = when {
+    clazz.isPrimitive -> append(primitiveClassToDesc.getValue(clazz))
+    clazz.isArray -> append('[').appendDescriptor(clazz.componentType)
+    else -> append("L${clazz.name.replace('.', '/')};")
+}
+
+internal fun Array<Class<*>>.toDescString(): String = this
+    .fold(StringBuilder("(")) { acc, cur -> acc.appendDescriptor(cur) }
+    .append(')')
+    .toString()
 
 internal fun Constructor<*>.toSignature(): JvmMethodSignature =
     JvmMethodSignature("<init>", parameterTypes.toDescString() + "V")

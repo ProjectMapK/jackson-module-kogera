@@ -75,27 +75,22 @@ internal class KotlinFallbackAnnotationIntrospector(
         }
     }
 
-    // If it is not a property on Kotlin, it is not used to serialization
-    override fun findPropertyAccess(ann: Annotated): JsonProperty.Access? = when (ann) {
-        is AnnotatedMethod ->
-            ann.annotated
-                .takeIf { it.parameters.isEmpty() } // Ignore target is only getter
-                ?.let { method ->
-                    cache.getKmClass(method.declaringClass)?.let { kmClass ->
-                        JsonProperty.Access.WRITE_ONLY.takeIf { kmClass.findPropertyByGetter(method) == null }
-                    }
-                }
-        else -> null
-    }
+    // If it is not a property on Kotlin, it is not used to ser/deserialization
+    override fun findPropertyAccess(ann: Annotated): JsonProperty.Access? = (ann as? AnnotatedMethod)?.let { _ ->
+        cache.getKmClass(ann.declaringClass)?.let { kmClass ->
+            val method = ann.annotated
 
-    // Ignored during deserialization if not a property
-    override fun hasIgnoreMarker(m: AnnotatedMember): Boolean = (m as? AnnotatedMethod)?.member
-        ?.takeIf { it.parameters.size == 1 && !Modifier.isStatic(it.modifiers) }
-        ?.let { cache.getKmClass(it.declaringClass) }
-        ?.let { kmClass ->
-            val methodSignature = m.annotated.toSignature()
-            kmClass.properties.none { it.setterSignature == methodSignature }
-        } ?: false
+            // By returning an illegal JsonProperty.Access, it is effectively ignore.
+            when (method.parameters.size) {
+                0 -> JsonProperty.Access.WRITE_ONLY.takeIf { kmClass.findPropertyByGetter(method) == null }
+                1 -> {
+                    val signature = method.toSignature()
+                    JsonProperty.Access.READ_ONLY.takeIf { kmClass.properties.none { it.setterSignature == signature } }
+                }
+                else -> null
+            }
+        }
+    }
 
     private fun getValueParameter(a: AnnotatedParameter): ValueParameter? =
         cache.valueCreatorFromJava(a.owner.annotated as Executable)?.let { it.valueParameters[a.index] }

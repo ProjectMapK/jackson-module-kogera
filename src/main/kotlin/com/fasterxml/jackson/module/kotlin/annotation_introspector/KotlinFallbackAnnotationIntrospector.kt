@@ -20,7 +20,6 @@ import com.fasterxml.jackson.module.kotlin.findPropertyByGetter
 import com.fasterxml.jackson.module.kotlin.isNullable
 import com.fasterxml.jackson.module.kotlin.isUnboxableValueClass
 import com.fasterxml.jackson.module.kotlin.reconstructClassOrNull
-import com.fasterxml.jackson.module.kotlin.ser.ValueClassBoxConverter
 import com.fasterxml.jackson.module.kotlin.toSignature
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.jvm.fieldSignature
@@ -110,29 +109,9 @@ internal class KotlinFallbackAnnotationIntrospector(
         }
     }
 
-    private fun AnnotatedMethod.findValueClassBoxConverter(
-        takePredicate: (Class<*>) -> Boolean
-    ): ValueClassBoxConverter<*, *>? {
-        val getter = this.member.apply {
-            // If the return value of the getter is a value class,
-            // it will be serialized properly without doing anything.
-            // TODO: Verify the case where a value class encompasses another value class.
-            if (this.returnType.isUnboxableValueClass()) return null
-        }
-        val kotlinProperty = cache.getKmClass(getter.declaringClass)?.findPropertyByGetter(getter)
-
-        // Since there was no way to directly determine whether returnType is a value class or not,
-        // Class is restored and processed.
-        // If the cost of this process is significant, consider caching it.
-        return kotlinProperty?.returnType?.reconstructClassOrNull()?.let { clazz ->
-            clazz.takeIf(takePredicate)
-                ?.let { ValueClassBoxConverter(getter.returnType, it) }
-        }
-    }
-
     // Find a converter to handle the case where the getter returns an unboxed value from the value class.
     override fun findSerializationConverter(a: Annotated): Converter<*, *>? = (a as? AnnotatedMethod)
-        ?.let { _ -> a.findValueClassBoxConverter { it.isUnboxableValueClass() } }
+        ?.let { _ -> cache.findValueClassBoxConverterFrom(a) }
 
     // Determine if the `unbox` result of `value class` is `nullable
     // @see findNullSerializer
@@ -142,7 +121,9 @@ internal class KotlinFallbackAnnotationIntrospector(
     // Perform proper serialization even if the value wrapped by the value class is null.
     // If value is a non-null object type, it must not be reboxing.
     override fun findNullSerializer(am: Annotated): JsonSerializer<*>? = (am as? AnnotatedMethod)?.let { _ ->
-        am.findValueClassBoxConverter { it.requireRebox() }?.let { StdDelegatingSerializer(it) }
+        cache.findValueClassBoxConverterFrom(am)?.let { converter ->
+            converter.takeIf { it.valueClass.requireRebox() }?.let { StdDelegatingSerializer(it) }
+        }
     }
 }
 

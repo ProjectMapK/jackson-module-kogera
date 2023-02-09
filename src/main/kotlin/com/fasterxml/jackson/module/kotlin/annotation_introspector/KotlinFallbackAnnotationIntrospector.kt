@@ -20,7 +20,6 @@ import com.fasterxml.jackson.module.kotlin.findPropertyByGetter
 import com.fasterxml.jackson.module.kotlin.isNullable
 import com.fasterxml.jackson.module.kotlin.isUnboxableValueClass
 import com.fasterxml.jackson.module.kotlin.reconstructClassOrNull
-import com.fasterxml.jackson.module.kotlin.ser.ValueClassBoxConverter
 import com.fasterxml.jackson.module.kotlin.toSignature
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.jvm.fieldSignature
@@ -75,27 +74,22 @@ internal class KotlinFallbackAnnotationIntrospector(
         }
     }
 
-    // If it is not a property on Kotlin, it is not used to serialization
-    override fun findPropertyAccess(ann: Annotated): JsonProperty.Access? = when (ann) {
-        is AnnotatedMethod ->
-            ann.annotated
-                .takeIf { it.parameters.isEmpty() } // Ignore target is only getter
-                ?.let { method ->
-                    cache.getKmClass(method.declaringClass)?.let { kmClass ->
-                        JsonProperty.Access.WRITE_ONLY.takeIf { kmClass.findPropertyByGetter(method) == null }
-                    }
-                }
-        else -> null
-    }
+    // If it is not a property on Kotlin, it is not used to ser/deserialization
+    override fun findPropertyAccess(ann: Annotated): JsonProperty.Access? = (ann as? AnnotatedMethod)?.let { _ ->
+        cache.getKmClass(ann.declaringClass)?.let { kmClass ->
+            val method = ann.annotated
 
-    // Ignored during deserialization if not a property
-    override fun hasIgnoreMarker(m: AnnotatedMember): Boolean = (m as? AnnotatedMethod)?.member
-        ?.takeIf { it.parameters.size == 1 && !Modifier.isStatic(it.modifiers) }
-        ?.let { cache.getKmClass(it.declaringClass) }
-        ?.let { kmClass ->
-            val methodSignature = m.annotated.toSignature()
-            kmClass.properties.none { it.setterSignature == methodSignature }
-        } ?: false
+            // By returning an illegal JsonProperty.Access, it is effectively ignore.
+            when (method.parameters.size) {
+                0 -> JsonProperty.Access.WRITE_ONLY.takeIf { kmClass.findPropertyByGetter(method) == null }
+                1 -> {
+                    val signature = method.toSignature()
+                    JsonProperty.Access.READ_ONLY.takeIf { kmClass.properties.none { it.setterSignature == signature } }
+                }
+                else -> null
+            }
+        }
+    }
 
     private fun getValueParameter(a: AnnotatedParameter): ValueParameter? =
         cache.valueCreatorFromJava(a.owner.annotated as Executable)?.let { it.valueParameters[a.index] }
@@ -115,29 +109,9 @@ internal class KotlinFallbackAnnotationIntrospector(
         }
     }
 
-    private fun AnnotatedMethod.findValueClassBoxConverter(
-        takePredicate: (Class<*>) -> Boolean
-    ): ValueClassBoxConverter<*, *>? {
-        val getter = this.member.apply {
-            // If the return value of the getter is a value class,
-            // it will be serialized properly without doing anything.
-            // TODO: Verify the case where a value class encompasses another value class.
-            if (this.returnType.isUnboxableValueClass()) return null
-        }
-        val kotlinProperty = cache.getKmClass(getter.declaringClass)?.findPropertyByGetter(getter)
-
-        // Since there was no way to directly determine whether returnType is a value class or not,
-        // Class is restored and processed.
-        // If the cost of this process is significant, consider caching it.
-        return kotlinProperty?.returnType?.reconstructClassOrNull()?.let { clazz ->
-            clazz.takeIf(takePredicate)
-                ?.let { ValueClassBoxConverter(getter.returnType, it) }
-        }
-    }
-
     // Find a converter to handle the case where the getter returns an unboxed value from the value class.
     override fun findSerializationConverter(a: Annotated): Converter<*, *>? = (a as? AnnotatedMethod)
-        ?.let { _ -> a.findValueClassBoxConverter { it.isUnboxableValueClass() } }
+        ?.let { _ -> cache.findValueClassBoxConverterFrom(a) }
 
     // Determine if the `unbox` result of `value class` is `nullable
     // @see findNullSerializer
@@ -147,7 +121,9 @@ internal class KotlinFallbackAnnotationIntrospector(
     // Perform proper serialization even if the value wrapped by the value class is null.
     // If value is a non-null object type, it must not be reboxing.
     override fun findNullSerializer(am: Annotated): JsonSerializer<*>? = (am as? AnnotatedMethod)?.let { _ ->
-        am.findValueClassBoxConverter { it.requireRebox() }?.let { StdDelegatingSerializer(it) }
+        cache.findValueClassBoxConverterFrom(am)?.let { converter ->
+            converter.takeIf { it.valueClass.requireRebox() }?.let { StdDelegatingSerializer(it) }
+        }
     }
 }
 

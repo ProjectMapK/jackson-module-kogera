@@ -1,9 +1,11 @@
 package com.fasterxml.jackson.module.kotlin
 
+import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.util.LRUMap
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ConstructorValueCreator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.MethodValueCreator
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueCreator
+import com.fasterxml.jackson.module.kotlin.ser.ValueClassBoxConverter
 import kotlinx.metadata.KmClass
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
@@ -14,6 +16,10 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
     // This cache is used for both serialization and deserialization, so reserve a larger size from the start.
     private val classCache = LRUMap<Class<*>, Optional<KmClass>>(reflectionCacheSize, reflectionCacheSize)
     private val creatorCache: LRUMap<Executable, ValueCreator<*>>
+
+    // TODO: Consider whether the cache size should be reduced more,
+    //       since the cache is used only twice locally at initialization per property.
+    private val valueClassBoxConverterCache: LRUMap<AnnotatedMethod, Optional<ValueClassBoxConverter<*, *>>>
 
     init {
         // The current default value of reflectionCacheSize is 512.
@@ -28,6 +34,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
             reflectionCacheSize
         }
         creatorCache = LRUMap(initialEntries, reflectionCacheSize)
+        valueClassBoxConverterCache = LRUMap(initialEntries, reflectionCacheSize)
     }
 
     fun getKmClass(clazz: Class<*>): KmClass? {
@@ -44,7 +51,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
     /**
      * return null if declaringClass is not kotlin class
      */
-    fun valueCreatorFromJava(_creator: Executable): ValueCreator<*>? = when (val creator = _creator) {
+    fun valueCreatorFromJava(creator: Executable): ValueCreator<*>? = when (creator) {
         is Constructor<*> -> {
             creatorCache.get(creator)
                 ?: run {
@@ -69,4 +76,32 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
             "Expected a constructor or method to create a Kotlin object, instead found ${creator.javaClass.name}"
         )
     } // we cannot reflect this method so do the default Java-ish behavior
+
+    private fun AnnotatedMethod.findValueClassBoxConverter(): ValueClassBoxConverter<*, *>? {
+        val getter = this.member.apply {
+            // If the return value of the getter is a value class,
+            // it will be serialized properly without doing anything.
+            // TODO: Verify the case where a value class encompasses another value class.
+            if (this.returnType.isUnboxableValueClass()) return null
+        }
+        val kotlinProperty = getKmClass(getter.declaringClass)?.findPropertyByGetter(getter)
+
+        // Since there was no way to directly determine whether returnType is a value class or not,
+        // Class is restored and processed.
+        return kotlinProperty?.returnType?.reconstructClassOrNull()?.let { clazz ->
+            clazz.takeIf { it.isUnboxableValueClass() }
+                ?.let { ValueClassBoxConverter(getter.returnType, it) }
+        }
+    }
+
+    fun findValueClassBoxConverterFrom(a: AnnotatedMethod): ValueClassBoxConverter<*, *>? {
+        val optional = valueClassBoxConverterCache.get(a)
+
+        return if (optional != null) {
+            optional
+        } else {
+            val value = Optional.ofNullable(a.findValueClassBoxConverter())
+            (valueClassBoxConverterCache.putIfAbsent(a, value) ?: value)
+        }.orElse(null)
+    }
 }

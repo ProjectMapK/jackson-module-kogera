@@ -69,14 +69,17 @@ internal class KotlinPrimaryAnnotationIntrospector(
 
     private fun AnnotatedField.hasRequiredMarker(kmClass: KmClass): Boolean? {
         val member = annotated
-
-        val byAnnotation = member.isRequiredByAnnotation()
         val fieldSignature = member.toSignature()
-        val byNullability = kmClass.properties
-            .find { it.fieldSignature == fieldSignature }
-            ?.let { !it.returnType.isNullable() }
 
-        return requiredAnnotationOrNullability(byAnnotation, byNullability)
+        // Direct access to `AnnotatedField` is only performed if there is no accessor (defined as JvmField),
+        // so if an accessor is defined, it is ignored.
+        return kmClass.properties
+            .find { it.fieldSignature == fieldSignature }
+            // Since a property that does not currently have a getter cannot be defined,
+            // only a check for the existence of a getter is performed.
+            // https://youtrack.jetbrains.com/issue/KT-6519
+            ?.takeIf { it.getterSignature == null }
+            ?.let { !it.returnType.isNullable() }
     }
 
     private fun AccessibleObject.isRequiredByAnnotation(): Boolean? = annotations

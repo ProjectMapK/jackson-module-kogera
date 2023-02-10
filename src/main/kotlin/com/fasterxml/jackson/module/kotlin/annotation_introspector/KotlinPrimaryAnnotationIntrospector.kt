@@ -97,14 +97,9 @@ internal class KotlinPrimaryAnnotationIntrospector(
 
     private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(kmClass: KmClass): Boolean? {
         val memberSignature = member.toSignature()
-        kmClass.properties.forEach { kmProperty ->
-            if (kmProperty.getterSignature == memberSignature || kmProperty.setterSignature == memberSignature) {
-                val byAnnotation = this.member.isRequiredByAnnotation()
-                val byNullability = kmProperty.isRequiredByNullability()
-                return requiredAnnotationOrNullability(byAnnotation, byNullability)
-            }
-        }
-        return null
+        return kmClass.properties
+            .find { it.getterSignature == memberSignature || it.setterSignature == memberSignature }
+            ?.isRequiredByNullability()
     }
 
     private fun AnnotatedParameter.hasRequiredMarker(kmClass: KmClass): Boolean? {

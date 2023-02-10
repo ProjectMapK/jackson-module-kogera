@@ -2,8 +2,6 @@ package com.fasterxml.jackson.module.kotlin.annotation_introspector
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.Module
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.introspect.Annotated
 import com.fasterxml.jackson.databind.introspect.AnnotatedConstructor
@@ -27,7 +25,6 @@ import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.setterSignature
 import kotlinx.metadata.jvm.signature
-import java.lang.reflect.AccessibleObject
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
@@ -37,32 +34,22 @@ import java.lang.reflect.Method
 // (in most cases, JacksonAnnotationIntrospector).
 // Original name: KotlinAnnotationIntrospector
 internal class KotlinPrimaryAnnotationIntrospector(
-    private val context: Module.SetupContext,
     private val nullToEmptyCollection: Boolean,
     private val nullToEmptyMap: Boolean,
     private val cache: ReflectionCache
 ) : NopAnnotationIntrospector() {
-
-    // TODO: implement nullIsSameAsDefault flag, which represents when TRUE that if something has a default value,
-    //       it can be passed a null to default it
-    //       this likely impacts this class to be accurate about what COULD be considered required
-
     // If JsonProperty.required is true, the behavior is clearly specified and the result is paramount.
     // Otherwise, the required is determined from the configuration and the definition on Kotlin.
     override fun hasRequiredMarker(m: AnnotatedMember): Boolean? {
         val byAnnotation = _findAnnotation(m, JsonProperty::class.java)?.required
             ?.apply { if (this) return true }
 
-        return when {
-            nullToEmptyCollection && m.type.isCollectionLikeType -> false
-            nullToEmptyMap && m.type.isMapLikeType -> false
-            else -> cache.getKmClass(m.member.declaringClass)?.let {
-                when (m) {
-                    is AnnotatedField -> m.hasRequiredMarker(it)
-                    is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(it)
-                    is AnnotatedParameter -> m.hasRequiredMarker(it)
-                    else -> null
-                }
+        return cache.getKmClass(m.member.declaringClass)?.let {
+            when (m) {
+                is AnnotatedField -> m.hasRequiredMarker(it)
+                is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(it)
+                is AnnotatedParameter -> m.hasRequiredMarker(it)
+                else -> null
             }
         } ?: byAnnotation // If a JsonProperty is available, use it to reduce processing costs.
     }
@@ -82,17 +69,6 @@ internal class KotlinPrimaryAnnotationIntrospector(
             ?.let { !it.returnType.isNullable() }
     }
 
-    private fun AccessibleObject.isRequiredByAnnotation(): Boolean? = annotations
-        .filterIsInstance<JsonProperty>()
-        .firstOrNull()
-        ?.required
-
-    private fun requiredAnnotationOrNullability(byAnnotation: Boolean?, byNullability: Boolean?): Boolean? = when {
-        byAnnotation != null && byNullability != null -> byAnnotation || byNullability
-        byNullability != null -> byNullability
-        else -> byAnnotation
-    }
-
     private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable()
 
     private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(kmClass: KmClass): Boolean? {
@@ -103,34 +79,28 @@ internal class KotlinPrimaryAnnotationIntrospector(
     }
 
     private fun AnnotatedParameter.hasRequiredMarker(kmClass: KmClass): Boolean? {
-        val byAnnotation = this.getAnnotation(JsonProperty::class.java)?.required
-        val byNullability: Boolean? = when (val member = member) {
-            is Constructor<*> -> {
-                val paramDef = kmClass.findKmConstructor(member)
-                    ?.let { it.valueParameters[index] }
-                    ?: return null
-
-                paramDef to member.parameterTypes[index]
-            }
+        val paramDef = when (val member = member) {
+            is Constructor<*> -> kmClass.findKmConstructor(member)
+                ?.let { it.valueParameters[index] }
             is Method -> {
                 val signature = member.toSignature()
-                val paramDef = kmClass.functions.find { it.signature == signature }
+                kmClass.functions.find { it.signature == signature }
                     ?.let { it.valueParameters[index] }
-                    ?: return null
-
-                paramDef to member.parameterTypes[index]
             }
             else -> null
-        }?.let { (paramDef, paramType) ->
-            val isPrimitive = paramType.isPrimitive
-            val isOptional = Flag.ValueParameter.DECLARES_DEFAULT_VALUE(paramDef.flags)
-            val isMarkedNullable = paramDef.type.isNullable()
+        } ?: return null // Return null if function on Kotlin cannot be determined
 
-            !isMarkedNullable && !isOptional &&
-                !(isPrimitive && !context.isEnabled(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES))
+        // non required if...
+        return when {
+            // Argument definition is nullable
+            paramDef.type.isNullable() -> false
+            // Default argument are defined
+            Flag.ValueParameter.DECLARES_DEFAULT_VALUE(paramDef.flags) -> false
+            // The conversion in case of null is defined.
+            nullToEmptyCollection && type.isCollectionLikeType -> false
+            nullToEmptyMap && type.isMapLikeType -> false
+            else -> true
         }
-
-        return requiredAnnotationOrNullability(byAnnotation, byNullability)
     }
 
     /**

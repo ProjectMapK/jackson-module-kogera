@@ -47,8 +47,13 @@ internal class KotlinPrimaryAnnotationIntrospector(
     //       it can be passed a null to default it
     //       this likely impacts this class to be accurate about what COULD be considered required
 
-    override fun hasRequiredMarker(m: AnnotatedMember): Boolean? = try {
-        when {
+    // If JsonProperty.required is true, the behavior is clearly specified and the result is paramount.
+    // Otherwise, the required is determined from the configuration and the definition on Kotlin.
+    override fun hasRequiredMarker(m: AnnotatedMember): Boolean? {
+        val byAnnotation = _findAnnotation(m, JsonProperty::class.java)?.required
+            ?.apply { if (this) return true }
+
+        return when {
             nullToEmptyCollection && m.type.isCollectionLikeType -> false
             nullToEmptyMap && m.type.isMapLikeType -> false
             else -> cache.getKmClass(m.member.declaringClass)?.let {
@@ -59,9 +64,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
                     else -> null
                 }
             }
-        }
-    } catch (ex: UnsupportedOperationException) {
-        null
+        } ?: byAnnotation // If a JsonProperty is available, use it to reduce processing costs.
     }
 
     private fun AnnotatedField.hasRequiredMarker(kmClass: KmClass): Boolean? {

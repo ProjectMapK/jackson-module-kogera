@@ -55,9 +55,13 @@ internal class KotlinPrimaryAnnotationIntrospector(
         } ?: byAnnotation // If a JsonProperty is available, use it to reduce processing costs.
     }
 
+    // Functions that call this may return incorrect results for value classes whose value type is Collection or Map,
+    // but this is a rare case and difficult to handle, so it is not supported.
     private fun JavaType.hasDefaultEmptyValue() =
         (nullToEmptyCollection && isCollectionLikeType) || (nullToEmptyMap && isMapLikeType)
 
+    // The nullToEmpty option also affects serialization,
+    // but deserialization is preferred because there is currently no way to distinguish between contexts.
     private fun AnnotatedField.hasRequiredMarker(kmClass: KmClass): Boolean? {
         val member = annotated
         val fieldSignature = member.toSignature()

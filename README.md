@@ -30,7 +30,7 @@ Details are summarized in [KogeraSpecificImplementations](./docs/KogeraSpecificI
 
 # Compatibility
 - `Java 8+`
-- `jackson 2.14.1`
+- `jackson 2.14.2`
 - `Kotlin 1.7.21+`(This version will be smaller than `1.6.x.`)
 
 # Installation

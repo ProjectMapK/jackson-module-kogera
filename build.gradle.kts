@@ -5,8 +5,10 @@ plugins {
     id("org.jmailen.kotlinter") version "3.13.0"
 }
 
+val jacksonVersion = "2.14.2"
+
 group = "com.fasterxml.jackson"
-version = "2.14.1-SNAPSHOT"
+version = "${jacksonVersion}-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -16,8 +18,8 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.6.0")
 
-    api("com.fasterxml.jackson.core:jackson-databind:2.14.1")
-    api("com.fasterxml.jackson.core:jackson-annotations:2.14.1")
+    api("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
+    api("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
 
     // test libs
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")

@@ -2,6 +2,7 @@ package com.fasterxml.jackson.module.kotlin.annotation_introspector
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.introspect.Annotated
 import com.fasterxml.jackson.databind.introspect.AnnotatedConstructor
@@ -69,9 +70,15 @@ internal class KotlinPrimaryAnnotationIntrospector(
             ?.let { !it.returnType.isNullable() }
     }
 
+    private fun JavaType.hasDefaultEmptyValue() =
+        (nullToEmptyCollection && isCollectionLikeType) || (nullToEmptyMap && isMapLikeType)
+
     private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable()
 
     private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(kmClass: KmClass): Boolean? {
+        // false if setter and nullToEmpty option is specified
+        if (parameterCount == 1 && this.getParameter(0).type.hasDefaultEmptyValue()) return false
+
         val memberSignature = member.toSignature()
         return kmClass.properties
             .find { it.getterSignature == memberSignature || it.setterSignature == memberSignature }
@@ -97,8 +104,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
             // Default argument are defined
             Flag.ValueParameter.DECLARES_DEFAULT_VALUE(paramDef.flags) -> false
             // The conversion in case of null is defined.
-            nullToEmptyCollection && type.isCollectionLikeType -> false
-            nullToEmptyMap && type.isMapLikeType -> false
+            type.hasDefaultEmptyValue() -> false
             else -> true
         }
     }

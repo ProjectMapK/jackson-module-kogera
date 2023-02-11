@@ -22,6 +22,7 @@ A list of issues that have not been resolved in `jackson-module-kotlin`, but hav
 - [Lazy load UNIT\_TYPE · Issue \#580](https://github.com/FasterXML/jackson-module-kotlin/issues/580)
 - [Can I deserialize a data class with an unsigned member in the constructor? · Issue \#591](https://github.com/FasterXML/jackson-module-kotlin/issues/591)
 - [Serialization of flatRate and isFlatRate are mixed up\. · Issue \#600](https://github.com/FasterXML/jackson-module-kotlin/issues/600)
+- [Type Introspection: non\-nullable field with default is reported as required · Issue \#609](https://github.com/FasterXML/jackson-module-kotlin/issues/609)
 - [Parsing of UShort uses incorrect ranges · Issue \#611](https://github.com/FasterXML/jackson-module-kotlin/issues/611)
 - [`JsonSerializer` is enabled when the value is an Object type with non\-null value and the property definition is nullable. · Issue \#618](https://github.com/FasterXML/jackson-module-kotlin/issues/618)
 

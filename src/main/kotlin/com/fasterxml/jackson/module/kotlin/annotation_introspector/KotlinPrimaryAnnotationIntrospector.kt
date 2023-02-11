@@ -55,6 +55,9 @@ internal class KotlinPrimaryAnnotationIntrospector(
         } ?: byAnnotation // If a JsonProperty is available, use it to reduce processing costs.
     }
 
+    private fun JavaType.hasDefaultEmptyValue() =
+        (nullToEmptyCollection && isCollectionLikeType) || (nullToEmptyMap && isMapLikeType)
+
     private fun AnnotatedField.hasRequiredMarker(kmClass: KmClass): Boolean? {
         val member = annotated
         val fieldSignature = member.toSignature()
@@ -67,11 +70,8 @@ internal class KotlinPrimaryAnnotationIntrospector(
             // only a check for the existence of a getter is performed.
             // https://youtrack.jetbrains.com/issue/KT-6519
             ?.takeIf { it.getterSignature == null }
-            ?.let { !it.returnType.isNullable() }
+            ?.let { !(it.returnType.isNullable() || type.hasDefaultEmptyValue()) }
     }
-
-    private fun JavaType.hasDefaultEmptyValue() =
-        (nullToEmptyCollection && isCollectionLikeType) || (nullToEmptyMap && isMapLikeType)
 
     private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable()
 

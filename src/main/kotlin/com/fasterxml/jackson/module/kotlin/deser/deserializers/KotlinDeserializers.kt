@@ -8,9 +8,15 @@ import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.module.kotlin.ReflectionCache
 import com.fasterxml.jackson.module.kotlin.hasCreatorAnnotation
 import com.fasterxml.jackson.module.kotlin.isUnboxableValueClass
+import com.fasterxml.jackson.module.kotlin.toSignature
+import kotlinx.metadata.Flag
+import kotlinx.metadata.KmClass
+import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 
 internal object SequenceDeserializer : StdDeserializer<Sequence<*>>(Sequence::class.java) {
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Sequence<*> {
@@ -66,33 +72,51 @@ internal object ULongDeserializer : StdDeserializer<ULong>(ULong::class.java) {
         ULongChecker.readWithRangeCheck(p, p.bigIntegerValue)
 }
 
-internal class ValueClassBoxDeserializer<T : Any>(clazz: Class<T>) : StdDeserializer<T>(clazz) {
-    private val boxedType = clazz.getDeclaredMethod("unbox-impl").returnType
+internal class ValueClassBoxDeserializer<T : Any>(
+    private val creator: Method,
+    clazz: Class<T>
+) : StdDeserializer<T>(clazz) {
+    private val inputType: Class<*> = creator.parameterTypes[0]
+    private val boxMethod: Method = clazz
+        .getDeclaredMethod("box-impl", clazz.getDeclaredMethod("unbox-impl").returnType)
+        .apply { if (!this.isAccessible) this.isAccessible = true }
 
-    // Here the PRIMARY constructor is invoked, ignoring visibility.
-    // This behavior is the same as the normal class deserialization by kotlin-module.
-    private val constructorImpl: Method = clazz.getDeclaredMethod("constructor-impl", boxedType).apply {
-        if (!this.isAccessible) this.isAccessible = true
-    }
-    private val boxMethod: Method = clazz.getDeclaredMethod("box-impl", boxedType).apply {
-        if (!this.isAccessible) this.isAccessible = true
+    init {
+        creator.apply { if (!this.isAccessible) this.isAccessible = true }
     }
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): T {
-        val input = p.readValueAs(boxedType)
+        val input = p.readValueAs(inputType)
 
         // To instantiate the value class in the same way as other classes,
-        // it is necessary to call constructor-impl -> box-impl in that order.
+        // it is necessary to call creator(e.g. constructor-impl) -> box-impl in that order.
         @Suppress("UNCHECKED_CAST")
-        return boxMethod.invoke(null, constructorImpl.invoke(null, input)) as T
+        return boxMethod.invoke(null, creator.invoke(null, input)) as T
     }
 }
 
-private fun hasJsonCreator(valueClass: Class<*>): Boolean = valueClass.declaredMethods.any { method ->
-    method.hasCreatorAnnotation()
+private fun findValueCreator(clazz: Class<*>, kmClass: KmClass): Method? {
+    val primaryKmConstructorSignature =
+        kmClass.constructors.first { !Flag.Constructor.IS_SECONDARY(it.flags) }.signature
+    var primaryConstructor: Method? = null
+
+    clazz.declaredMethods.forEach { method ->
+        if (Modifier.isStatic(method.modifiers)) {
+            if (method.hasCreatorAnnotation()) {
+                // Do nothing if a correctly functioning Creator is defined
+                return method.takeIf { clazz != method.returnType }
+            } else if (method.toSignature() == primaryKmConstructorSignature) {
+                // Here the PRIMARY constructor is invoked, ignoring visibility.
+                // This behavior is the same as the normal class deserialization by kotlin-module.
+                primaryConstructor = method
+            }
+        }
+    }
+
+    return primaryConstructor
 }
 
-internal class KotlinDeserializers : Deserializers.Base() {
+internal class KotlinDeserializers(private val cache: ReflectionCache) : Deserializers.Base() {
     override fun findBeanDeserializer(
         type: JavaType,
         config: DeserializationConfig?,
@@ -107,7 +131,8 @@ internal class KotlinDeserializers : Deserializers.Base() {
             rawClass == UShort::class.java -> UShortDeserializer
             rawClass == UInt::class.java -> UIntDeserializer
             rawClass == ULong::class.java -> ULongDeserializer
-            rawClass.isUnboxableValueClass() && !hasJsonCreator(rawClass) -> ValueClassBoxDeserializer(rawClass)
+            rawClass.isUnboxableValueClass() -> findValueCreator(rawClass, cache.getKmClass(rawClass)!!)
+                ?.let { ValueClassBoxDeserializer(it, rawClass) }
             else -> null
         }
     }

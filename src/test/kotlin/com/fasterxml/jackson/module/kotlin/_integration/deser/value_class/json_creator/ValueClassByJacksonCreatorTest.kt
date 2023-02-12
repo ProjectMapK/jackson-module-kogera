@@ -6,7 +6,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class ValueClassByCreatorTest {
+// Test for Creator that can be handled by the Jackson mechanism.
+class ValueClassByJacksonCreatorTest {
     @JvmInline
     value class PrimitiveNullableCreator(val value: Int) {
         companion object {

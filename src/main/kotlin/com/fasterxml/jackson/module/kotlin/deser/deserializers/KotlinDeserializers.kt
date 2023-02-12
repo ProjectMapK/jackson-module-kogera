@@ -98,8 +98,8 @@ internal class ValueClassBoxDeserializer<T : Any>(
 
 private fun invalidCreatorMessage(m: Method): String =
     "The argument size of a Creator that does not return a value class on the JVM must be 1, " +
-            "please fix it or use JsonDeserializer.\n" +
-            "Detected: ${m.parameters.joinToString(prefix = "${m.name}(", separator = ", ", postfix = ")") { it.name }}"
+        "please fix it or use JsonDeserializer.\n" +
+        "Detected: ${m.parameters.joinToString(prefix = "${m.name}(", separator = ", ", postfix = ")") { it.name }}"
 
 private fun findValueCreator(type: JavaType, clazz: Class<*>, kmClass: KmClass): Method? {
     val primaryKmConstructorSignature =

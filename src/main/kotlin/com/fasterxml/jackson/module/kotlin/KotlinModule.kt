@@ -81,7 +81,7 @@ public class KotlinModule private constructor(
 
         context.setClassIntrospector(KotlinClassIntrospector)
 
-        context.addDeserializers(KotlinDeserializers())
+        context.addDeserializers(KotlinDeserializers(cache))
         context.addKeyDeserializers(KotlinKeyDeserializers)
         context.addSerializers(KotlinSerializers())
         context.addKeySerializers(KotlinKeySerializers())

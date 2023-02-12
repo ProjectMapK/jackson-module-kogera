@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.fasterxml.jackson.module.kotlin.ReflectionCache
 import com.fasterxml.jackson.module.kotlin.findKmConstructor
+import com.fasterxml.jackson.module.kotlin.hasCreatorAnnotation
 import com.fasterxml.jackson.module.kotlin.isNullable
 import com.fasterxml.jackson.module.kotlin.reconstructClass
 import com.fasterxml.jackson.module.kotlin.toSignature
@@ -26,7 +27,6 @@ import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.setterSignature
 import kotlinx.metadata.jvm.signature
-import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
@@ -146,9 +146,6 @@ internal class KotlinPrimaryAnnotationIntrospector(
 private fun Constructor<*>.isPrimarilyConstructorOf(kmClass: KmClass): Boolean = kmClass.findKmConstructor(this)
     ?.let { !Flag.Constructor.IS_SECONDARY(it.flags) || kmClass.constructors.size == 1 }
     ?: false
-
-private fun AnnotatedElement.hasCreatorAnnotation(): Boolean =
-    annotations.any { it is JsonCreator && it.mode != JsonCreator.Mode.DISABLED }
 
 private fun KmClassifier.isString(): Boolean = this is KmClassifier.Class && this.name == "kotlin/String"
 

@@ -13,7 +13,7 @@ private fun Primitive.modify(): Primitive = Primitive(v + 100)
 private fun NonNullObject.modify(): NonNullObject = NonNullObject("$v-creator")
 private fun NullableObject.modify(): NullableObject = NullableObject(v!! + "-creator")
 
-class InArgument {
+class InCreatorArgumentTest {
     data class Dst(
         val pNn: Primitive,
         val pN: Primitive?,

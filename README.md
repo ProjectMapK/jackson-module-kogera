@@ -20,7 +20,9 @@ First, by implementing the equivalent of https://github.com/FasterXML/jackson-mo
 The cache has also been reorganized based on [benchmark results](https://github.com/ProjectMapK/kogera-benchmark) to achieve smaller memory consumption.  
 The performance degradation when the `strictNullChecks` option is enabled is also [greatly reduced](https://github.com/ProjectMapK/jackson-module-kogera/pull/44).
 
-In addition, several property-related behaviors have been improved.
+The next main feature is `value class` support.  
+The `jackson-module-kogera` supports many use cases for `value class`, including deserialization.  
+See [here](./docs/AboutValueClassSupport.md) for basic policies and notes on handling `value class`.
 
 [Here](./docs/FixedIssues.md) is a list of issues that are not resolved in `jackson-module-kotlin` but are or will be resolved in `kogera`.
 
@@ -67,11 +69,11 @@ At least for the `Spring` project at hand, I have confirmed that this method wor
 If you find any problems, it would be appreciated if you could share them in an `issue`.
 
 # About the future
-Currently this project is in `alpha`.  
+Currently, this project is in `alpha`.  
 After the following features are implemented, this project will be moved to the `beta` version if there is enough demand for it.
 
-- Deserialization support for `value class`
-  - Partial support is achieved at [#40](https://github.com/ProjectMapK/jackson-module-kogera/pull/40).
+- ~~Deserialization support for `value class`~~
+  - Support for policy decisions and basic use cases was completed in #68, only edge cases and hard-to-fix issues remain
 - Support for less than `Kotlin 1.6.x`(including grid test building with `CI`)
 - Rename module and package(see https://github.com/FasterXML/jackson-module-kotlin/issues/450#issuecomment-1384788717).
 

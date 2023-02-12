@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.kotlin
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmClassifier
@@ -12,6 +13,7 @@ import kotlinx.metadata.jvm.JvmMethodSignature
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
+import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -130,3 +132,6 @@ internal fun KmClass.findPropertyByGetter(getter: Method): KmProperty? {
 }
 
 internal fun KmType.isNullable(): Boolean = Flag.Type.IS_NULLABLE(this.flags)
+
+internal fun AnnotatedElement.hasCreatorAnnotation(): Boolean =
+    annotations.any { it is JsonCreator && it.mode != JsonCreator.Mode.DISABLED }

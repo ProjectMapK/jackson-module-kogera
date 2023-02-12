@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
 import com.fasterxml.jackson.module.kotlin.ReflectionCache
 import com.fasterxml.jackson.module.kotlin.hasCreatorAnnotation
 import com.fasterxml.jackson.module.kotlin.isUnboxableValueClass
@@ -95,7 +96,11 @@ internal class ValueClassBoxDeserializer<T : Any>(
     }
 }
 
-private fun findValueCreator(clazz: Class<*>, kmClass: KmClass): Method? {
+private fun invalidCreatorMessage(m: Method): String =
+    "The argument size of a Creator that does not return a value class on the JVM must be 1.\n" +
+        "Detected: ${m.parameters.joinToString(prefix = "${m.name}(", separator = ", ", postfix = ")") { it.name }}"
+
+private fun findValueCreator(type: JavaType, clazz: Class<*>, kmClass: KmClass): Method? {
     val primaryKmConstructorSignature =
         kmClass.constructors.first { !Flag.Constructor.IS_SECONDARY(it.flags) }.signature
     var primaryConstructor: Method? = null
@@ -104,7 +109,12 @@ private fun findValueCreator(clazz: Class<*>, kmClass: KmClass): Method? {
         if (Modifier.isStatic(method.modifiers)) {
             if (method.hasCreatorAnnotation()) {
                 // Do nothing if a correctly functioning Creator is defined
-                return method.takeIf { clazz != method.returnType }
+                return method.takeIf { clazz != method.returnType }?.apply {
+                    // Creator with an argument size not equal to 1 is currently not supported.
+                    if (parameterCount != 1) {
+                        throw InvalidDefinitionException.from(null as JsonParser?, invalidCreatorMessage(method), type)
+                    }
+                }
             } else if (method.toSignature() == primaryKmConstructorSignature) {
                 // Here the PRIMARY constructor is invoked, ignoring visibility.
                 // This behavior is the same as the normal class deserialization by kotlin-module.
@@ -131,7 +141,7 @@ internal class KotlinDeserializers(private val cache: ReflectionCache) : Deseria
             rawClass == UShort::class.java -> UShortDeserializer
             rawClass == UInt::class.java -> UIntDeserializer
             rawClass == ULong::class.java -> ULongDeserializer
-            rawClass.isUnboxableValueClass() -> findValueCreator(rawClass, cache.getKmClass(rawClass)!!)
+            rawClass.isUnboxableValueClass() -> findValueCreator(type, rawClass, cache.getKmClass(rawClass)!!)
                 ?.let { ValueClassBoxDeserializer(it, rawClass) }
             else -> null
         }

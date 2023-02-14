@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.kotlin.annotation_introspector
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.introspect.Annotated
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember
@@ -101,7 +102,7 @@ internal class KotlinFallbackAnnotationIntrospector(
 
             valueParameter.createValueClassUnboxConverterOrNull(rawType) ?: run {
                 if (strictNullChecks) {
-                    valueParameter.createStrictNullChecksConverterOrNull(rawType)
+                    valueParameter.createStrictNullChecksConverterOrNull(a.type, rawType)
                 } else {
                     null
                 }
@@ -137,15 +138,15 @@ private fun ValueParameter.createValueClassUnboxConverterOrNull(rawType: Class<*
 // @see com.fasterxml.jackson.module.kotlin._ported.test.StrictNullChecksTest#testListOfGenericWithNullValue
 private fun ValueParameter.isNullishTypeAt(index: Int) = arguments.getOrNull(index)?.isNullable ?: true
 
-private fun ValueParameter.createStrictNullChecksConverterOrNull(rawType: Class<*>): Converter<*, *>? {
+private fun ValueParameter.createStrictNullChecksConverterOrNull(type: JavaType, rawType: Class<*>): Converter<*, *>? {
     @Suppress("UNCHECKED_CAST")
     return when {
         Array::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(0) ->
-            CollectionValueStrictNullChecksConverter.ForArray(this)
+            CollectionValueStrictNullChecksConverter.ForArray(type, this)
         Iterable::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(0) ->
-            CollectionValueStrictNullChecksConverter.ForIterable(this)
+            CollectionValueStrictNullChecksConverter.ForIterable(type, this)
         Map::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(1) ->
-            MapValueStrictNullChecksConverter(this)
+            MapValueStrictNullChecksConverter(type, this)
         else -> null
     }
 }

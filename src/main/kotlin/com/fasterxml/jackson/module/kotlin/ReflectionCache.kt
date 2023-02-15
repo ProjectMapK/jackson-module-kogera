@@ -81,23 +81,6 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
         )
     } // we cannot reflect this method so do the default Java-ish behavior
 
-    private fun AnnotatedMethod.findValueClassBoxConverter(): ValueClassBoxConverter<*, *>? {
-        val getter = this.member.apply {
-            // If the return value of the getter is a value class,
-            // it will be serialized properly without doing anything.
-            // TODO: Verify the case where a value class encompasses another value class.
-            if (this.returnType.isUnboxableValueClass()) return null
-        }
-        val kotlinProperty = getKmClass(getter.declaringClass)?.findPropertyByGetter(getter)
-
-        // Since there was no way to directly determine whether returnType is a value class or not,
-        // Class is restored and processed.
-        return kotlinProperty?.returnType?.reconstructClassOrNull()?.let { clazz ->
-            clazz.takeIf { it.isUnboxableValueClass() }
-                ?.let { ValueClassBoxConverter(getter.returnType, it) }
-        }
-    }
-
     private fun AnnotatedMethod.getValueClassReturnType(): Class<*>? {
         val getter = this.member.apply {
             // If the return value of the getter is a value class,

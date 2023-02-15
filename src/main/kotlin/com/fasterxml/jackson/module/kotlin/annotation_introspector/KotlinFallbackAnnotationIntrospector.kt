@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMember
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
-import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer
 import com.fasterxml.jackson.databind.util.Converter
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.ReflectionCache
@@ -125,7 +124,7 @@ internal class KotlinFallbackAnnotationIntrospector(
     override fun findNullSerializer(am: Annotated): JsonSerializer<*>? = (am as? AnnotatedMethod)?.let { _ ->
         cache.findValueClassReturnType(am)
             ?.takeIf { it.requireRebox() }
-            ?.let { StdDelegatingSerializer(cache.getValueClassBoxConverter(am.rawReturnType, it)) }
+            ?.let { cache.getValueClassBoxConverter(am.rawReturnType, it).delegatingSerializer }
     }
 }
 

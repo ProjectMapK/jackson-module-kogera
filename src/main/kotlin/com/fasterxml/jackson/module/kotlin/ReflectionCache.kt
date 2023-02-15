@@ -17,9 +17,14 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
     private val classCache = LRUMap<Class<*>, Optional<KmClass>>(reflectionCacheSize, reflectionCacheSize)
     private val creatorCache: LRUMap<Executable, ValueCreator<*>>
 
+    // Initial size is 0 because the value class is not always used
+    private val valueClassReturnTypeCache: LRUMap<AnnotatedMethod, Optional<Class<*>>> =
+        LRUMap(0, reflectionCacheSize)
+
     // TODO: Consider whether the cache size should be reduced more,
     //       since the cache is used only twice locally at initialization per property.
-    private val valueClassBoxConverterCache: LRUMap<AnnotatedMethod, Optional<ValueClassBoxConverter<*, *>>>
+    private val valueClassBoxConverterCache: LRUMap<Class<*>, ValueClassBoxConverter<*, *>> =
+        LRUMap(0, reflectionCacheSize)
 
     init {
         // The current default value of reflectionCacheSize is 512.
@@ -34,7 +39,6 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
             reflectionCacheSize
         }
         creatorCache = LRUMap(initialEntries, reflectionCacheSize)
-        valueClassBoxConverterCache = LRUMap(initialEntries, reflectionCacheSize)
     }
 
     fun getKmClass(clazz: Class<*>): KmClass? {
@@ -94,14 +98,35 @@ internal class ReflectionCache(reflectionCacheSize: Int) {
         }
     }
 
-    fun findValueClassBoxConverterFrom(a: AnnotatedMethod): ValueClassBoxConverter<*, *>? {
-        val optional = valueClassBoxConverterCache.get(a)
+    private fun AnnotatedMethod.getValueClassReturnType(): Class<*>? {
+        val getter = this.member.apply {
+            // If the return value of the getter is a value class,
+            // it will be serialized properly without doing anything.
+            // TODO: Verify the case where a value class encompasses another value class.
+            if (this.returnType.isUnboxableValueClass()) return null
+        }
+        val kotlinProperty = getKmClass(getter.declaringClass)?.findPropertyByGetter(getter)
+
+        // Since there was no way to directly determine whether returnType is a value class or not,
+        // Class is restored and processed.
+        return kotlinProperty?.returnType?.reconstructClassOrNull()?.takeIf { it.isUnboxableValueClass() }
+    }
+
+    fun findValueClassReturnType(getter: AnnotatedMethod): Class<*>? {
+        val optional = valueClassReturnTypeCache.get(getter)
 
         return if (optional != null) {
             optional
         } else {
-            val value = Optional.ofNullable(a.findValueClassBoxConverter())
-            (valueClassBoxConverterCache.putIfAbsent(a, value) ?: value)
+            val value = Optional.ofNullable(getter.getValueClassReturnType())
+            (valueClassReturnTypeCache.putIfAbsent(getter, value) ?: value)
         }.orElse(null)
     }
+
+    fun getValueClassBoxConverter(unboxedClass: Class<*>, valueClass: Class<*>): ValueClassBoxConverter<*, *> =
+        valueClassBoxConverterCache.get(valueClass) ?: run {
+            val value = ValueClassBoxConverter(unboxedClass, valueClass)
+
+            (valueClassBoxConverterCache.putIfAbsent(valueClass, value) ?: value)
+        }
 }

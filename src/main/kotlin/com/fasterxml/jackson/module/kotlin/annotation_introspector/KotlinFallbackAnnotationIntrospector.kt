@@ -114,9 +114,9 @@ internal class KotlinFallbackAnnotationIntrospector(
         cache.findValueClassReturnType(a)?.let { cache.getValueClassBoxConverter(a.rawReturnType, it) }
     }
 
-    // Determine if the `unbox` result of `value class` is `nullable
+    // Determine if the unbox result of value class is nullable
     // @see findNullSerializer
-    private fun Class<*>.requireRebox(): Boolean = isUnboxableValueClass() &&
+    private fun Class<*>.requireRebox(): Boolean =
         cache.getKmClass(this)!!.properties.first { it.fieldSignature != null }.returnType.isNullable()
 
     // Perform proper serialization even if the value wrapped by the value class is null.

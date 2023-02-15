@@ -111,8 +111,9 @@ internal class KotlinFallbackAnnotationIntrospector(
     }
 
     // Find a converter to handle the case where the getter returns an unboxed value from the value class.
-    override fun findSerializationConverter(a: Annotated): Converter<*, *>? = (a as? AnnotatedMethod)
-        ?.let { _ -> cache.findValueClassBoxConverterFrom(a) }
+    override fun findSerializationConverter(a: Annotated): Converter<*, *>? = (a as? AnnotatedMethod)?.let { _ ->
+        cache.findValueClassReturnType(a)?.let { cache.getValueClassBoxConverter(a.rawReturnType, it) }
+    }
 
     // Determine if the `unbox` result of `value class` is `nullable
     // @see findNullSerializer
@@ -122,9 +123,9 @@ internal class KotlinFallbackAnnotationIntrospector(
     // Perform proper serialization even if the value wrapped by the value class is null.
     // If value is a non-null object type, it must not be reboxing.
     override fun findNullSerializer(am: Annotated): JsonSerializer<*>? = (am as? AnnotatedMethod)?.let { _ ->
-        cache.findValueClassBoxConverterFrom(am)?.let { converter ->
-            converter.takeIf { it.valueClass.requireRebox() }?.let { StdDelegatingSerializer(it) }
-        }
+        cache.findValueClassReturnType(am)
+            ?.takeIf { it.requireRebox() }
+            ?.let { StdDelegatingSerializer(cache.getValueClassBoxConverter(am.rawReturnType, it)) }
     }
 }
 

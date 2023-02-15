@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.util.StdConverter
 // @see KotlinFallbackAnnotationIntrospector.findNullSerializer
 internal class ValueClassBoxConverter<S : Any?, D : Any>(
     unboxedClass: Class<S>,
-    val valueClass: Class<D>
+    valueClass: Class<D>
 ) : StdConverter<S, D>() {
     private val boxMethod = valueClass.getDeclaredMethod("box-impl", unboxedClass).apply {
         if (!this.isAccessible) this.isAccessible = true

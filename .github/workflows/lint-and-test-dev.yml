@@ -5,12 +5,12 @@ on:
       - develop
     paths:
       - "gradle/**"
-      - "src/**"
-      - build.gradle.kts
+      - "**.kts"
       - gradle.properties
       - gradlew
       - gradlew.bat
-      - settings.gradle.kts
+      - "**.kt"
+      - "**.java"
       - .github/workflows/lint-and-test-dev.yml
   pull_request:
     branches:
@@ -21,12 +21,12 @@ on:
       - reopened
     paths:
       - "gradle/**"
-      - "src/**"
-      - build.gradle.kts
+      - "**.kts"
       - gradle.properties
       - gradlew
       - gradlew.bat
-      - settings.gradle.kts
+      - "**.kt"
+      - "**.java"
       - .github/workflows/lint-and-test-dev.yml
 jobs:
   lint-and-test-dev:

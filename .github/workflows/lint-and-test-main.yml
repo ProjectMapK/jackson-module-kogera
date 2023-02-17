@@ -13,6 +13,8 @@ on:
       - settings.gradle.kts
       - .github/workflows/lint-and-test-main.yml
   pull_request:
+    branches:
+      - main
     types:
       - opened
       - synchronize

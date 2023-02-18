@@ -51,6 +51,12 @@ public class KotlinModule private constructor(
         builder.isEnabled(StrictNullChecks)
     )
 
+    @Deprecated(
+        message = "This is an API for compatibility; use Builder.",
+        level = DeprecationLevel.ERROR
+    )
+    public constructor() : this(Builder())
+
     public companion object {
         private const val serialVersionUID = 1L
     }

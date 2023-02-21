@@ -65,11 +65,9 @@ internal class KotlinFallbackAnnotationIntrospector(
     }
 
     private fun findKotlinParameterName(param: AnnotatedParameter, kmClass: KmClass): String? {
-        val declaringClass = param.declaringClass
-
         return when (val member = param.owner.member) {
             is Constructor<*> -> kmClass.findKmConstructor(member)?.let { it.valueParameters[param.index].name }
-            is Method -> findKotlinFactoryParameterName(declaringClass, kmClass, member, param.index)
+            is Method -> findKotlinFactoryParameterName(param.declaringClass, kmClass, member, param.index)
             else -> null
         }
     }

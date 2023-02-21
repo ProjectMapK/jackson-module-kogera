@@ -42,7 +42,11 @@ internal class KotlinFallbackAnnotationIntrospector(
     override fun findImplicitPropertyName(
         member: AnnotatedMember
     ): String? = when (member) {
-        is AnnotatedMethod -> cache.getKmClass(member.declaringClass)?.findPropertyByGetter(member.annotated)?.name
+        is AnnotatedMethod -> if (member.parameterCount == 0) {
+            cache.getKmClass(member.declaringClass)?.findPropertyByGetter(member.annotated)?.name
+        } else {
+            null
+        }
         is AnnotatedParameter -> cache.getKmClass(member.declaringClass)?.let { findKotlinParameterName(member, it) }
         else -> null
     }

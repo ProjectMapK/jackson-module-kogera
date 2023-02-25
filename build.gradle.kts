@@ -47,6 +47,10 @@ kotlinter {
 }
 
 tasks {
+    compileKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+
     test {
         useJUnitPlatform()
     }

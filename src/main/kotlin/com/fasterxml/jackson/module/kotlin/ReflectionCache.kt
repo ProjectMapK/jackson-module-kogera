@@ -7,12 +7,18 @@ import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.Meth
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueCreator
 import com.fasterxml.jackson.module.kotlin.ser.ValueClassBoxConverter
 import kotlinx.metadata.KmClass
+import java.io.Serializable
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
 import java.util.Optional
 
-internal class ReflectionCache(reflectionCacheSize: Int) {
+internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
+    companion object {
+        // Increment is required when properties that use LRUMap are changed.
+        private const val serialVersionUID = 1L
+    }
+
     // This cache is used for both serialization and deserialization, so reserve a larger size from the start.
     private val classCache = LRUMap<Class<*>, Optional<KmClass>>(reflectionCacheSize, reflectionCacheSize)
     private val creatorCache: LRUMap<Executable, ValueCreator<*>>

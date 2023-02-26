@@ -1,11 +1,9 @@
-// Remove this Supress after updating to Gradle 8.1 or higher.
-// for https://github.com/gradle/gradle/issues/22797
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     `maven-publish` // for JitPack
-    // The Kotlin version is managed in a version catalog for grid testing.
-    // see gradle/libs.versions.toml
-    alias(libs.plugins.kotlinJvm)
+
+    val kotlinVersion: String = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() } ?: "1.7.21"
+    kotlin("jvm") version kotlinVersion
+
     java
     id("org.jmailen.kotlinter") version "3.13.0"
 }

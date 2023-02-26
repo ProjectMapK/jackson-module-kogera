@@ -1,0 +1,10 @@
+[versions]
+kotlin = "1.7.21"
+
+[plugins]
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+
+[libraries]
+kotlin-compilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
+kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-gradlePlugin-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }

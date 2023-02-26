@@ -31,9 +31,19 @@ This project makes several disruptive changes to achieve more `Kotlin-like` beha
 Details are summarized in [KogeraSpecificImplementations](./docs/KogeraSpecificImplementations.md).
 
 # Compatibility
-- `Java 8+`
 - `jackson 2.14.2`
-- `Kotlin 1.7.21+`(This version will be smaller than `1.6.x.`)
+- `Java 8+`
+- `Kotlin 1.7.21+`
+
+## About compatibility checks
+Compatibility checks for `Java` and `Kotlin` are done by `CI` grid tests.
+
+The `Java` test covers all currently supported LTS versions and the latest versions.  
+Currently 8,11,17 and 19 are covered.
+
+`Kotlin` is tested on the latest patch version and the latest `Beta` or `RC` version within each minor version since 1.7.21.  
+Currently 1.7.21, 1.8.10 and 1.8.20-Beta are covered.  
+I hope to lower this version in the future, but currently the minimum `Kotlin` version that can be supported is 1.7 due to `kotlinx-metadata-jvm` constraints.
 
 # Installation
 The package is temporarily published in `JitPack`.  
@@ -74,7 +84,9 @@ After the following features are implemented, this project will be moved to the 
 
 - ~~Deserialization support for `value class`~~
   - Support for policy decisions and basic use cases was completed in #68, only edge cases and hard-to-fix issues remain
-- Support for less than `Kotlin 1.6.x`(including grid test building with `CI`)
+- ~~Support for less than `Kotlin 1.6.x`(including grid test building with `CI`)~~
+  - Due to limitations of `kotlinx-metadata-jvm`, only 1.7 or later is supported.
+  - However, it will be pulled down when possible.
 - Rename module and package(see https://github.com/FasterXML/jackson-module-kotlin/issues/450#issuecomment-1384788717).
 
 # About license

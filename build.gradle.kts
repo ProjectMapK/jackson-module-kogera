@@ -18,7 +18,9 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.6.0") {
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib")
+    }
 
     api("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
     api("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")

@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.deser.ValueInstantiators
 import com.fasterxml.jackson.databind.deser.impl.NullsAsEmptyProvider
 import com.fasterxml.jackson.databind.deser.impl.PropertyValueBuffer
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
+import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.module.kotlin.ReflectionCache
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueCreator
 import java.lang.reflect.Executable
@@ -67,10 +67,10 @@ internal class KotlinValueInstantiator(
                 } else {
                     val isMissingAndRequired = isMissing && jsonProp.isRequired
                     if (isMissingAndRequired || (!paramDef.isGenericType && !paramDef.isNullable)) {
-                        throw MissingKotlinParameterException(
-                            parameter = paramDef,
-                            processor = ctxt.parser,
-                            msg = "Instantiation of $valueTypeDesc value failed for JSON property ${jsonProp.name} " +
+                        throw MismatchedInputException.from(
+                            ctxt.parser,
+                            jsonProp.type,
+                            "Instantiation of $valueTypeDesc value failed for JSON property ${jsonProp.name} " +
                                 "due to missing (therefore NULL) value for creator parameter ${paramDef.name} " +
                                 "which is a non-nullable type"
                         ).wrapWithPath(this.valueClass, jsonProp.name)

@@ -1,8 +1,8 @@
 package com.fasterxml.jackson.module.kotlin._ported.test
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.NullIsSameAsDefault
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -48,7 +48,7 @@ class TestNullToDefault {
 
     @Test
     fun shouldNotUseNullAsDefault() {
-        assertThrows<MissingKotlinParameterException> {
+        assertThrows<MismatchedInputException> {
             createMapper(false).readValue<TestClass>(
                 """{
 					"sku": "974",
@@ -64,7 +64,7 @@ class TestNullToDefault {
     // @Test(expected = MissingKotlinParameterException::class)
     @Test
     fun errorIfNotDefault() {
-        assertThrows<MissingKotlinParameterException> {
+        assertThrows<MismatchedInputException> {
             createMapper(true).readValue<TestClass>(
                 """{
 						"sku": "974",

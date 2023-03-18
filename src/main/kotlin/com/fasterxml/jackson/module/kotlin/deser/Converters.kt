@@ -1,10 +1,10 @@
 package com.fasterxml.jackson.module.kotlin.deser
 
 import com.fasterxml.jackson.databind.JavaType
+import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.databind.type.TypeFactory
 import com.fasterxml.jackson.databind.util.Converter
 import com.fasterxml.jackson.databind.util.StdConverter
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueParameter
 
 internal class ValueClassUnboxConverter<T : Any>(private val valueClass: Class<T>) : StdConverter<T, Any?>() {
@@ -26,9 +26,9 @@ internal sealed class CollectionValueStrictNullChecksConverter<T : Any> : Conver
     override fun convert(value: T): T {
         getValues(value).forEach {
             if (it == null) {
-                throw MissingKotlinParameterException(
-                    valueParameter,
+                throw MismatchedInputException.from(
                     null,
+                    null as JavaType?,
                     "A null value was entered for the parameter ${valueParameter.name}."
                 )
             }
@@ -62,9 +62,9 @@ internal class MapValueStrictNullChecksConverter(
     override fun convert(value: Map<*, *>): Map<*, *> = value.apply {
         entries.forEach { (k, v) ->
             if (v == null) {
-                throw MissingKotlinParameterException(
-                    valueParameter,
+                throw MismatchedInputException.from(
                     null,
+                    null as JavaType?,
                     "A null value was entered for key $k of the parameter ${valueParameter.name}."
                 )
             }

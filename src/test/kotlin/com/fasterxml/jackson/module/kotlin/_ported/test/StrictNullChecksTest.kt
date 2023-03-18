@@ -1,8 +1,8 @@
 package com.fasterxml.jackson.module.kotlin._ported.test
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.StrictNullChecks
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Assertions.assertArrayEquals
@@ -31,7 +31,7 @@ class StrictNullChecksTest {
     @Test
     fun testListOfInt() {
         val json = """{"samples":[1, null]}"""
-        assertThrows<MissingKotlinParameterException> { mapper.readValue<ClassWithListOfInt>(json) }
+        assertThrows<MismatchedInputException> { mapper.readValue<ClassWithListOfInt>(json) }
     }
 
     private data class ClassWithNullableListOfInt(val samples: List<Int>?)
@@ -59,7 +59,7 @@ class StrictNullChecksTest {
     @Test
     fun testArrayOfInt() {
         val json = """{"samples":[1, null]}"""
-        assertThrows<MissingKotlinParameterException> { mapper.readValue<ClassWithArrayOfInt>(json) }
+        assertThrows<MismatchedInputException> { mapper.readValue<ClassWithArrayOfInt>(json) }
     }
 
     private data class ClassWithNullableArrayOfInt(val samples: Array<Int>?)
@@ -87,7 +87,7 @@ class StrictNullChecksTest {
     @Test
     fun testMapOfStringToIntWithNullValue() {
         val json = """{ "samples": { "key": null } }"""
-        assertThrows<MissingKotlinParameterException> { mapper.readValue<ClassWithMapOfStringToInt>(json) }
+        assertThrows<MismatchedInputException> { mapper.readValue<ClassWithMapOfStringToInt>(json) }
     }
 
     private data class ClassWithNullableMapOfStringToInt(val samples: Map<String, Int>?)

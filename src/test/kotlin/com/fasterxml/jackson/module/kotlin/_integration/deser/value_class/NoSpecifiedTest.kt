@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.kotlin._integration.deser.value_class
 
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
+import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -87,7 +87,7 @@ class NoSpecifiedTest {
         val expected = Failing(NullableObject(null))
         val src = mapper.writeValueAsString(expected)
 
-        assertThrows<MissingKotlinParameterException>("Kogera #42 is fixed") {
+        assertThrows<MismatchedInputException>("Kogera #42 is fixed") {
             val result = mapper.readValue<Failing>(src)
             assertEquals(expected, result)
         }

@@ -1,6 +1,9 @@
 plugins {
     `maven-publish` // for JitPack
-    kotlin("jvm") version "1.7.21"
+
+    val kotlinVersion: String = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() } ?: "1.7.21"
+    kotlin("jvm") version kotlinVersion
+
     java
     id("org.jmailen.kotlinter") version "3.13.0"
 }
@@ -47,6 +50,10 @@ kotlinter {
 }
 
 tasks {
+    compileKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+
     test {
         useJUnitPlatform()
     }

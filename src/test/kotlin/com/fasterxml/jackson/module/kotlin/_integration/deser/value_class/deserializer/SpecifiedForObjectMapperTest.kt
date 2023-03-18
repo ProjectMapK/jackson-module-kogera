@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.kotlin._integration.deser.value_class.deserializer
 
+import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin._integration.deser.value_class.NonNullObject
 import com.fasterxml.jackson.module.kotlin._integration.deser.value_class.NullableObject
 import com.fasterxml.jackson.module.kotlin._integration.deser.value_class.Primitive
@@ -98,7 +98,7 @@ class SpecifiedForObjectMapperTest {
         val expected = Failing(NullableObject(null))
         val src = mapper.writeValueAsString(expected)
 
-        assertThrows<MissingKotlinParameterException>("Kogera #42 is fixed") {
+        assertThrows<MismatchedInputException>("Kogera #42 is fixed") {
             val result = mapper.readValue<Failing>(src)
             assertEquals(expected, result)
         }

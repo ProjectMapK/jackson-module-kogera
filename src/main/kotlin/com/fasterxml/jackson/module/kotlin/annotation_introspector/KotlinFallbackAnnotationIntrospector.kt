@@ -21,7 +21,6 @@ import com.fasterxml.jackson.module.kotlin.isNullable
 import com.fasterxml.jackson.module.kotlin.isUnboxableValueClass
 import com.fasterxml.jackson.module.kotlin.reconstructClassOrNull
 import com.fasterxml.jackson.module.kotlin.toSignature
-import kotlinx.metadata.KmClass
 import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.setterSignature
 import kotlinx.metadata.jvm.signature
@@ -39,40 +38,31 @@ internal class KotlinFallbackAnnotationIntrospector(
     private val cache: ReflectionCache
 ) : NopAnnotationIntrospector() {
     // since 2.4
-    override fun findImplicitPropertyName(
-        member: AnnotatedMember
-    ): String? = cache.getKmClass(member.declaringClass)?.let { kmClass ->
-        when (member) {
-            is AnnotatedMethod -> kmClass.findPropertyByGetter(member.annotated)?.name
-            is AnnotatedParameter -> findKotlinParameterName(member, kmClass)
-            else -> null
+    override fun findImplicitPropertyName(member: AnnotatedMember): String? = when (member) {
+        is AnnotatedMethod -> if (member.parameterCount == 0) {
+            cache.getKmClass(member.declaringClass)?.findPropertyByGetter(member.annotated)?.name
+        } else {
+            null
         }
+        is AnnotatedParameter -> findKotlinParameterName(member)
+        else -> null
     }
 
-    private fun findKotlinFactoryParameterName(
-        declaringClass: Class<*>,
-        kmClass: KmClass,
-        member: Method,
-        index: Int
-    ) = kmClass.companionObject?.takeIf { _ -> Modifier.isStatic(member.modifiers) }?.let { companion ->
-        val companionKmClass = declaringClass.getDeclaredField(companion)
-            .type
-            .let { cache.getKmClass(it) }!!
-        val signature = member.toSignature()
+    private fun findKotlinParameterName(param: AnnotatedParameter): String? = when (val owner = param.owner.member) {
+        is Constructor<*> -> cache.getKmClass(param.declaringClass)?.findKmConstructor(owner)?.valueParameters
+        is Method ->
+            owner.takeIf { _ -> Modifier.isStatic(owner.modifiers) }
+                ?.let { _ ->
+                    val companion = cache.getKmClass(param.declaringClass)?.companionObject ?: return@let null
+                    val companionKmClass = owner.declaringClass.getDeclaredField(companion)
+                        .type
+                        .let { cache.getKmClass(it) }!!
+                    val signature = owner.toSignature()
 
-        companionKmClass.functions.find { it.signature == signature }
-            ?.let { it.valueParameters[index].name }
-    }
-
-    private fun findKotlinParameterName(param: AnnotatedParameter, kmClass: KmClass): String? {
-        val declaringClass = param.declaringClass
-
-        return when (val member = param.owner.member) {
-            is Constructor<*> -> kmClass.findKmConstructor(member)?.let { it.valueParameters[param.index].name }
-            is Method -> findKotlinFactoryParameterName(declaringClass, kmClass, member, param.index)
-            else -> null
-        }
-    }
+                    companionKmClass.functions.find { it.signature == signature }?.valueParameters
+                }
+        else -> null
+    }?.let { it[param.index].name }
 
     // If it is not a property on Kotlin, it is not used to ser/deserialization
     override fun findPropertyAccess(ann: Annotated): JsonProperty.Access? = (ann as? AnnotatedMethod)?.let { _ ->

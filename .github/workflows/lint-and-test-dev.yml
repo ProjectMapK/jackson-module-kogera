@@ -1,47 +1,49 @@
-name: lint-and-test
+name: lint-and-test-dev
 on:
   push:
     branches:
-      - main
+      - develop
     paths:
       - "gradle/**"
-      - "src/**"
-      - build.gradle.kts
+      - "**.kts"
       - gradle.properties
       - gradlew
       - gradlew.bat
-      - settings.gradle.kts
-      - .github/workflows/lint-and-test.yml
+      - "**.kt"
+      - "**.java"
+      - .github/workflows/lint-and-test-dev.yml
   pull_request:
+    branches:
+      - develop
     types:
       - opened
       - synchronize
       - reopened
     paths:
       - "gradle/**"
-      - "src/**"
-      - build.gradle.kts
+      - "**.kts"
       - gradle.properties
       - gradlew
       - gradlew.bat
-      - settings.gradle.kts
-      - .github/workflows/lint-and-test.yml
+      - "**.kt"
+      - "**.java"
+      - .github/workflows/lint-and-test-dev.yml
 jobs:
-  lint-and-test:
-    name: lint-and-test
+  lint-and-test-dev:
+    name: lint-and-test-dev
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
       - name: Set up java
         uses: actions/setup-java@v2
         with:
           java-version: '8'
           distribution: 'adopt'
           cache: 'gradle'
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Lint

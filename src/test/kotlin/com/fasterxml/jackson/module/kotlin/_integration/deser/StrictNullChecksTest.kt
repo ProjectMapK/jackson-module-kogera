@@ -1,9 +1,9 @@
 package com.fasterxml.jackson.module.kotlin._integration.deser
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -60,19 +60,19 @@ class StrictNullChecksTest {
         @Test
         fun array() {
             val src = mapper.writeValueAsString(AnyWrapper(arrayOf<Int?>(null)))
-            assertThrows<MissingKotlinParameterException> { mapper.readValue<ArrayWrapper>(src) }
+            assertThrows<MismatchedInputException> { mapper.readValue<ArrayWrapper>(src) }
         }
 
         @Test
         fun list() {
             val src = mapper.writeValueAsString(AnyWrapper(arrayOf<Int?>(null)))
-            assertThrows<MissingKotlinParameterException> { mapper.readValue<ListWrapper>(src) }
+            assertThrows<MismatchedInputException> { mapper.readValue<ListWrapper>(src) }
         }
 
         @Test
         fun map() {
             val src = mapper.writeValueAsString(AnyWrapper(mapOf("foo" to null)))
-            assertThrows<MissingKotlinParameterException> { mapper.readValue<MapWrapper>(src) }
+            assertThrows<MismatchedInputException> { mapper.readValue<MapWrapper>(src) }
         }
     }
 }

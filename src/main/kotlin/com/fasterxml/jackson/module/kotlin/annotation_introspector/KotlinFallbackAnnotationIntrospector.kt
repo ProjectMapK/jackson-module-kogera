@@ -49,8 +49,7 @@ internal class KotlinFallbackAnnotationIntrospector(
     }
 
     private fun findKotlinParameterName(param: AnnotatedParameter): String? = when (val owner = param.owner.member) {
-        is Constructor<*> -> cache.getKmClass(param.declaringClass)
-            ?.findKmConstructor(owner)?.let { it.valueParameters[param.index].name }
+        is Constructor<*> -> cache.getKmClass(param.declaringClass)?.findKmConstructor(owner)?.valueParameters
         is Method ->
             owner.takeIf { _ -> Modifier.isStatic(owner.modifiers) }
                 ?.let { _ ->
@@ -60,11 +59,10 @@ internal class KotlinFallbackAnnotationIntrospector(
                         .let { cache.getKmClass(it) }!!
                     val signature = owner.toSignature()
 
-                    companionKmClass.functions.find { it.signature == signature }
-                        ?.let { it.valueParameters[param.index].name }
+                    companionKmClass.functions.find { it.signature == signature }?.valueParameters
                 }
         else -> null
-    }
+    }?.let { it[param.index].name }
 
     // If it is not a property on Kotlin, it is not used to ser/deserialization
     override fun findPropertyAccess(ann: Annotated): JsonProperty.Access? = (ann as? AnnotatedMethod)?.let { _ ->

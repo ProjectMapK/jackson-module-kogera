@@ -30,6 +30,7 @@ import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 
 // AnnotationIntrospector that overrides the behavior of the default AnnotationIntrospector
 // (in most cases, JacksonAnnotationIntrospector).
@@ -170,12 +171,10 @@ private fun hasCreatorConstructor(clazz: Class<*>, kmClass: KmClass, propertyNam
 
 // In the original, `isPossibleSingleString` comparison was disabled,
 // and if enabled, the behavior would have changed, so the comparison is skipped.
-private fun hasCreatorFunction(clazz: Class<*>, kmClass: KmClass): Boolean = kmClass.companionObject
-    ?.let { companion ->
-        clazz.getDeclaredField(companion).type.declaredMethods.any { it.hasCreatorAnnotation() }
-    } ?: false
+private fun hasCreatorFunction(clazz: Class<*>): Boolean = clazz.declaredMethods
+    .any { Modifier.isStatic(it.modifiers) && it.hasCreatorAnnotation() }
 
 private fun hasCreator(clazz: Class<*>, kmClass: KmClass): Boolean {
     val propertyNames = kmClass.properties.map { it.name }.toSet()
-    return hasCreatorConstructor(clazz, kmClass, propertyNames) || hasCreatorFunction(clazz, kmClass)
+    return hasCreatorConstructor(clazz, kmClass, propertyNames) || hasCreatorFunction(clazz)
 }

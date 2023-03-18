@@ -53,7 +53,7 @@ public class KotlinModule private constructor(
 
     @Deprecated(
         message = "This is an API for compatibility; use Builder.",
-        level = DeprecationLevel.ERROR
+        level = DeprecationLevel.HIDDEN
     )
     public constructor() : this(Builder())
 

@@ -14,11 +14,7 @@ public object ValueClassSupport {
      */
     public val <T : Any> T.boxedValue: Any?
         @Suppress("UNCHECKED_CAST")
-        get() = if (this::class.isValue) {
-            (this::class as KClass<T>).boxedProperty.get(this)
-        } else {
-            throw UnsupportedOperationException("$this is not a value class")
-        }
+        get() = (this::class as KClass<T>).boxedProperty.get(this)
 
     /**
      * cache of boxed value property of a **`value class`**.

@@ -19,7 +19,7 @@ class ValueClassSupportTest {
             test.boxedValue
         }
 
-        Assertions.assertEquals("$test is not a value class", exception.message)
+        Assertions.assertEquals("${test::class} is not a value class", exception.message)
     }
 
     @Test

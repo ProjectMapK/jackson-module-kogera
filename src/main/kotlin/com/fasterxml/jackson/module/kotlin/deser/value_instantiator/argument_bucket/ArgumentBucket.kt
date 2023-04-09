@@ -29,7 +29,8 @@ internal class BucketGenerator(
         // Set values of primitive arguments to the boxed default values (such as 0, 0.0, false) instead of nulls.
         parameterTypes[i].takeIf { it.isPrimitive }?.let { defaultPrimitiveValue(it) }
     }
-    private val originalMasks: IntArray = IntArray(calcMaskSize(parameterTypes.size)) { 0xFFFF }
+    // -1 is the filled bit mask.
+    private val originalMasks: IntArray = IntArray(calcMaskSize(parameterTypes.size)) { -1 }
 
     init {
         if (hasVarargParam) {

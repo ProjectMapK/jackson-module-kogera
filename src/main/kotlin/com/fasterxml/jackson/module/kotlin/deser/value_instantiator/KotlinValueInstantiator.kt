@@ -66,7 +66,7 @@ internal class KotlinValueInstantiator(
                     paramVal = NullsAsEmptyProvider(jsonProp.valueDeserializer).getNullValue(ctxt)
                 } else {
                     val isMissingAndRequired = isMissing && jsonProp.isRequired
-                    if (isMissingAndRequired || (!paramDef.isGenericType && !paramDef.isNullable)) {
+                    if (isMissingAndRequired || !(paramDef.isNullable || paramDef.isGenericType)) {
                         throw MismatchedInputException.from(
                             ctxt.parser,
                             jsonProp.type,

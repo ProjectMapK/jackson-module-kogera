@@ -61,6 +61,11 @@ public inline fun <reified T> ObjectReader.readValuesTyped(jp: JsonParser): Iter
 public inline fun <reified T> ObjectReader.treeToValue(n: TreeNode): T? =
     readValue(this.treeAsTokens(n), jacksonTypeRef<T>())
 
+public inline fun <reified T, reified U> ObjectMapper.addMixIn(): ObjectMapper =
+    this.addMixIn(T::class.java, U::class.java)
+public inline fun <reified T, reified U> JsonMapper.Builder.addMixIn(): JsonMapper.Builder =
+    this.addMixIn(T::class.java, U::class.java)
+
 public operator fun ArrayNode.plus(element: Boolean) { add(element) }
 public operator fun ArrayNode.plus(element: Short) { add(element) }
 public operator fun ArrayNode.plus(element: Int) { add(element) }

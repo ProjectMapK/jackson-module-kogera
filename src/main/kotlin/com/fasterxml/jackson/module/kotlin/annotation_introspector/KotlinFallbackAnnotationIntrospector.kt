@@ -3,11 +3,14 @@ package com.fasterxml.jackson.module.kotlin.annotation_introspector
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonSerializer
+import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.introspect.Annotated
+import com.fasterxml.jackson.databind.introspect.AnnotatedClass
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
+import com.fasterxml.jackson.databind.type.TypeFactory
 import com.fasterxml.jackson.databind.util.Converter
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.ReflectionCache
@@ -115,6 +118,54 @@ internal class KotlinFallbackAnnotationIntrospector(
         cache.findValueClassReturnType(am)
             ?.takeIf { it.requireRebox() }
             ?.let { cache.getValueClassBoxConverter(am.rawReturnType, it).delegatingSerializer }
+    }
+
+    /*
+     * ClosedRange, which is not a concrete type like IntRange, does not have a type to deserialize to,
+     * so deserialization by ClosedRangeMixin does not work.
+     * Therefore, this process provides a concrete type.
+     *
+     * The target of processing is ClosedRange and interfaces or abstract classes that inherit from it.
+     * As of Kotlin 1.5.32, ClosedRange and ClosedFloatingPointRange are processed.
+     */
+    override fun refineDeserializationType(config: MapperConfig<*>, a: Annotated, baseType: JavaType): JavaType {
+        return (a as? AnnotatedClass)
+            ?.let { _ ->
+                a.rawType.apply {
+                    if (this != ClosedRange::class.java && this != ClosedFloatingPointRange::class.java) return@let null
+                }
+
+                baseType.bindings.typeParameters.firstOrNull()
+                    ?.let { ClosedRangeHelpers.findClosedFloatingPointRangeRef(it.rawClass) }
+                    ?: ClosedRangeHelpers.comparableRangeClass?.let {
+                        val factory = config.typeFactory
+                        factory.constructParametricType(it, a.type.bindings)
+                    }
+            } ?: baseType
+    }
+}
+
+// At present, it depends on the private class, but if it is made public, it must be switched to a direct reference.
+// see https://youtrack.jetbrains.com/issue/KT-55376
+internal object ClosedRangeHelpers {
+    val closedDoubleRangeRef: JavaType? by lazy {
+        runCatching { Class.forName("kotlin.ranges.ClosedDoubleRange") }.getOrNull()
+            ?.let { TypeFactory.defaultInstance().constructType(it) }
+    }
+
+    val closedFloatRangeRef: JavaType? by lazy {
+        runCatching { Class.forName("kotlin.ranges.ClosedFloatRange") }.getOrNull()
+            ?.let { TypeFactory.defaultInstance().constructType(it) }
+    }
+
+    fun findClosedFloatingPointRangeRef(contentType: Class<*>): JavaType? = when (contentType) {
+        Double::class.javaPrimitiveType, Double::class.javaObjectType -> closedDoubleRangeRef
+        Float::class.javaPrimitiveType, Float::class.javaObjectType -> closedFloatRangeRef
+        else -> null
+    }
+
+    val comparableRangeClass: Class<*>? by lazy {
+        runCatching { Class.forName("kotlin.ranges.ComparableRange") }.getOrNull()
     }
 }
 

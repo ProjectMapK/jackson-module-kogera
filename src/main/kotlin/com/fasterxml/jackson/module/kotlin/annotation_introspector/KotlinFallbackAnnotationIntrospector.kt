@@ -180,7 +180,6 @@ private fun ValueParameter.createValueClassUnboxConverterOrNull(rawType: Class<*
 private fun ValueParameter.isNullishTypeAt(index: Int) = arguments.getOrNull(index)?.isNullable ?: true
 
 private fun ValueParameter.createStrictNullChecksConverterOrNull(type: JavaType, rawType: Class<*>): Converter<*, *>? {
-    @Suppress("UNCHECKED_CAST")
     return when {
         Array::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(0) ->
             CollectionValueStrictNullChecksConverter.ForArray(type, this)

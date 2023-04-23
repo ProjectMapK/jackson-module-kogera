@@ -55,8 +55,9 @@ internal object ValueClassUnboxSerializer : StdSerializer<Any>(Any::class.java) 
 }
 
 // Class must be UnboxableValueClass.
-private fun Class<*>.getStaticJsonValueGetter(): Method? = this.declaredMethods
-    .find { method -> Modifier.isStatic(method.modifiers) && method.annotations.any { it is JsonValue } }
+private fun Class<*>.getStaticJsonValueGetter(): Method? = this.declaredMethods.find { method ->
+    Modifier.isStatic(method.modifiers) && method.annotations.any { it is JsonValue && it.value }
+}
 
 internal class ValueClassStaticJsonValueSerializer<T>(
     t: Class<T>,

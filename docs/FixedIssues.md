@@ -6,6 +6,7 @@ A list of issues that have not been resolved in `jackson-module-kotlin`, but hav
 - [Private getter with different return type hides property · Issue \#341](https://github.com/FasterXML/jackson-module-kotlin/issues/341)
 - [Remove \`kotlin\-reflect\` and replace it with \`kotlinx\-metadata\-jvm\` · Issue \#450](https://github.com/FasterXML/jackson-module-kotlin/issues/450)
 - [Remove deprecated method in KNAI · Issue \#508](https://github.com/FasterXML/jackson-module-kotlin/issues/508)
+- [Support JsonKey in value class · Issue \#536](https://github.com/FasterXML/jackson-module-kotlin/issues/536)
 - [Type Introspection: non\-nullable field with default is reported as required · Issue \#609](https://github.com/FasterXML/jackson-module-kotlin/issues/609)
 - [`JsonSerializer` is enabled when the value is an Object type with non\-null value and the property definition is nullable. · Issue \#618](https://github.com/FasterXML/jackson-module-kotlin/issues/618)
 - [About the problem that property names in \`Jackson\` and definitions in \`Kotlin\` are sometimes different\. · Issue \#630](https://github.com/FasterXML/jackson-module-kotlin/issues/630)

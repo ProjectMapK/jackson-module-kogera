@@ -16,8 +16,7 @@ import java.math.BigInteger
 
 internal object SequenceSerializer : StdSerializer<Sequence<*>>(Sequence::class.java) {
     override fun serialize(value: Sequence<*>, gen: JsonGenerator, provider: SerializerProvider) {
-        val materializedList = value.toList()
-        provider.defaultSerializeValue(materializedList, gen)
+        provider.defaultSerializeValue(value.iterator(), gen)
     }
 }
 
@@ -56,8 +55,9 @@ internal object ValueClassUnboxSerializer : StdSerializer<Any>(Any::class.java) 
 }
 
 // Class must be UnboxableValueClass.
-private fun Class<*>.getStaticJsonValueGetter(): Method? = this.declaredMethods
-    .find { method -> Modifier.isStatic(method.modifiers) && method.annotations.any { it is JsonValue } }
+private fun Class<*>.getStaticJsonValueGetter(): Method? = this.declaredMethods.find { method ->
+    Modifier.isStatic(method.modifiers) && method.annotations.any { it is JsonValue && it.value }
+}
 
 internal class ValueClassStaticJsonValueSerializer<T>(
     t: Class<T>,

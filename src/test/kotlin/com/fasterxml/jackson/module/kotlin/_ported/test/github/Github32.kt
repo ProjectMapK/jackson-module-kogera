@@ -5,12 +5,9 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-// @see com.fasterxml.jackson.module.kotlin.deser.value_instantiator.creator.ValueParameter#toString
-@Disabled
 private class TestGithub32 {
     @Test
     fun `valid mandatory data class constructor param`() {

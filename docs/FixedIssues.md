@@ -12,6 +12,7 @@ A list of issues that have not been resolved in `jackson-module-kotlin`, but hav
 - [About the problem that property names in \`Jackson\` and definitions in \`Kotlin\` are sometimes different\. · Issue \#630](https://github.com/FasterXML/jackson-module-kotlin/issues/630)
 - [Annotation given to constructor parameters containing \`value class\` as argument does not work · Issue \#651](https://github.com/FasterXML/jackson-module-kotlin/issues/651)
 - [How to deserialize a kotlin\.ranges\.ClosedRange<T> with Jackson · Issue \#663](https://github.com/FasterXML/jackson-module-kotlin/issues/663)
+- [The parameter's \`isRequired\` is overridden by the JsonProperty granted to accessor\. · Issue \#668](https://github.com/FasterXML/jackson-module-kotlin/issues/668)
 
 ## Maybe fixed(verification required)
 - [@JsonProperty is ignored on data class properties with names starting with "is" · Issue \#237](https://github.com/FasterXML/jackson-module-kotlin/issues/237)

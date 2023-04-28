@@ -86,4 +86,23 @@ class HasRequiredMarkerTest {
             "KotlinPrimaryAnnotationIntrospector::AnnotatedField.hasRequiredMarker fixed"
         )
     }
+
+    data class AffectByAccessor(
+        @param:JsonProperty(required = true)
+        @field:JsonProperty(required = true)
+        @set:JsonProperty(required = true)
+        var a: String?
+    ) {
+        @set:JsonProperty(required = true)
+        @field:JsonProperty(required = true)
+        var b: String? = null
+    }
+
+    @Test
+    fun affectByAccessorTest() {
+        val desc = mapper.introspectSer<AffectByAccessor>()
+
+        assertFalse(desc.isRequired("a"))
+        assertFalse(desc.isRequired("b"))
+    }
 }

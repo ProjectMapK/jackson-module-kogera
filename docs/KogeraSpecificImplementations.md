@@ -22,6 +22,7 @@ In `kogera`, the specification has been revised as follows.
     - In `kogera`, the deserialization behavior is not affected by whether the argument is of type `primitive` or not.
 - The `nullToEmpty` option only affects deserialization.
     - As for `JvmField`, there was no way to distinguish between contexts, so that option affects serialization.
+- Do not override the value of a parameter by `nullability` even if `required = true` is specified for the accessor.
 
 ## Stricter visibility and privatization of some codes
 In `jackson-module-kotlin`, some code has been inadvertently released.

@@ -27,7 +27,6 @@ import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.setterSignature
 import kotlinx.metadata.jvm.signature
-import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
@@ -41,24 +40,21 @@ internal class KotlinPrimaryAnnotationIntrospector(
     private val nullToEmptyMap: Boolean,
     private val cache: ReflectionCache
 ) : NopAnnotationIntrospector() {
-    // region hasRequiredMarker
-
     // If JsonProperty.required is true, the behavior is clearly specified and the result is paramount.
     // Otherwise, the required is determined from the configuration and the definition on Kotlin.
-    // Using this::_findAnnotation or AnnotatedMember::getAnnotation will give incorrect results
-    // because the retrieval is done from all annotations of parameters, fields, and accessors.
-    // To avoid this, the implementation retrieves from each individual member.
-    override fun hasRequiredMarker(m: AnnotatedMember): Boolean? = cache.getKmClass(m.member.declaringClass)?.let {
-        m.member
-        when (m) {
-            is AnnotatedField -> m.hasRequiredMarker(it)
-            is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(it)
-            is AnnotatedParameter -> m.hasRequiredMarker(it)
-            else -> null
-        }
-    }
+    override fun hasRequiredMarker(m: AnnotatedMember): Boolean? {
+        val byAnnotation = _findAnnotation(m, JsonProperty::class.java)?.required
+            ?.apply { if (this) return true }
 
-    private fun AnnotatedElement.requiredByAnnotation(): Boolean? = getAnnotation(JsonProperty::class.java)?.required
+        return cache.getKmClass(m.member.declaringClass)?.let {
+            when (m) {
+                is AnnotatedField -> m.hasRequiredMarker(it)
+                is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(it)
+                is AnnotatedParameter -> m.hasRequiredMarker(it)
+                else -> null
+            }
+        } ?: byAnnotation // If a JsonProperty is available, use it to reduce processing costs.
+    }
 
     // Functions that call this may return incorrect results for value classes whose value type is Collection or Map,
     // but this is a rare case and difficult to handle, so it is not supported.
@@ -69,8 +65,6 @@ internal class KotlinPrimaryAnnotationIntrospector(
     // but deserialization is preferred because there is currently no way to distinguish between contexts.
     private fun AnnotatedField.hasRequiredMarker(kmClass: KmClass): Boolean? {
         val member = annotated
-        val byAnnotation = member.requiredByAnnotation().apply { if (this == true) return true }
-
         val fieldSignature = member.toSignature()
 
         // Direct access to `AnnotatedField` is only performed if there is no accessor (defined as JvmField),
@@ -82,14 +76,11 @@ internal class KotlinPrimaryAnnotationIntrospector(
             // https://youtrack.jetbrains.com/issue/KT-6519
             ?.takeIf { it.getterSignature == null }
             ?.let { !(it.returnType.isNullable() || type.hasDefaultEmptyValue()) }
-            ?: byAnnotation
     }
 
     private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable()
 
     private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(kmClass: KmClass): Boolean? {
-        val byAnnotation = member.requiredByAnnotation().apply { if (this == true) return true }
-
         // false if setter and nullToEmpty option is specified
         if (parameterCount == 1 && this.getParameter(0).type.hasDefaultEmptyValue()) return false
 
@@ -97,20 +88,13 @@ internal class KotlinPrimaryAnnotationIntrospector(
         return kmClass.properties
             .find { it.getterSignature == memberSignature || it.setterSignature == memberSignature }
             ?.isRequiredByNullability()
-            ?: byAnnotation
     }
 
     private fun AnnotatedParameter.hasRequiredMarker(kmClass: KmClass): Boolean? {
         val paramDef = when (val member = member) {
-            is Constructor<*> -> {
-                member.parameters[index].requiredByAnnotation().apply { if (this == true) return true }
-
-                kmClass.findKmConstructor(member)
-                    ?.let { it.valueParameters[index] }
-            }
+            is Constructor<*> -> kmClass.findKmConstructor(member)
+                ?.let { it.valueParameters[index] }
             is Method -> {
-                member.parameters[index].requiredByAnnotation().apply { if (this == true) return true }
-
                 val signature = member.toSignature()
                 kmClass.functions.find { it.signature == signature }
                     ?.let { it.valueParameters[index] }
@@ -129,7 +113,6 @@ internal class KotlinPrimaryAnnotationIntrospector(
             else -> true
         }
     }
-    // endregion
 
     /**
      * Subclasses can be detected automatically for sealed classes, since all possible subclasses are known

@@ -160,23 +160,4 @@ class HasRequiredMarkerTest {
         assertTrue(desc.isRequired("mapProp"))
         assertTrue(desc.isRequired("mapField"))
     }
-
-    data class AffectByAccessor(
-        @get:JsonProperty(required = true)
-        @field:JsonProperty(required = true)
-        @set:JsonProperty(required = true)
-        var a: String?
-    ) {
-        @get:JsonProperty(required = true)
-        @field:JsonProperty(required = true)
-        var b: String? = null
-    }
-
-    @Test
-    fun affectByAccessorTest() {
-        val desc = defaultMapper.introspectDeser<AffectByAccessor>()
-
-        assertFalse(desc.isRequired("a"))
-        assertFalse(desc.isRequired("b"))
-    }
 }

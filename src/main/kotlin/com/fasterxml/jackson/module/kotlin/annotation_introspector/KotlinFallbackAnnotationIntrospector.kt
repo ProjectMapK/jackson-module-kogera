@@ -23,6 +23,7 @@ import com.fasterxml.jackson.module.kotlin.findPropertyByGetter
 import com.fasterxml.jackson.module.kotlin.isNullable
 import com.fasterxml.jackson.module.kotlin.isUnboxableValueClass
 import com.fasterxml.jackson.module.kotlin.reconstructClassOrNull
+import com.fasterxml.jackson.module.kotlin.ser.SequenceToIteratorConverter
 import com.fasterxml.jackson.module.kotlin.toSignature
 import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.setterSignature
@@ -102,9 +103,15 @@ internal class KotlinFallbackAnnotationIntrospector(
         }
     }
 
-    // Find a converter to handle the case where the getter returns an unboxed value from the value class.
-    override fun findSerializationConverter(a: Annotated): Converter<*, *>? = (a as? AnnotatedMethod)?.let { _ ->
-        cache.findValueClassReturnType(a)?.let { cache.getValueClassBoxConverter(a.rawReturnType, it) }
+    override fun findSerializationConverter(a: Annotated): Converter<*, *>? = when (a) {
+        // Find a converter to handle the case where the getter returns an unboxed value from the value class.
+        is AnnotatedMethod -> cache.findValueClassReturnType(a)
+            ?.let { cache.getValueClassBoxConverter(a.rawReturnType, it) }
+        is AnnotatedClass ->
+            a
+                .takeIf { Sequence::class.java.isAssignableFrom(it.rawType) }
+                ?.let { SequenceToIteratorConverter(it.type) }
+        else -> null
     }
 
     // Determine if the unbox result of value class is nullable

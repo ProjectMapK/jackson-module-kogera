@@ -1,0 +1,133 @@
+package io.github.projectmapk.jackson.module.kogera
+
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.databind.module.SimpleModule
+import io.github.projectmapk.jackson.module.kogera.KotlinFeature.NullIsSameAsDefault
+import io.github.projectmapk.jackson.module.kogera.KotlinFeature.NullToEmptyCollection
+import io.github.projectmapk.jackson.module.kogera.KotlinFeature.NullToEmptyMap
+import io.github.projectmapk.jackson.module.kogera.KotlinFeature.SingletonSupport
+import io.github.projectmapk.jackson.module.kogera.KotlinFeature.StrictNullChecks
+import io.github.projectmapk.jackson.module.kogera.annotation_introspector.KotlinFallbackAnnotationIntrospector
+import io.github.projectmapk.jackson.module.kogera.annotation_introspector.KotlinPrimaryAnnotationIntrospector
+import io.github.projectmapk.jackson.module.kogera.deser.deserializers.KotlinDeserializers
+import io.github.projectmapk.jackson.module.kogera.deser.deserializers.KotlinKeyDeserializers
+import io.github.projectmapk.jackson.module.kogera.deser.singleton_support.KotlinBeanDeserializerModifier
+import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.KotlinInstantiators
+import io.github.projectmapk.jackson.module.kogera.ser.serializers.KotlinKeySerializers
+import io.github.projectmapk.jackson.module.kogera.ser.serializers.KotlinSerializers
+import java.util.*
+
+/**
+ * @param reflectionCacheSize     Default: 512.  Size, in items, of the caches used for mapping objects.
+ * @param nullToEmptyCollection   Default: false.  Whether to deserialize null values for collection properties as
+ *                                      empty collections.
+ * @param nullToEmptyMap          Default: false.  Whether to deserialize null values for a map property to an empty
+ *                                      map object.
+ * @param nullIsSameAsDefault     Default false.  Whether to treat null values as absent when deserializing, thereby
+ *                                      using the default value provided in Kotlin.
+ * @param singletonSupport        Default: DISABLED.  Mode for singleton handling.
+ *                                      See {@link io.github.projectmapk.jackson.module.kogera.SingletonSupport label}
+ * @param strictNullChecks        Default: false.  Whether to check deserialized collections.  With this disabled,
+ *                                      the default, collections which are typed to disallow null members
+ *                                      (e.g. List<String>) may contain null values after deserialization.  Enabling it
+ *                                      protects against this but has significant performance impact.
+ */
+// Do not delete default arguments,
+// as this will cause an error during initialization by Spring's Jackson2ObjectMapperBuilder.
+public class KotlinModule private constructor(
+    public val reflectionCacheSize: Int = Builder.reflectionCacheSizeDefault,
+    public val nullToEmptyCollection: Boolean = NullToEmptyCollection.enabledByDefault,
+    public val nullToEmptyMap: Boolean = NullToEmptyMap.enabledByDefault,
+    public val nullIsSameAsDefault: Boolean = NullIsSameAsDefault.enabledByDefault,
+    public val singletonSupport: Boolean = SingletonSupport.enabledByDefault,
+    public val strictNullChecks: Boolean = StrictNullChecks.enabledByDefault
+) : SimpleModule(KotlinModule::class.java.name /* TODO: add Version parameter */) {
+    private constructor(builder: Builder) : this(
+        builder.reflectionCacheSize,
+        builder.isEnabled(NullToEmptyCollection),
+        builder.isEnabled(NullToEmptyMap),
+        builder.isEnabled(NullIsSameAsDefault),
+        builder.isEnabled(SingletonSupport),
+        builder.isEnabled(StrictNullChecks)
+    )
+
+    @Deprecated(
+        message = "This is an API for compatibility; use Builder.",
+        level = DeprecationLevel.HIDDEN
+    )
+    public constructor() : this(Builder())
+
+    public companion object {
+        private const val serialVersionUID = 1L
+    }
+
+    override fun setupModule(context: SetupContext) {
+        super.setupModule(context)
+
+        if (!context.isEnabled(MapperFeature.USE_ANNOTATIONS)) {
+            throw IllegalStateException(
+                "The Jackson Kotlin module requires USE_ANNOTATIONS to be true or it cannot function"
+            )
+        }
+
+        val cache = ReflectionCache(reflectionCacheSize)
+
+        context.addValueInstantiators(
+            KotlinInstantiators(cache, nullToEmptyCollection, nullToEmptyMap, nullIsSameAsDefault)
+        )
+
+        if (singletonSupport) {
+            context.addBeanDeserializerModifier(KotlinBeanDeserializerModifier)
+        }
+
+        context.insertAnnotationIntrospector(
+            KotlinPrimaryAnnotationIntrospector(nullToEmptyCollection, nullToEmptyMap, cache)
+        )
+        context.appendAnnotationIntrospector(KotlinFallbackAnnotationIntrospector(this, strictNullChecks, cache))
+
+        context.setClassIntrospector(KotlinClassIntrospector)
+
+        context.addDeserializers(KotlinDeserializers(cache))
+        context.addKeyDeserializers(KotlinKeyDeserializers)
+        context.addSerializers(KotlinSerializers())
+        context.addKeySerializers(KotlinKeySerializers())
+
+        // ranges
+        context.setMixInAnnotations(ClosedRange::class.java, ClosedRangeMixin::class.java)
+    }
+
+    public class Builder {
+        public companion object {
+            internal const val reflectionCacheSizeDefault = 512
+        }
+
+        public var reflectionCacheSize: Int = reflectionCacheSizeDefault
+            private set
+
+        private val bitSet: BitSet = KotlinFeature.defaults
+
+        public fun withReflectionCacheSize(reflectionCacheSize: Int): Builder = apply {
+            this.reflectionCacheSize = reflectionCacheSize
+        }
+
+        public fun enable(feature: KotlinFeature): Builder = apply {
+            bitSet.or(feature.bitSet)
+        }
+
+        public fun disable(feature: KotlinFeature): Builder = apply {
+            bitSet.andNot(feature.bitSet)
+        }
+
+        public fun configure(feature: KotlinFeature, enabled: Boolean): Builder =
+            when {
+                enabled -> enable(feature)
+                else -> disable(feature)
+            }
+
+        public fun isEnabled(feature: KotlinFeature): Boolean =
+            bitSet.intersects(feature.bitSet)
+
+        public fun build(): KotlinModule =
+            KotlinModule(this)
+    }
+}

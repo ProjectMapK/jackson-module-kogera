@@ -66,28 +66,25 @@ dependencies {
 ```
 
 ## Migration in existing projects
-**The following descriptions are for the `alpha` version.**  
-**I plan to change the package and module names when I move to the `beta` version(see https://github.com/FasterXML/jackson-module-kotlin/issues/450#issuecomment-1384788717).**
+When replacing `jackson-module-kotlin` in an existing project, please follow these steps
 
-When replacing `jackson-module-kotlin` in an existing project, please replace the dependencies of `jackson-module-kotlin` with `jackson-module-kogera`.  
-Since the package/module name of `jackson-module-kogera` is the same as that of `jackson-module-kotlin`, it is basically possible to migrate by simply replacing dependencies (although there is a possibility of compile errors due to some destructive changes).
+1. Replace the dependencies of `jackson-module-kotlin` with `jackson-module-kogera`.
+2. Replace `com.fasterxml.jackson.module.kotlin` used for `import` with `io.github.projectmapk.jackson.module.kogera`.
 
-`. /gradlew dependencies` and if `jackson-module-kotlin` does not appear, you have successfully migrated.  
-If `jackson-module-kotlin` is still there, please `exclude` it from the dependencies.  
-At least for the `Spring` project at hand, I have confirmed that this method works fine up to the `Jackson2ObjectMapperBuilder` auto-configuration.
+In projects that use `spring-boot`, there is a possibility that `jackson-module-kotlin` will be used by auto-configuration.  
+Therefore, it is necessary to exclude `jackson-module-kotlin` from the dependencies and to configure it manually.
+
+You can check if your project's dependencies include `jackson-module-kotlin` by looking at `. /gradlew dependencies`.
 
 If you find any problems, it would be appreciated if you could share them in an `issue`.
 
 # About the future
-Currently, this project is in `alpha`.  
-After the following features are implemented, this project will be moved to the `beta` version if there is enough demand for it.
+Currently, this project is in `beta`.  
+I intend to develop the following
 
-- ~~Deserialization support for `value class`~~
-  - Support for policy decisions and basic use cases was completed in #68, only edge cases and hard-to-fix issues remain
-- ~~Support for less than `Kotlin 1.6.x`(including grid test building with `CI`)~~
-  - Due to limitations of `kotlinx-metadata-jvm`, only 1.7 or later is supported.
-  - However, it will be pulled down when possible.
-- Rename module and package(see https://github.com/FasterXML/jackson-module-kotlin/issues/450#issuecomment-1384788717).
+- Migration to more efficient reflection cache.
+- Resolve as many known bugs related to `value class` as possible.
+- Fixing other bugs.
 
 # About license
 This project is based on `jackson-module-kotlin`, so the license follows `jackson-module-kotlin`.  

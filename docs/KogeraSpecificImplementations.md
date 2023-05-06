@@ -7,7 +7,7 @@ In `jackson-module-kotlin`, functions with getterLike or setterLike names are ha
 On the other hand, this implementation causes discrepancies between the `Kotlin` description and the processing results by `Jackson`.
 
 Therefore, `kogera` processes only `Kotlin Property` and excludes other functions from processing.  
-In addition, `Kogera` uses the content defined in `Kotlin` as its name.
+In addition, `kogera` uses the content defined in `Kotlin` as its name.
 
 These changes make it impossible to manipulate the results using `JvmName`.
 
@@ -17,6 +17,7 @@ In `kogera`, the specification has been revised as follows.
 
 - If `required = true` is specified in the `JsonProperty` annotation, the result is preferred.
     - This should not be overridden, as it will not be `true` unless explicitly specified by the user.
+    - This implementation follows the [basic policy of `Jackson`](https://github.com/ProjectMapK/jackson-module-kogera/pull/101#issuecomment-1527739305).
 - Processing on `field` that has accessors are skipped.
 - The `FAIL_ON_NULL_FOR_PRIMITIVES` option does not affect the results.
     - In `kogera`, the deserialization behavior is not affected by whether the argument is of type `primitive` or not.

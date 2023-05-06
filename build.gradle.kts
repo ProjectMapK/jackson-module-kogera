@@ -10,7 +10,7 @@ plugins {
 
 val jacksonVersion = "2.15.0"
 
-group = "com.fasterxml.jackson"
+group = "io.github.projectmapk"
 version = "${jacksonVersion}-SNAPSHOT"
 
 repositories {

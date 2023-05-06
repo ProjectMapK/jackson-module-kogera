@@ -8,7 +8,7 @@ plugins {
     id("org.jmailen.kotlinter") version "3.13.0"
 }
 
-val jacksonVersion = "2.14.2"
+val jacksonVersion = "2.15.0"
 
 group = "com.fasterxml.jackson"
 version = "${jacksonVersion}-SNAPSHOT"
@@ -25,7 +25,7 @@ dependencies {
     api("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
 
     // test libs
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("io.mockk:mockk:1.13.3")
 

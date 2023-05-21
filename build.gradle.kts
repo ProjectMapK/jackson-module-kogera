@@ -3,6 +3,7 @@ plugins {
 
     val kotlinVersion: String = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() } ?: "1.7.21"
     kotlin("jvm") version kotlinVersion
+    id("org.jetbrains.dokka") version "1.8.10"
 
     java
     id("org.jmailen.kotlinter") version "3.13.0"
@@ -46,6 +47,9 @@ kotlin {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+
+    withSourcesJar()
+    withJavadocJar()
 }
 
 kotlinter {
@@ -87,6 +91,11 @@ public val kogeraVersion: Version = VersionUtil.parseVersion("$version", "$group
 
     test {
         useJUnitPlatform()
+    }
+
+    // This task is added by Gradle when we use java.withJavadocJar()
+    val javadocJar = named<Jar>("javadocJar") {
+        from(named("dokkaJavadoc"))
     }
 }
 

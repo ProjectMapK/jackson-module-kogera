@@ -97,6 +97,10 @@ public val kogeraVersion: Version = VersionUtil.parseVersion("$version", "$group
     val javadocJar = named<Jar>("javadocJar") {
         from(named("dokkaJavadoc"))
     }
+    // The project currently has no Java files to publish, and the javadoc task is disabled to avoid errors.
+    javadoc {
+        isEnabled = false
+    }
 }
 
 publishing {

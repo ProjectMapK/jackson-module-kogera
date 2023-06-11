@@ -10,7 +10,7 @@ plugins {
 
 // Since group cannot be obtained by generateKogeraVersion, it is defined as a constant.
 val groupStr = "io.github.projectmapk"
-val jacksonVersion = "2.15.1"
+val jacksonVersion = "2.15.2"
 val generatedSrcPath = "$buildDir/generated/kotlin"
 
 group = groupStr

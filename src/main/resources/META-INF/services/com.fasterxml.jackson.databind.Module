@@ -1,1 +1,1 @@
-com.fasterxml.jackson.module.kotlin.KotlinModule
+io.github.projectmapk.jackson.module.kogera.KotlinModule

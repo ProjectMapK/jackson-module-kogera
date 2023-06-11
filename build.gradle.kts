@@ -8,10 +8,13 @@ plugins {
     id("org.jmailen.kotlinter") version "3.13.0"
 }
 
-val jacksonVersion = "2.14.2"
+// Since group cannot be obtained by generateKogeraVersion, it is defined as a constant.
+val groupStr = "io.github.projectmapk"
+val jacksonVersion = "2.15.2"
+val generatedSrcPath = "$buildDir/generated/kotlin"
 
-group = "com.fasterxml.jackson"
-version = "${jacksonVersion}-SNAPSHOT"
+group = groupStr
+version = "${jacksonVersion}-beta0"
 
 repositories {
     mavenCentral()
@@ -25,7 +28,7 @@ dependencies {
     api("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
 
     // test libs
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("io.mockk:mockk:1.13.3")
 
@@ -34,6 +37,10 @@ dependencies {
 
 kotlin {
     explicitApi()
+    // for PackageVersion
+    sourceSets["main"].apply {
+        kotlin.srcDir(generatedSrcPath)
+    }
 }
 
 java {
@@ -50,7 +57,31 @@ kotlinter {
 }
 
 tasks {
+    // Task to generate version file
+    val generateKogeraVersion by registering(Copy::class) {
+        val packageStr = "$groupStr.jackson.module.kogera"
+
+        from(
+            resources.text.fromString(
+                """
+package $packageStr
+
+import com.fasterxml.jackson.core.Version
+import com.fasterxml.jackson.core.util.VersionUtil
+
+public val kogeraVersion: Version = VersionUtil.parseVersion("$version", "$groupStr", "${rootProject.name}")
+
+                """.trimIndent()
+            )
+        ) {
+            rename { "KogeraVersion.kt" }
+        }
+
+        into(file("$generatedSrcPath/${packageStr.replace(".", "/")}"))
+    }
+
     compileKotlin {
+        dependsOn.add(generateKogeraVersion)
         kotlinOptions.jvmTarget = "1.8"
     }
 

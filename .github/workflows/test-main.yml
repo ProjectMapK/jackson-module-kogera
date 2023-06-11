@@ -34,9 +34,9 @@ jobs:
       fail-fast: false
       matrix:
         # LTS versions, latest version (if exists)
-        java-version: [ '8', '11', '17', '19' ]
+        java-version: [ '8', '11', '17', '20' ]
         # Minimum version, latest release version, latest pre-release version (if exists)
-        kotlin-version: [ '1.7.21', '1.8.21' ]
+        kotlin-version: [ '1.7.21', '1.8.22', '1.9.0-Beta' ]
     env:
       KOTLIN_VERSION: ${{ matrix.kotlin-version }}
     name: test-main

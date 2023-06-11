@@ -1,4 +1,4 @@
-name: lint-and-test-main
+name: test-main
 on:
   push:
     branches:
@@ -11,7 +11,7 @@ on:
       - gradlew.bat
       - "**.kt"
       - "**.java"
-      - .github/workflows/lint-and-test-main.yml
+      - .github/workflows/test-main.yml
   pull_request:
     branches:
       - main
@@ -27,9 +27,9 @@ on:
       - gradlew.bat
       - "**.kt"
       - "**.java"
-      - .github/workflows/lint-and-test-main.yml
+      - .github/workflows/test-main.yml
 jobs:
-  lint-and-test-main:
+  test-main:
     strategy:
       fail-fast: false
       matrix:
@@ -39,7 +39,7 @@ jobs:
         kotlin-version: [ '1.7.21', '1.8.21' ]
     env:
       KOTLIN_VERSION: ${{ matrix.kotlin-version }}
-    name: lint-and-test-main
+    name: test-main
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -55,7 +55,5 @@ jobs:
           cache: 'gradle'
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Lint
-        run: ./gradlew lintKotlin
       - name: Test
         run: ./gradlew test

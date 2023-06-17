@@ -52,8 +52,7 @@ jobs:
         with:
           java-version: '${{ matrix.java-version }}'
           distribution: 'adopt'
-          cache: 'gradle'
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
       - name: Test
-        run: ./gradlew test
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: test

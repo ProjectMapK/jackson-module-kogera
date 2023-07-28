@@ -189,11 +189,11 @@ private fun ValueParameter.isNullishTypeAt(index: Int) = arguments.getOrNull(ind
 private fun ValueParameter.createStrictNullChecksConverterOrNull(type: JavaType, rawType: Class<*>): Converter<*, *>? {
     return when {
         Array::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(0) ->
-            CollectionValueStrictNullChecksConverter.ForArray(type, this)
+            CollectionValueStrictNullChecksConverter.ForArray(type, this.name)
         Iterable::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(0) ->
-            CollectionValueStrictNullChecksConverter.ForIterable(type, this)
+            CollectionValueStrictNullChecksConverter.ForIterable(type, this.name)
         Map::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(1) ->
-            MapValueStrictNullChecksConverter(type, this)
+            MapValueStrictNullChecksConverter(type, this.name)
         else -> null
     }
 }

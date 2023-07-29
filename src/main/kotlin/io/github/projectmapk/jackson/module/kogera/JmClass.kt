@@ -14,13 +14,14 @@ import java.lang.reflect.Method
 // Jackson Metadata Class
 internal class JmClass(
     private val clazz: Class<*>,
-    val kmClass: KmClass
+    kmClass: KmClass
 ) {
     val constructors: List<KmConstructor> = kmClass.constructors
     val properties: List<KmProperty> = kmClass.properties
     private val functions: List<KmFunction> = kmClass.functions
     val sealedSubclasses: List<ClassName> = kmClass.sealedSubclasses
-    val companion: CompanionObject? by lazy { CompanionObject.createOrNull(this) }
+    private val companionPropName: String? = kmClass.companionObject
+    val companion: CompanionObject? by lazy { companionPropName?.let { CompanionObject(clazz, it) } }
 
     fun findKmConstructor(constructor: Constructor<*>): KmConstructor? {
         val descHead = constructor.parameterTypes.toDescBuilder()
@@ -69,11 +70,6 @@ internal class JmClass(
         fun findFunctionByMethod(method: Method): KmFunction? {
             val signature = method.toSignature()
             return kmClass.functions.find { it.signature == signature }
-        }
-
-        companion object {
-            fun createOrNull(jmClass: JmClass): CompanionObject? = jmClass.kmClass.companionObject
-                ?.let { CompanionObject(jmClass.clazz, it) }
         }
     }
 

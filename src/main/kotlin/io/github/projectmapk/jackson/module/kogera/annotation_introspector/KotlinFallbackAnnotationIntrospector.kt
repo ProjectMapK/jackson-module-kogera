@@ -53,13 +53,8 @@ internal class KotlinFallbackAnnotationIntrospector(
         is Method ->
             owner.takeIf { _ -> Modifier.isStatic(owner.modifiers) }
                 ?.let { _ ->
-                    val companion = cache.getJmClass(param.declaringClass)?.kmClass?.companionObject ?: return@let null
-                    val companionKmClass = owner.declaringClass.getDeclaredField(companion)
-                        .type
-                        .let { cache.getJmClass(it) }!!
-                    val signature = owner.toSignature()
-
-                    companionKmClass.kmClass.functions.find { it.signature == signature }?.valueParameters
+                    val companion = cache.getJmClass(param.declaringClass)?.companion ?: return@let null
+                    companion.findFunctionByMethod(owner)?.valueParameters
                 }
         else -> null
     }?.let { it[param.index].name }

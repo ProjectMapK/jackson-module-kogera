@@ -8,14 +8,19 @@ import kotlinx.metadata.KmProperty
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
+import java.lang.reflect.Field
 import java.lang.reflect.Method
 
 // Jackson Metadata Class
-internal class JmClass(val kmClass: KmClass) {
+internal class JmClass(
+    private val clazz: Class<*>,
+    val kmClass: KmClass
+) {
     val constructors: List<KmConstructor> = kmClass.constructors
     val properties: List<KmProperty> = kmClass.properties
     private val functions: List<KmFunction> = kmClass.functions
     val sealedSubclasses: List<ClassName> = kmClass.sealedSubclasses
+    val companion: CompanionObject? by lazy { CompanionObject.createOrNull(this) }
 
     fun findKmConstructor(constructor: Constructor<*>): KmConstructor? {
         val descHead = constructor.parameterTypes.toDescBuilder()
@@ -47,7 +52,26 @@ internal class JmClass(val kmClass: KmClass) {
         return functions.find { it.signature == signature }
     }
 
+    internal class CompanionObject(
+        declaringClass: Class<*>,
+        companionObject: String
+    ) {
+        private val companionField: Field = declaringClass.getDeclaredField(companionObject)
+        private val companionObjectClass: Class<*> = companionField.type
+        private val kmClass: KmClass by lazy { companionObjectClass.toKmClass()!! }
+
+        fun findFunctionByMethod(method: Method): KmFunction? {
+            val signature = method.toSignature()
+            return kmClass.functions.find { it.signature == signature }
+        }
+
+        companion object {
+            fun createOrNull(jmClass: JmClass): CompanionObject? = jmClass.kmClass.companionObject
+                ?.let { CompanionObject(jmClass.clazz, it) }
+        }
+    }
+
     companion object {
-        fun createOrNull(clazz: Class<*>): JmClass? = clazz.toKmClass()?.let { JmClass(it) }
+        fun createOrNull(clazz: Class<*>): JmClass? = clazz.toKmClass()?.let { JmClass(clazz, it) }
     }
 }

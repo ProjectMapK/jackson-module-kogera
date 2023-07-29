@@ -136,7 +136,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
             ?: return null
 
         return JsonCreator.Mode.DEFAULT
-            .takeIf { ann.annotated.isPrimarilyConstructorOf(jmClass) && !hasCreator(declaringClass, jmClass.kmClass) }
+            .takeIf { ann.annotated.isPrimarilyConstructorOf(jmClass) && !hasCreator(declaringClass, jmClass) }
     }
 }
 
@@ -154,8 +154,8 @@ private fun isPossibleSingleString(
     kotlinParams[0].let { it.name !in propertyNames && it.type.classifier.isString() } &&
     javaFunction.parameters[0].annotations.none { it is JsonProperty }
 
-private fun hasCreatorConstructor(clazz: Class<*>, kmClass: KmClass, propertyNames: Set<String>): Boolean {
-    val kmConstructorMap = kmClass.constructors.associateBy { it.signature?.desc }
+private fun hasCreatorConstructor(clazz: Class<*>, jmClass: JmClass, propertyNames: Set<String>): Boolean {
+    val kmConstructorMap = jmClass.constructors.associateBy { it.signature?.desc }
 
     return clazz.constructors.any { constructor ->
         val kmConstructor = kmConstructorMap[constructor.toSignature().desc] ?: return@any false
@@ -170,7 +170,7 @@ private fun hasCreatorConstructor(clazz: Class<*>, kmClass: KmClass, propertyNam
 private fun hasCreatorFunction(clazz: Class<*>): Boolean = clazz.declaredMethods
     .any { Modifier.isStatic(it.modifiers) && it.hasCreatorAnnotation() }
 
-private fun hasCreator(clazz: Class<*>, kmClass: KmClass): Boolean {
-    val propertyNames = kmClass.properties.map { it.name }.toSet()
-    return hasCreatorConstructor(clazz, kmClass, propertyNames) || hasCreatorFunction(clazz)
+private fun hasCreator(clazz: Class<*>, jmClass: JmClass): Boolean {
+    val propertyNames = jmClass.properties.map { it.name }.toSet()
+    return hasCreatorConstructor(clazz, jmClass, propertyNames) || hasCreatorFunction(clazz)
 }

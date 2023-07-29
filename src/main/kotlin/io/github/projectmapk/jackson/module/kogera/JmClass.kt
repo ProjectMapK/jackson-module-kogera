@@ -2,6 +2,7 @@ package io.github.projectmapk.jackson.module.kogera
 
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmConstructor
+import kotlinx.metadata.KmFunction
 import kotlinx.metadata.KmProperty
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
@@ -12,6 +13,7 @@ import java.lang.reflect.Method
 internal class JmClass(val kmClass: KmClass) {
     val constructors: List<KmConstructor> = kmClass.constructors
     val properties: List<KmProperty> = kmClass.properties
+    private val functions: List<KmFunction> = kmClass.functions
 
     fun findKmConstructor(constructor: Constructor<*>): KmConstructor? {
         val descHead = constructor.parameterTypes.toDescBuilder()
@@ -36,6 +38,11 @@ internal class JmClass(val kmClass: KmClass) {
     fun findPropertyByGetter(getter: Method): KmProperty? {
         val signature = getter.toSignature()
         return properties.find { it.getterSignature == signature }
+    }
+
+    fun findFunctionByMethod(method: Method): KmFunction? {
+        val signature = method.toSignature()
+        return functions.find { it.signature == signature }
     }
 
     companion object {

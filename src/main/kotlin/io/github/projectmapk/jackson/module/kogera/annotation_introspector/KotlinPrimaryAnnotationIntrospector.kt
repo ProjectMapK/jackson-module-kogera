@@ -92,15 +92,11 @@ internal class KotlinPrimaryAnnotationIntrospector(
 
     private fun AnnotatedParameter.hasRequiredMarker(jmClass: JmClass): Boolean? {
         val paramDef = when (val member = member) {
-            is Constructor<*> -> jmClass.findKmConstructor(member)
-                ?.let { it.valueParameters[index] }
-            is Method -> {
-                val signature = member.toSignature()
-                jmClass.kmClass.functions.find { it.signature == signature }
-                    ?.let { it.valueParameters[index] }
-            }
+            is Constructor<*> -> jmClass.findKmConstructor(member)?.valueParameters
+
+            is Method -> jmClass.findFunctionByMethod(member)?.valueParameters
             else -> null
-        } ?: return null // Return null if function on Kotlin cannot be determined
+        }?.let { it[index] } ?: return null // Return null if function on Kotlin cannot be determined
 
         // non required if...
         return when {

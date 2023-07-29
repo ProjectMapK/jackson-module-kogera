@@ -44,17 +44,17 @@ class TestObjectSingleton {
         // read back persisted state resets singleton state
         val newSingleton = mapper.readValue<Singleton>(js)
         assertEquals(initial, Singleton.content)
-        assertEquals(initial, Singleton.content)
+        assertEquals(initial, newSingleton.content)
     }
 
     @Test
     fun deserializedObjectsBehaveLikeSingletons() {
         val js = mapper.writeValueAsString(Singleton)
         val newSingleton = mapper.readValue<Singleton>(js)
-        assertEquals(Singleton.content, Singleton.content)
+        assertEquals(Singleton.content, newSingleton.content)
 
         Singleton.content += 1
 
-        assertEquals(Singleton.content, Singleton.content)
+        assertEquals(Singleton.content, newSingleton.content)
     }
 }

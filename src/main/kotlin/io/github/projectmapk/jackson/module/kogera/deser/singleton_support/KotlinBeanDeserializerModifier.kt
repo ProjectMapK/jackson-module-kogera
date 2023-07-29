@@ -4,11 +4,22 @@ import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
-import io.github.projectmapk.jackson.module.kogera.toKmClass
+import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import kotlinx.metadata.Flag
 
 // [module-kotlin#225]: keep Kotlin singletons as singletons
-internal object KotlinBeanDeserializerModifier : BeanDeserializerModifier() {
+internal class KotlinBeanDeserializerModifier(private val cache: ReflectionCache) : BeanDeserializerModifier() {
+    private fun objectSingletonInstance(beanClass: Class<*>): Any? = cache.getJmClass(beanClass)?.let {
+        val flags = it.flags
+
+        // It is not assumed that the companion object is the target
+        if (Flag.Class.IS_OBJECT(flags) && !Flag.Class.IS_COMPANION_OBJECT(flags)) {
+            beanClass.getDeclaredField("INSTANCE").get(null)
+        } else {
+            null
+        }
+    }
+
     override fun modifyDeserializer(
         config: DeserializationConfig,
         beanDesc: BeanDescription,
@@ -19,14 +30,5 @@ internal object KotlinBeanDeserializerModifier : BeanDeserializerModifier() {
         return objectSingletonInstance(beanDesc.beanClass)
             ?.let { KotlinObjectSingletonDeserializer(it, modifiedFromParent) }
             ?: modifiedFromParent
-    }
-}
-
-private fun objectSingletonInstance(beanClass: Class<*>): Any? = beanClass.toKmClass()?.let {
-    // It is not assumed that the companion object is the target
-    if (Flag.Class.IS_OBJECT(it.flags) && !Flag.Class.IS_COMPANION_OBJECT(it.flags)) {
-        beanClass.getDeclaredField("INSTANCE").get(null)
-    } else {
-        null
     }
 }

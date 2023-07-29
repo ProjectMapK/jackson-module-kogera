@@ -1,21 +1,30 @@
 package io.github.projectmapk.jackson.module.kogera
 
 import kotlinx.metadata.ClassName
+import kotlinx.metadata.Flags
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmConstructor
 import kotlinx.metadata.KmFunction
 import kotlinx.metadata.KmProperty
+import kotlinx.metadata.jvm.KotlinClassMetadata
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
+private fun Class<*>.toKmClass(): KmClass? = annotations
+    .filterIsInstance<Metadata>()
+    .firstOrNull()
+    ?.let { KotlinClassMetadata.read(it) as KotlinClassMetadata.Class }
+    ?.toKmClass()
+
 // Jackson Metadata Class
 internal class JmClass(
     private val clazz: Class<*>,
     kmClass: KmClass
 ) {
+    val flags: Flags = kmClass.flags
     val constructors: List<KmConstructor> = kmClass.constructors
     val properties: List<KmProperty> = kmClass.properties
     private val functions: List<KmFunction> = kmClass.functions

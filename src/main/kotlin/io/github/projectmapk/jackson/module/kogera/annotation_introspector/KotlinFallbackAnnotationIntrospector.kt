@@ -18,7 +18,6 @@ import io.github.projectmapk.jackson.module.kogera.deser.MapValueStrictNullCheck
 import io.github.projectmapk.jackson.module.kogera.deser.ValueClassUnboxConverter
 import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.creator.ValueParameter
 import io.github.projectmapk.jackson.module.kogera.findKmConstructor
-import io.github.projectmapk.jackson.module.kogera.findPropertyByGetter
 import io.github.projectmapk.jackson.module.kogera.isNullable
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
@@ -42,7 +41,7 @@ internal class KotlinFallbackAnnotationIntrospector(
     // since 2.4
     override fun findImplicitPropertyName(member: AnnotatedMember): String? = when (member) {
         is AnnotatedMethod -> if (member.parameterCount == 0) {
-            cache.getJmClass(member.declaringClass)?.kmClass?.findPropertyByGetter(member.annotated)?.name
+            cache.getJmClass(member.declaringClass)?.findPropertyByGetter(member.annotated)?.name
         } else {
             null
         }
@@ -73,7 +72,7 @@ internal class KotlinFallbackAnnotationIntrospector(
 
             // By returning an illegal JsonProperty.Access, it is effectively ignore.
             when (method.parameters.size) {
-                0 -> JsonProperty.Access.WRITE_ONLY.takeIf { jmClass.kmClass.findPropertyByGetter(method) == null }
+                0 -> JsonProperty.Access.WRITE_ONLY.takeIf { jmClass.findPropertyByGetter(method) == null }
                 1 -> {
                     val signature = method.toSignature()
                     JsonProperty.Access.READ_ONLY.takeIf { jmClass.properties.none { it.setterSignature == signature } }

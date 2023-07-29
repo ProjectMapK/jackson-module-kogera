@@ -5,13 +5,11 @@ import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmConstructor
-import kotlinx.metadata.KmProperty
 import kotlinx.metadata.KmType
 import kotlinx.metadata.KmValueParameter
 import kotlinx.metadata.jvm.JvmFieldSignature
 import kotlinx.metadata.jvm.JvmMethodSignature
 import kotlinx.metadata.jvm.KotlinClassMetadata
-import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
@@ -124,11 +122,6 @@ internal fun KmClass.findKmConstructor(constructor: Constructor<*>): KmConstruct
         val targetDesc = it.signature?.desc
         targetDesc == desc || targetDesc == valueDesc
     }
-}
-
-internal fun KmClass.findPropertyByGetter(getter: Method): KmProperty? {
-    val signature = getter.toSignature()
-    return properties.find { it.getterSignature == signature }
 }
 
 internal fun KmType.isNullable(): Boolean = Flag.Type.IS_NULLABLE(this.flags)

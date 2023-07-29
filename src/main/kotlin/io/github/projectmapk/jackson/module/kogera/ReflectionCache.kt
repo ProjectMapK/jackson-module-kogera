@@ -94,7 +94,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
             // TODO: Verify the case where a value class encompasses another value class.
             if (this.returnType.isUnboxableValueClass()) return null
         }
-        val kotlinProperty = getJmClass(getter.declaringClass)?.kmClass?.findPropertyByGetter(getter)
+        val kotlinProperty = getJmClass(getter.declaringClass)?.findPropertyByGetter(getter)
 
         // Since there was no way to directly determine whether returnType is a value class or not,
         // Class is restored and processed.

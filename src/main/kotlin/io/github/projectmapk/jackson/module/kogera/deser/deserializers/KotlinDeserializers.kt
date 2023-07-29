@@ -9,12 +9,12 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
+import io.github.projectmapk.jackson.module.kogera.JmClass
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
 import kotlinx.metadata.Flag
-import kotlinx.metadata.KmClass
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -101,9 +101,9 @@ private fun invalidCreatorMessage(m: Method): String =
         "please fix it or use JsonDeserializer.\n" +
         "Detected: ${m.parameters.joinToString(prefix = "${m.name}(", separator = ", ", postfix = ")") { it.name }}"
 
-private fun findValueCreator(type: JavaType, clazz: Class<*>, kmClass: KmClass): Method? {
+private fun findValueCreator(type: JavaType, clazz: Class<*>, jmClass: JmClass): Method? {
     val primaryKmConstructorSignature =
-        kmClass.constructors.first { !Flag.Constructor.IS_SECONDARY(it.flags) }.signature
+        jmClass.constructors.first { !Flag.Constructor.IS_SECONDARY(it.flags) }.signature
     var primaryConstructor: Method? = null
 
     clazz.declaredMethods.forEach { method ->
@@ -142,7 +142,7 @@ internal class KotlinDeserializers(private val cache: ReflectionCache) : Deseria
             rawClass == UShort::class.java -> UShortDeserializer
             rawClass == UInt::class.java -> UIntDeserializer
             rawClass == ULong::class.java -> ULongDeserializer
-            rawClass.isUnboxableValueClass() -> findValueCreator(type, rawClass, cache.getJmClass(rawClass)!!.kmClass)
+            rawClass.isUnboxableValueClass() -> findValueCreator(type, rawClass, cache.getJmClass(rawClass)!!)
                 ?.let { ValueClassBoxDeserializer(it, rawClass) }
             else -> null
         }

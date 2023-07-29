@@ -18,13 +18,13 @@ class ReflectionCacheTest {
 
                 assertNotNull(deserialized)
                 // Deserialized instance also do not raise exceptions
-                deserialized.getKmClass(this::class.java)
+                deserialized.getJmClass(this::class.java)
             }
         }
 
         @Test
         fun notEmptyCache() {
-            val cache = ReflectionCache(100).apply { getKmClass(this::class.java) }
+            val cache = ReflectionCache(100).apply { getJmClass(this::class.java) }
             val serialized = jdkSerialize(cache)
 
             assertDoesNotThrow {
@@ -32,7 +32,7 @@ class ReflectionCacheTest {
 
                 assertNotNull(deserialized)
                 // Deserialized instance also do not raise exceptions
-                deserialized.getKmClass(this::class.java)
+                deserialized.getJmClass(this::class.java)
             }
         }
     }

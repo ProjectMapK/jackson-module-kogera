@@ -6,7 +6,6 @@ import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.crea
 import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.creator.MethodValueCreator
 import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.creator.ValueCreator
 import io.github.projectmapk.jackson.module.kogera.ser.ValueClassBoxConverter
-import kotlinx.metadata.KmClass
 import java.io.Serializable
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
@@ -21,7 +20,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
     }
 
     // This cache is used for both serialization and deserialization, so reserve a larger size from the start.
-    private val classCache = LRUMap<Class<*>, Optional<KmClass>>(reflectionCacheSize, reflectionCacheSize)
+    private val classCache = LRUMap<Class<*>, Optional<JmClass>>(reflectionCacheSize, reflectionCacheSize)
     private val creatorCache: LRUMap<Executable, ValueCreator<*>>
 
     // Initial size is 0 because the value class is not always used
@@ -48,13 +47,13 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
         creatorCache = LRUMap(initialEntries, reflectionCacheSize)
     }
 
-    fun getKmClass(clazz: Class<*>): KmClass? {
+    fun getJmClass(clazz: Class<*>): JmClass? {
         val optional = classCache.get(clazz)
 
         return if (optional != null) {
             optional
         } else {
-            val value = Optional.ofNullable(clazz.toKmClass())
+            val value = Optional.ofNullable(JmClass.createOrNull(clazz))
             (classCache.putIfAbsent(clazz, value) ?: value)
         }.orElse(null)
     }
@@ -66,7 +65,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
         is Constructor<*> -> {
             creatorCache.get(creator)
                 ?: run {
-                    getKmClass(creator.declaringClass)?.let {
+                    getJmClass(creator.declaringClass)?.let {
                         val value = ConstructorValueCreator(creator, it)
                         creatorCache.putIfAbsent(creator, value) ?: value
                     }
@@ -76,7 +75,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
         is Method -> {
             creatorCache.get(creator)
                 ?: run {
-                    getKmClass(creator.declaringClass)?.let {
+                    getJmClass(creator.declaringClass)?.let {
                         val value = MethodValueCreator<Any?>(creator, it)
                         creatorCache.putIfAbsent(creator, value) ?: value
                     }
@@ -95,7 +94,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
             // TODO: Verify the case where a value class encompasses another value class.
             if (this.returnType.isUnboxableValueClass()) return null
         }
-        val kotlinProperty = getKmClass(getter.declaringClass)?.findPropertyByGetter(getter)
+        val kotlinProperty = getJmClass(getter.declaringClass)?.findPropertyByGetter(getter)
 
         // Since there was no way to directly determine whether returnType is a value class or not,
         // Class is restored and processed.

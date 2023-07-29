@@ -17,8 +17,6 @@ import io.github.projectmapk.jackson.module.kogera.deser.CollectionValueStrictNu
 import io.github.projectmapk.jackson.module.kogera.deser.MapValueStrictNullChecksConverter
 import io.github.projectmapk.jackson.module.kogera.deser.ValueClassUnboxConverter
 import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.creator.ValueParameter
-import io.github.projectmapk.jackson.module.kogera.findKmConstructor
-import io.github.projectmapk.jackson.module.kogera.findPropertyByGetter
 import io.github.projectmapk.jackson.module.kogera.isNullable
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
@@ -42,7 +40,7 @@ internal class KotlinFallbackAnnotationIntrospector(
     // since 2.4
     override fun findImplicitPropertyName(member: AnnotatedMember): String? = when (member) {
         is AnnotatedMethod -> if (member.parameterCount == 0) {
-            cache.getKmClass(member.declaringClass)?.findPropertyByGetter(member.annotated)?.name
+            cache.getJmClass(member.declaringClass)?.findPropertyByGetter(member.annotated)?.name
         } else {
             null
         }
@@ -51,32 +49,27 @@ internal class KotlinFallbackAnnotationIntrospector(
     }
 
     private fun findKotlinParameterName(param: AnnotatedParameter): String? = when (val owner = param.owner.member) {
-        is Constructor<*> -> cache.getKmClass(param.declaringClass)?.findKmConstructor(owner)?.valueParameters
+        is Constructor<*> -> cache.getJmClass(param.declaringClass)?.findKmConstructor(owner)?.valueParameters
         is Method ->
             owner.takeIf { _ -> Modifier.isStatic(owner.modifiers) }
                 ?.let { _ ->
-                    val companion = cache.getKmClass(param.declaringClass)?.companionObject ?: return@let null
-                    val companionKmClass = owner.declaringClass.getDeclaredField(companion)
-                        .type
-                        .let { cache.getKmClass(it) }!!
-                    val signature = owner.toSignature()
-
-                    companionKmClass.functions.find { it.signature == signature }?.valueParameters
+                    val companion = cache.getJmClass(param.declaringClass)?.companion ?: return@let null
+                    companion.findFunctionByMethod(owner)?.valueParameters
                 }
         else -> null
     }?.let { it[param.index].name }
 
     // If it is not a property on Kotlin, it is not used to ser/deserialization
     override fun findPropertyAccess(ann: Annotated): JsonProperty.Access? = (ann as? AnnotatedMethod)?.let { _ ->
-        cache.getKmClass(ann.declaringClass)?.let { kmClass ->
+        cache.getJmClass(ann.declaringClass)?.let { jmClass ->
             val method = ann.annotated
 
             // By returning an illegal JsonProperty.Access, it is effectively ignore.
             when (method.parameters.size) {
-                0 -> JsonProperty.Access.WRITE_ONLY.takeIf { kmClass.findPropertyByGetter(method) == null }
+                0 -> JsonProperty.Access.WRITE_ONLY.takeIf { jmClass.findPropertyByGetter(method) == null }
                 1 -> {
                     val signature = method.toSignature()
-                    JsonProperty.Access.READ_ONLY.takeIf { kmClass.properties.none { it.setterSignature == signature } }
+                    JsonProperty.Access.READ_ONLY.takeIf { jmClass.properties.none { it.setterSignature == signature } }
                 }
                 else -> null
             }
@@ -115,7 +108,7 @@ internal class KotlinFallbackAnnotationIntrospector(
     // Determine if the unbox result of value class is nullable
     // @see findNullSerializer
     private fun Class<*>.requireRebox(): Boolean =
-        cache.getKmClass(this)!!.properties.first { it.fieldSignature != null }.returnType.isNullable()
+        cache.getJmClass(this)!!.properties.first { it.fieldSignature != null }.returnType.isNullable()
 
     // Perform proper serialization even if the value wrapped by the value class is null.
     // If value is a non-null object type, it must not be reboxing.

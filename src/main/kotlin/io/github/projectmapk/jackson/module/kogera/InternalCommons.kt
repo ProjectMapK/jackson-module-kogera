@@ -4,15 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmClassifier
-import kotlinx.metadata.KmConstructor
-import kotlinx.metadata.KmProperty
 import kotlinx.metadata.KmType
 import kotlinx.metadata.KmValueParameter
 import kotlinx.metadata.jvm.JvmFieldSignature
 import kotlinx.metadata.jvm.JvmMethodSignature
 import kotlinx.metadata.jvm.KotlinClassMetadata
-import kotlinx.metadata.jvm.getterSignature
-import kotlinx.metadata.jvm.signature
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -105,31 +101,6 @@ internal fun String.reconstructClass(): Class<*> {
 
 internal fun KmType.reconstructClassOrNull(): Class<*>? = (classifier as? KmClassifier.Class)
     ?.let { kotlin.runCatching { it.name.reconstructClass() }.getOrNull() }
-
-internal fun KmClass.findKmConstructor(constructor: Constructor<*>): KmConstructor? {
-    val descHead = constructor.parameterTypes.toDescBuilder()
-    val desc = CharArray(descHead.length + 1).apply {
-        descHead.getChars(0, descHead.length, this, 0)
-        this[this.lastIndex] = 'V'
-    }.let { String(it) }
-
-    // Only constructors that take a value class as an argument have a DefaultConstructorMarker on the Signature.
-    val valueDesc = descHead
-        .deleteCharAt(descHead.length - 1)
-        .append("Lkotlin/jvm/internal/DefaultConstructorMarker;)V")
-        .toString()
-
-    // Constructors always have the same name, so only desc is compared
-    return constructors.find {
-        val targetDesc = it.signature?.desc
-        targetDesc == desc || targetDesc == valueDesc
-    }
-}
-
-internal fun KmClass.findPropertyByGetter(getter: Method): KmProperty? {
-    val signature = getter.toSignature()
-    return properties.find { it.getterSignature == signature }
-}
 
 internal fun KmType.isNullable(): Boolean = Flag.Type.IS_NULLABLE(this.flags)
 

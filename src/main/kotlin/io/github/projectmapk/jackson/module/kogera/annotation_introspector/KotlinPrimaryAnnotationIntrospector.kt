@@ -12,14 +12,13 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import com.fasterxml.jackson.databind.jsontype.NamedType
+import io.github.projectmapk.jackson.module.kogera.JmClass
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
-import io.github.projectmapk.jackson.module.kogera.findKmConstructor
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
 import io.github.projectmapk.jackson.module.kogera.isNullable
 import io.github.projectmapk.jackson.module.kogera.reconstructClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
 import kotlinx.metadata.Flag
-import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmProperty
 import kotlinx.metadata.KmValueParameter
@@ -46,7 +45,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
         val byAnnotation = _findAnnotation(m, JsonProperty::class.java)?.required
             ?.apply { if (this) return true }
 
-        return cache.getKmClass(m.member.declaringClass)?.let {
+        return cache.getJmClass(m.member.declaringClass)?.let {
             when (m) {
                 is AnnotatedField -> m.hasRequiredMarker(it)
                 is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(it)
@@ -63,13 +62,13 @@ internal class KotlinPrimaryAnnotationIntrospector(
 
     // The nullToEmpty option also affects serialization,
     // but deserialization is preferred because there is currently no way to distinguish between contexts.
-    private fun AnnotatedField.hasRequiredMarker(kmClass: KmClass): Boolean? {
+    private fun AnnotatedField.hasRequiredMarker(jmClass: JmClass): Boolean? {
         val member = annotated
         val fieldSignature = member.toSignature()
 
         // Direct access to `AnnotatedField` is only performed if there is no accessor (defined as JvmField),
         // so if an accessor is defined, it is ignored.
-        return kmClass.properties
+        return jmClass.properties
             .find { it.fieldSignature == fieldSignature }
             // Since a property that does not currently have a getter cannot be defined,
             // only a check for the existence of a getter is performed.
@@ -80,27 +79,23 @@ internal class KotlinPrimaryAnnotationIntrospector(
 
     private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable()
 
-    private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(kmClass: KmClass): Boolean? {
+    private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(jmClass: JmClass): Boolean? {
         // false if setter and nullToEmpty option is specified
         if (parameterCount == 1 && this.getParameter(0).type.hasDefaultEmptyValue()) return false
 
         val memberSignature = member.toSignature()
-        return kmClass.properties
+        return jmClass.properties
             .find { it.getterSignature == memberSignature || it.setterSignature == memberSignature }
             ?.isRequiredByNullability()
     }
 
-    private fun AnnotatedParameter.hasRequiredMarker(kmClass: KmClass): Boolean? {
+    private fun AnnotatedParameter.hasRequiredMarker(jmClass: JmClass): Boolean? {
         val paramDef = when (val member = member) {
-            is Constructor<*> -> kmClass.findKmConstructor(member)
-                ?.let { it.valueParameters[index] }
-            is Method -> {
-                val signature = member.toSignature()
-                kmClass.functions.find { it.signature == signature }
-                    ?.let { it.valueParameters[index] }
-            }
+            is Constructor<*> -> jmClass.findKmConstructor(member)?.valueParameters
+
+            is Method -> jmClass.findFunctionByMethod(member)?.valueParameters
             else -> null
-        } ?: return null // Return null if function on Kotlin cannot be determined
+        }?.let { it[index] } ?: return null // Return null if function on Kotlin cannot be determined
 
         // non required if...
         return when {
@@ -120,8 +115,8 @@ internal class KotlinPrimaryAnnotationIntrospector(
      */
     // The definition location was not changed from kotlin-module because
     // the result was the same whether it was defined in Primary or Fallback.
-    override fun findSubtypes(a: Annotated): List<NamedType>? = cache.getKmClass(a.rawType)?.let { kmClass ->
-        kmClass.sealedSubclasses.map { NamedType(it.reconstructClass()) }.ifEmpty { null }
+    override fun findSubtypes(a: Annotated): List<NamedType>? = cache.getJmClass(a.rawType)?.let { jmClass ->
+        jmClass.sealedSubclasses.map { NamedType(it.reconstructClass()) }.ifEmpty { null }
     }
 
     // Return Mode.DEFAULT if ann is a Primary Constructor and the condition is satisfied.
@@ -134,18 +129,18 @@ internal class KotlinPrimaryAnnotationIntrospector(
         (ann as? AnnotatedConstructor)?.takeIf { 0 < it.parameterCount } ?: return null
 
         val declaringClass = ann.declaringClass
-        val kmClass = declaringClass
+        val jmClass = declaringClass
             ?.takeIf { !it.isEnum }
-            ?.let { cache.getKmClass(it) }
+            ?.let { cache.getJmClass(it) }
             ?: return null
 
         return JsonCreator.Mode.DEFAULT
-            .takeIf { ann.annotated.isPrimarilyConstructorOf(kmClass) && !hasCreator(declaringClass, kmClass) }
+            .takeIf { ann.annotated.isPrimarilyConstructorOf(jmClass) && !hasCreator(declaringClass, jmClass) }
     }
 }
 
-private fun Constructor<*>.isPrimarilyConstructorOf(kmClass: KmClass): Boolean = kmClass.findKmConstructor(this)
-    ?.let { !Flag.Constructor.IS_SECONDARY(it.flags) || kmClass.constructors.size == 1 }
+private fun Constructor<*>.isPrimarilyConstructorOf(jmClass: JmClass): Boolean = jmClass.findKmConstructor(this)
+    ?.let { !Flag.Constructor.IS_SECONDARY(it.flags) || jmClass.constructors.size == 1 }
     ?: false
 
 private fun KmClassifier.isString(): Boolean = this is KmClassifier.Class && this.name == "kotlin/String"
@@ -158,8 +153,8 @@ private fun isPossibleSingleString(
     kotlinParams[0].let { it.name !in propertyNames && it.type.classifier.isString() } &&
     javaFunction.parameters[0].annotations.none { it is JsonProperty }
 
-private fun hasCreatorConstructor(clazz: Class<*>, kmClass: KmClass, propertyNames: Set<String>): Boolean {
-    val kmConstructorMap = kmClass.constructors.associateBy { it.signature?.desc }
+private fun hasCreatorConstructor(clazz: Class<*>, jmClass: JmClass, propertyNames: Set<String>): Boolean {
+    val kmConstructorMap = jmClass.constructors.associateBy { it.signature?.desc }
 
     return clazz.constructors.any { constructor ->
         val kmConstructor = kmConstructorMap[constructor.toSignature().desc] ?: return@any false
@@ -174,7 +169,7 @@ private fun hasCreatorConstructor(clazz: Class<*>, kmClass: KmClass, propertyNam
 private fun hasCreatorFunction(clazz: Class<*>): Boolean = clazz.declaredMethods
     .any { Modifier.isStatic(it.modifiers) && it.hasCreatorAnnotation() }
 
-private fun hasCreator(clazz: Class<*>, kmClass: KmClass): Boolean {
-    val propertyNames = kmClass.properties.map { it.name }.toSet()
-    return hasCreatorConstructor(clazz, kmClass, propertyNames) || hasCreatorFunction(clazz)
+private fun hasCreator(clazz: Class<*>, jmClass: JmClass): Boolean {
+    val propertyNames = jmClass.properties.map { it.name }.toSet()
+    return hasCreatorConstructor(clazz, jmClass, propertyNames) || hasCreatorFunction(clazz)
 }

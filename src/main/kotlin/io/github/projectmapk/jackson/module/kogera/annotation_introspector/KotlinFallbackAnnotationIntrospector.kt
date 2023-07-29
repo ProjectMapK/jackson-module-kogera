@@ -76,7 +76,7 @@ internal class KotlinFallbackAnnotationIntrospector(
                 0 -> JsonProperty.Access.WRITE_ONLY.takeIf { jmClass.kmClass.findPropertyByGetter(method) == null }
                 1 -> {
                     val signature = method.toSignature()
-                    JsonProperty.Access.READ_ONLY.takeIf { jmClass.kmClass.properties.none { it.setterSignature == signature } }
+                    JsonProperty.Access.READ_ONLY.takeIf { jmClass.properties.none { it.setterSignature == signature } }
                 }
                 else -> null
             }
@@ -115,7 +115,7 @@ internal class KotlinFallbackAnnotationIntrospector(
     // Determine if the unbox result of value class is nullable
     // @see findNullSerializer
     private fun Class<*>.requireRebox(): Boolean =
-        cache.getJmClass(this)!!.kmClass.properties.first { it.fieldSignature != null }.returnType.isNullable()
+        cache.getJmClass(this)!!.properties.first { it.fieldSignature != null }.returnType.isNullable()
 
     // Perform proper serialization even if the value wrapped by the value class is null.
     // If value is a non-null object type, it must not be reboxing.

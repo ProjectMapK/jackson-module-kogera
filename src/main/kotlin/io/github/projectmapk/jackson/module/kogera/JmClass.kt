@@ -1,5 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera
 
+import kotlinx.metadata.ClassName
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmConstructor
 import kotlinx.metadata.KmFunction
@@ -14,6 +15,7 @@ internal class JmClass(val kmClass: KmClass) {
     val constructors: List<KmConstructor> = kmClass.constructors
     val properties: List<KmProperty> = kmClass.properties
     private val functions: List<KmFunction> = kmClass.functions
+    val sealedSubclasses: List<ClassName> = kmClass.sealedSubclasses
 
     fun findKmConstructor(constructor: Constructor<*>): KmConstructor? {
         val descHead = constructor.parameterTypes.toDescBuilder()

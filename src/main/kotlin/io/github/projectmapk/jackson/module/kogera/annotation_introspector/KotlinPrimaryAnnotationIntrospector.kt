@@ -116,7 +116,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
     // The definition location was not changed from kotlin-module because
     // the result was the same whether it was defined in Primary or Fallback.
     override fun findSubtypes(a: Annotated): List<NamedType>? = cache.getJmClass(a.rawType)?.let { jmClass ->
-        jmClass.kmClass.sealedSubclasses.map { NamedType(it.reconstructClass()) }.ifEmpty { null }
+        jmClass.sealedSubclasses.map { NamedType(it.reconstructClass()) }.ifEmpty { null }
     }
 
     // Return Mode.DEFAULT if ann is a Primary Constructor and the condition is satisfied.

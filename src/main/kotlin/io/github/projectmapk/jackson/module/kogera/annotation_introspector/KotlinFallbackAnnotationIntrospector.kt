@@ -24,7 +24,6 @@ import io.github.projectmapk.jackson.module.kogera.ser.SequenceToIteratorConvert
 import io.github.projectmapk.jackson.module.kogera.toSignature
 import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.setterSignature
-import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method

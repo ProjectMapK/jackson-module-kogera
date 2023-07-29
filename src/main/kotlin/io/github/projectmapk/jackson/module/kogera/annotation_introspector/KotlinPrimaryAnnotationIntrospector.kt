@@ -48,9 +48,9 @@ internal class KotlinPrimaryAnnotationIntrospector(
 
         return cache.getJmClass(m.member.declaringClass)?.let {
             when (m) {
-                is AnnotatedField -> m.hasRequiredMarker(it)
-                is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(it)
-                is AnnotatedParameter -> m.hasRequiredMarker(it)
+                is AnnotatedField -> m.hasRequiredMarker(it.kmClass)
+                is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(it.kmClass)
+                is AnnotatedParameter -> m.hasRequiredMarker(it.kmClass)
                 else -> null
             }
         } ?: byAnnotation // If a JsonProperty is available, use it to reduce processing costs.
@@ -121,7 +121,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
     // The definition location was not changed from kotlin-module because
     // the result was the same whether it was defined in Primary or Fallback.
     override fun findSubtypes(a: Annotated): List<NamedType>? = cache.getJmClass(a.rawType)?.let { jmClass ->
-        jmClass.sealedSubclasses.map { NamedType(it.reconstructClass()) }.ifEmpty { null }
+        jmClass.kmClass.sealedSubclasses.map { NamedType(it.reconstructClass()) }.ifEmpty { null }
     }
 
     // Return Mode.DEFAULT if ann is a Primary Constructor and the condition is satisfied.
@@ -140,7 +140,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
             ?: return null
 
         return JsonCreator.Mode.DEFAULT
-            .takeIf { ann.annotated.isPrimarilyConstructorOf(kmClass) && !hasCreator(declaringClass, kmClass) }
+            .takeIf { ann.annotated.isPrimarilyConstructorOf(kmClass.kmClass) && !hasCreator(declaringClass, kmClass.kmClass) }
     }
 }
 

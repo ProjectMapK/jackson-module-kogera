@@ -42,7 +42,7 @@ internal class KotlinFallbackAnnotationIntrospector(
     // since 2.4
     override fun findImplicitPropertyName(member: AnnotatedMember): String? = when (member) {
         is AnnotatedMethod -> if (member.parameterCount == 0) {
-            cache.getJmClass(member.declaringClass)?.findPropertyByGetter(member.annotated)?.name
+            cache.getJmClass(member.declaringClass)?.kmClass?.findPropertyByGetter(member.annotated)?.name
         } else {
             null
         }
@@ -51,17 +51,17 @@ internal class KotlinFallbackAnnotationIntrospector(
     }
 
     private fun findKotlinParameterName(param: AnnotatedParameter): String? = when (val owner = param.owner.member) {
-        is Constructor<*> -> cache.getJmClass(param.declaringClass)?.findKmConstructor(owner)?.valueParameters
+        is Constructor<*> -> cache.getJmClass(param.declaringClass)?.kmClass?.findKmConstructor(owner)?.valueParameters
         is Method ->
             owner.takeIf { _ -> Modifier.isStatic(owner.modifiers) }
                 ?.let { _ ->
-                    val companion = cache.getJmClass(param.declaringClass)?.companionObject ?: return@let null
+                    val companion = cache.getJmClass(param.declaringClass)?.kmClass?.companionObject ?: return@let null
                     val companionKmClass = owner.declaringClass.getDeclaredField(companion)
                         .type
                         .let { cache.getJmClass(it) }!!
                     val signature = owner.toSignature()
 
-                    companionKmClass.functions.find { it.signature == signature }?.valueParameters
+                    companionKmClass.kmClass.functions.find { it.signature == signature }?.valueParameters
                 }
         else -> null
     }?.let { it[param.index].name }
@@ -73,10 +73,10 @@ internal class KotlinFallbackAnnotationIntrospector(
 
             // By returning an illegal JsonProperty.Access, it is effectively ignore.
             when (method.parameters.size) {
-                0 -> JsonProperty.Access.WRITE_ONLY.takeIf { jmClass.findPropertyByGetter(method) == null }
+                0 -> JsonProperty.Access.WRITE_ONLY.takeIf { jmClass.kmClass.findPropertyByGetter(method) == null }
                 1 -> {
                     val signature = method.toSignature()
-                    JsonProperty.Access.READ_ONLY.takeIf { jmClass.properties.none { it.setterSignature == signature } }
+                    JsonProperty.Access.READ_ONLY.takeIf { jmClass.kmClass.properties.none { it.setterSignature == signature } }
                 }
                 else -> null
             }
@@ -115,7 +115,7 @@ internal class KotlinFallbackAnnotationIntrospector(
     // Determine if the unbox result of value class is nullable
     // @see findNullSerializer
     private fun Class<*>.requireRebox(): Boolean =
-        cache.getJmClass(this)!!.properties.first { it.fieldSignature != null }.returnType.isNullable()
+        cache.getJmClass(this)!!.kmClass.properties.first { it.fieldSignature != null }.returnType.isNullable()
 
     // Perform proper serialization even if the value wrapped by the value class is null.
     // If value is a non-null object type, it must not be reboxing.

@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import com.fasterxml.jackson.databind.type.TypeFactory
 import com.fasterxml.jackson.databind.util.Converter
-import io.github.projectmapk.jackson.module.kogera.KotlinModule
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.deser.CollectionValueStrictNullChecksConverter
 import io.github.projectmapk.jackson.module.kogera.deser.MapValueStrictNullChecksConverter
@@ -37,7 +36,6 @@ import java.lang.reflect.Modifier
 // (in most cases, JacksonAnnotationIntrospector).
 // Original name: KotlinNamesAnnotationIntrospector
 internal class KotlinFallbackAnnotationIntrospector(
-    val module: KotlinModule,
     private val strictNullChecks: Boolean,
     private val cache: ReflectionCache
 ) : NopAnnotationIntrospector() {
@@ -189,11 +187,11 @@ private fun ValueParameter.isNullishTypeAt(index: Int) = arguments.getOrNull(ind
 private fun ValueParameter.createStrictNullChecksConverterOrNull(type: JavaType, rawType: Class<*>): Converter<*, *>? {
     return when {
         Array::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(0) ->
-            CollectionValueStrictNullChecksConverter.ForArray(type, this)
+            CollectionValueStrictNullChecksConverter.ForArray(type, this.name)
         Iterable::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(0) ->
-            CollectionValueStrictNullChecksConverter.ForIterable(type, this)
+            CollectionValueStrictNullChecksConverter.ForIterable(type, this.name)
         Map::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(1) ->
-            MapValueStrictNullChecksConverter(type, this)
+            MapValueStrictNullChecksConverter(type, this.name)
         else -> null
     }
 }

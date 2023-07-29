@@ -83,7 +83,7 @@ public class KotlinModule private constructor(
         context.insertAnnotationIntrospector(
             KotlinPrimaryAnnotationIntrospector(nullToEmptyCollection, nullToEmptyMap, cache)
         )
-        context.appendAnnotationIntrospector(KotlinFallbackAnnotationIntrospector(this, strictNullChecks, cache))
+        context.appendAnnotationIntrospector(KotlinFallbackAnnotationIntrospector(strictNullChecks, cache))
 
         context.setClassIntrospector(KotlinClassIntrospector)
 

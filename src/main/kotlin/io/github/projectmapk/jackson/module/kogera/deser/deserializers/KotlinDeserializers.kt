@@ -142,7 +142,7 @@ internal class KotlinDeserializers(private val cache: ReflectionCache) : Deseria
             rawClass == UShort::class.java -> UShortDeserializer
             rawClass == UInt::class.java -> UIntDeserializer
             rawClass == ULong::class.java -> ULongDeserializer
-            rawClass.isUnboxableValueClass() -> findValueCreator(type, rawClass, cache.getKmClass(rawClass)!!)
+            rawClass.isUnboxableValueClass() -> findValueCreator(type, rawClass, cache.getJmClass(rawClass)!!)
                 ?.let { ValueClassBoxDeserializer(it, rawClass) }
             else -> null
         }

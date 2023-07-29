@@ -46,7 +46,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
         val byAnnotation = _findAnnotation(m, JsonProperty::class.java)?.required
             ?.apply { if (this) return true }
 
-        return cache.getKmClass(m.member.declaringClass)?.let {
+        return cache.getJmClass(m.member.declaringClass)?.let {
             when (m) {
                 is AnnotatedField -> m.hasRequiredMarker(it)
                 is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(it)
@@ -120,8 +120,8 @@ internal class KotlinPrimaryAnnotationIntrospector(
      */
     // The definition location was not changed from kotlin-module because
     // the result was the same whether it was defined in Primary or Fallback.
-    override fun findSubtypes(a: Annotated): List<NamedType>? = cache.getKmClass(a.rawType)?.let { kmClass ->
-        kmClass.sealedSubclasses.map { NamedType(it.reconstructClass()) }.ifEmpty { null }
+    override fun findSubtypes(a: Annotated): List<NamedType>? = cache.getJmClass(a.rawType)?.let { jmClass ->
+        jmClass.sealedSubclasses.map { NamedType(it.reconstructClass()) }.ifEmpty { null }
     }
 
     // Return Mode.DEFAULT if ann is a Primary Constructor and the condition is satisfied.
@@ -136,7 +136,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
         val declaringClass = ann.declaringClass
         val kmClass = declaringClass
             ?.takeIf { !it.isEnum }
-            ?.let { cache.getKmClass(it) }
+            ?.let { cache.getJmClass(it) }
             ?: return null
 
         return JsonCreator.Mode.DEFAULT

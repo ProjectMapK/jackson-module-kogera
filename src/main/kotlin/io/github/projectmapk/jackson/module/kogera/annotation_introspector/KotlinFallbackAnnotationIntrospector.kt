@@ -37,7 +37,6 @@ import java.lang.reflect.Modifier
 // (in most cases, JacksonAnnotationIntrospector).
 // Original name: KotlinNamesAnnotationIntrospector
 internal class KotlinFallbackAnnotationIntrospector(
-    val module: KotlinModule,
     private val strictNullChecks: Boolean,
     private val cache: ReflectionCache
 ) : NopAnnotationIntrospector() {

@@ -1,8 +1,10 @@
 package io.github.projectmapk.jackson.module.kogera._integration.deser.value_class.deserializer.by_annotation
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import io.github.projectmapk.jackson.module.kogera.KotlinFeature
+import io.github.projectmapk.jackson.module.kogera.KotlinModule
 import io.github.projectmapk.jackson.module.kogera._integration.deser.value_class.Primitive
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -15,7 +17,12 @@ class TempTest {
 
     @Test
     fun test() {
-        val result = jacksonObjectMapper().readValue<Dst>("""{"value":1}""")
+        val result = KotlinModule.Builder()
+            .enable(KotlinFeature.CopySyntheticConstructorParameterAnnotations)
+            .build()
+            .let { ObjectMapper().registerModule(it) }
+            .readValue<Dst>("""{"value":1}""")
+
         assertEquals(Dst(Primitive(101)), result)
     }
 }

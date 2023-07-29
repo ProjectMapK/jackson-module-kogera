@@ -11,11 +11,10 @@ class KotlinModuleTest {
     fun jdkSerializabilityTest() {
         val module = KotlinModule.Builder().apply {
             withReflectionCacheSize(123)
-            enable(KotlinFeature.NullToEmptyCollection)
-            enable(KotlinFeature.NullToEmptyMap)
-            enable(KotlinFeature.NullIsSameAsDefault)
-            enable(KotlinFeature.SingletonSupport)
-            enable(KotlinFeature.StrictNullChecks)
+
+            KotlinFeature.values().forEach {
+                enable(it)
+            }
         }.build()
 
         val serialized = jdkSerialize(module)
@@ -30,6 +29,7 @@ class KotlinModuleTest {
             assertTrue(deserialized.nullIsSameAsDefault)
             assertTrue(deserialized.singletonSupport)
             assertTrue(deserialized.strictNullChecks)
+            assertTrue(deserialized.copySyntheticConstructorParameterAnnotations)
         }
     }
 }

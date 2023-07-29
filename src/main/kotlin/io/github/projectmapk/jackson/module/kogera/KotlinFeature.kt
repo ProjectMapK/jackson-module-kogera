@@ -55,7 +55,25 @@ public enum class KotlinFeature(internal val enabledByDefault: Boolean) {
      * may contain null values after deserialization.
      * Enabling it protects against this but has performance impact.
      */
-    StrictNullChecks(enabledByDefault = false);
+    StrictNullChecks(enabledByDefault = false),
+
+    /**
+     * This feature represents whether to include in Jackson's parsing the annotations given to the parameters of
+     * constructors that include value class as a parameter.
+     *
+     * Constructor with value class as a parameter on Kotlin are compiled into a public synthetic constructor
+     * and a private constructor.
+     * In this case, annotations are only given to synthetic constructors,
+     * so they are not normally included in Jackson's parsing and will not work.
+     *
+     * To work around this problem, annotations can be added by specifying a field or getter,
+     * or by enabling this feature.
+     * However, enabling this feature will affect initialization performance.
+     * Also note that enabling this feature does not enable annotations given to the constructor.
+     *
+     * @see KotlinClassIntrospector
+     */
+    CopySyntheticConstructorParameterAnnotations(enabledByDefault = false);
 
     internal val bitSet: BitSet = (1 shl ordinal).toBitSet()
 

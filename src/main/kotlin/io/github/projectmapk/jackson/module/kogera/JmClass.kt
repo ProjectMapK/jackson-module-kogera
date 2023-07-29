@@ -57,8 +57,14 @@ internal class JmClass(
         companionObject: String
     ) {
         private val companionField: Field = declaringClass.getDeclaredField(companionObject)
-        private val companionObjectClass: Class<*> = companionField.type
-        private val kmClass: KmClass by lazy { companionObjectClass.toKmClass()!! }
+        val type: Class<*> = companionField.type
+        val isAccessible: Boolean = companionField.isAccessible
+        private val kmClass: KmClass by lazy { type.toKmClass()!! }
+        val instance: Any by lazy {
+            // To prevent the call from failing, save the initial value and then rewrite the flag.
+            if (!companionField.isAccessible) companionField.isAccessible = true
+            companionField.get(null)
+        }
 
         fun findFunctionByMethod(method: Method): KmFunction? {
             val signature = method.toSignature()

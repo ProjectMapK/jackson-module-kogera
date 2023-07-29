@@ -66,7 +66,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
             creatorCache.get(creator)
                 ?: run {
                     getJmClass(creator.declaringClass)?.let {
-                        val value = ConstructorValueCreator(creator, it.kmClass)
+                        val value = ConstructorValueCreator(creator, it)
                         creatorCache.putIfAbsent(creator, value) ?: value
                     }
                 }

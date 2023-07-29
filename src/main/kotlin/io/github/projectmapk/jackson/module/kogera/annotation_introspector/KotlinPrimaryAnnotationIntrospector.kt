@@ -12,8 +12,8 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import com.fasterxml.jackson.databind.jsontype.NamedType
+import io.github.projectmapk.jackson.module.kogera.JmClass
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
-import io.github.projectmapk.jackson.module.kogera.findKmConstructor
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
 import io.github.projectmapk.jackson.module.kogera.isNullable
 import io.github.projectmapk.jackson.module.kogera.reconstructClass
@@ -50,7 +50,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
             when (m) {
                 is AnnotatedField -> m.hasRequiredMarker(it.kmClass)
                 is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(it.kmClass)
-                is AnnotatedParameter -> m.hasRequiredMarker(it.kmClass)
+                is AnnotatedParameter -> m.hasRequiredMarker(it)
                 else -> null
             }
         } ?: byAnnotation // If a JsonProperty is available, use it to reduce processing costs.
@@ -90,13 +90,13 @@ internal class KotlinPrimaryAnnotationIntrospector(
             ?.isRequiredByNullability()
     }
 
-    private fun AnnotatedParameter.hasRequiredMarker(kmClass: KmClass): Boolean? {
+    private fun AnnotatedParameter.hasRequiredMarker(jmClass: JmClass): Boolean? {
         val paramDef = when (val member = member) {
-            is Constructor<*> -> kmClass.findKmConstructor(member)
+            is Constructor<*> -> jmClass.findKmConstructor(member)
                 ?.let { it.valueParameters[index] }
             is Method -> {
                 val signature = member.toSignature()
-                kmClass.functions.find { it.signature == signature }
+                jmClass.kmClass.functions.find { it.signature == signature }
                     ?.let { it.valueParameters[index] }
             }
             else -> null
@@ -134,18 +134,18 @@ internal class KotlinPrimaryAnnotationIntrospector(
         (ann as? AnnotatedConstructor)?.takeIf { 0 < it.parameterCount } ?: return null
 
         val declaringClass = ann.declaringClass
-        val kmClass = declaringClass
+        val jmClass = declaringClass
             ?.takeIf { !it.isEnum }
             ?.let { cache.getJmClass(it) }
             ?: return null
 
         return JsonCreator.Mode.DEFAULT
-            .takeIf { ann.annotated.isPrimarilyConstructorOf(kmClass.kmClass) && !hasCreator(declaringClass, kmClass.kmClass) }
+            .takeIf { ann.annotated.isPrimarilyConstructorOf(jmClass) && !hasCreator(declaringClass, jmClass.kmClass) }
     }
 }
 
-private fun Constructor<*>.isPrimarilyConstructorOf(kmClass: KmClass): Boolean = kmClass.findKmConstructor(this)
-    ?.let { !Flag.Constructor.IS_SECONDARY(it.flags) || kmClass.constructors.size == 1 }
+private fun Constructor<*>.isPrimarilyConstructorOf(jmClass: JmClass): Boolean = jmClass.findKmConstructor(this)
+    ?.let { !Flag.Constructor.IS_SECONDARY(it.flags) || jmClass.constructors.size == 1 }
     ?: false
 
 private fun KmClassifier.isString(): Boolean = this is KmClassifier.Class && this.name == "kotlin/String"

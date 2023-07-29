@@ -17,7 +17,6 @@ import io.github.projectmapk.jackson.module.kogera.deser.CollectionValueStrictNu
 import io.github.projectmapk.jackson.module.kogera.deser.MapValueStrictNullChecksConverter
 import io.github.projectmapk.jackson.module.kogera.deser.ValueClassUnboxConverter
 import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.creator.ValueParameter
-import io.github.projectmapk.jackson.module.kogera.findKmConstructor
 import io.github.projectmapk.jackson.module.kogera.isNullable
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
@@ -50,7 +49,7 @@ internal class KotlinFallbackAnnotationIntrospector(
     }
 
     private fun findKotlinParameterName(param: AnnotatedParameter): String? = when (val owner = param.owner.member) {
-        is Constructor<*> -> cache.getJmClass(param.declaringClass)?.kmClass?.findKmConstructor(owner)?.valueParameters
+        is Constructor<*> -> cache.getJmClass(param.declaringClass)?.findKmConstructor(owner)?.valueParameters
         is Method ->
             owner.takeIf { _ -> Modifier.isStatic(owner.modifiers) }
                 ?.let { _ ->

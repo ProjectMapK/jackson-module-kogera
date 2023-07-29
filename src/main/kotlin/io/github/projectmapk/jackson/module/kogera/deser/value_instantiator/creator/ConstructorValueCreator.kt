@@ -1,19 +1,18 @@
 package io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.creator
 
+import io.github.projectmapk.jackson.module.kogera.JmClass
 import io.github.projectmapk.jackson.module.kogera.call
 import io.github.projectmapk.jackson.module.kogera.defaultConstructorMarker
 import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.argument_bucket.ArgumentBucket
 import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.argument_bucket.BucketGenerator
 import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.calcMaskSize
-import io.github.projectmapk.jackson.module.kogera.findKmConstructor
 import io.github.projectmapk.jackson.module.kogera.getDeclaredConstructorBy
 import io.github.projectmapk.jackson.module.kogera.hasVarargParam
-import kotlinx.metadata.KmClass
 import java.lang.reflect.Constructor
 
 internal class ConstructorValueCreator<T : Any>(
     private val constructor: Constructor<T>,
-    declaringKmClass: KmClass
+    declaringJmClass: JmClass
 ) : ValueCreator<T>() {
     private val declaringClass: Class<T> = constructor.declaringClass
 
@@ -26,7 +25,7 @@ internal class ConstructorValueCreator<T : Any>(
         // To prevent the call from failing, save the initial value and then rewrite the flag.
         if (!isAccessible) constructor.isAccessible = true
 
-        val constructorParameters = declaringKmClass.findKmConstructor(constructor)!!.valueParameters
+        val constructorParameters = declaringJmClass.findKmConstructor(constructor)!!.valueParameters
 
         valueParameters = constructorParameters.map { ValueParameter(it) }
         bucketGenerator = BucketGenerator(constructor.parameterTypes.asList(), constructorParameters.hasVarargParam())

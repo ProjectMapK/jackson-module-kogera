@@ -19,7 +19,6 @@ import io.github.projectmapk.jackson.module.kogera.isNullable
 import io.github.projectmapk.jackson.module.kogera.reconstructClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
 import kotlinx.metadata.Flag
-import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmProperty
 import kotlinx.metadata.KmValueParameter
@@ -48,8 +47,8 @@ internal class KotlinPrimaryAnnotationIntrospector(
 
         return cache.getJmClass(m.member.declaringClass)?.let {
             when (m) {
-                is AnnotatedField -> m.hasRequiredMarker(it.kmClass)
-                is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(it.kmClass)
+                is AnnotatedField -> m.hasRequiredMarker(it)
+                is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(it)
                 is AnnotatedParameter -> m.hasRequiredMarker(it)
                 else -> null
             }
@@ -63,13 +62,13 @@ internal class KotlinPrimaryAnnotationIntrospector(
 
     // The nullToEmpty option also affects serialization,
     // but deserialization is preferred because there is currently no way to distinguish between contexts.
-    private fun AnnotatedField.hasRequiredMarker(kmClass: KmClass): Boolean? {
+    private fun AnnotatedField.hasRequiredMarker(jmClass: JmClass): Boolean? {
         val member = annotated
         val fieldSignature = member.toSignature()
 
         // Direct access to `AnnotatedField` is only performed if there is no accessor (defined as JvmField),
         // so if an accessor is defined, it is ignored.
-        return kmClass.properties
+        return jmClass.properties
             .find { it.fieldSignature == fieldSignature }
             // Since a property that does not currently have a getter cannot be defined,
             // only a check for the existence of a getter is performed.
@@ -80,12 +79,12 @@ internal class KotlinPrimaryAnnotationIntrospector(
 
     private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable()
 
-    private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(kmClass: KmClass): Boolean? {
+    private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(jmClass: JmClass): Boolean? {
         // false if setter and nullToEmpty option is specified
         if (parameterCount == 1 && this.getParameter(0).type.hasDefaultEmptyValue()) return false
 
         val memberSignature = member.toSignature()
-        return kmClass.properties
+        return jmClass.properties
             .find { it.getterSignature == memberSignature || it.setterSignature == memberSignature }
             ?.isRequiredByNullability()
     }

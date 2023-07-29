@@ -77,7 +77,7 @@ public class KotlinModule private constructor(
         )
 
         if (singletonSupport) {
-            context.addBeanDeserializerModifier(KotlinBeanDeserializerModifier)
+            context.addBeanDeserializerModifier(KotlinBeanDeserializerModifier(cache))
         }
 
         context.insertAnnotationIntrospector(

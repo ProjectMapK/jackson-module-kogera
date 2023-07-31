@@ -1,15 +1,21 @@
 package io.github.projectmapk.jackson.module.kogera._integration.ser.value_class.serializer.by_annotation.primitive
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import io.github.projectmapk.jackson.module.kogera.KotlinFeature
+import io.github.projectmapk.jackson.module.kogera.KotlinModule
 import io.github.projectmapk.jackson.module.kogera._integration.ser.value_class.serializer.Primitive
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.testPrettyWriter
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class ByAnnotationTest {
     companion object {
-        val writer = jacksonObjectMapper().testPrettyWriter()
+        val writer = KotlinModule.Builder()
+            .enable(KotlinFeature.CopySyntheticConstructorParameterAnnotations)
+            .build()
+            .let { ObjectMapper().registerModule(it) }
+            .testPrettyWriter()
     }
 
     data class NonNullSrc(

@@ -2,16 +2,18 @@ The `jackson-module-kogera` supports many use cases of `value class` (`inline cl
 This page summarizes the basic policy and points to note regarding the use of the `value class`.
 
 ## Note on the use of `value class`
-`value class` is one of the distinctive features of `Kotlin`.  
-Many key use cases are not supported in `jackson-module-kotlin` because
-the functions and properties associated with `value class` have a special representation on the `JVM`.
+The `value class` is one of the `Kotlin` specific feature.  
+On the other hand, `jackson-module-kotlin` does not support deserialization of `value class` in particular.  
+Also, there are some features of serialization that do not work properly.
 
-However, due to `Jackson` limitations, the same behavior as the normal class is not fully reproduced.  
+The reason for this is that `value class` is a special representation on the `JVM`.  
+Due to this difference, some cases cannot be handled by basic `Jackson` parsing, which assumes `Java`.  
 Known issues related to `value class` can be found [here](https://github.com/ProjectMapK/jackson-module-kogera/issues?q=is%3Aissue+is%3Aopen+label%3A%22value+class%22).
 
-Also, when using `Jackson`, there is a concern that the use of `value class` will rather degrade performance.  
-This is because `jackson-module-kogera` does a lot of reflection processing to support `value class`
-(this concern will be confirmed in [kogera-benchmark](https://github.com/ProjectMapK/kogera-benchmark) in the future).
+In addition, one of the features of the `value class` is improved performance,
+but when using `Jackson` (not only `Jackson`, but also other libraries that use reflection),
+the performance is rather reduced.  
+This can be confirmed from [kogera-benchmark](https://github.com/ProjectMapK/kogera-benchmark).
 
 For these reasons, I recommend careful consideration when using `value class`.
 

@@ -85,7 +85,7 @@ internal class KotlinFallbackAnnotationIntrospector(
 
             valueParameter.createValueClassUnboxConverterOrNull(rawType) ?: run {
                 if (strictNullChecks) {
-                    valueParameter.createStrictNullChecksConverterOrNull(a.type, rawType)
+                    valueParameter.createStrictNullChecksConverterOrNull(a.type)
                 } else {
                     null
                 }
@@ -176,13 +176,13 @@ private fun ValueParameter.createValueClassUnboxConverterOrNull(rawType: Class<*
 // @see io.github.projectmapk.jackson.module.kogera._ported.test.StrictNullChecksTest#testListOfGenericWithNullValue
 private fun ValueParameter.isNullishTypeAt(index: Int) = arguments.getOrNull(index)?.isNullable ?: true
 
-private fun ValueParameter.createStrictNullChecksConverterOrNull(type: JavaType, rawType: Class<*>): Converter<*, *>? {
+private fun ValueParameter.createStrictNullChecksConverterOrNull(type: JavaType): Converter<*, *>? {
     return when {
-        Array::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(0) ->
+        type.isArrayType && !this.isNullishTypeAt(0) ->
             CollectionValueStrictNullChecksConverter.ForArray(type, this.name)
-        Iterable::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(0) ->
+        type.isCollectionLikeType && !this.isNullishTypeAt(0) ->
             CollectionValueStrictNullChecksConverter.ForIterable(type, this.name)
-        Map::class.java.isAssignableFrom(rawType) && !this.isNullishTypeAt(1) ->
+        type.isMapLikeType && !this.isNullishTypeAt(1) ->
             MapValueStrictNullChecksConverter(type, this.name)
         else -> null
     }

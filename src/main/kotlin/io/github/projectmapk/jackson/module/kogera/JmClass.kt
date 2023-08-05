@@ -26,8 +26,8 @@ internal class JmClass(
         }
 
         // Add properties of inherited classes and interfaces
-        // TODO: Ideally, more specific types should be preferred for each property,
-        //       but as a provisional implementation, the first one in is used.
+        // If an `interface` is implicitly implemented by an abstract class,
+        // it is necessary to obtain a more specific type, so always add it from the abstract class first.
         superJmClass?.allPropsMap?.forEach {
             this.putIfAbsent(it.key, it.value)
         }

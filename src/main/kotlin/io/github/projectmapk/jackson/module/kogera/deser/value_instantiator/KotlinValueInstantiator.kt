@@ -13,8 +13,12 @@ import com.fasterxml.jackson.databind.deser.impl.PropertyValueBuffer
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
+import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.creator.ConstructorValueCreator
+import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.creator.MethodValueCreator
 import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.creator.ValueCreator
+import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
+import java.lang.reflect.Method
 
 private fun JsonMappingException.wrapWithPath(refFrom: Any?, refFieldName: String) =
     JsonMappingException.wrapWithPath(this, refFrom, refFieldName)
@@ -29,13 +33,25 @@ internal class KotlinValueInstantiator(
     private fun JavaType.requireEmptyValue() =
         (nullToEmptyCollection && this.isCollectionLikeType) || (nullToEmptyMap && this.isMapLikeType)
 
+    private val valueCreator: ValueCreator<*>? by ReflectProperties.lazySoft {
+        val creator = _withArgsCreator.annotated as Executable
+        val jmClass = cache.getJmClass(creator.declaringClass) ?: return@lazySoft null
+
+        when (creator) {
+            is Constructor<*> -> ConstructorValueCreator(creator, jmClass)
+            is Method -> MethodValueCreator<Any?>(creator, jmClass)
+            else -> throw IllegalStateException(
+                "Expected a constructor or method to create a Kotlin object, instead found ${creator.javaClass.name}"
+            )
+        }
+    } // we cannot reflect this method so do the default Java-ish behavior
+
     override fun createFromObjectWith(
         ctxt: DeserializationContext,
         props: Array<out SettableBeanProperty>,
         buffer: PropertyValueBuffer
     ): Any? {
-        val valueCreator: ValueCreator<*> = cache.valueCreatorFromJava(_withArgsCreator.annotated as Executable)
-            ?: return super.createFromObjectWith(ctxt, props, buffer)
+        val valueCreator: ValueCreator<*> = valueCreator ?: return super.createFromObjectWith(ctxt, props, buffer)
 
         val bucket = valueCreator.generateBucket()
 

@@ -22,6 +22,7 @@ import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
 import io.github.projectmapk.jackson.module.kogera.ser.SequenceToIteratorConverter
 import io.github.projectmapk.jackson.module.kogera.toSignature
+import kotlinx.metadata.KmValueParameter
 import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.setterSignature
 import java.lang.reflect.Constructor
@@ -36,6 +37,18 @@ internal class KotlinFallbackAnnotationIntrospector(
     private val strictNullChecks: Boolean,
     private val cache: ReflectionCache
 ) : NopAnnotationIntrospector() {
+    private fun findKotlinParameter(param: AnnotatedParameter): KmValueParameter? =
+        when (val owner = param.owner.member) {
+            is Constructor<*> -> cache.getJmClass(param.declaringClass)?.findKmConstructor(owner)?.valueParameters
+            is Method ->
+                owner.takeIf { _ -> Modifier.isStatic(owner.modifiers) }
+                    ?.let { _ ->
+                        val companion = cache.getJmClass(param.declaringClass)?.companion ?: return@let null
+                        companion.findFunctionByMethod(owner)?.valueParameters
+                    }
+            else -> null
+        }?.let { it[param.index] }
+
     // since 2.4
     override fun findImplicitPropertyName(member: AnnotatedMember): String? = when (member) {
         is AnnotatedMethod -> if (member.parameterCount == 0) {
@@ -43,20 +56,9 @@ internal class KotlinFallbackAnnotationIntrospector(
         } else {
             null
         }
-        is AnnotatedParameter -> findKotlinParameterName(member)
+        is AnnotatedParameter -> findKotlinParameter(member)?.name
         else -> null
     }
-
-    private fun findKotlinParameterName(param: AnnotatedParameter): String? = when (val owner = param.owner.member) {
-        is Constructor<*> -> cache.getJmClass(param.declaringClass)?.findKmConstructor(owner)?.valueParameters
-        is Method ->
-            owner.takeIf { _ -> Modifier.isStatic(owner.modifiers) }
-                ?.let { _ ->
-                    val companion = cache.getJmClass(param.declaringClass)?.companion ?: return@let null
-                    companion.findFunctionByMethod(owner)?.valueParameters
-                }
-        else -> null
-    }?.let { it[param.index].name }
 
     // If it is not a property on Kotlin, it is not used to ser/deserialization
     override fun findPropertyAccess(ann: Annotated): JsonProperty.Access? = (ann as? AnnotatedMethod)?.let { _ ->

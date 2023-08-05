@@ -7,7 +7,7 @@ import kotlinx.metadata.KmType
 import kotlinx.metadata.KmTypeProjection
 import kotlinx.metadata.KmValueParameter
 
-internal class ValueParameter(private val param: KmValueParameter) {
+internal class ValueParameter(param: KmValueParameter) {
     internal sealed interface Argument {
         val isNullable: Boolean
         val name: String?
@@ -44,5 +44,5 @@ internal class ValueParameter(private val param: KmValueParameter) {
     }
 
     // TODO: Formatting into a form that is easy to understand as an error message with reference to KParameter
-    override fun toString() = "parameter name: ${param.name} parameter type: ${param.type.classifier}"
+    override fun toString() = "parameter name: $name parameter type: ${type.classifier}"
 }

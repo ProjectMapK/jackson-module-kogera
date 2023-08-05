@@ -2,17 +2,25 @@ package io.github.projectmapk.jackson.module.kogera
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import kotlinx.metadata.Flag
+import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmType
 import kotlinx.metadata.KmValueParameter
 import kotlinx.metadata.jvm.JvmFieldSignature
 import kotlinx.metadata.jvm.JvmMethodSignature
+import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
 internal fun Class<*>.isUnboxableValueClass() = annotations.any { it is JvmInline }
+
+internal fun Class<*>.toKmClass(): KmClass? = annotations
+    .filterIsInstance<Metadata>()
+    .firstOrNull()
+    ?.let { KotlinClassMetadata.read(it) as KotlinClassMetadata.Class }
+    ?.toKmClass()
 
 private val primitiveClassToDesc by lazy {
     mapOf(

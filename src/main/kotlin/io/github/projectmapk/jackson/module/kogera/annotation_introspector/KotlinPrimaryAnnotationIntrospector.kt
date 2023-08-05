@@ -22,7 +22,6 @@ import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmProperty
 import kotlinx.metadata.KmValueParameter
-import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.setterSignature
 import kotlinx.metadata.jvm.signature
@@ -64,12 +63,10 @@ internal class KotlinPrimaryAnnotationIntrospector(
     // but deserialization is preferred because there is currently no way to distinguish between contexts.
     private fun AnnotatedField.hasRequiredMarker(jmClass: JmClass): Boolean? {
         val member = annotated
-        val fieldSignature = member.toSignature()
 
         // Direct access to `AnnotatedField` is only performed if there is no accessor (defined as JvmField),
         // so if an accessor is defined, it is ignored.
-        return jmClass.properties
-            .find { it.fieldSignature == fieldSignature }
+        return jmClass.findPropertyByField(member)
             // Since a property that does not currently have a getter cannot be defined,
             // only a check for the existence of a getter is performed.
             // https://youtrack.jetbrains.com/issue/KT-6519
@@ -92,8 +89,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
     private fun AnnotatedParameter.hasRequiredMarker(jmClass: JmClass): Boolean? {
         val paramDef = when (val member = member) {
             is Constructor<*> -> jmClass.findKmConstructor(member)?.valueParameters
-
-            is Method -> jmClass.findFunctionByMethod(member)?.valueParameters
+            is Method -> jmClass.companion?.findFunctionByMethod(member)?.valueParameters
             else -> null
         }?.let { it[index] } ?: return null // Return null if function on Kotlin cannot be determined
 

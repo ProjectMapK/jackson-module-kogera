@@ -9,6 +9,9 @@ This project has the following features compared to `jackson-module-kotlin`.
   - Smaller memory consumption
 - More `Kotlin` friendly behavior
 
+Especially when it comes to deserialization throughput, it is several times higher than `jackson-module-kotlin`.
+![](https://docs.google.com/spreadsheets/d/e/2PACX-1vTZB9ByuRV9XS_eug0vM_IEx_Em_ObiuZMoClXAt7zVZQZ9EnhKCXmbTsRQpoLiBbje6H_R9Hf7v0RI/pubchart?oid=754117157&format=image)
+
 This project is experimental, but passes all the tests implemented in `jackson-module-kotlin` except for the intentional incompatibility.
 
 # Features of `jackson-module-kogera`

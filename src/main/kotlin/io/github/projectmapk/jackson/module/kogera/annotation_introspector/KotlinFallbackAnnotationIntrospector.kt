@@ -16,16 +16,16 @@ import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.deser.CollectionValueStrictNullChecksConverter
 import io.github.projectmapk.jackson.module.kogera.deser.MapValueStrictNullChecksConverter
 import io.github.projectmapk.jackson.module.kogera.deser.ValueClassUnboxConverter
-import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.creator.ValueParameter
 import io.github.projectmapk.jackson.module.kogera.isNullable
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
 import io.github.projectmapk.jackson.module.kogera.ser.SequenceToIteratorConverter
 import io.github.projectmapk.jackson.module.kogera.toSignature
+import kotlinx.metadata.KmTypeProjection
+import kotlinx.metadata.KmValueParameter
 import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.setterSignature
 import java.lang.reflect.Constructor
-import java.lang.reflect.Executable
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
@@ -36,6 +36,18 @@ internal class KotlinFallbackAnnotationIntrospector(
     private val strictNullChecks: Boolean,
     private val cache: ReflectionCache
 ) : NopAnnotationIntrospector() {
+    private fun findKotlinParameter(param: AnnotatedParameter): KmValueParameter? =
+        when (val owner = param.owner.member) {
+            is Constructor<*> -> cache.getJmClass(param.declaringClass)?.findKmConstructor(owner)?.valueParameters
+            is Method ->
+                owner.takeIf { _ -> Modifier.isStatic(owner.modifiers) }
+                    ?.let { _ ->
+                        val companion = cache.getJmClass(param.declaringClass)?.companion ?: return@let null
+                        companion.findFunctionByMethod(owner)?.valueParameters
+                    }
+            else -> null
+        }?.let { it[param.index] }
+
     // since 2.4
     override fun findImplicitPropertyName(member: AnnotatedMember): String? = when (member) {
         is AnnotatedMethod -> if (member.parameterCount == 0) {
@@ -43,20 +55,9 @@ internal class KotlinFallbackAnnotationIntrospector(
         } else {
             null
         }
-        is AnnotatedParameter -> findKotlinParameterName(member)
+        is AnnotatedParameter -> findKotlinParameter(member)?.name
         else -> null
     }
-
-    private fun findKotlinParameterName(param: AnnotatedParameter): String? = when (val owner = param.owner.member) {
-        is Constructor<*> -> cache.getJmClass(param.declaringClass)?.findKmConstructor(owner)?.valueParameters
-        is Method ->
-            owner.takeIf { _ -> Modifier.isStatic(owner.modifiers) }
-                ?.let { _ ->
-                    val companion = cache.getJmClass(param.declaringClass)?.companion ?: return@let null
-                    companion.findFunctionByMethod(owner)?.valueParameters
-                }
-        else -> null
-    }?.let { it[param.index].name }
 
     // If it is not a property on Kotlin, it is not used to ser/deserialization
     override fun findPropertyAccess(ann: Annotated): JsonProperty.Access? = (ann as? AnnotatedMethod)?.let { _ ->
@@ -75,12 +76,9 @@ internal class KotlinFallbackAnnotationIntrospector(
         }
     }
 
-    private fun getValueParameter(a: AnnotatedParameter): ValueParameter? =
-        cache.valueCreatorFromJava(a.owner.annotated as Executable)?.let { it.valueParameters[a.index] }
-
     // returns Converter when the argument on Java is an unboxed value class
     override fun findDeserializationConverter(a: Annotated): Any? = (a as? AnnotatedParameter)?.let { param ->
-        getValueParameter(param)?.let { valueParameter ->
+        findKotlinParameter(param)?.let { valueParameter ->
             val rawType = a.rawType
 
             valueParameter.createValueClassUnboxConverterOrNull(rawType) ?: run {
@@ -166,17 +164,18 @@ internal object ClosedRangeHelpers {
     }
 }
 
-private fun ValueParameter.createValueClassUnboxConverterOrNull(rawType: Class<*>): ValueClassUnboxConverter<*>? {
+private fun KmValueParameter.createValueClassUnboxConverterOrNull(rawType: Class<*>): ValueClassUnboxConverter<*>? {
     return type.reconstructClassOrNull()
         ?.takeIf { it.isUnboxableValueClass() && it != rawType }
         ?.let { ValueClassUnboxConverter(it) }
 }
 
-// If the collection type argument cannot be obtained, treat it as nullable
-// @see io.github.projectmapk.jackson.module.kogera._ported.test.StrictNullChecksTest#testListOfGenericWithNullValue
-private fun ValueParameter.isNullishTypeAt(index: Int) = arguments.getOrNull(index)?.isNullable ?: true
+private fun KmValueParameter.isNullishTypeAt(index: Int): Boolean = type.arguments.getOrNull(index)?.let {
+    // If it is not a StarProjection, type is not null
+    it === KmTypeProjection.STAR || it.type!!.isNullable()
+} ?: true // If a type argument cannot be taken, treat it as nullable to avoid unexpected failure.
 
-private fun ValueParameter.createStrictNullChecksConverterOrNull(type: JavaType): Converter<*, *>? {
+private fun KmValueParameter.createStrictNullChecksConverterOrNull(type: JavaType): Converter<*, *>? {
     return when {
         type.isArrayType && !this.isNullishTypeAt(0) ->
             CollectionValueStrictNullChecksConverter.ForArray(type, this.name)

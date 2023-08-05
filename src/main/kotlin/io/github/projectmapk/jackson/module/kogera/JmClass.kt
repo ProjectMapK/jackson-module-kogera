@@ -6,28 +6,41 @@ import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmConstructor
 import kotlinx.metadata.KmFunction
 import kotlinx.metadata.KmProperty
-import kotlinx.metadata.jvm.KotlinClassMetadata
+import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
-private fun Class<*>.toKmClass(): KmClass? = annotations
-    .filterIsInstance<Metadata>()
-    .firstOrNull()
-    ?.let { KotlinClassMetadata.read(it) as KotlinClassMetadata.Class }
-    ?.toKmClass()
-
 // Jackson Metadata Class
 internal class JmClass(
     private val clazz: Class<*>,
-    kmClass: KmClass
+    kmClass: KmClass,
+    superJmClass: JmClass?,
+    interfaceJmClasses: List<JmClass>
 ) {
+    private val allPropsMap: Map<String, KmProperty> = mutableMapOf<String, KmProperty>().apply {
+        kmClass.properties.forEach {
+            this[it.name] = it
+        }
+
+        // Add properties of inherited classes and interfaces
+        // If an `interface` is implicitly implemented by an abstract class,
+        // it is necessary to obtain a more specific type, so always add it from the abstract class first.
+        superJmClass?.allPropsMap?.forEach {
+            this.putIfAbsent(it.key, it.value)
+        }
+        interfaceJmClasses.forEach { i ->
+            i.allPropsMap.forEach {
+                this.putIfAbsent(it.key, it.value)
+            }
+        }
+    }
+
     val flags: Flags = kmClass.flags
     val constructors: List<KmConstructor> = kmClass.constructors
-    val properties: List<KmProperty> = kmClass.properties
-    private val functions: List<KmFunction> = kmClass.functions
+    val properties: List<KmProperty> = allPropsMap.values.toList()
     val sealedSubclasses: List<ClassName> = kmClass.sealedSubclasses
     private val companionPropName: String? = kmClass.companionObject
     val companion: CompanionObject? by lazy { companionPropName?.let { CompanionObject(clazz, it) } }
@@ -52,14 +65,13 @@ internal class JmClass(
         }
     }
 
+    // Field name always matches property name
+    fun findPropertyByField(field: Field): KmProperty? = allPropsMap[field.name]
+        ?.takeIf { it.fieldSignature == field.toSignature() }
+
     fun findPropertyByGetter(getter: Method): KmProperty? {
         val signature = getter.toSignature()
         return properties.find { it.getterSignature == signature }
-    }
-
-    fun findFunctionByMethod(method: Method): KmFunction? {
-        val signature = method.toSignature()
-        return functions.find { it.signature == signature }
     }
 
     internal class CompanionObject(
@@ -80,9 +92,5 @@ internal class JmClass(
             val signature = method.toSignature()
             return kmClass.functions.find { it.signature == signature }
         }
-    }
-
-    companion object {
-        fun createOrNull(clazz: Class<*>): JmClass? = clazz.toKmClass()?.let { JmClass(clazz, it) }
     }
 }

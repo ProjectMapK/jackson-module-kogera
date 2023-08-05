@@ -1,5 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera._integration.deser
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -26,7 +27,7 @@ class HasRequiredMarkerTest {
             .build()
     )
 
-    data class ParamTarget(
+    data class ConstructorParamTarget(
         val nullable: String?,
         val hasDefault: String = "default",
         val collection: Collection<*>,
@@ -35,10 +36,10 @@ class HasRequiredMarkerTest {
     )
 
     @Nested
-    inner class ParamTest {
+    inner class ConstructorParamTest {
         @Test
         fun defaultParam() {
-            val desc = defaultMapper.introspectDeser<ParamTarget>()
+            val desc = defaultMapper.introspectDeser<ConstructorParamTarget>()
 
             assertFalse(desc.isRequired("nullable"))
             assertFalse(desc.isRequired("hasDefault"))
@@ -49,7 +50,7 @@ class HasRequiredMarkerTest {
 
         @Test
         fun nullToDefaultParam() {
-            val desc = nullToDefaultMapper.introspectDeser<ParamTarget>()
+            val desc = nullToDefaultMapper.introspectDeser<ConstructorParamTarget>()
 
             assertFalse(desc.isRequired("nullable"))
             assertFalse(desc.isRequired("hasDefault"))
@@ -159,5 +160,82 @@ class HasRequiredMarkerTest {
         assertTrue(desc.isRequired("collectionField"))
         assertTrue(desc.isRequired("mapProp"))
         assertTrue(desc.isRequired("mapField"))
+    }
+
+    data class FactoryParamTarget(
+        val nullable: String?,
+        val hasDefault: String,
+        val collection: Collection<*>,
+        val map: Map<*, *>,
+        val nonNull: Any
+    ) {
+        companion object {
+            @JvmStatic
+            @JsonCreator
+            fun creator(
+                nullable: String?,
+                hasDefault: String = "default",
+                collection: Collection<*>,
+                map: Map<*, *>,
+                nonNull: Any
+            ) = FactoryParamTarget(nullable, hasDefault, collection, map, nonNull)
+        }
+    }
+
+    @Nested
+    inner class ParamTest {
+        @Test
+        fun defaultParam() {
+            val desc = defaultMapper.introspectDeser<FactoryParamTarget>()
+
+            assertFalse(desc.isRequired("nullable"))
+            assertFalse(desc.isRequired("hasDefault"))
+            assertTrue(desc.isRequired("collection"))
+            assertTrue(desc.isRequired("map"))
+            assertTrue(desc.isRequired("nonNull"))
+        }
+
+        @Test
+        fun nullToDefaultParam() {
+            val desc = nullToDefaultMapper.introspectDeser<FactoryParamTarget>()
+
+            assertFalse(desc.isRequired("nullable"))
+            assertFalse(desc.isRequired("hasDefault"))
+            assertFalse(desc.isRequired("collection"))
+            assertFalse(desc.isRequired("map"))
+            assertTrue(desc.isRequired("nonNull"))
+        }
+    }
+
+    data class FactoryAnnotationTarget(
+        val nullableParam: String?,
+        val hasDefaultParam: String = "default",
+        val collectionParam: Collection<*>,
+        val mapParam: Map<*, *>
+    ) {
+        companion object {
+            @JvmStatic
+            @JsonCreator
+            fun creator(
+                @JsonProperty(required = true)
+                nullableParam: String?,
+                @JsonProperty(required = true)
+                hasDefaultParam: String = "default",
+                @JsonProperty(required = true)
+                collectionParam: Collection<*>,
+                @JsonProperty(required = true)
+                mapParam: Map<*, *>
+            ) = FactoryAnnotationTarget(nullableParam, hasDefaultParam, collectionParam, mapParam)
+        }
+    }
+
+    @Test
+    fun overrideFactoryAnnotationTest() {
+        val desc = nullToDefaultMapper.introspectDeser<FactoryAnnotationTarget>()
+
+        assertTrue(desc.isRequired("nullableParam"))
+        assertTrue(desc.isRequired("hasDefaultParam"))
+        assertTrue(desc.isRequired("collectionParam"))
+        assertTrue(desc.isRequired("mapParam"))
     }
 }

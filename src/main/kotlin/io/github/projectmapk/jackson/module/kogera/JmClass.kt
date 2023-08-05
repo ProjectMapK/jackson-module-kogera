@@ -41,7 +41,6 @@ internal class JmClass(
     val flags: Flags = kmClass.flags
     val constructors: List<KmConstructor> = kmClass.constructors
     val properties: List<KmProperty> = allPropsMap.values.toList()
-    private val functions: List<KmFunction> = kmClass.functions
     val sealedSubclasses: List<ClassName> = kmClass.sealedSubclasses
     private val companionPropName: String? = kmClass.companionObject
     val companion: CompanionObject? by lazy { companionPropName?.let { CompanionObject(clazz, it) } }
@@ -73,11 +72,6 @@ internal class JmClass(
     fun findPropertyByGetter(getter: Method): KmProperty? {
         val signature = getter.toSignature()
         return properties.find { it.getterSignature == signature }
-    }
-
-    fun findFunctionByMethod(method: Method): KmFunction? {
-        val signature = method.toSignature()
-        return functions.find { it.signature == signature }
     }
 
     internal class CompanionObject(

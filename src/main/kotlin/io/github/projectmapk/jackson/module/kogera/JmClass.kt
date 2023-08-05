@@ -74,8 +74,4 @@ internal class JmClass(
             return kmClass.functions.find { it.signature == signature }
         }
     }
-
-    companion object {
-        fun createOrNull(clazz: Class<*>): JmClass? = clazz.toKmClass()?.let { JmClass(clazz, it) }
-    }
 }

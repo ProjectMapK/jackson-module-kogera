@@ -15,11 +15,31 @@ import java.lang.reflect.Method
 // Jackson Metadata Class
 internal class JmClass(
     private val clazz: Class<*>,
-    kmClass: KmClass
+    kmClass: KmClass,
+    superJmClass: JmClass?,
+    interfaceJmClasses: List<JmClass>
 ) {
+    private val allPropsMap: Map<String, KmProperty> = mutableMapOf<String, KmProperty>().apply {
+        kmClass.properties.forEach {
+            this[it.name] = it
+        }
+
+        // Add properties of inherited classes and interfaces
+        // TODO: Ideally, more specific types should be preferred for each property,
+        //       but as a provisional implementation, the first one in is used.
+        superJmClass?.allPropsMap?.forEach {
+            this.putIfAbsent(it.key, it.value)
+        }
+        interfaceJmClasses.forEach { i ->
+            i.allPropsMap.forEach {
+                this.putIfAbsent(it.key, it.value)
+            }
+        }
+    }
+
     val flags: Flags = kmClass.flags
     val constructors: List<KmConstructor> = kmClass.constructors
-    val properties: List<KmProperty> = kmClass.properties
+    val properties: List<KmProperty> = allPropsMap.values.toList()
     private val functions: List<KmFunction> = kmClass.functions
     val sealedSubclasses: List<ClassName> = kmClass.sealedSubclasses
     private val companionPropName: String? = kmClass.companionObject

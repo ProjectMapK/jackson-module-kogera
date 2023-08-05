@@ -6,6 +6,7 @@ import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmConstructor
 import kotlinx.metadata.KmFunction
 import kotlinx.metadata.KmProperty
+import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
@@ -15,11 +16,31 @@ import java.lang.reflect.Method
 // Jackson Metadata Class
 internal class JmClass(
     private val clazz: Class<*>,
-    kmClass: KmClass
+    kmClass: KmClass,
+    superJmClass: JmClass?,
+    interfaceJmClasses: List<JmClass>
 ) {
+    private val allPropsMap: Map<String, KmProperty> = mutableMapOf<String, KmProperty>().apply {
+        kmClass.properties.forEach {
+            this[it.name] = it
+        }
+
+        // Add properties of inherited classes and interfaces
+        // If an `interface` is implicitly implemented by an abstract class,
+        // it is necessary to obtain a more specific type, so always add it from the abstract class first.
+        superJmClass?.allPropsMap?.forEach {
+            this.putIfAbsent(it.key, it.value)
+        }
+        interfaceJmClasses.forEach { i ->
+            i.allPropsMap.forEach {
+                this.putIfAbsent(it.key, it.value)
+            }
+        }
+    }
+
     val flags: Flags = kmClass.flags
     val constructors: List<KmConstructor> = kmClass.constructors
-    val properties: List<KmProperty> = kmClass.properties
+    val properties: List<KmProperty> = allPropsMap.values.toList()
     private val functions: List<KmFunction> = kmClass.functions
     val sealedSubclasses: List<ClassName> = kmClass.sealedSubclasses
     private val companionPropName: String? = kmClass.companionObject
@@ -44,6 +65,10 @@ internal class JmClass(
             targetDesc == desc || targetDesc == valueDesc
         }
     }
+
+    // Field name always matches property name
+    fun findPropertyByField(field: Field): KmProperty? = allPropsMap[field.name]
+        ?.takeIf { it.fieldSignature == field.toSignature() }
 
     fun findPropertyByGetter(getter: Method): KmProperty? {
         val signature = getter.toSignature()

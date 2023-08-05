@@ -6,18 +6,11 @@ import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmConstructor
 import kotlinx.metadata.KmFunction
 import kotlinx.metadata.KmProperty
-import kotlinx.metadata.jvm.KotlinClassMetadata
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
-
-private fun Class<*>.toKmClass(): KmClass? = annotations
-    .filterIsInstance<Metadata>()
-    .firstOrNull()
-    ?.let { KotlinClassMetadata.read(it) as KotlinClassMetadata.Class }
-    ?.toKmClass()
 
 // Jackson Metadata Class
 internal class JmClass(
@@ -80,9 +73,5 @@ internal class JmClass(
             val signature = method.toSignature()
             return kmClass.functions.find { it.signature == signature }
         }
-    }
-
-    companion object {
-        fun createOrNull(clazz: Class<*>): JmClass? = clazz.toKmClass()?.let { JmClass(clazz, it) }
     }
 }

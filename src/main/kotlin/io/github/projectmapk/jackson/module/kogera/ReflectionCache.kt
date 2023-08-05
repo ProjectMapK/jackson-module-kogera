@@ -20,7 +20,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
     }
 
     // This cache is used for both serialization and deserialization, so reserve a larger size from the start.
-    private val classCache = LRUMap<Class<*>, Optional<JmClass>>(reflectionCacheSize, reflectionCacheSize)
+    private val classCache = LRUMap<Class<*>, JmClass>(reflectionCacheSize, reflectionCacheSize)
     private val creatorCache: LRUMap<Executable, ValueCreator<*>>
 
     // Initial size is 0 because the value class is not always used
@@ -48,14 +48,11 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
     }
 
     fun getJmClass(clazz: Class<*>): JmClass? {
-        val optional = classCache.get(clazz)
-
-        return if (optional != null) {
-            optional
-        } else {
-            val value = Optional.ofNullable(JmClass.createOrNull(clazz))
+        return classCache[clazz] ?: run {
+            val kmClass = clazz.toKmClass() ?: return null
+            val value = JmClass(clazz, kmClass)
             (classCache.putIfAbsent(clazz, value) ?: value)
-        }.orElse(null)
+        }
     }
 
     /**

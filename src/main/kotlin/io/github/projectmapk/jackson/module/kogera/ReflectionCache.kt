@@ -16,7 +16,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
     companion object {
         // Increment is required when properties that use LRUMap are changed.
         @Suppress("ConstPropertyName")
-        private const val serialVersionUID = 1L
+        private const val serialVersionUID = 2L
     }
 
     // This cache is used for both serialization and deserialization, so reserve a larger size from the start.

@@ -14,13 +14,10 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
-internal fun Class<*>.isUnboxableValueClass() = annotations.any { it is JvmInline }
+internal fun Class<*>.isUnboxableValueClass() = this.getAnnotation(JvmInline::class.java) != null
 
-internal fun Class<*>.toKmClass(): KmClass? = annotations
-    .filterIsInstance<Metadata>()
-    .firstOrNull()
-    ?.let { KotlinClassMetadata.read(it) as KotlinClassMetadata.Class }
-    ?.toKmClass()
+internal fun Class<*>.toKmClass(): KmClass? = this.getAnnotation(Metadata::class.java)
+    ?.let { (KotlinClassMetadata.read(it) as KotlinClassMetadata.Class).toKmClass() }
 
 private val primitiveClassToDesc by lazy {
     mapOf(
@@ -104,5 +101,6 @@ internal fun KmType.reconstructClassOrNull(): Class<*>? = (classifier as? KmClas
 
 internal fun KmType.isNullable(): Boolean = Flag.Type.IS_NULLABLE(this.flags)
 
-internal fun AnnotatedElement.hasCreatorAnnotation(): Boolean =
-    annotations.any { it is JsonCreator && it.mode != JsonCreator.Mode.DISABLED }
+internal fun AnnotatedElement.hasCreatorAnnotation(): Boolean = getAnnotation(JsonCreator::class.java)
+    ?.let { it.mode != JsonCreator.Mode.DISABLED }
+    ?: false

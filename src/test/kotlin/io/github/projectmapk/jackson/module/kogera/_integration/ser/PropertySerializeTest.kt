@@ -15,10 +15,7 @@ class PropertySerializeTest {
         @Suppress("PropertyName") val `baz-baz`: String,
         // https://github.com/FasterXML/jackson-module-kotlin/issues/503
         val nQux: Int
-    ) {
-        // Ignored because it is not a Kotlin property
-        fun getZzz(): Int = -1
-    }
+    )
 
     @Test
     fun test() {

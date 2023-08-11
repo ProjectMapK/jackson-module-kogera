@@ -38,7 +38,8 @@ class Github464 {
     interface IGetter<T> {
         val quux: T
 
-        val xyzzy: T get() = quux
+        // see #129
+        // val xyzzy: T get() = quux
     }
 
     class Poko(
@@ -106,7 +107,6 @@ class Github464 {
                         "1" : null,
                         "null-key" : null
                       },
-                      "xyzzy" : 0,
                       "plugh" : 0
                     }
                 """.trimIndent(),
@@ -142,7 +142,6 @@ class Github464 {
                         "1" : "null-value",
                         "null-key" : "null-value"
                       },
-                      "xyzzy" : 0,
                       "plugh" : 0
                     }
                 """.trimIndent(),

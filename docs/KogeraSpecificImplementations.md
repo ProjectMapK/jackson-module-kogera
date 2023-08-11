@@ -2,15 +2,6 @@ In `jackson-module-kogera`, there are several intentional design changes that ar
 This page summarizes them.
 
 # Common
-## Set `Kotlin Property` as positive and ignore functions.
-In `jackson-module-kotlin`, functions with getterLike or setterLike names are handled in the same way as `Kotlin Property`.  
-On the other hand, this implementation causes discrepancies between the `Kotlin` description and the processing results by `Jackson`.
-
-Therefore, `kogera` processes only `Kotlin Property` and excludes other functions from processing.  
-In addition, `kogera` uses the content defined in `Kotlin` as its name.
-
-These changes make it impossible to manipulate the results using `JvmName`.
-
 ## Change of `hasRequiredMarker` specification
 The `KotlinAnnotationIntrospector::hasRequiredMarker` function in `jackson-module-kotlin` has several problems.
 In `kogera`, the specification has been revised as follows.

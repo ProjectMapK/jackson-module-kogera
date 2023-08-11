@@ -1,6 +1,5 @@
 package io.github.projectmapk.jackson.module.kogera.annotation_introspector
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.cfg.MapperConfig
@@ -20,11 +19,9 @@ import io.github.projectmapk.jackson.module.kogera.isNullable
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
 import io.github.projectmapk.jackson.module.kogera.ser.SequenceToIteratorConverter
-import io.github.projectmapk.jackson.module.kogera.toSignature
 import kotlinx.metadata.KmTypeProjection
 import kotlinx.metadata.KmValueParameter
 import kotlinx.metadata.jvm.fieldSignature
-import kotlinx.metadata.jvm.setterSignature
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -57,23 +54,6 @@ internal class KotlinFallbackAnnotationIntrospector(
         }
         is AnnotatedParameter -> findKotlinParameter(member)?.name
         else -> null
-    }
-
-    // If it is not a property on Kotlin, it is not used to ser/deserialization
-    override fun findPropertyAccess(ann: Annotated): JsonProperty.Access? = (ann as? AnnotatedMethod)?.let { _ ->
-        cache.getJmClass(ann.declaringClass)?.let { jmClass ->
-            val method = ann.annotated
-
-            // By returning an illegal JsonProperty.Access, it is effectively ignore.
-            when (method.parameters.size) {
-                0 -> JsonProperty.Access.WRITE_ONLY.takeIf { jmClass.findPropertyByGetter(method) == null }
-                1 -> {
-                    val signature = method.toSignature()
-                    JsonProperty.Access.READ_ONLY.takeIf { jmClass.properties.none { it.setterSignature == signature } }
-                }
-                else -> null
-            }
-        }
     }
 
     // returns Converter when the argument on Java is an unboxed value class

@@ -67,7 +67,7 @@ internal class JmClass(
 
     // Field name always matches property name
     fun findPropertyByField(field: Field): KmProperty? = allPropsMap[field.name]
-        ?.takeIf { it.fieldSignature == field.toSignature() }
+        ?.takeIf { it.fieldSignature?.desc == field.desc() }
 
     fun findPropertyByGetter(getter: Method): KmProperty? {
         val signature = getter.toSignature()

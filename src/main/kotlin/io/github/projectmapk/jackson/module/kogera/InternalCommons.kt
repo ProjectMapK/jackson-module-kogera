@@ -70,8 +70,7 @@ private val Class<*>.descriptor: String
         else -> "L${this.descName()};"
     }
 
-internal fun Field.toSignature(): JvmFieldSignature =
-    JvmFieldSignature(this.name, this.type.descriptor)
+internal fun Field.desc(): String = this.type.descriptor
 
 internal fun List<KmValueParameter>.hasVarargParam(): Boolean =
     lastOrNull()?.let { it.varargElementType != null } ?: false

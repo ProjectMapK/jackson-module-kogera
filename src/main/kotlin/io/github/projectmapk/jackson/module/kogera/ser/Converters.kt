@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer
 import com.fasterxml.jackson.databind.type.TypeFactory
 import com.fasterxml.jackson.databind.util.StdConverter
+import io.github.projectmapk.jackson.module.kogera.JavaDuration
+import io.github.projectmapk.jackson.module.kogera.KotlinDuration
+import kotlin.time.toJavaDuration
 
 internal class SequenceToIteratorConverter(private val input: JavaType) : StdConverter<Sequence<*>, Iterator<*>>() {
     override fun convert(value: Sequence<*>): Iterator<*> = value.iterator()
@@ -30,4 +33,14 @@ internal class ValueClassBoxConverter<S : Any?, D : Any>(
     override fun convert(value: S): D = boxMethod.invoke(null, value) as D
 
     val delegatingSerializer: StdDelegatingSerializer by lazy { StdDelegatingSerializer(this) }
+}
+
+internal object KotlinDurationValueToJavaDurationConverter : StdConverter<Long, JavaDuration>() {
+    private val boxConverter by lazy { ValueClassBoxConverter(Long::class.java, KotlinDuration::class.java) }
+
+    override fun convert(value: Long): JavaDuration = KotlinToJavaDurationConverter.convert(boxConverter.convert(value))
+}
+
+internal object KotlinToJavaDurationConverter : StdConverter<KotlinDuration, JavaDuration>() {
+    override fun convert(value: KotlinDuration) = value.toJavaDuration()
 }

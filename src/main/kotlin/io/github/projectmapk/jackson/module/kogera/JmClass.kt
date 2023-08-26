@@ -15,7 +15,7 @@ import java.lang.reflect.Method
 
 // Jackson Metadata Class
 internal class JmClass(
-    private val clazz: Class<*>,
+    clazz: Class<*>,
     kmClass: KmClass,
     superJmClass: JmClass?,
     interfaceJmClasses: List<JmClass>

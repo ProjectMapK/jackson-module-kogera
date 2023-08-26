@@ -73,7 +73,16 @@ public enum class KotlinFeature(internal val enabledByDefault: Boolean) {
      *
      * @see KotlinClassIntrospector
      */
-    CopySyntheticConstructorParameterAnnotations(enabledByDefault = false);
+    CopySyntheticConstructorParameterAnnotations(enabledByDefault = false),
+
+    /**
+     * This feature represents whether to handle [kotlin.time.Duration] using [java.time.Duration] as conversion bridge.
+     *
+     * This allows use Kotlin Duration type with [com.fasterxml.jackson.datatype.jsr310.JavaTimeModule].
+     * `@JsonFormat` annotations need to be declared either on getter using `@get:JsonFormat` or field using `@field:JsonFormat`.
+     * See [jackson-module-kotlin#651] for details.
+     */
+    UseJavaDurationConversion(enabledByDefault = false);
 
     internal val bitSet: BitSet = (1 shl ordinal).toBitSet()
 

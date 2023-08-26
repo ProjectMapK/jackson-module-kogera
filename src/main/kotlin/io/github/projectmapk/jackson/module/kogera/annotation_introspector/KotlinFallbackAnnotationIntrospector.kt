@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import com.fasterxml.jackson.databind.type.TypeFactory
 import com.fasterxml.jackson.databind.util.Converter
+import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.deser.CollectionValueStrictNullChecksConverter
 import io.github.projectmapk.jackson.module.kogera.deser.MapValueStrictNullChecksConverter
@@ -18,6 +19,8 @@ import io.github.projectmapk.jackson.module.kogera.deser.ValueClassUnboxConverte
 import io.github.projectmapk.jackson.module.kogera.isNullable
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
+import io.github.projectmapk.jackson.module.kogera.ser.KotlinDurationValueToJavaDurationConverter
+import io.github.projectmapk.jackson.module.kogera.ser.KotlinToJavaDurationConverter
 import io.github.projectmapk.jackson.module.kogera.ser.SequenceToIteratorConverter
 import kotlinx.metadata.KmTypeProjection
 import kotlinx.metadata.KmValueParameter
@@ -31,6 +34,7 @@ import java.lang.reflect.Modifier
 // Original name: KotlinNamesAnnotationIntrospector
 internal class KotlinFallbackAnnotationIntrospector(
     private val strictNullChecks: Boolean,
+    private val useJavaDurationConversion: Boolean,
     private val cache: ReflectionCache
 ) : NopAnnotationIntrospector() {
     private fun findKotlinParameter(param: AnnotatedParameter): KmValueParameter? =
@@ -73,12 +77,24 @@ internal class KotlinFallbackAnnotationIntrospector(
 
     override fun findSerializationConverter(a: Annotated): Converter<*, *>? = when (a) {
         // Find a converter to handle the case where the getter returns an unboxed value from the value class.
-        is AnnotatedMethod -> cache.findValueClassReturnType(a)
-            ?.let { cache.getValueClassBoxConverter(a.rawReturnType, it) }
-        is AnnotatedClass ->
-            a
-                .takeIf { Sequence::class.java.isAssignableFrom(it.rawType) }
-                ?.let { SequenceToIteratorConverter(it.type) }
+        is AnnotatedMethod -> cache.findValueClassReturnType(a)?.let {
+            if (useJavaDurationConversion && it == KotlinDuration::class.java) {
+                if (a.rawReturnType == KotlinDuration::class.java) {
+                    KotlinToJavaDurationConverter
+                } else {
+                    KotlinDurationValueToJavaDurationConverter
+                }
+            } else {
+                cache.getValueClassBoxConverter(a.rawReturnType, it)
+            }
+        }
+        is AnnotatedClass -> lookupKotlinTypeConverter(a)
+        else -> null
+    }
+
+    private fun lookupKotlinTypeConverter(a: AnnotatedClass) = when {
+        Sequence::class.java.isAssignableFrom(a.rawType) -> SequenceToIteratorConverter(a.type)
+        KotlinDuration::class.java == a.rawType -> KotlinToJavaDurationConverter.takeIf { useJavaDurationConversion }
         else -> null
     }
 

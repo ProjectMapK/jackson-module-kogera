@@ -33,6 +33,7 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.3")
 
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
+    testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 }
 
 kotlin {

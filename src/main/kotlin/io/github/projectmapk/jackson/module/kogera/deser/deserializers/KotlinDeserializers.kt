@@ -10,7 +10,9 @@ import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
 import io.github.projectmapk.jackson.module.kogera.JmClass
+import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
+import io.github.projectmapk.jackson.module.kogera.deser.JavaToKotlinDurationConverter
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
@@ -127,7 +129,10 @@ private fun findValueCreator(type: JavaType, clazz: Class<*>, jmClass: JmClass):
     return primaryConstructor
 }
 
-internal class KotlinDeserializers(private val cache: ReflectionCache) : Deserializers.Base() {
+internal class KotlinDeserializers(
+    private val cache: ReflectionCache,
+    private val useJavaDurationConversion: Boolean
+) : Deserializers.Base() {
     override fun findBeanDeserializer(
         type: JavaType,
         config: DeserializationConfig?,
@@ -142,6 +147,8 @@ internal class KotlinDeserializers(private val cache: ReflectionCache) : Deseria
             rawClass == UShort::class.java -> UShortDeserializer
             rawClass == UInt::class.java -> UIntDeserializer
             rawClass == ULong::class.java -> ULongDeserializer
+            rawClass == KotlinDuration::class.java ->
+                JavaToKotlinDurationConverter.takeIf { useJavaDurationConversion }?.delegatingDeserializer
             rawClass.isUnboxableValueClass() -> findValueCreator(type, rawClass, cache.getJmClass(rawClass)!!)
                 ?.let { ValueClassBoxDeserializer(it, rawClass) }
             else -> null

@@ -62,11 +62,9 @@ internal class KotlinPrimaryAnnotationIntrospector(
     // The nullToEmpty option also affects serialization,
     // but deserialization is preferred because there is currently no way to distinguish between contexts.
     private fun AnnotatedField.hasRequiredMarker(jmClass: JmClass): Boolean? {
-        val member = annotated
-
         // Direct access to `AnnotatedField` is only performed if there is no accessor (defined as JvmField),
         // so if an accessor is defined, it is ignored.
-        return jmClass.findPropertyByField(member)
+        return jmClass.findPropertyByField(annotated)
             // Since a property that does not currently have a getter cannot be defined,
             // only a check for the existence of a getter is performed.
             // https://youtrack.jetbrains.com/issue/KT-6519

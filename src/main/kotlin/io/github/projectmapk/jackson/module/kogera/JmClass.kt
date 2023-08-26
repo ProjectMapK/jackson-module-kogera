@@ -47,14 +47,15 @@ internal class JmClass(
 
     fun findKmConstructor(constructor: Constructor<*>): KmConstructor? {
         val descHead = constructor.parameterTypes.toDescBuilder()
-        val desc = CharArray(descHead.length + 1).apply {
-            descHead.getChars(0, descHead.length, this, 0)
-            this[this.lastIndex] = 'V'
+        val len = descHead.length
+        val desc = CharArray(len + 1).apply {
+            descHead.getChars(0, len, this, 0)
+            this[len] = 'V'
         }.let { String(it) }
 
         // Only constructors that take a value class as an argument have a DefaultConstructorMarker on the Signature.
         val valueDesc = descHead
-            .deleteCharAt(descHead.length - 1)
+            .deleteCharAt(len - 1)
             .append("Lkotlin/jvm/internal/DefaultConstructorMarker;)V")
             .toString()
 

@@ -31,9 +31,10 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
 
             // Do not parse super class for interfaces.
             val superJmClass = if (!clazz.isInterface) {
-                clazz.superclass
-                    ?.takeIf { it != Any::class.java } // Stop parsing when `Object` is reached
-                    ?.let { getJmClass(it) }
+                clazz.superclass?.let {
+                    // Stop parsing when `Object` is reached
+                    if (it != Any::class.java) getJmClass(it) else null
+                }
             } else {
                 null
             }

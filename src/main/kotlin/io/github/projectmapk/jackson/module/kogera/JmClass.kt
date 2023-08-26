@@ -15,7 +15,7 @@ import java.lang.reflect.Method
 
 // Jackson Metadata Class
 internal class JmClass(
-    private val clazz: Class<*>,
+    clazz: Class<*>,
     kmClass: KmClass,
     superJmClass: JmClass?,
     interfaceJmClasses: List<JmClass>
@@ -47,15 +47,15 @@ internal class JmClass(
 
     fun findKmConstructor(constructor: Constructor<*>): KmConstructor? {
         val descHead = constructor.parameterTypes.toDescBuilder()
-        val desc = CharArray(descHead.length + 1).apply {
-            descHead.getChars(0, descHead.length, this, 0)
-            this[this.lastIndex] = 'V'
+        val len = descHead.length
+        val desc = CharArray(len + 1).apply {
+            descHead.getChars(0, len, this, 0)
+            this[len] = 'V'
         }.let { String(it) }
 
         // Only constructors that take a value class as an argument have a DefaultConstructorMarker on the Signature.
         val valueDesc = descHead
-            .deleteCharAt(descHead.length - 1)
-            .append("Lkotlin/jvm/internal/DefaultConstructorMarker;)V")
+            .replace(len - 1, len, "Lkotlin/jvm/internal/DefaultConstructorMarker;)V")
             .toString()
 
         // Constructors always have the same name, so only desc is compared
@@ -67,7 +67,7 @@ internal class JmClass(
 
     // Field name always matches property name
     fun findPropertyByField(field: Field): KmProperty? = allPropsMap[field.name]
-        ?.takeIf { it.fieldSignature == field.toSignature() }
+        ?.takeIf { it.fieldSignature?.desc == field.desc() }
 
     fun findPropertyByGetter(getter: Method): KmProperty? {
         val signature = getter.toSignature()
@@ -81,7 +81,7 @@ internal class JmClass(
         private val companionField: Field = declaringClass.getDeclaredField(companionObject)
         val type: Class<*> = companionField.type
         val isAccessible: Boolean = companionField.isAccessible
-        private val kmClass: KmClass by lazy { type.toKmClass()!! }
+        private val functions by lazy { type.toKmClass()!!.functions }
         val instance: Any by lazy {
             // To prevent the call from failing, save the initial value and then rewrite the flag.
             if (!companionField.isAccessible) companionField.isAccessible = true
@@ -90,7 +90,7 @@ internal class JmClass(
 
         fun findFunctionByMethod(method: Method): KmFunction? {
             val signature = method.toSignature()
-            return kmClass.functions.find { it.signature == signature }
+            return functions.find { it.signature == signature }
         }
     }
 }

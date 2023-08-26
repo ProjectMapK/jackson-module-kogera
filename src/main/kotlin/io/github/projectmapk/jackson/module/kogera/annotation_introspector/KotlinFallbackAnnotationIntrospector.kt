@@ -40,12 +40,13 @@ internal class KotlinFallbackAnnotationIntrospector(
     private fun findKotlinParameter(param: AnnotatedParameter): KmValueParameter? =
         when (val owner = param.owner.member) {
             is Constructor<*> -> cache.getJmClass(param.declaringClass)?.findKmConstructor(owner)?.valueParameters
-            is Method ->
-                owner.takeIf { _ -> Modifier.isStatic(owner.modifiers) }
-                    ?.let { _ ->
-                        val companion = cache.getJmClass(param.declaringClass)?.companion ?: return@let null
-                        companion.findFunctionByMethod(owner)?.valueParameters
-                    }
+            is Method -> if (Modifier.isStatic(owner.modifiers)) {
+                cache.getJmClass(param.declaringClass)
+                    ?.companion
+                    ?.let { it.findFunctionByMethod(owner)?.valueParameters }
+            } else {
+                null
+            }
             else -> null
         }?.let { it[param.index] }
 
@@ -106,9 +107,9 @@ internal class KotlinFallbackAnnotationIntrospector(
     // Perform proper serialization even if the value wrapped by the value class is null.
     // If value is a non-null object type, it must not be reboxing.
     override fun findNullSerializer(am: Annotated): JsonSerializer<*>? = (am as? AnnotatedMethod)?.let { _ ->
-        cache.findValueClassReturnType(am)
-            ?.takeIf { it.requireRebox() }
-            ?.let { cache.getValueClassBoxConverter(am.rawReturnType, it).delegatingSerializer }
+        cache.findValueClassReturnType(am)?.let {
+            if (it.requireRebox()) cache.getValueClassBoxConverter(am.rawReturnType, it).delegatingSerializer else null
+        }
     }
 
     /*
@@ -161,9 +162,9 @@ internal object ClosedRangeHelpers {
 }
 
 private fun KmValueParameter.createValueClassUnboxConverterOrNull(rawType: Class<*>): ValueClassUnboxConverter<*>? {
-    return type.reconstructClassOrNull()
-        ?.takeIf { it.isUnboxableValueClass() && it != rawType }
-        ?.let { ValueClassUnboxConverter(it) }
+    return type.reconstructClassOrNull()?.let {
+        if (it.isUnboxableValueClass() && it != rawType) ValueClassUnboxConverter(it) else null
+    }
 }
 
 private fun KmValueParameter.isNullishTypeAt(index: Int): Boolean = type.arguments.getOrNull(index)?.let {

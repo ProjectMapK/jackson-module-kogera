@@ -55,8 +55,7 @@ internal class JmClass(
 
         // Only constructors that take a value class as an argument have a DefaultConstructorMarker on the Signature.
         val valueDesc = descHead
-            .deleteCharAt(len - 1)
-            .append("Lkotlin/jvm/internal/DefaultConstructorMarker;)V")
+            .replace(len - 1, len, "Lkotlin/jvm/internal/DefaultConstructorMarker;)V")
             .toString()
 
         // Constructors always have the same name, so only desc is compared

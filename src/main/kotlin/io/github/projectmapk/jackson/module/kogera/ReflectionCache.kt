@@ -9,7 +9,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
     companion object {
         // Increment is required when properties that use LRUMap are changed.
         @Suppress("ConstPropertyName")
-        private const val serialVersionUID = 2L
+        private const val serialVersionUID = 3L
     }
 
     // This cache is used for both serialization and deserialization, so reserve a larger size from the start.
@@ -22,6 +22,8 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
     // TODO: Consider whether the cache size should be reduced more,
     //       since the cache is used only twice locally at initialization per property.
     private val valueClassBoxConverterCache: LRUMap<Class<*>, ValueClassBoxConverter<*, *>> =
+        LRUMap(0, reflectionCacheSize)
+    private val valueClassUnboxConverterCache: LRUMap<Class<*>, ValueClassUnboxConverter<*>> =
         LRUMap(0, reflectionCacheSize)
 
     fun getJmClass(clazz: Class<*>): JmClass? {
@@ -74,5 +76,12 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
             val value = ValueClassBoxConverter(unboxedClass, valueClass)
 
             (valueClassBoxConverterCache.putIfAbsent(valueClass, value) ?: value)
+        }
+
+    fun getValueClassUnboxConverter(valueClass: Class<*>): ValueClassUnboxConverter<*> =
+        valueClassUnboxConverterCache.get(valueClass) ?: run {
+            val value = ValueClassUnboxConverter(valueClass)
+
+            (valueClassUnboxConverterCache.putIfAbsent(valueClass, value) ?: value)
         }
 }

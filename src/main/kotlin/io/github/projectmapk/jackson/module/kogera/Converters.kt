@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.util.StdConverter
  */
 internal class ValueClassBoxConverter<S : Any?, D : Any>(
     unboxedClass: Class<S>,
-    valueClass: Class<D>
+    val valueClass: Class<D>
 ) : StdConverter<S, D>() {
     private val boxMethod = valueClass.getDeclaredMethod("box-impl", unboxedClass).apply {
         if (!this.isAccessible) this.isAccessible = true

@@ -103,7 +103,7 @@ public class KotlinModule private constructor(
         context.addDeserializers(KotlinDeserializers(cache, useJavaDurationConversion))
         context.addKeyDeserializers(KotlinKeyDeserializers)
         context.addSerializers(KotlinSerializers())
-        context.addKeySerializers(KotlinKeySerializers())
+        context.addKeySerializers(KotlinKeySerializers(cache))
 
         // ranges
         context.setMixInAnnotations(ClosedRange::class.java, ClosedRangeMixin::class.java)

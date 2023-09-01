@@ -25,7 +25,7 @@ internal class ValueClassBoxConverter<S : Any?, D : Any>(
     val delegatingSerializer: StdDelegatingSerializer by lazy { StdDelegatingSerializer(this) }
 }
 
-internal class ValueClassUnboxConverter<T : Any>(private val valueClass: Class<T>) : StdConverter<T, Any?>() {
+internal class ValueClassUnboxConverter<T : Any>(val valueClass: Class<T>) : StdConverter<T, Any?>() {
     private val unboxMethod = valueClass.getDeclaredMethod("unbox-impl").apply {
         if (!this.isAccessible) this.isAccessible = true
     }
@@ -34,4 +34,6 @@ internal class ValueClassUnboxConverter<T : Any>(private val valueClass: Class<T
     override fun convert(value: T): Any? = unboxMethod.invoke(value)
 
     override fun getInputType(typeFactory: TypeFactory): JavaType = typeFactory.constructType(valueClass)
+    override fun getOutputType(typeFactory: TypeFactory): JavaType =
+        typeFactory.constructType(unboxMethod.genericReturnType)
 }

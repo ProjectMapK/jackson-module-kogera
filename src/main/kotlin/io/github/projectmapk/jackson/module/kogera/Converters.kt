@@ -3,8 +3,12 @@ package io.github.projectmapk.jackson.module.kogera
 import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer
 import com.fasterxml.jackson.databind.util.StdConverter
 
-// S is nullable because value corresponds to a nullable value class
-// @see KotlinFallbackAnnotationIntrospector.findNullSerializer
+/**
+ * A converter that only performs box processing for the value class.
+ * Note that constructor-impl is not called.
+ * @param S is nullable because value corresponds to a nullable value class.
+ *   see [io.github.projectmapk.jackson.module.kogera.annotation_introspector.KotlinFallbackAnnotationIntrospector.findNullSerializer]
+ */
 internal class ValueClassBoxConverter<S : Any?, D : Any>(
     unboxedClass: Class<S>,
     valueClass: Class<D>

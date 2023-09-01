@@ -13,9 +13,9 @@ import com.fasterxml.jackson.databind.type.TypeFactory
 import com.fasterxml.jackson.databind.util.Converter
 import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
+import io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter
 import io.github.projectmapk.jackson.module.kogera.deser.CollectionValueStrictNullChecksConverter
 import io.github.projectmapk.jackson.module.kogera.deser.MapValueStrictNullChecksConverter
-import io.github.projectmapk.jackson.module.kogera.deser.ValueClassUnboxConverter
 import io.github.projectmapk.jackson.module.kogera.isNullable
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull

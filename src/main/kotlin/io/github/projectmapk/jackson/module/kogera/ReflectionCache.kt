@@ -2,7 +2,6 @@ package io.github.projectmapk.jackson.module.kogera
 
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.util.LRUMap
-import io.github.projectmapk.jackson.module.kogera.ser.ValueClassBoxConverter
 import java.io.Serializable
 import java.util.Optional
 

@@ -2,7 +2,6 @@ package io.github.projectmapk.jackson.module.kogera
 
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.util.LRUMap
-import io.github.projectmapk.jackson.module.kogera.ser.ValueClassBoxConverter
 import java.io.Serializable
 import java.util.Optional
 
@@ -10,7 +9,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
     companion object {
         // Increment is required when properties that use LRUMap are changed.
         @Suppress("ConstPropertyName")
-        private const val serialVersionUID = 2L
+        private const val serialVersionUID = 3L
     }
 
     // This cache is used for both serialization and deserialization, so reserve a larger size from the start.
@@ -24,6 +23,8 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
     //       since the cache is used only twice locally at initialization per property.
     private val valueClassBoxConverterCache: LRUMap<Class<*>, ValueClassBoxConverter<*, *>> =
         LRUMap(0, reflectionCacheSize)
+    private val valueClassUnboxConverterCache: LRUMap<Class<*>, ValueClassUnboxConverter<*>> =
+        LRUMap(0, reflectionCacheSize)
 
     fun getJmClass(clazz: Class<*>): JmClass? {
         return classCache[clazz] ?: run {
@@ -31,9 +32,10 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
 
             // Do not parse super class for interfaces.
             val superJmClass = if (!clazz.isInterface) {
-                clazz.superclass
-                    ?.takeIf { it != Any::class.java } // Stop parsing when `Object` is reached
-                    ?.let { getJmClass(it) }
+                clazz.superclass?.let {
+                    // Stop parsing when `Object` is reached
+                    if (it != Any::class.java) getJmClass(it) else null
+                }
             } else {
                 null
             }
@@ -74,5 +76,12 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
             val value = ValueClassBoxConverter(unboxedClass, valueClass)
 
             (valueClassBoxConverterCache.putIfAbsent(valueClass, value) ?: value)
+        }
+
+    fun getValueClassUnboxConverter(valueClass: Class<*>): ValueClassUnboxConverter<*> =
+        valueClassUnboxConverterCache.get(valueClass) ?: run {
+            val value = ValueClassUnboxConverter(valueClass)
+
+            (valueClassUnboxConverterCache.putIfAbsent(valueClass, value) ?: value)
         }
 }

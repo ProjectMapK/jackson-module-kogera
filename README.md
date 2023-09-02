@@ -10,7 +10,7 @@ This project has the following features compared to `jackson-module-kotlin`.
 - More `Kotlin` friendly behavior
 
 Especially when it comes to deserialization throughput, it is several times higher than `jackson-module-kotlin`.
-![](https://docs.google.com/spreadsheets/d/e/2PACX-1vTZB9ByuRV9XS_eug0vM_IEx_Em_ObiuZMoClXAt7zVZQZ9EnhKCXmbTsRQpoLiBbje6H_R9Hf7v0RI/pubchart?oid=754117157&format=image)
+![](https://docs.google.com/spreadsheets/d/e/2PACX-1vSDpaOENd0a-qO_zK7C5_UkSxEKk7BxLjmyg8XVnPP0jj6J5rgoA8cCnm_lj7lflx6NDjvC1yMUPrce/pubchart?oid=1594997844&format=image)
 
 This project is experimental, but passes all the tests implemented in `jackson-module-kotlin` except for the intentional incompatibility.
 

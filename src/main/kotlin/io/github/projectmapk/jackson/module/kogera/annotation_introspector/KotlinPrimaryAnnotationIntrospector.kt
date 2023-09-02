@@ -41,8 +41,8 @@ internal class KotlinPrimaryAnnotationIntrospector(
     // If JsonProperty.required is true, the behavior is clearly specified and the result is paramount.
     // Otherwise, the required is determined from the configuration and the definition on Kotlin.
     override fun hasRequiredMarker(m: AnnotatedMember): Boolean? {
-        val byAnnotation = _findAnnotation(m, JsonProperty::class.java)?.required
-            ?.apply { if (this) return true }
+        val byAnnotation = _findAnnotation(m, JsonProperty::class.java)
+            ?.let { it.required.apply { if (this) return true } }
 
         return cache.getJmClass(m.member.declaringClass)?.let {
             when (m) {
@@ -62,16 +62,15 @@ internal class KotlinPrimaryAnnotationIntrospector(
     // The nullToEmpty option also affects serialization,
     // but deserialization is preferred because there is currently no way to distinguish between contexts.
     private fun AnnotatedField.hasRequiredMarker(jmClass: JmClass): Boolean? {
-        val member = annotated
-
         // Direct access to `AnnotatedField` is only performed if there is no accessor (defined as JvmField),
         // so if an accessor is defined, it is ignored.
-        return jmClass.findPropertyByField(member)
+        return jmClass.findPropertyByField(annotated)
             // Since a property that does not currently have a getter cannot be defined,
             // only a check for the existence of a getter is performed.
             // https://youtrack.jetbrains.com/issue/KT-6519
-            ?.takeIf { it.getterSignature == null }
-            ?.let { !(it.returnType.isNullable() || type.hasDefaultEmptyValue()) }
+            ?.let {
+                if (it.getterSignature == null) !(it.returnType.isNullable() || type.hasDefaultEmptyValue()) else null
+            }
     }
 
     private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable()
@@ -126,8 +125,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
 
         val declaringClass = ann.declaringClass
         val jmClass = declaringClass
-            ?.takeIf { !it.isEnum }
-            ?.let { cache.getJmClass(it) }
+            ?.let { if (it.isEnum) null else cache.getJmClass(it) }
             ?: return null
 
         return JsonCreator.Mode.DEFAULT

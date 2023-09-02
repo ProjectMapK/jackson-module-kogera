@@ -14,7 +14,7 @@ val jacksonVersion = "2.15.2"
 val generatedSrcPath = "$buildDir/generated/kotlin"
 
 group = groupStr
-version = "${jacksonVersion}-beta0"
+version = "${jacksonVersion}-beta3"
 
 repositories {
     mavenCentral()
@@ -33,6 +33,7 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.3")
 
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
+    testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 }
 
 kotlin {

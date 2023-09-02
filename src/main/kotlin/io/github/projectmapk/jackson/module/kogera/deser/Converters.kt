@@ -1,20 +1,14 @@
 package io.github.projectmapk.jackson.module.kogera.deser
 
 import com.fasterxml.jackson.databind.JavaType
+import com.fasterxml.jackson.databind.deser.std.StdDelegatingDeserializer
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.databind.type.TypeFactory
 import com.fasterxml.jackson.databind.util.Converter
 import com.fasterxml.jackson.databind.util.StdConverter
-
-internal class ValueClassUnboxConverter<T : Any>(private val valueClass: Class<T>) : StdConverter<T, Any?>() {
-    private val unboxMethod = valueClass.getDeclaredMethod("unbox-impl").apply {
-        if (!this.isAccessible) this.isAccessible = true
-    }
-
-    override fun convert(value: T): Any? = unboxMethod.invoke(value)
-
-    override fun getInputType(typeFactory: TypeFactory): JavaType = typeFactory.constructType(valueClass)
-}
+import io.github.projectmapk.jackson.module.kogera.JavaDuration
+import io.github.projectmapk.jackson.module.kogera.KotlinDuration
+import kotlin.time.toKotlinDuration
 
 internal sealed class CollectionValueStrictNullChecksConverter<T : Any> : Converter<T, T> {
     protected abstract val type: JavaType
@@ -72,4 +66,17 @@ internal class MapValueStrictNullChecksConverter(
 
     override fun getInputType(typeFactory: TypeFactory): JavaType = type
     override fun getOutputType(typeFactory: TypeFactory): JavaType = type
+}
+
+/**
+ * Currently it is not possible to deduce type of [kotlin.time.Duration] fields therefore explicit annotation is needed on fields in order to properly deserialize POJO.
+ *
+ * @see [com.fasterxml.jackson.module.kotlin.test.DurationTests]
+ */
+internal object JavaToKotlinDurationConverter : StdConverter<JavaDuration, KotlinDuration>() {
+    override fun convert(value: JavaDuration) = value.toKotlinDuration()
+
+    val delegatingDeserializer: StdDelegatingDeserializer<KotlinDuration> by lazy {
+        StdDelegatingDeserializer(this)
+    }
 }

@@ -10,7 +10,10 @@ import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
 import io.github.projectmapk.jackson.module.kogera.JmClass
+import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
+import io.github.projectmapk.jackson.module.kogera.ValueClassBoxConverter
+import io.github.projectmapk.jackson.module.kogera.deser.JavaToKotlinDurationConverter
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
@@ -73,26 +76,23 @@ internal object ULongDeserializer : StdDeserializer<ULong>(ULong::class.java) {
         ULongChecker.readWithRangeCheck(p, p.bigIntegerValue)
 }
 
-internal class ValueClassBoxDeserializer<T : Any>(
+internal class ValueClassBoxDeserializer<S, D : Any>(
     private val creator: Method,
-    clazz: Class<T>
-) : StdDeserializer<T>(clazz) {
+    private val converter: ValueClassBoxConverter<S, D>
+) : StdDeserializer<D>(converter.valueClass) {
     private val inputType: Class<*> = creator.parameterTypes[0]
-    private val boxMethod: Method = clazz
-        .getDeclaredMethod("box-impl", clazz.getDeclaredMethod("unbox-impl").returnType)
-        .apply { if (!this.isAccessible) this.isAccessible = true }
 
     init {
         creator.apply { if (!this.isAccessible) this.isAccessible = true }
     }
 
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): T {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): D {
         val input = p.readValueAs(inputType)
 
         // To instantiate the value class in the same way as other classes,
         // it is necessary to call creator(e.g. constructor-impl) -> box-impl in that order.
         @Suppress("UNCHECKED_CAST")
-        return boxMethod.invoke(null, creator.invoke(null, input)) as T
+        return converter.convert(creator.invoke(null, input) as S)
     }
 }
 
@@ -127,7 +127,10 @@ private fun findValueCreator(type: JavaType, clazz: Class<*>, jmClass: JmClass):
     return primaryConstructor
 }
 
-internal class KotlinDeserializers(private val cache: ReflectionCache) : Deserializers.Base() {
+internal class KotlinDeserializers(
+    private val cache: ReflectionCache,
+    private val useJavaDurationConversion: Boolean
+) : Deserializers.Base() {
     override fun findBeanDeserializer(
         type: JavaType,
         config: DeserializationConfig?,
@@ -142,8 +145,13 @@ internal class KotlinDeserializers(private val cache: ReflectionCache) : Deseria
             rawClass == UShort::class.java -> UShortDeserializer
             rawClass == UInt::class.java -> UIntDeserializer
             rawClass == ULong::class.java -> ULongDeserializer
-            rawClass.isUnboxableValueClass() -> findValueCreator(type, rawClass, cache.getJmClass(rawClass)!!)
-                ?.let { ValueClassBoxDeserializer(it, rawClass) }
+            rawClass == KotlinDuration::class.java ->
+                JavaToKotlinDurationConverter.takeIf { useJavaDurationConversion }?.delegatingDeserializer
+            rawClass.isUnboxableValueClass() -> findValueCreator(type, rawClass, cache.getJmClass(rawClass)!!)?.let {
+                val unboxedClass = cache.getValueClassUnboxConverter(rawClass).unboxedClass
+                val converter = cache.getValueClassBoxConverter(unboxedClass, rawClass)
+                ValueClassBoxDeserializer(it, converter)
+            }
             else -> null
         }
     }

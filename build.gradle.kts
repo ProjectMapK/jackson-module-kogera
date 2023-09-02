@@ -14,7 +14,7 @@ val jacksonVersion = "2.15.2"
 val generatedSrcPath = "$buildDir/generated/kotlin"
 
 group = groupStr
-version = "${jacksonVersion}-beta3"
+version = "${jacksonVersion}-beta4"
 
 repositories {
     mavenCentral()
@@ -22,15 +22,15 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.6.2")
 
     api("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
     api("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
 
     // test libs
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    testImplementation("io.mockk:mockk:1.13.3")
+    testImplementation("io.mockk:mockk:1.13.7")
 
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
     testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")

@@ -1,5 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.deser.value_instantiator
 
+import com.fasterxml.jackson.annotation.Nulls
 import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.DeserializationContext
@@ -33,6 +34,9 @@ internal class KotlinValueInstantiator(
     private fun JavaType.requireEmptyValue() =
         (nullToEmptyCollection && this.isCollectionLikeType) || (nullToEmptyMap && this.isMapLikeType)
 
+    private fun SettableBeanProperty.skipNulls(): Boolean =
+        nullIsSameAsDefault || (metadata.valueNulls == Nulls.SKIP)
+
     private val valueCreator: ValueCreator<*>? by ReflectProperties.lazySoft {
         val creator = _withArgsCreator.annotated as Executable
         val jmClass = cache.getJmClass(creator.declaringClass) ?: return@lazySoft null
@@ -65,7 +69,7 @@ internal class KotlinValueInstantiator(
 
             var paramVal = if (!isMissing || paramDef.isPrimitive || jsonProp.hasInjectableValueId()) {
                 buffer.getParameter(jsonProp).apply {
-                    if (nullIsSameAsDefault && this == null && paramDef.isOptional) return@forEachIndexed
+                    if (this == null && jsonProp.skipNulls() && paramDef.isOptional) return@forEachIndexed
                 }
             } else {
                 if (paramDef.isNullable) {

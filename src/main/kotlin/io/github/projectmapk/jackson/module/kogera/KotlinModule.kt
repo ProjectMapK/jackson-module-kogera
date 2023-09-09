@@ -107,6 +107,7 @@ public class KotlinModule private constructor(
 
         // ranges
         context.setMixInAnnotations(ClosedRange::class.java, ClosedRangeMixin::class.java)
+        context.addAbstractTypeResolver(ClosedRangeResolver)
     }
 
     public class Builder {

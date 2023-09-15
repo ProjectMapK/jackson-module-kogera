@@ -70,8 +70,8 @@ internal class JmClass(
         ?.takeIf { it.fieldSignature?.desc == field.desc() }
 
     fun findPropertyByGetter(getter: Method): KmProperty? {
-        val signature = getter.toSignature()
-        return properties.find { it.getterSignature == signature }
+        val getterName = getter.name
+        return properties.find { it.getterSignature?.name == getterName }
     }
 
     internal class CompanionObject(

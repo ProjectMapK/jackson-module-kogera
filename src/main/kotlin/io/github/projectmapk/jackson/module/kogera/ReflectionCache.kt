@@ -28,7 +28,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
 
     fun getJmClass(clazz: Class<*>): JmClass? {
         return classCache[clazz] ?: run {
-            val kmClass = clazz.toKmClass() ?: return null
+            val kmClass = clazz.toReducedKmClass() ?: return null
 
             // Do not parse super class for interfaces.
             val superJmClass = if (!clazz.isInterface) {

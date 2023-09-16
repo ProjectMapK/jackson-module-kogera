@@ -6,6 +6,7 @@ import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmConstructor
 import kotlinx.metadata.KmFunction
 import kotlinx.metadata.KmProperty
+import kotlinx.metadata.KmType
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
@@ -39,10 +40,12 @@ internal class JmClass(
 
     val flags: Flags = kmClass.flags
     val constructors: List<KmConstructor> = kmClass.constructors
+    val propertyNameSet: Set<String> get() = allPropsMap.keys
     val properties: List<KmProperty> = allPropsMap.values.toList()
     val sealedSubclasses: List<ClassName> = kmClass.sealedSubclasses
     private val companionPropName: String? = kmClass.companionObject
     val companion: CompanionObject? by lazy { companionPropName?.let { CompanionObject(clazz, it) } }
+    val inlineClassUnderlyingType: KmType? = kmClass.inlineClassUnderlyingType
 
     fun findKmConstructor(constructor: Constructor<*>): KmConstructor? {
         val descHead = constructor.parameterTypes.toDescBuilder()

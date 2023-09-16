@@ -128,8 +128,8 @@ internal class KotlinPrimaryAnnotationIntrospector(
         (ann as? AnnotatedConstructor)?.takeIf { 0 < it.parameterCount } ?: return null
 
         val declaringClass = ann.declaringClass
-        val jmClass = declaringClass
-            ?.let { if (it.isEnum) null else cache.getJmClass(it) }
+        val jmClass = declaringClass.takeIf { !it.isEnum }
+            ?.let { cache.getJmClass(it) }
             ?: return null
 
         return JsonCreator.Mode.DEFAULT

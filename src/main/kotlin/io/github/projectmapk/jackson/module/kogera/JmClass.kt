@@ -6,7 +6,6 @@ import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmConstructor
 import kotlinx.metadata.KmFunction
 import kotlinx.metadata.KmProperty
-import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
@@ -67,7 +66,6 @@ internal class JmClass(
 
     // Field name always matches property name
     fun findPropertyByField(field: Field): KmProperty? = allPropsMap[field.name]
-        ?.takeIf { it.fieldSignature?.desc == field.desc() }
 
     fun findPropertyByGetter(getter: Method): KmProperty? {
         val getterName = getter.name

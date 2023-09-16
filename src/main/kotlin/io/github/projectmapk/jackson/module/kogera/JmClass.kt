@@ -1,17 +1,67 @@
 package io.github.projectmapk.jackson.module.kogera
 
 import kotlinx.metadata.ClassName
+import kotlinx.metadata.ExperimentalContextReceivers
 import kotlinx.metadata.Flags
 import kotlinx.metadata.KmClass
+import kotlinx.metadata.KmClassExtensionVisitor
+import kotlinx.metadata.KmClassVisitor
 import kotlinx.metadata.KmConstructor
+import kotlinx.metadata.KmConstructorVisitor
+import kotlinx.metadata.KmExtensionType
 import kotlinx.metadata.KmFunction
+import kotlinx.metadata.KmFunctionVisitor
 import kotlinx.metadata.KmProperty
+import kotlinx.metadata.KmPropertyVisitor
 import kotlinx.metadata.KmType
+import kotlinx.metadata.KmTypeAliasVisitor
+import kotlinx.metadata.KmTypeParameterVisitor
+import kotlinx.metadata.KmTypeVisitor
+import kotlinx.metadata.KmVariance
+import kotlinx.metadata.KmVersionRequirementVisitor
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
+
+// KmClassVisitor with all processing disabled as much as possible to reduce load
+internal sealed class ReducedKmClassVisitor : KmClassVisitor() {
+    final override val delegate: KmClassVisitor? get() = null
+
+    // from KmDeclarationContainerVisitor
+    override fun visitFunction(flags: Flags, name: String): KmFunctionVisitor? = null
+    override fun visitProperty(
+        flags: Flags,
+        name: String,
+        getterFlags: Flags,
+        setterFlags: Flags
+    ): KmPropertyVisitor? = null
+    override fun visitTypeAlias(flags: Flags, name: String): KmTypeAliasVisitor? = null
+    override fun visitExtensions(type: KmExtensionType): KmClassExtensionVisitor? = null
+
+    // from KmClassVisitor
+    override fun visit(flags: Flags, name: ClassName) {}
+    override fun visitTypeParameter(
+        flags: Flags,
+        name: String,
+        id: Int,
+        variance: KmVariance
+    ): KmTypeParameterVisitor? = null
+    override fun visitSupertype(flags: Flags): KmTypeVisitor? = null
+    override fun visitConstructor(flags: Flags): KmConstructorVisitor? = null
+    override fun visitCompanionObject(name: String) {}
+    override fun visitNestedClass(name: String) {}
+    override fun visitEnumEntry(name: String) {}
+    override fun visitSealedSubclass(name: ClassName) {}
+    override fun visitInlineClassUnderlyingPropertyName(name: String) {}
+    override fun visitInlineClassUnderlyingType(flags: Flags): KmTypeVisitor? = null
+
+    @OptIn(ExperimentalContextReceivers::class)
+    override fun visitContextReceiverType(flags: Flags): KmTypeVisitor? = null
+    override fun visitVersionRequirement(): KmVersionRequirementVisitor? = null
+    override fun visitEnd() {}
+}
 
 // Jackson Metadata Class
 internal class JmClass(

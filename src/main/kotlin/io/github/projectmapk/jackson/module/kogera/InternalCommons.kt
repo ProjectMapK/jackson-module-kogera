@@ -2,15 +2,14 @@ package io.github.projectmapk.jackson.module.kogera
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import kotlinx.metadata.Flag
-import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmType
 import kotlinx.metadata.KmValueParameter
+import kotlinx.metadata.internal.accept
+import kotlinx.metadata.internal.metadata.jvm.deserialization.JvmProtoBufUtil
 import kotlinx.metadata.jvm.JvmMethodSignature
-import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
-import java.lang.reflect.Field
 import java.lang.reflect.Method
 
 internal typealias JavaDuration = java.time.Duration
@@ -18,8 +17,13 @@ internal typealias KotlinDuration = kotlin.time.Duration
 
 internal fun Class<*>.isUnboxableValueClass() = this.getAnnotation(JvmInline::class.java) != null
 
-internal fun Class<*>.toKmClass(): KmClass? = this.getAnnotation(Metadata::class.java)
-    ?.let { (KotlinClassMetadata.read(it) as KotlinClassMetadata.Class).toKmClass() }
+internal fun Metadata.accept(visitor: ReducedKmClassVisitor) {
+    val (strings, proto) = JvmProtoBufUtil.readClassDataFrom(data1.takeIf(Array<*>::isNotEmpty)!!, data2)
+    proto.accept(visitor, strings)
+}
+
+internal fun Class<*>.toReducedKmClass(): ReducedKmClass? = this.getAnnotation(Metadata::class.java)
+    ?.let { ReducedKmClass().apply { it.accept(this) } }
 
 private val primitiveClassToDesc by lazy {
     mapOf(
@@ -68,8 +72,6 @@ private val Class<*>.descriptor: String
         isArray -> "[${componentType.descriptor}"
         else -> "L${this.descName()};"
     }
-
-internal fun Field.desc(): String = this.type.descriptor
 
 internal fun List<KmValueParameter>.hasVarargParam(): Boolean =
     lastOrNull()?.let { it.varargElementType != null } ?: false

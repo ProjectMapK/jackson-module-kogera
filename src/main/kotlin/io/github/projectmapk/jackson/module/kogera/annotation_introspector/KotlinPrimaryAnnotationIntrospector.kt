@@ -42,7 +42,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
     // Otherwise, the required is determined from the configuration and the definition on Kotlin.
     override fun hasRequiredMarker(m: AnnotatedMember): Boolean? {
         val byAnnotation = _findAnnotation(m, JsonProperty::class.java)
-            ?.let { it.required.apply { if (this) return true } }
+            ?.let { if (it.required) return true else false }
 
         return cache.getJmClass(m.member.declaringClass)?.let {
             when (m) {
@@ -75,15 +75,19 @@ internal class KotlinPrimaryAnnotationIntrospector(
 
     private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable()
 
-    private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(jmClass: JmClass): Boolean? {
-        // false if setter and nullToEmpty option is specified
-        if (parameterCount == 1 && this.getParameter(0).type.hasDefaultEmptyValue()) return false
-
-        val memberSignature = member.toSignature()
-        return jmClass.properties
-            .find { it.getterSignature == memberSignature || it.setterSignature == memberSignature }
-            ?.isRequiredByNullability()
-    }
+    private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(jmClass: JmClass): Boolean? =
+        when (parameterCount) {
+            0 -> jmClass.findPropertyByGetter(member)?.isRequiredByNullability()
+            1 -> {
+                if (this.getParameter(0).type.hasDefaultEmptyValue()) {
+                    false
+                } else {
+                    val memberSignature = member.toSignature()
+                    jmClass.properties.find { it.setterSignature == memberSignature }?.isRequiredByNullability()
+                }
+            }
+            else -> null
+        }
 
     private fun AnnotatedParameter.hasRequiredMarker(jmClass: JmClass): Boolean? {
         val paramDef = when (val member = member) {
@@ -164,6 +168,6 @@ private fun hasCreatorFunction(clazz: Class<*>): Boolean = clazz.declaredMethods
     .any { Modifier.isStatic(it.modifiers) && it.hasCreatorAnnotation() }
 
 private fun hasCreator(clazz: Class<*>, jmClass: JmClass): Boolean {
-    val propertyNames = jmClass.properties.map { it.name }.toSet()
+    val propertyNames = jmClass.propertyNameSet
     return hasCreatorConstructor(clazz, jmClass, propertyNames) || hasCreatorFunction(clazz)
 }

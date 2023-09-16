@@ -1,6 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera._integration
 
-import io.github.projectmapk.jackson.module.kogera.annotation_introspector.ClosedRangeHelpers
+import io.github.projectmapk.jackson.module.kogera.ClosedRangeResolver
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -54,29 +54,29 @@ class ClosedRangesTest {
 
     @Test
     fun loadClasses() {
-        assertNotNull(ClosedRangeHelpers.closedDoubleRangeRef)
-        assertNotNull(ClosedRangeHelpers.closedFloatRangeRef)
-        assertNotNull(ClosedRangeHelpers.comparableRangeClass)
+        assertNotNull(ClosedRangeResolver.closedDoubleRangeRef)
+        assertNotNull(ClosedRangeResolver.closedFloatRangeRef)
+        assertNotNull(ClosedRangeResolver.comparableRangeClass)
     }
 
     @Test
     fun findClosedFloatingPointRangeRefTest() {
         assertEquals(
-            ClosedRangeHelpers.closedDoubleRangeRef,
-            ClosedRangeHelpers.findClosedFloatingPointRangeRef(Double::class.javaPrimitiveType!!)
+            ClosedRangeResolver.closedDoubleRangeRef,
+            ClosedRangeResolver.findClosedFloatingPointRangeRef(Double::class.javaPrimitiveType!!)
         )
         assertEquals(
-            ClosedRangeHelpers.closedDoubleRangeRef,
-            ClosedRangeHelpers.findClosedFloatingPointRangeRef(Double::class.javaObjectType)
+            ClosedRangeResolver.closedDoubleRangeRef,
+            ClosedRangeResolver.findClosedFloatingPointRangeRef(Double::class.javaObjectType)
         )
 
         assertEquals(
-            ClosedRangeHelpers.closedFloatRangeRef,
-            ClosedRangeHelpers.findClosedFloatingPointRangeRef(Float::class.javaPrimitiveType!!)
+            ClosedRangeResolver.closedFloatRangeRef,
+            ClosedRangeResolver.findClosedFloatingPointRangeRef(Float::class.javaPrimitiveType!!)
         )
         assertEquals(
-            ClosedRangeHelpers.closedFloatRangeRef,
-            ClosedRangeHelpers.findClosedFloatingPointRangeRef(Float::class.javaObjectType)
+            ClosedRangeResolver.closedFloatRangeRef,
+            ClosedRangeResolver.findClosedFloatingPointRangeRef(Float::class.javaObjectType)
         )
     }
 }

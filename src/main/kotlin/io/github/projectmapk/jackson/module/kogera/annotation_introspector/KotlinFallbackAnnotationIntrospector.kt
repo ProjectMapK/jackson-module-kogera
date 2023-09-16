@@ -22,7 +22,6 @@ import io.github.projectmapk.jackson.module.kogera.ser.KotlinToJavaDurationConve
 import io.github.projectmapk.jackson.module.kogera.ser.SequenceToIteratorConverter
 import kotlinx.metadata.KmTypeProjection
 import kotlinx.metadata.KmValueParameter
-import kotlinx.metadata.jvm.fieldSignature
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -100,7 +99,7 @@ internal class KotlinFallbackAnnotationIntrospector(
     // Determine if the unbox result of value class is nullable
     // @see findNullSerializer
     private fun Class<*>.requireRebox(): Boolean =
-        cache.getJmClass(this)!!.properties.first { it.fieldSignature != null }.returnType.isNullable()
+        cache.getJmClass(this)!!.inlineClassUnderlyingType!!.isNullable()
 
     // Perform proper serialization even if the value wrapped by the value class is null.
     // If value is a non-null object type, it must not be reboxing.

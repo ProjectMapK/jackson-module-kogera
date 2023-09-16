@@ -68,23 +68,21 @@ internal sealed class ReducedKmClassVisitor : KmClassVisitor() {
 // Jackson Metadata Class
 internal sealed interface JmClass {
     class CompanionObject(declaringClass: Class<*>, companionObject: String) {
-        private class ReducedCompanionVisitor : ReducedKmClassVisitor() {
+        private class ReducedCompanionVisitor(companionClass: Class<*>) : ReducedKmClassVisitor() {
             val functions: MutableList<KmFunction> = arrayListOf()
+
+            init {
+                companionClass.getAnnotation(Metadata::class.java)!!.accept(this)
+            }
 
             override fun visitFunction(flags: Flags, name: String): KmFunctionVisitor? = KmFunction(flags, name)
                 .apply { functions.add(this) }
-
-            companion object {
-                fun from(companionClass: Class<*>): ReducedCompanionVisitor = ReducedCompanionVisitor().apply {
-                    companionClass.getAnnotation(Metadata::class.java)!!.accept(this)
-                }
-            }
         }
 
         private val companionField: Field = declaringClass.getDeclaredField(companionObject)
         val type: Class<*> = companionField.type
         val isAccessible: Boolean = companionField.isAccessible
-        private val functions by lazy { ReducedCompanionVisitor.from(type).functions }
+        private val functions by lazy { ReducedCompanionVisitor(type).functions }
         val instance: Any by lazy {
             // To prevent the call from failing, save the initial value and then rewrite the flag.
             if (!companionField.isAccessible) companionField.isAccessible = true

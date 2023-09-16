@@ -19,6 +19,8 @@ import kotlinx.metadata.KmTypeVisitor
 import kotlinx.metadata.KmVariance
 import kotlinx.metadata.KmVersionRequirementVisitor
 import kotlinx.metadata.flagsOf
+import kotlinx.metadata.internal.accept
+import kotlinx.metadata.internal.metadata.jvm.deserialization.JvmProtoBufUtil
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
@@ -63,99 +65,9 @@ internal sealed class ReducedKmClassVisitor : KmClassVisitor() {
     override fun visitEnd() {}
 }
 
-internal class ReducedKmClass : ReducedKmClassVisitor() {
-    var flags: Flags = flagsOf()
-    val properties: MutableList<KmProperty> = ArrayList()
-    val constructors: MutableList<KmConstructor> = ArrayList(1)
-    var companionObject: String? = null
-    val sealedSubclasses: MutableList<ClassName> = ArrayList(0)
-    var inlineClassUnderlyingType: KmType? = null
-
-    override fun visit(flags: Flags, name: ClassName) {
-        this.flags = flags
-    }
-
-    override fun visitProperty(flags: Flags, name: String, getterFlags: Flags, setterFlags: Flags): KmPropertyVisitor =
-        KmProperty(flags, name, getterFlags, setterFlags).apply { properties.add(this) }
-
-    override fun visitConstructor(flags: Flags): KmConstructorVisitor =
-        KmConstructor(flags).apply { constructors.add(this) }
-
-    override fun visitCompanionObject(name: String) {
-        this.companionObject = name
-    }
-
-    override fun visitSealedSubclass(name: ClassName) {
-        sealedSubclasses.add(name)
-    }
-
-    override fun visitInlineClassUnderlyingType(flags: Flags): KmTypeVisitor =
-        KmType(flags).also { inlineClassUnderlyingType = it }
-}
-
 // Jackson Metadata Class
-internal class JmClass(
-    clazz: Class<*>,
-    kmClass: ReducedKmClass,
-    superJmClass: JmClass?,
-    interfaceJmClasses: List<JmClass>
-) {
-    private val allPropsMap: Map<String, KmProperty> = mutableMapOf<String, KmProperty>().apply {
-        kmClass.properties.forEach {
-            this[it.name] = it
-        }
-
-        // Add properties of inherited classes and interfaces
-        // If an `interface` is implicitly implemented by an abstract class,
-        // it is necessary to obtain a more specific type, so always add it from the abstract class first.
-        superJmClass?.allPropsMap?.forEach {
-            this.putIfAbsent(it.key, it.value)
-        }
-        interfaceJmClasses.forEach { i ->
-            i.allPropsMap.forEach {
-                this.putIfAbsent(it.key, it.value)
-            }
-        }
-    }
-
-    val flags: Flags = kmClass.flags
-    val constructors: List<KmConstructor> = kmClass.constructors
-    val propertyNameSet: Set<String> get() = allPropsMap.keys
-    val properties: List<KmProperty> = allPropsMap.values.toList()
-    val sealedSubclasses: List<ClassName> = kmClass.sealedSubclasses
-    private val companionPropName: String? = kmClass.companionObject
-    val companion: CompanionObject? by lazy { companionPropName?.let { CompanionObject(clazz, it) } }
-    val inlineClassUnderlyingType: KmType? = kmClass.inlineClassUnderlyingType
-
-    fun findKmConstructor(constructor: Constructor<*>): KmConstructor? {
-        val descHead = constructor.parameterTypes.toDescBuilder()
-        val len = descHead.length
-        val desc = CharArray(len + 1).apply {
-            descHead.getChars(0, len, this, 0)
-            this[len] = 'V'
-        }.let { String(it) }
-
-        // Only constructors that take a value class as an argument have a DefaultConstructorMarker on the Signature.
-        val valueDesc = descHead
-            .replace(len - 1, len, "Lkotlin/jvm/internal/DefaultConstructorMarker;)V")
-            .toString()
-
-        // Constructors always have the same name, so only desc is compared
-        return constructors.find {
-            val targetDesc = it.signature?.desc
-            targetDesc == desc || targetDesc == valueDesc
-        }
-    }
-
-    // Field name always matches property name
-    fun findPropertyByField(field: Field): KmProperty? = allPropsMap[field.name]
-
-    fun findPropertyByGetter(getter: Method): KmProperty? {
-        val getterName = getter.name
-        return properties.find { it.getterSignature?.name == getterName }
-    }
-
-    internal class CompanionObject(declaringClass: Class<*>, companionObject: String) {
+internal sealed interface JmClass {
+    class CompanionObject(declaringClass: Class<*>, companionObject: String) {
         private class ReducedCompanionVisitor : ReducedKmClassVisitor() {
             val functions: MutableList<KmFunction> = arrayListOf()
 
@@ -184,4 +96,117 @@ internal class JmClass(
             return functions.find { it.signature == signature }
         }
     }
+
+    val flags: Flags
+    val constructors: List<KmConstructor>
+    val sealedSubclasses: List<ClassName>
+    val inlineClassUnderlyingType: KmType?
+    val propertyNameSet: Set<String>
+    val properties: List<KmProperty>
+    val companion: CompanionObject?
+
+    fun findKmConstructor(constructor: Constructor<*>): KmConstructor?
+    fun findPropertyByField(field: Field): KmProperty?
+    fun findPropertyByGetter(getter: Method): KmProperty?
 }
+
+private class JmClassImpl(
+    clazz: Class<*>,
+    metadata: Metadata,
+    superJmClass: JmClass?,
+    interfaceJmClasses: List<JmClass>
+) : ReducedKmClassVisitor(), JmClass {
+    private val allPropsMap: MutableMap<String, KmProperty> = mutableMapOf()
+    private var companionPropName: String? = null
+
+    override var flags: Flags = flagsOf()
+    override val constructors: MutableList<KmConstructor> = mutableListOf()
+    override val sealedSubclasses: MutableList<ClassName> = mutableListOf()
+    override var inlineClassUnderlyingType: KmType? = null
+
+    init {
+        metadata.accept(this)
+
+        // Add properties of inherited classes and interfaces
+        // If an `interface` is implicitly implemented by an abstract class,
+        // it is necessary to obtain a more specific type, so always add it from the abstract class first.
+        (superJmClass as JmClassImpl?)?.allPropsMap?.forEach {
+            this.allPropsMap.putIfAbsent(it.key, it.value)
+        }
+        @Suppress("UNCHECKED_CAST")
+        (interfaceJmClasses as List<JmClassImpl>).forEach { i ->
+            i.allPropsMap.forEach {
+                this.allPropsMap.putIfAbsent(it.key, it.value)
+            }
+        }
+    }
+
+    // computed props
+    override val propertyNameSet: Set<String> get() = allPropsMap.keys
+    override val properties: List<KmProperty> by lazy { allPropsMap.values.toList() }
+    override val companion: JmClass.CompanionObject? by lazy {
+        companionPropName?.let { JmClass.CompanionObject(clazz, it) }
+    }
+
+    override fun findKmConstructor(constructor: Constructor<*>): KmConstructor? {
+        val descHead = constructor.parameterTypes.toDescBuilder()
+        val len = descHead.length
+        val desc = CharArray(len + 1).apply {
+            descHead.getChars(0, len, this, 0)
+            this[len] = 'V'
+        }.let { String(it) }
+
+        // Only constructors that take a value class as an argument have a DefaultConstructorMarker on the Signature.
+        val valueDesc = descHead
+            .replace(len - 1, len, "Lkotlin/jvm/internal/DefaultConstructorMarker;)V")
+            .toString()
+
+        // Constructors always have the same name, so only desc is compared
+        return constructors.find {
+            val targetDesc = it.signature?.desc
+            targetDesc == desc || targetDesc == valueDesc
+        }
+    }
+
+    // Field name always matches property name
+    override fun findPropertyByField(field: Field): KmProperty? = allPropsMap[field.name]
+
+    override fun findPropertyByGetter(getter: Method): KmProperty? {
+        val getterName = getter.name
+        return properties.find { it.getterSignature?.name == getterName }
+    }
+
+    // KmClassVisitor
+    override fun visit(flags: Flags, name: ClassName) {
+        this.flags = flags
+    }
+
+    override fun visitProperty(flags: Flags, name: String, getterFlags: Flags, setterFlags: Flags): KmPropertyVisitor =
+        KmProperty(flags, name, getterFlags, setterFlags).apply { allPropsMap[name] = this }
+
+    override fun visitConstructor(flags: Flags): KmConstructorVisitor =
+        KmConstructor(flags).apply { constructors.add(this) }
+
+    override fun visitCompanionObject(name: String) {
+        this.companionPropName = name
+    }
+
+    override fun visitSealedSubclass(name: ClassName) {
+        sealedSubclasses.add(name)
+    }
+
+    override fun visitInlineClassUnderlyingType(flags: Flags): KmTypeVisitor =
+        KmType(flags).also { inlineClassUnderlyingType = it }
+}
+
+private fun Metadata.accept(visitor: ReducedKmClassVisitor) {
+    val (strings, proto) = JvmProtoBufUtil.readClassDataFrom(data1.takeIf(Array<*>::isNotEmpty)!!, data2)
+    proto.accept(visitor, strings)
+}
+
+internal fun JmClass(
+    clazz: Class<*>,
+    metadata: Metadata,
+    superJmClass: JmClass?,
+    interfaceJmClasses: List<JmClass>
+): JmClass = JmClassImpl(clazz, metadata, superJmClass, interfaceJmClasses)

@@ -28,7 +28,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
 
     fun getJmClass(clazz: Class<*>): JmClass? {
         return classCache[clazz] ?: run {
-            val kmClass = clazz.toReducedKmClass() ?: return null
+            val metadata = clazz.getAnnotation(Metadata::class.java) ?: return null
 
             // Do not parse super class for interfaces.
             val superJmClass = if (!clazz.isInterface) {
@@ -41,7 +41,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
             }
             val interfaceJmClasses = clazz.interfaces.mapNotNull { getJmClass(it) }
 
-            val value = JmClass(clazz, kmClass, superJmClass, interfaceJmClasses)
+            val value = JmClass(clazz, metadata, superJmClass, interfaceJmClasses)
             (classCache.putIfAbsent(clazz, value) ?: value)
         }
     }

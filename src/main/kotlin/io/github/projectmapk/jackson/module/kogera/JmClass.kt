@@ -115,8 +115,11 @@ private class JmClassImpl(
     interfaceJmClasses: List<JmClass>
 ) : ReducedKmClassVisitor(), JmClass {
     private val allPropsMap: MutableMap<String, KmProperty> = mutableMapOf()
-    private var companionPropName: String? = null
 
+    // Defined as non-lazy because it is always read in both serialization and deserialization
+    final override val properties: List<KmProperty>
+
+    private var companionPropName: String? = null
     override var flags: Flags = flagsOf()
     override val constructors: MutableList<KmConstructor> = mutableListOf()
     override val sealedSubclasses: MutableList<ClassName> = mutableListOf()
@@ -137,11 +140,13 @@ private class JmClassImpl(
                 this.allPropsMap.putIfAbsent(it.key, it.value)
             }
         }
+
+        // Initialize after all properties have been read
+        properties = allPropsMap.values.toList()
     }
 
     // computed props
     override val propertyNameSet: Set<String> get() = allPropsMap.keys
-    override val properties: List<KmProperty> by lazy { allPropsMap.values.toList() }
     override val companion: JmClass.CompanionObject? by lazy {
         companionPropName?.let { JmClass.CompanionObject(clazz, it) }
     }

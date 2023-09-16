@@ -3,7 +3,6 @@ package io.github.projectmapk.jackson.module.kogera
 import kotlinx.metadata.ClassName
 import kotlinx.metadata.ExperimentalContextReceivers
 import kotlinx.metadata.Flags
-import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmClassExtensionVisitor
 import kotlinx.metadata.KmClassVisitor
 import kotlinx.metadata.KmConstructor
@@ -19,6 +18,7 @@ import kotlinx.metadata.KmTypeParameterVisitor
 import kotlinx.metadata.KmTypeVisitor
 import kotlinx.metadata.KmVariance
 import kotlinx.metadata.KmVersionRequirementVisitor
+import kotlinx.metadata.flagsOf
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
@@ -63,10 +63,40 @@ internal sealed class ReducedKmClassVisitor : KmClassVisitor() {
     override fun visitEnd() {}
 }
 
+internal class ReducedKmClass : ReducedKmClassVisitor() {
+    var flags: Flags = flagsOf()
+    val properties: MutableList<KmProperty> = ArrayList()
+    val constructors: MutableList<KmConstructor> = ArrayList(1)
+    var companionObject: String? = null
+    val sealedSubclasses: MutableList<ClassName> = ArrayList(0)
+    var inlineClassUnderlyingType: KmType? = null
+
+    override fun visit(flags: Flags, name: ClassName) {
+        this.flags = flags
+    }
+
+    override fun visitProperty(flags: Flags, name: String, getterFlags: Flags, setterFlags: Flags): KmPropertyVisitor =
+        KmProperty(flags, name, getterFlags, setterFlags).apply { properties.add(this) }
+
+    override fun visitConstructor(flags: Flags): KmConstructorVisitor =
+        KmConstructor(flags).apply { constructors.add(this) }
+
+    override fun visitCompanionObject(name: String) {
+        this.companionObject = name
+    }
+
+    override fun visitSealedSubclass(name: ClassName) {
+        sealedSubclasses.add(name)
+    }
+
+    override fun visitInlineClassUnderlyingType(flags: Flags): KmTypeVisitor =
+        KmType(flags).also { inlineClassUnderlyingType = it }
+}
+
 // Jackson Metadata Class
 internal class JmClass(
     clazz: Class<*>,
-    kmClass: KmClass,
+    kmClass: ReducedKmClass,
     superJmClass: JmClass?,
     interfaceJmClasses: List<JmClass>
 ) {

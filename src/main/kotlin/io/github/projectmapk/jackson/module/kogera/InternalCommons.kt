@@ -15,19 +15,17 @@ internal typealias KotlinDuration = kotlin.time.Duration
 
 internal fun Class<*>.isUnboxableValueClass() = this.getAnnotation(JvmInline::class.java) != null
 
-private val primitiveClassToDesc by lazy {
-    mapOf(
-        Byte::class.javaPrimitiveType to 'B',
-        Char::class.javaPrimitiveType to 'C',
-        Double::class.javaPrimitiveType to 'D',
-        Float::class.javaPrimitiveType to 'F',
-        Int::class.javaPrimitiveType to 'I',
-        Long::class.javaPrimitiveType to 'J',
-        Short::class.javaPrimitiveType to 'S',
-        Boolean::class.javaPrimitiveType to 'Z',
-        Void::class.javaPrimitiveType to 'V'
-    )
-}
+private val primitiveClassToDesc = mapOf(
+    Byte::class.javaPrimitiveType to 'B',
+    Char::class.javaPrimitiveType to 'C',
+    Double::class.javaPrimitiveType to 'D',
+    Float::class.javaPrimitiveType to 'F',
+    Int::class.javaPrimitiveType to 'I',
+    Long::class.javaPrimitiveType to 'J',
+    Short::class.javaPrimitiveType to 'S',
+    Boolean::class.javaPrimitiveType to 'Z',
+    Void::class.javaPrimitiveType to 'V'
+)
 
 // -> this.name.replace(".", "/")
 private fun Class<*>.descName(): String {

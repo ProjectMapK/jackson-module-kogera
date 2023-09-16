@@ -6,6 +6,8 @@ import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmType
 import kotlinx.metadata.KmValueParameter
+import kotlinx.metadata.internal.accept
+import kotlinx.metadata.internal.metadata.jvm.deserialization.JvmProtoBufUtil
 import kotlinx.metadata.jvm.JvmMethodSignature
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.lang.reflect.AnnotatedElement
@@ -16,6 +18,11 @@ internal typealias JavaDuration = java.time.Duration
 internal typealias KotlinDuration = kotlin.time.Duration
 
 internal fun Class<*>.isUnboxableValueClass() = this.getAnnotation(JvmInline::class.java) != null
+
+internal fun Metadata.accept(visitor: ReducedKmClassVisitor) {
+    val (strings, proto) = JvmProtoBufUtil.readClassDataFrom(data1.takeIf(Array<*>::isNotEmpty)!!, data2)
+    proto.accept(visitor, strings)
+}
 
 internal fun Class<*>.toKmClass(): KmClass? = this.getAnnotation(Metadata::class.java)
     ?.let { (KotlinClassMetadata.read(it) as KotlinClassMetadata.Class).toKmClass() }

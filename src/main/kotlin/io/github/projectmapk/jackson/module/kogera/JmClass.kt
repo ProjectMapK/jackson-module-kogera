@@ -125,14 +125,24 @@ internal class JmClass(
         return properties.find { it.getterSignature?.name == getterName }
     }
 
-    internal class CompanionObject(
-        declaringClass: Class<*>,
-        companionObject: String
-    ) {
+    internal class CompanionObject(declaringClass: Class<*>, companionObject: String) {
+        private class ReducedCompanionVisitor : ReducedKmClassVisitor() {
+            val functions: MutableList<KmFunction> = arrayListOf()
+
+            override fun visitFunction(flags: Flags, name: String): KmFunctionVisitor? = KmFunction(flags, name)
+                .apply { functions.add(this) }
+
+            companion object {
+                fun from(companionClass: Class<*>): ReducedCompanionVisitor = ReducedCompanionVisitor().apply {
+                    companionClass.getAnnotation(Metadata::class.java)!!.accept(this)
+                }
+            }
+        }
+
         private val companionField: Field = declaringClass.getDeclaredField(companionObject)
         val type: Class<*> = companionField.type
         val isAccessible: Boolean = companionField.isAccessible
-        private val functions by lazy { type.toKmClass()!!.functions }
+        private val functions by lazy { ReducedCompanionVisitor.from(type).functions }
         val instance: Any by lazy {
             // To prevent the call from failing, save the initial value and then rewrite the flag.
             if (!companionField.isAccessible) companionField.isAccessible = true

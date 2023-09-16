@@ -164,6 +164,6 @@ private fun hasCreatorFunction(clazz: Class<*>): Boolean = clazz.declaredMethods
     .any { Modifier.isStatic(it.modifiers) && it.hasCreatorAnnotation() }
 
 private fun hasCreator(clazz: Class<*>, jmClass: JmClass): Boolean {
-    val propertyNames = jmClass.properties.map { it.name }.toSet()
+    val propertyNames = jmClass.propertyNameSet
     return hasCreatorConstructor(clazz, jmClass, propertyNames) || hasCreatorFunction(clazz)
 }

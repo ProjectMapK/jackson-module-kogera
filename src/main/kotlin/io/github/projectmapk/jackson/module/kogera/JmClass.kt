@@ -40,6 +40,7 @@ internal class JmClass(
 
     val flags: Flags = kmClass.flags
     val constructors: List<KmConstructor> = kmClass.constructors
+    val propertyNameSet: Set<String> get() = allPropsMap.keys
     val properties: List<KmProperty> = allPropsMap.values.toList()
     val sealedSubclasses: List<ClassName> = kmClass.sealedSubclasses
     private val companionPropName: String? = kmClass.companionObject

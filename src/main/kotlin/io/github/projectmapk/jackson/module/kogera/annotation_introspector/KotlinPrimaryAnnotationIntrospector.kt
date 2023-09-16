@@ -42,7 +42,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
     // Otherwise, the required is determined from the configuration and the definition on Kotlin.
     override fun hasRequiredMarker(m: AnnotatedMember): Boolean? {
         val byAnnotation = _findAnnotation(m, JsonProperty::class.java)
-            ?.let { it.required.apply { if (this) return true } }
+            ?.let { if (it.required) return true else false }
 
         return cache.getJmClass(m.member.declaringClass)?.let {
             when (m) {

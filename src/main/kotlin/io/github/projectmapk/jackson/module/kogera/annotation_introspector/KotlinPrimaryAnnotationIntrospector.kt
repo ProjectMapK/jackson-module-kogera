@@ -75,15 +75,19 @@ internal class KotlinPrimaryAnnotationIntrospector(
 
     private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable()
 
-    private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(jmClass: JmClass): Boolean? {
-        // false if setter and nullToEmpty option is specified
-        if (parameterCount == 1 && this.getParameter(0).type.hasDefaultEmptyValue()) return false
-
-        val memberSignature = member.toSignature()
-        return jmClass.properties
-            .find { it.getterSignature == memberSignature || it.setterSignature == memberSignature }
-            ?.isRequiredByNullability()
-    }
+    private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(jmClass: JmClass): Boolean? =
+        when (parameterCount) {
+            0 -> jmClass.findPropertyByGetter(member)?.isRequiredByNullability()
+            1 -> {
+                if (this.getParameter(0).type.hasDefaultEmptyValue()) {
+                    false
+                } else {
+                    val memberSignature = member.toSignature()
+                    jmClass.properties.find { it.setterSignature == memberSignature }?.isRequiredByNullability()
+                }
+            }
+            else -> null
+        }
 
     private fun AnnotatedParameter.hasRequiredMarker(jmClass: JmClass): Boolean? {
         val paramDef = when (val member = member) {

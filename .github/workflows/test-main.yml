@@ -28,6 +28,7 @@ on:
       - "**.kt"
       - "**.java"
       - .github/workflows/test-main.yml
+  workflow_dispatch:
 jobs:
   test-main:
     strategy:

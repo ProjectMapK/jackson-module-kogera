@@ -59,7 +59,7 @@ jobs:
     env:
       KOTLIN_VERSION: ${{ matrix.kotlin.version }}
       USE_K2: ${{ matrix.kotlin.k2 }}
-    name: test-main
+    name: "Kotlin ${{ matrix.kotlin.name }} - Java ${{ matrix.java-version }}"
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

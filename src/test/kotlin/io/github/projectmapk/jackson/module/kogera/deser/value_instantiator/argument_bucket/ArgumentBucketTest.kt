@@ -73,6 +73,7 @@ private class ArgumentBucketTest {
             val objectGenerator = BucketGenerator(listOf(Array<Int>::class.java), true)
             val objectResult = objectGenerator.generate()
             assertEquals(1, objectResult.valueParameterSize)
+            @Suppress("UNCHECKED_CAST")
             assertArrayEquals(emptyArray<Int>(), objectResult.arguments[0] as Array<Int>)
             assertEquals(1, objectResult.masks.size)
             assertEquals(-1, objectResult.masks[0])

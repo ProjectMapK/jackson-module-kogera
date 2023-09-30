@@ -97,6 +97,10 @@ public val kogeraVersion: Version = VersionUtil.parseVersion("$version", "$group
         kotlinOptions.jvmTarget = "1.8"
     }
 
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+
     test {
         useJUnitPlatform()
     }

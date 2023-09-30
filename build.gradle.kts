@@ -11,7 +11,7 @@ plugins {
 // Since group cannot be obtained by generateKogeraVersion, it is defined as a constant.
 val groupStr = "io.github.projectmapk"
 val jacksonVersion = "2.15.2"
-val generatedSrcPath = "$buildDir/generated/kotlin"
+val generatedSrcPath = "${layout.buildDirectory.get()}/generated/kotlin"
 
 group = groupStr
 version = "${jacksonVersion}-beta5"
@@ -94,6 +94,10 @@ public val kogeraVersion: Version = VersionUtil.parseVersion("$version", "$group
 
     compileKotlin {
         dependsOn.add(generateKogeraVersion)
+        kotlinOptions.jvmTarget = "1.8"
+    }
+
+    compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
 

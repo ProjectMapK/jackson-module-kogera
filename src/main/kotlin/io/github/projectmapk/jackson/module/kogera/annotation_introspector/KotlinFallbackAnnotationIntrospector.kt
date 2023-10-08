@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.util.Converter
 import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter
+import io.github.projectmapk.jackson.module.kogera.annotation.JsonUnbox
 import io.github.projectmapk.jackson.module.kogera.deser.CollectionValueStrictNullChecksConverter
 import io.github.projectmapk.jackson.module.kogera.deser.MapValueStrictNullChecksConverter
 import io.github.projectmapk.jackson.module.kogera.isNullable
@@ -75,7 +76,7 @@ internal class KotlinFallbackAnnotationIntrospector(
 
     override fun findSerializationConverter(a: Annotated): Converter<*, *>? = when (a) {
         // Find a converter to handle the case where the getter returns an unboxed value from the value class.
-        is AnnotatedMethod -> cache.findValueClassReturnType(a)?.let {
+        is AnnotatedMethod -> cache.findBoxedReturnType(a)?.let {
             if (useJavaDurationConversion && it == KotlinDuration::class.java) {
                 if (a.rawReturnType == KotlinDuration::class.java) {
                     KotlinToJavaDurationConverter
@@ -83,7 +84,12 @@ internal class KotlinFallbackAnnotationIntrospector(
                     KotlinDurationValueToJavaDurationConverter
                 }
             } else {
-                cache.getValueClassBoxConverter(a.rawReturnType, it)
+                // If JsonUnbox is specified, the unboxed getter is used as is.
+                if (a.hasAnnotation(JsonUnbox::class.java) || it.getAnnotation(JsonUnbox::class.java) != null) {
+                    null
+                } else {
+                    cache.getValueClassBoxConverter(a.rawReturnType, it)
+                }
             }
         }
         is AnnotatedClass -> lookupKotlinTypeConverter(a)
@@ -104,7 +110,7 @@ internal class KotlinFallbackAnnotationIntrospector(
     // Perform proper serialization even if the value wrapped by the value class is null.
     // If value is a non-null object type, it must not be reboxing.
     override fun findNullSerializer(am: Annotated): JsonSerializer<*>? = (am as? AnnotatedMethod)?.let { _ ->
-        cache.findValueClassReturnType(am)?.let {
+        cache.findBoxedReturnType(am)?.let {
             if (it.requireRebox()) cache.getValueClassBoxConverter(am.rawReturnType, it).delegatingSerializer else null
         }
     }

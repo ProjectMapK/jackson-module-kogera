@@ -3,6 +3,7 @@ package io.github.projectmapk.jackson.module.kogera
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.util.LRUMap
 import java.io.Serializable
+import java.lang.reflect.Method
 import java.util.Optional
 
 internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
@@ -16,7 +17,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
     private val classCache = LRUMap<Class<*>, JmClass>(reflectionCacheSize, reflectionCacheSize)
 
     // Initial size is 0 because the value class is not always used
-    private val valueClassReturnTypeCache: LRUMap<AnnotatedMethod, Optional<Class<*>>> =
+    private val valueClassReturnTypeCache: LRUMap<Method, Optional<Class<*>>> =
         LRUMap(0, reflectionCacheSize)
 
     // TODO: Consider whether the cache size should be reduced more,
@@ -28,7 +29,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
 
     fun getJmClass(clazz: Class<*>): JmClass? {
         return classCache[clazz] ?: run {
-            val kmClass = clazz.toReducedKmClass() ?: return null
+            val metadata = clazz.getAnnotation(Metadata::class.java) ?: return null
 
             // Do not parse super class for interfaces.
             val superJmClass = if (!clazz.isInterface) {
@@ -41,33 +42,34 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
             }
             val interfaceJmClasses = clazz.interfaces.mapNotNull { getJmClass(it) }
 
-            val value = JmClass(clazz, kmClass, superJmClass, interfaceJmClasses)
+            val value = JmClass(clazz, metadata, superJmClass, interfaceJmClasses)
             (classCache.putIfAbsent(clazz, value) ?: value)
         }
     }
 
-    private fun AnnotatedMethod.getValueClassReturnType(): Class<*>? {
-        val getter = this.member.apply {
-            // If the return value of the getter is a value class,
-            // it will be serialized properly without doing anything.
-            // TODO: Verify the case where a value class encompasses another value class.
-            if (this.returnType.isUnboxableValueClass()) return null
-        }
-        val kotlinProperty = getJmClass(getter.declaringClass)?.findPropertyByGetter(getter)
+    private fun Method.getValueClassReturnType(): Class<*>? {
+        val kotlinProperty = getJmClass(declaringClass)?.findPropertyByGetter(this)
 
         // Since there was no way to directly determine whether returnType is a value class or not,
         // Class is restored and processed.
         return kotlinProperty?.returnType?.reconstructClassOrNull()?.takeIf { it.isUnboxableValueClass() }
     }
 
-    fun findValueClassReturnType(getter: AnnotatedMethod): Class<*>? {
-        val optional = valueClassReturnTypeCache.get(getter)
+    // Return boxed type on Kotlin for unboxed getters
+    fun findBoxedReturnType(getter: AnnotatedMethod): Class<*>? {
+        val method = getter.member
+        val optional = valueClassReturnTypeCache.get(method)
 
         return if (optional != null) {
             optional
         } else {
-            val value = Optional.ofNullable(getter.getValueClassReturnType())
-            (valueClassReturnTypeCache.putIfAbsent(getter, value) ?: value)
+            // If the return value of the getter is a value class,
+            // it will be serialized properly without doing anything.
+            // TODO: Verify the case where a value class encompasses another value class.
+            if (method.returnType.isUnboxableValueClass()) return null
+
+            val value = Optional.ofNullable(method.getValueClassReturnType())
+            (valueClassReturnTypeCache.putIfAbsent(method, value) ?: value)
         }.orElse(null)
     }
 

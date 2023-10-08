@@ -28,6 +28,7 @@ on:
       - "**.kt"
       - "**.java"
       - .github/workflows/test-main.yml
+  workflow_dispatch:
 jobs:
   test-main:
     strategy:
@@ -36,10 +37,29 @@ jobs:
         # LTS versions, latest version (if exists)
         java-version: [ '8', '11', '17', '20' ]
         # Minimum version, latest release version, latest pre-release version (if exists)
-        kotlin-version: [ '1.7.21', '1.8.22', '1.9.10', '1.9.20-Beta' ]
+        kotlin:
+          - name: '1.7.21'
+            version: '1.7.21'
+            k2: false
+          - name: '1.8.22'
+            version: '1.8.22'
+            k2: false
+          - name: '1.9.10'
+            version: '1.9.10'
+            k2: false
+          - name: '1.9.10 K2'
+            version: '1.9.10'
+            k2: true
+          - name: '1.9.20-Beta'
+            version: '1.9.20-Beta'
+            k2: false
+          - name: '1.9.20-Beta K2'
+            version: '1.9.20-Beta'
+            k2: true
     env:
-      KOTLIN_VERSION: ${{ matrix.kotlin-version }}
-    name: test-main
+      KOTLIN_VERSION: ${{ matrix.kotlin.version }}
+      USE_K2: ${{ matrix.kotlin.k2 }}
+    name: "Kotlin ${{ matrix.kotlin.name }} - Java ${{ matrix.java-version }}"
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

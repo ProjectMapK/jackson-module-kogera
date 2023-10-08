@@ -19,6 +19,8 @@ import kotlinx.metadata.KmTypeVisitor
 import kotlinx.metadata.KmVariance
 import kotlinx.metadata.KmVersionRequirementVisitor
 import kotlinx.metadata.flagsOf
+import kotlinx.metadata.internal.accept
+import kotlinx.metadata.internal.metadata.jvm.deserialization.JvmProtoBufUtil
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
@@ -63,71 +65,93 @@ internal sealed class ReducedKmClassVisitor : KmClassVisitor() {
     override fun visitEnd() {}
 }
 
-internal class ReducedKmClass : ReducedKmClassVisitor() {
-    var flags: Flags = flagsOf()
-    val properties: MutableList<KmProperty> = ArrayList()
-    val constructors: MutableList<KmConstructor> = ArrayList(1)
-    var companionObject: String? = null
-    val sealedSubclasses: MutableList<ClassName> = ArrayList(0)
-    var inlineClassUnderlyingType: KmType? = null
+// Jackson Metadata Class
+internal sealed interface JmClass {
+    class CompanionObject(declaringClass: Class<*>, companionObject: String) {
+        private class ReducedCompanionVisitor(companionClass: Class<*>) : ReducedKmClassVisitor() {
+            val functions: MutableList<KmFunction> = arrayListOf()
 
-    override fun visit(flags: Flags, name: ClassName) {
-        this.flags = flags
+            init {
+                companionClass.getAnnotation(Metadata::class.java)!!.accept(this)
+            }
+
+            override fun visitFunction(flags: Flags, name: String): KmFunctionVisitor? = KmFunction(flags, name)
+                .apply { functions.add(this) }
+        }
+
+        private val companionField: Field = declaringClass.getDeclaredField(companionObject)
+        val type: Class<*> = companionField.type
+        val isAccessible: Boolean = companionField.isAccessible
+        private val functions by lazy { ReducedCompanionVisitor(type).functions }
+        val instance: Any by lazy {
+            // To prevent the call from failing, save the initial value and then rewrite the flag.
+            if (!companionField.isAccessible) companionField.isAccessible = true
+            companionField.get(null)
+        }
+
+        fun findFunctionByMethod(method: Method): KmFunction? {
+            val signature = method.toSignature()
+            return functions.find { it.signature == signature }
+        }
     }
 
-    override fun visitProperty(flags: Flags, name: String, getterFlags: Flags, setterFlags: Flags): KmPropertyVisitor =
-        KmProperty(flags, name, getterFlags, setterFlags).apply { properties.add(this) }
+    val flags: Flags
+    val constructors: List<KmConstructor>
+    val sealedSubclasses: List<ClassName>
+    val inlineClassUnderlyingType: KmType?
+    val propertyNameSet: Set<String>
+    val properties: List<KmProperty>
+    val companion: CompanionObject?
 
-    override fun visitConstructor(flags: Flags): KmConstructorVisitor =
-        KmConstructor(flags).apply { constructors.add(this) }
-
-    override fun visitCompanionObject(name: String) {
-        this.companionObject = name
-    }
-
-    override fun visitSealedSubclass(name: ClassName) {
-        sealedSubclasses.add(name)
-    }
-
-    override fun visitInlineClassUnderlyingType(flags: Flags): KmTypeVisitor =
-        KmType(flags).also { inlineClassUnderlyingType = it }
+    fun findKmConstructor(constructor: Constructor<*>): KmConstructor?
+    fun findPropertyByField(field: Field): KmProperty?
+    fun findPropertyByGetter(getter: Method): KmProperty?
 }
 
-// Jackson Metadata Class
-internal class JmClass(
+private class JmClassImpl(
     clazz: Class<*>,
-    kmClass: ReducedKmClass,
+    metadata: Metadata,
     superJmClass: JmClass?,
     interfaceJmClasses: List<JmClass>
-) {
-    private val allPropsMap: Map<String, KmProperty> = mutableMapOf<String, KmProperty>().apply {
-        kmClass.properties.forEach {
-            this[it.name] = it
-        }
+) : ReducedKmClassVisitor(), JmClass {
+    private val allPropsMap: MutableMap<String, KmProperty> = mutableMapOf()
+
+    // Defined as non-lazy because it is always read in both serialization and deserialization
+    final override val properties: List<KmProperty>
+
+    private var companionPropName: String? = null
+    override var flags: Flags = flagsOf()
+    override val constructors: MutableList<KmConstructor> = mutableListOf()
+    override val sealedSubclasses: MutableList<ClassName> = mutableListOf()
+    override var inlineClassUnderlyingType: KmType? = null
+
+    init {
+        metadata.accept(this)
 
         // Add properties of inherited classes and interfaces
         // If an `interface` is implicitly implemented by an abstract class,
         // it is necessary to obtain a more specific type, so always add it from the abstract class first.
-        superJmClass?.allPropsMap?.forEach {
-            this.putIfAbsent(it.key, it.value)
+        (superJmClass as JmClassImpl?)?.allPropsMap?.forEach {
+            this.allPropsMap.putIfAbsent(it.key, it.value)
         }
-        interfaceJmClasses.forEach { i ->
+        @Suppress("UNCHECKED_CAST")
+        (interfaceJmClasses as List<JmClassImpl>).forEach { i ->
             i.allPropsMap.forEach {
-                this.putIfAbsent(it.key, it.value)
+                this.allPropsMap.putIfAbsent(it.key, it.value)
             }
         }
+
+        // Initialize after all properties have been read
+        properties = allPropsMap.values.toList()
     }
 
-    val flags: Flags = kmClass.flags
-    val constructors: List<KmConstructor> = kmClass.constructors
-    val propertyNameSet: Set<String> get() = allPropsMap.keys
-    val properties: List<KmProperty> = allPropsMap.values.toList()
-    val sealedSubclasses: List<ClassName> = kmClass.sealedSubclasses
-    private val companionPropName: String? = kmClass.companionObject
-    val companion: CompanionObject? by lazy { companionPropName?.let { CompanionObject(clazz, it) } }
-    val inlineClassUnderlyingType: KmType? = kmClass.inlineClassUnderlyingType
+    // computed props
+    override val propertyNameSet: Set<String> get() = allPropsMap.keys
+    override val companion: JmClass.CompanionObject? by lazy {
+        companionPropName?.let { JmClass.CompanionObject(clazz, it) }
+    }
 
-    fun findKmConstructor(constructor: Constructor<*>): KmConstructor? {
+    override fun findKmConstructor(constructor: Constructor<*>): KmConstructor? {
         val descHead = constructor.parameterTypes.toDescBuilder()
         val len = descHead.length
         val desc = CharArray(len + 1).apply {
@@ -148,40 +172,44 @@ internal class JmClass(
     }
 
     // Field name always matches property name
-    fun findPropertyByField(field: Field): KmProperty? = allPropsMap[field.name]
+    override fun findPropertyByField(field: Field): KmProperty? = allPropsMap[field.name]
 
-    fun findPropertyByGetter(getter: Method): KmProperty? {
+    override fun findPropertyByGetter(getter: Method): KmProperty? {
         val getterName = getter.name
         return properties.find { it.getterSignature?.name == getterName }
     }
 
-    internal class CompanionObject(declaringClass: Class<*>, companionObject: String) {
-        private class ReducedCompanionVisitor : ReducedKmClassVisitor() {
-            val functions: MutableList<KmFunction> = arrayListOf()
-
-            override fun visitFunction(flags: Flags, name: String): KmFunctionVisitor? = KmFunction(flags, name)
-                .apply { functions.add(this) }
-
-            companion object {
-                fun from(companionClass: Class<*>): ReducedCompanionVisitor = ReducedCompanionVisitor().apply {
-                    companionClass.getAnnotation(Metadata::class.java)!!.accept(this)
-                }
-            }
-        }
-
-        private val companionField: Field = declaringClass.getDeclaredField(companionObject)
-        val type: Class<*> = companionField.type
-        val isAccessible: Boolean = companionField.isAccessible
-        private val functions by lazy { ReducedCompanionVisitor.from(type).functions }
-        val instance: Any by lazy {
-            // To prevent the call from failing, save the initial value and then rewrite the flag.
-            if (!companionField.isAccessible) companionField.isAccessible = true
-            companionField.get(null)
-        }
-
-        fun findFunctionByMethod(method: Method): KmFunction? {
-            val signature = method.toSignature()
-            return functions.find { it.signature == signature }
-        }
+    // KmClassVisitor
+    override fun visit(flags: Flags, name: ClassName) {
+        this.flags = flags
     }
+
+    override fun visitProperty(flags: Flags, name: String, getterFlags: Flags, setterFlags: Flags): KmPropertyVisitor =
+        KmProperty(flags, name, getterFlags, setterFlags).apply { allPropsMap[name] = this }
+
+    override fun visitConstructor(flags: Flags): KmConstructorVisitor =
+        KmConstructor(flags).apply { constructors.add(this) }
+
+    override fun visitCompanionObject(name: String) {
+        this.companionPropName = name
+    }
+
+    override fun visitSealedSubclass(name: ClassName) {
+        sealedSubclasses.add(name)
+    }
+
+    override fun visitInlineClassUnderlyingType(flags: Flags): KmTypeVisitor =
+        KmType(flags).also { inlineClassUnderlyingType = it }
 }
+
+private fun Metadata.accept(visitor: ReducedKmClassVisitor) {
+    val (strings, proto) = JvmProtoBufUtil.readClassDataFrom(data1.takeIf(Array<*>::isNotEmpty)!!, data2)
+    proto.accept(visitor, strings)
+}
+
+internal fun JmClass(
+    clazz: Class<*>,
+    metadata: Metadata,
+    superJmClass: JmClass?,
+    interfaceJmClasses: List<JmClass>
+): JmClass = JmClassImpl(clazz, metadata, superJmClass, interfaceJmClasses)

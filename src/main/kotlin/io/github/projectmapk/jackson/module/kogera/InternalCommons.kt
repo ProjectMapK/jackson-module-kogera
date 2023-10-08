@@ -5,8 +5,6 @@ import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmType
 import kotlinx.metadata.KmValueParameter
-import kotlinx.metadata.internal.accept
-import kotlinx.metadata.internal.metadata.jvm.deserialization.JvmProtoBufUtil
 import kotlinx.metadata.jvm.JvmMethodSignature
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
@@ -17,27 +15,17 @@ internal typealias KotlinDuration = kotlin.time.Duration
 
 internal fun Class<*>.isUnboxableValueClass() = this.getAnnotation(JvmInline::class.java) != null
 
-internal fun Metadata.accept(visitor: ReducedKmClassVisitor) {
-    val (strings, proto) = JvmProtoBufUtil.readClassDataFrom(data1.takeIf(Array<*>::isNotEmpty)!!, data2)
-    proto.accept(visitor, strings)
-}
-
-internal fun Class<*>.toReducedKmClass(): ReducedKmClass? = this.getAnnotation(Metadata::class.java)
-    ?.let { ReducedKmClass().apply { it.accept(this) } }
-
-private val primitiveClassToDesc by lazy {
-    mapOf(
-        Byte::class.javaPrimitiveType to 'B',
-        Char::class.javaPrimitiveType to 'C',
-        Double::class.javaPrimitiveType to 'D',
-        Float::class.javaPrimitiveType to 'F',
-        Int::class.javaPrimitiveType to 'I',
-        Long::class.javaPrimitiveType to 'J',
-        Short::class.javaPrimitiveType to 'S',
-        Boolean::class.javaPrimitiveType to 'Z',
-        Void::class.javaPrimitiveType to 'V'
-    )
-}
+private val primitiveClassToDesc = mapOf(
+    Byte::class.javaPrimitiveType to 'B',
+    Char::class.javaPrimitiveType to 'C',
+    Double::class.javaPrimitiveType to 'D',
+    Float::class.javaPrimitiveType to 'F',
+    Int::class.javaPrimitiveType to 'I',
+    Long::class.javaPrimitiveType to 'J',
+    Short::class.javaPrimitiveType to 'S',
+    Boolean::class.javaPrimitiveType to 'Z',
+    Void::class.javaPrimitiveType to 'V'
+)
 
 // -> this.name.replace(".", "/")
 private fun Class<*>.descName(): String {

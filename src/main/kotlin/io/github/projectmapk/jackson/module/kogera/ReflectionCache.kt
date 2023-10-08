@@ -17,7 +17,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
     private val classCache = LRUMap<Class<*>, JmClass>(reflectionCacheSize, reflectionCacheSize)
 
     // Initial size is 0 because the value class is not always used
-    private val valueClassReturnTypeCache: LRUMap<AnnotatedMethod, Optional<Class<*>>> =
+    private val valueClassReturnTypeCache: LRUMap<Method, Optional<Class<*>>> =
         LRUMap(0, reflectionCacheSize)
 
     // TODO: Consider whether the cache size should be reduced more,
@@ -70,7 +70,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
             optional
         } else {
             val value = Optional.ofNullable(method.getValueClassReturnType())
-            (valueClassReturnTypeCache.putIfAbsent(getter, value) ?: value)
+            (valueClassReturnTypeCache.putIfAbsent(method, value) ?: value)
         }.orElse(null)
     }
 

@@ -43,6 +43,14 @@ The same policy applies to deserialization.
 This policy was decided with reference to the behavior as of `jackson-module-kotlin 2.14.1` and [kotlinx-serialization](https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/value-classes.md#serializable-value-classes).  
 However, these are just basic policies, and the behavior can be overridden with `JsonSerializer` or `JsonDeserializer`.
 
+### Serialization performance improvement using `JsonUnbox`
+In `jackson-module-kogera`, the `jackson` functionality is modified by reflection so that the `Jackson` functionality works for `value class` as well.
+These are executed on all calls.
+On the other hand, if only `unbox` is required, these are extra overheads that can significantly impair serialization performance.
+
+Therefore, `jackson-module-kogera` provides the `JsonUnbox` annotation.
+When this annotation is provided, serialization performance is improved because only calls to `getter` that is `unboxed` will be made.
+
 ## For features that would not be supported
 I do not intend to support features that require significant effort to support and that can be circumvented by user definition.
 

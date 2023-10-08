@@ -55,7 +55,8 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
         return kotlinProperty?.returnType?.reconstructClassOrNull()?.takeIf { it.isUnboxableValueClass() }
     }
 
-    fun findValueClassReturnType(getter: AnnotatedMethod): Class<*>? {
+    // Return boxed type on Kotlin for unboxed getters
+    fun findBoxedReturnType(getter: AnnotatedMethod): Class<*>? {
         val method = getter.member.apply {
             // If the return value of the getter is a value class,
             // it will be serialized properly without doing anything.

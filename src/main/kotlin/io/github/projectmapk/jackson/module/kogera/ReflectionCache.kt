@@ -3,6 +3,7 @@ package io.github.projectmapk.jackson.module.kogera
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.util.LRUMap
 import java.io.Serializable
+import java.lang.reflect.Method
 import java.util.Optional
 
 internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
@@ -46,14 +47,8 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
         }
     }
 
-    private fun AnnotatedMethod.getValueClassReturnType(): Class<*>? {
-        val getter = this.member.apply {
-            // If the return value of the getter is a value class,
-            // it will be serialized properly without doing anything.
-            // TODO: Verify the case where a value class encompasses another value class.
-            if (this.returnType.isUnboxableValueClass()) return null
-        }
-        val kotlinProperty = getJmClass(getter.declaringClass)?.findPropertyByGetter(getter)
+    private fun Method.getValueClassReturnType(): Class<*>? {
+        val kotlinProperty = getJmClass(declaringClass)?.findPropertyByGetter(this)
 
         // Since there was no way to directly determine whether returnType is a value class or not,
         // Class is restored and processed.
@@ -61,12 +56,19 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
     }
 
     fun findValueClassReturnType(getter: AnnotatedMethod): Class<*>? {
-        val optional = valueClassReturnTypeCache.get(getter)
+        val method = getter.member.apply {
+            // If the return value of the getter is a value class,
+            // it will be serialized properly without doing anything.
+            // TODO: Verify the case where a value class encompasses another value class.
+            if (this.returnType.isUnboxableValueClass()) return null
+        }
+
+        val optional = valueClassReturnTypeCache.get(method)
 
         return if (optional != null) {
             optional
         } else {
-            val value = Optional.ofNullable(getter.getValueClassReturnType())
+            val value = Optional.ofNullable(method.getValueClassReturnType())
             (valueClassReturnTypeCache.putIfAbsent(getter, value) ?: value)
         }.orElse(null)
     }

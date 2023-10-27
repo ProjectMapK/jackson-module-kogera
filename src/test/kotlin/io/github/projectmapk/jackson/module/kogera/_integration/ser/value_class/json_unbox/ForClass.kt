@@ -1,21 +1,21 @@
 package io.github.projectmapk.jackson.module.kogera._integration.ser.value_class.json_unbox
 
-import io.github.projectmapk.jackson.module.kogera.annotation.JsonUnbox
+import io.github.projectmapk.jackson.module.kogera.annotation.JsonKUnbox
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class ForClass {
     @JvmInline
-    @JsonUnbox
+    @JsonKUnbox
     value class Primitive(val v: Int)
 
     @JvmInline
-    @JsonUnbox
+    @JsonKUnbox
     value class NonNullObject(val v: String)
 
     @JvmInline
-    @JsonUnbox
+    @JsonKUnbox
     value class NullableObject(val v: String?)
 
     data class Dto(

@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.util.Converter
 import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter
-import io.github.projectmapk.jackson.module.kogera.annotation.JsonUnbox
+import io.github.projectmapk.jackson.module.kogera.annotation.JsonKUnbox
 import io.github.projectmapk.jackson.module.kogera.deser.CollectionValueStrictNullChecksConverter
 import io.github.projectmapk.jackson.module.kogera.deser.MapValueStrictNullChecksConverter
 import io.github.projectmapk.jackson.module.kogera.isNullable
@@ -85,7 +85,7 @@ internal class KotlinFallbackAnnotationIntrospector(
                 }
             } else {
                 // If JsonUnbox is specified, the unboxed getter is used as is.
-                if (a.hasAnnotation(JsonUnbox::class.java) || it.getAnnotation(JsonUnbox::class.java) != null) {
+                if (a.hasAnnotation(JsonKUnbox::class.java) || it.getAnnotation(JsonKUnbox::class.java) != null) {
                     null
                 } else {
                     cache.getValueClassBoxConverter(a.rawReturnType, it)

@@ -9,4 +9,4 @@ package io.github.projectmapk.jackson.module.kogera.annotation
 @Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS, AnnotationTarget.PROPERTY_GETTER)
-public annotation class JsonUnbox
+public annotation class JsonKUnbox

@@ -1,5 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.annotation_introspector
 
+import com.fasterxml.jackson.annotation.JsonSetter
+import com.fasterxml.jackson.annotation.Nulls
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.introspect.Annotated
@@ -13,8 +15,6 @@ import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter
 import io.github.projectmapk.jackson.module.kogera.annotation.JsonKUnbox
-import io.github.projectmapk.jackson.module.kogera.deser.CollectionValueStrictNullChecksConverter
-import io.github.projectmapk.jackson.module.kogera.deser.MapValueStrictNullChecksConverter
 import io.github.projectmapk.jackson.module.kogera.isNullable
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
@@ -60,18 +60,8 @@ internal class KotlinFallbackAnnotationIntrospector(
     }
 
     // returns Converter when the argument on Java is an unboxed value class
-    override fun findDeserializationConverter(a: Annotated): Any? = (a as? AnnotatedParameter)?.let { param ->
-        findKotlinParameter(param)?.let { valueParameter ->
-            val rawType = a.rawType
-
-            valueParameter.createValueClassUnboxConverterOrNull(rawType) ?: run {
-                if (strictNullChecks) {
-                    valueParameter.createStrictNullChecksConverterOrNull(a.type)
-                } else {
-                    null
-                }
-            }
-        }
+    override fun findDeserializationConverter(a: Annotated): Any? = (a as? AnnotatedParameter)?.let {
+        findKotlinParameter(it)?.createValueClassUnboxConverterOrNull(a.rawType)
     }
 
     override fun findSerializationConverter(a: Annotated): Converter<*, *>? = when (a) {
@@ -114,6 +104,19 @@ internal class KotlinFallbackAnnotationIntrospector(
             if (it.requireRebox()) cache.getValueClassBoxConverter(am.rawReturnType, it).delegatingSerializer else null
         }
     }
+
+    override fun findSetterInfo(ann: Annotated): JsonSetter.Value = (ann as? AnnotatedParameter)
+        ?.takeIf { strictNullChecks }
+        ?.let {
+            findKotlinParameter(ann)?.let { valueParameter ->
+                if (valueParameter.requireStrictNullCheck(ann.type)) {
+                    JsonSetter.Value.forContentNulls(Nulls.FAIL)
+                } else {
+                    null
+                }
+            }
+        }
+        ?: super.findSetterInfo(ann)
 }
 
 private fun KmValueParameter.createValueClassUnboxConverterOrNull(rawType: Class<*>): ValueClassUnboxConverter<*>? {
@@ -127,14 +130,6 @@ private fun KmValueParameter.isNullishTypeAt(index: Int): Boolean = type.argumen
     it === KmTypeProjection.STAR || it.type!!.isNullable()
 } ?: true // If a type argument cannot be taken, treat it as nullable to avoid unexpected failure.
 
-private fun KmValueParameter.createStrictNullChecksConverterOrNull(type: JavaType): Converter<*, *>? {
-    return when {
-        type.isArrayType && !this.isNullishTypeAt(0) ->
-            CollectionValueStrictNullChecksConverter.ForArray(type, this.name)
-        type.isCollectionLikeType && !this.isNullishTypeAt(0) ->
-            CollectionValueStrictNullChecksConverter.ForIterable(type, this.name)
-        type.isMapLikeType && !this.isNullishTypeAt(1) ->
-            MapValueStrictNullChecksConverter(type, this.name)
-        else -> null
-    }
-}
+private fun KmValueParameter.requireStrictNullCheck(type: JavaType): Boolean =
+    ((type.isArrayType || type.isCollectionLikeType) && !this.isNullishTypeAt(0)) ||
+        (type.isMapLikeType && !this.isNullishTypeAt(1))

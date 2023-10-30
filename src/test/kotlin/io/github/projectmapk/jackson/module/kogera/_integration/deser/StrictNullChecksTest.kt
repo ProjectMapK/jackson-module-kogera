@@ -3,7 +3,7 @@ package io.github.projectmapk.jackson.module.kogera._integration.deser
 import com.fasterxml.jackson.annotation.JsonSetter
 import com.fasterxml.jackson.annotation.Nulls
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.exc.MismatchedInputException
+import com.fasterxml.jackson.databind.exc.InvalidNullException
 import io.github.projectmapk.jackson.module.kogera.KotlinFeature
 import io.github.projectmapk.jackson.module.kogera.KotlinModule
 import io.github.projectmapk.jackson.module.kogera.readValue
@@ -62,53 +62,79 @@ class StrictNullChecksTest {
         @Test
         fun array() {
             val src = mapper.writeValueAsString(AnyWrapper(arrayOf<Int?>(null)))
-            assertThrows<MismatchedInputException> { mapper.readValue<ArrayWrapper>(src) }
+            assertThrows<InvalidNullException> { mapper.readValue<ArrayWrapper>(src) }
         }
 
         @Test
         fun list() {
             val src = mapper.writeValueAsString(AnyWrapper(arrayOf<Int?>(null)))
-            assertThrows<MismatchedInputException> { mapper.readValue<ListWrapper>(src) }
+            assertThrows<InvalidNullException> { mapper.readValue<ListWrapper>(src) }
         }
 
         @Test
         fun map() {
             val src = mapper.writeValueAsString(AnyWrapper(mapOf("foo" to null)))
-            assertThrows<MismatchedInputException> { mapper.readValue<MapWrapper>(src) }
+            assertThrows<InvalidNullException> { mapper.readValue<MapWrapper>(src) }
         }
     }
 
-    class NullsSkipArrayWrapper(@JsonSetter(contentNulls = Nulls.SKIP) val value: Array<Int>)
-    data class NullsSkipListWrapper(@JsonSetter(contentNulls = Nulls.SKIP) val value: List<Int>)
-    data class NullsSkipMapWrapper(@JsonSetter(contentNulls = Nulls.SKIP) val value: Map<String, Int>)
+    class ContentNullsSkipArrayWrapper(@JsonSetter(contentNulls = Nulls.SKIP) val value: Array<Int>)
+    data class ContentNullsSkipListWrapper(@JsonSetter(contentNulls = Nulls.SKIP) val value: List<Int>)
+    data class ContentNullsSkipMapWrapper(@JsonSetter(contentNulls = Nulls.SKIP) val value: Map<String, Int>)
 
     @Nested
     inner class CustomByAnnotationTest {
         @Test
         fun array() {
-            val expected = NullsSkipArrayWrapper(emptyArray())
+            val expected = ContentNullsSkipArrayWrapper(emptyArray())
             val src = mapper.writeValueAsString(AnyWrapper(arrayOf<Int?>(null)))
-            val result = mapper.readValue<NullsSkipArrayWrapper>(src)
+            val result = mapper.readValue<ContentNullsSkipArrayWrapper>(src)
 
             assertArrayEquals(expected.value, result.value)
         }
 
         @Test
         fun list() {
-            val expected = NullsSkipListWrapper(emptyList())
+            val expected = ContentNullsSkipListWrapper(emptyList())
             val src = mapper.writeValueAsString(AnyWrapper(listOf<Int?>(null)))
-            val result = mapper.readValue<NullsSkipListWrapper>(src)
+            val result = mapper.readValue<ContentNullsSkipListWrapper>(src)
 
             assertEquals(expected, result)
         }
 
         @Test
         fun map() {
-            val expected = NullsSkipMapWrapper(emptyMap())
+            val expected = ContentNullsSkipMapWrapper(emptyMap())
             val src = mapper.writeValueAsString(AnyWrapper(mapOf("foo" to null)))
-            val result = mapper.readValue<NullsSkipMapWrapper>(src)
+            val result = mapper.readValue<ContentNullsSkipMapWrapper>(src)
 
             assertEquals(expected, result)
+        }
+    }
+
+    class AnnotatedArrayWrapper(@JsonSetter(nulls = Nulls.SKIP) val value: Array<Int> = emptyArray())
+    data class AnnotatedListWrapper(@JsonSetter(nulls = Nulls.SKIP) val value: List<Int> = emptyList())
+    data class AnnotatedMapWrapper(@JsonSetter(nulls = Nulls.SKIP) val value: Map<String, Int> = emptyMap())
+
+    // If Default is specified by annotation, it is not overridden.
+    @Nested
+    inner class AnnotatedNullInput {
+        @Test
+        fun array() {
+            val src = mapper.writeValueAsString(AnyWrapper(arrayOf<Int?>(null)))
+            assertThrows<InvalidNullException> { mapper.readValue<AnnotatedArrayWrapper>(src) }
+        }
+
+        @Test
+        fun list() {
+            val src = mapper.writeValueAsString(AnyWrapper(arrayOf<Int?>(null)))
+            assertThrows<InvalidNullException> { mapper.readValue<AnnotatedListWrapper>(src) }
+        }
+
+        @Test
+        fun map() {
+            val src = mapper.writeValueAsString(AnyWrapper(mapOf("foo" to null)))
+            assertThrows<InvalidNullException> { mapper.readValue<AnnotatedMapWrapper>(src) }
         }
     }
 }

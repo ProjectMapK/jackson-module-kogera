@@ -5,7 +5,8 @@ import java.io.Serializable
 import java.lang.reflect.Method
 import java.util.Optional
 
-internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
+// For ease of testing, maxCacheSize is limited only in KotlinModule.
+internal class ReflectionCache(initialCacheSize: Int, maxCacheSize: Int) : Serializable {
     companion object {
         // Increment is required when properties that use LRUMap are changed.
         @Suppress("ConstPropertyName")
@@ -33,7 +34,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
         ) : CacheKey<Class<*>, io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter<*>>()
     }
 
-    private val cache = LRUMap<CacheKey<*, *>, Any>(reflectionCacheSize, reflectionCacheSize)
+    private val cache = LRUMap<CacheKey<*, *>, Any>(initialCacheSize, maxCacheSize)
     private fun <T : Any> find(key: CacheKey<*, T>): T? = cache[key]?.let {
         @Suppress("UNCHECKED_CAST")
         it as T

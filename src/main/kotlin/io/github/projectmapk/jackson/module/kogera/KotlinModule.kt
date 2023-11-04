@@ -39,7 +39,7 @@ import java.util.*
 // Do not delete default arguments,
 // as this will cause an error during initialization by Spring's Jackson2ObjectMapperBuilder.
 public class KotlinModule private constructor(
-    public val reflectionCacheSize: Int = Builder.reflectionCacheSizeDefault,
+    public val reflectionCacheSize: Int = Builder.DEFAULT_CACHE_SIZE,
     public val nullToEmptyCollection: Boolean = NullToEmptyCollection.enabledByDefault,
     public val nullToEmptyMap: Boolean = NullToEmptyMap.enabledByDefault,
     public val nullIsSameAsDefault: Boolean = NullIsSameAsDefault.enabledByDefault,
@@ -112,10 +112,10 @@ public class KotlinModule private constructor(
 
     public class Builder {
         public companion object {
-            internal const val reflectionCacheSizeDefault = 512
+            internal const val DEFAULT_CACHE_SIZE = 512
         }
 
-        public var reflectionCacheSize: Int = reflectionCacheSizeDefault
+        public var reflectionCacheSize: Int = DEFAULT_CACHE_SIZE
             private set
 
         private val bitSet: BitSet = KotlinFeature.defaults

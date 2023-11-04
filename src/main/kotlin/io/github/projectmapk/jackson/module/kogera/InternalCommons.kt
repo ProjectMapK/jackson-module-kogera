@@ -54,13 +54,6 @@ internal fun Constructor<*>.toSignature(): JvmMethodSignature =
 internal fun Method.toSignature(): JvmMethodSignature =
     JvmMethodSignature(this.name, parameterTypes.toDescBuilder().appendDescriptor(this.returnType).toString())
 
-private val Class<*>.descriptor: String
-    get() = when {
-        isPrimitive -> primitiveClassToDesc.getValue(this).toString()
-        isArray -> "[${componentType.descriptor}"
-        else -> "L${this.descName()};"
-    }
-
 internal fun List<KmValueParameter>.hasVarargParam(): Boolean =
     lastOrNull()?.let { it.varargElementType != null } ?: false
 

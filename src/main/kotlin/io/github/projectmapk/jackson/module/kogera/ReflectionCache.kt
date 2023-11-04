@@ -10,25 +10,43 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
     companion object {
         // Increment is required when properties that use LRUMap are changed.
         @Suppress("ConstPropertyName")
-        private const val serialVersionUID = 3L
+        private const val serialVersionUID = 4L
     }
 
-    // This cache is used for both serialization and deserialization, so reserve a larger size from the start.
-    private val classCache = LRUMap<Class<*>, JmClass>(reflectionCacheSize, reflectionCacheSize)
+    private sealed class CacheKey<K : Any, V : Any> {
+        abstract val key: K
 
-    // Initial size is 0 because the value class is not always used
-    private val valueClassReturnTypeCache: LRUMap<Method, Optional<Class<*>>> =
-        LRUMap(0, reflectionCacheSize)
+        final override fun equals(other: Any?): Boolean =
+            (other as? CacheKey<*, *>)?.let { it::class == this::class && it.key == key } ?: false
 
-    // TODO: Consider whether the cache size should be reduced more,
-    //       since the cache is used only twice locally at initialization per property.
-    private val valueClassBoxConverterCache: LRUMap<Class<*>, ValueClassBoxConverter<*, *>> =
-        LRUMap(0, reflectionCacheSize)
-    private val valueClassUnboxConverterCache: LRUMap<Class<*>, ValueClassUnboxConverter<*>> =
-        LRUMap(0, reflectionCacheSize)
+        final override fun hashCode(): Int = key.hashCode()
+        final override fun toString(): String = key.toString()
+
+        class JmClass(
+            override val key: Class<*>
+        ) : CacheKey<Class<*>, io.github.projectmapk.jackson.module.kogera.JmClass>()
+        class ValueClassReturnType(override val key: Method) : CacheKey<Method, Optional<Class<*>>>()
+        class ValueClassBoxConverter(
+            override val key: Class<*>
+        ) : CacheKey<Class<*>, io.github.projectmapk.jackson.module.kogera.ValueClassBoxConverter<*, *>>()
+        class ValueClassUnboxConverter(
+            override val key: Class<*>
+        ) : CacheKey<Class<*>, io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter<*>>()
+    }
+
+    private val cache = LRUMap<CacheKey<*, *>, Any>(reflectionCacheSize, reflectionCacheSize)
+    private fun <T : Any> find(key: CacheKey<*, T>): T? = cache[key]?.let {
+        @Suppress("UNCHECKED_CAST")
+        it as T
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <T : Any> putIfAbsent(key: CacheKey<*, T>, value: T): T = cache.putIfAbsent(key, value) as T? ?: value
 
     fun getJmClass(clazz: Class<*>): JmClass? {
-        return classCache[clazz] ?: run {
+        val key = CacheKey.JmClass(clazz)
+
+        return find(key) ?: run {
             val metadata = clazz.getAnnotation(Metadata::class.java) ?: return null
 
             // Do not parse super class for interfaces.
@@ -43,7 +61,7 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
             val interfaceJmClasses = clazz.interfaces.mapNotNull { getJmClass(it) }
 
             val value = JmClass(clazz, metadata, superJmClass, interfaceJmClasses)
-            (classCache.putIfAbsent(clazz, value) ?: value)
+            putIfAbsent(key, value)
         }
     }
 
@@ -58,7 +76,8 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
     // Return boxed type on Kotlin for unboxed getters
     fun findBoxedReturnType(getter: AnnotatedMethod): Class<*>? {
         val method = getter.member
-        val optional = valueClassReturnTypeCache.get(method)
+        val key = CacheKey.ValueClassReturnType(method)
+        val optional = find(key)
 
         return if (optional != null) {
             optional
@@ -69,21 +88,17 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
             if (method.returnType.isUnboxableValueClass()) return null
 
             val value = Optional.ofNullable(method.getValueClassReturnType())
-            (valueClassReturnTypeCache.putIfAbsent(method, value) ?: value)
+            putIfAbsent(key, value)
         }.orElse(null)
     }
 
-    fun getValueClassBoxConverter(unboxedClass: Class<*>, valueClass: Class<*>): ValueClassBoxConverter<*, *> =
-        valueClassBoxConverterCache.get(valueClass) ?: run {
-            val value = ValueClassBoxConverter(unboxedClass, valueClass)
+    fun getValueClassBoxConverter(unboxedClass: Class<*>, valueClass: Class<*>): ValueClassBoxConverter<*, *> {
+        val key = CacheKey.ValueClassBoxConverter(valueClass)
+        return find(key) ?: putIfAbsent(key, ValueClassBoxConverter(unboxedClass, valueClass))
+    }
 
-            (valueClassBoxConverterCache.putIfAbsent(valueClass, value) ?: value)
-        }
-
-    fun getValueClassUnboxConverter(valueClass: Class<*>): ValueClassUnboxConverter<*> =
-        valueClassUnboxConverterCache.get(valueClass) ?: run {
-            val value = ValueClassUnboxConverter(valueClass)
-
-            (valueClassUnboxConverterCache.putIfAbsent(valueClass, value) ?: value)
-        }
+    fun getValueClassUnboxConverter(valueClass: Class<*>): ValueClassUnboxConverter<*> {
+        val key = CacheKey.ValueClassUnboxConverter(valueClass)
+        return find(key) ?: putIfAbsent(key, ValueClassUnboxConverter(valueClass))
+    }
 }

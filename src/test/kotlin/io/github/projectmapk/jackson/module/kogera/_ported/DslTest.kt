@@ -32,7 +32,7 @@ class DslTest {
     @Test
     fun createModuleWithBuilderOptions() {
         val module = kotlinModule {
-            withReflectionCacheSize(123)
+            withInitialCacheSize(123)
             enable(NullToEmptyCollection)
             enable(NullToEmptyMap)
             enable(NullIsSameAsDefault)
@@ -41,7 +41,7 @@ class DslTest {
         }
 
         assertNotNull(module)
-        assertEquals(module.reflectionCacheSize, 123)
+        assertEquals(module.initialCacheSize, 123)
         assertTrue(module.nullToEmptyCollection)
         assertTrue(module.nullToEmptyMap)
         assertTrue(module.nullIsSameAsDefault)

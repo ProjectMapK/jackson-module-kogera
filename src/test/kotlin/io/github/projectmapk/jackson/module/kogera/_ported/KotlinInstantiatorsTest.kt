@@ -15,7 +15,7 @@ class KotlinInstantiatorsTest {
     private val deserConfig = mapper.deserializationConfig
 
     private val kotlinInstantiators = KotlinInstantiators(
-        ReflectionCache(10),
+        ReflectionCache(10, 10),
         nullToEmptyCollection = false,
         nullToEmptyMap = false,
         nullIsSameAsDefault = false

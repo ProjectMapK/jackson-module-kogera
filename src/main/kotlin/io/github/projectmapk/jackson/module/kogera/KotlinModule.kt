@@ -150,6 +150,7 @@ public class KotlinModule private constructor(
          */
         public fun withInitialCacheSize(initialCacheSize: Int): Builder = apply {
             checkCacheSize(initialCacheSize, maxCacheSize)
+
             this.initialCacheSize = initialCacheSize
         }
 
@@ -163,7 +164,8 @@ public class KotlinModule private constructor(
          */
         public fun withMaxCacheSize(maxCacheSize: Int): Builder = apply {
             checkMaxCacheSize(maxCacheSize)
-            if (maxCacheSize < initialCacheSize) initialCacheSize = maxCacheSize
+            checkCacheSize(initialCacheSize, maxCacheSize)
+
             this.maxCacheSize = maxCacheSize
         }
 

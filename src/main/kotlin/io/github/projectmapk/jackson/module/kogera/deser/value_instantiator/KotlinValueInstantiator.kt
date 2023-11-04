@@ -119,7 +119,7 @@ internal class KotlinInstantiators(
         beanDescriptor: BeanDescription,
         defaultInstantiator: ValueInstantiator
     ): ValueInstantiator {
-        return if (beanDescriptor.beanClass.declaredAnnotations.any { it is Metadata }) {
+        return if (cache.getJmClass(beanDescriptor.beanClass) != null) {
             if (defaultInstantiator::class == StdValueInstantiator::class) {
                 KotlinValueInstantiator(
                     defaultInstantiator as StdValueInstantiator,

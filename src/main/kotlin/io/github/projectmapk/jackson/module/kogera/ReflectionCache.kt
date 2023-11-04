@@ -1,6 +1,5 @@
 package io.github.projectmapk.jackson.module.kogera
 
-import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.util.LRUMap
 import java.io.Serializable
 import java.lang.reflect.Method
@@ -74,9 +73,8 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
     }
 
     // Return boxed type on Kotlin for unboxed getters
-    fun findBoxedReturnType(getter: AnnotatedMethod): Class<*>? {
-        val method = getter.member
-        val key = CacheKey.ValueClassReturnType(method)
+    fun findBoxedReturnType(getter: Method): Class<*>? {
+        val key = CacheKey.ValueClassReturnType(getter)
         val optional = find(key)
 
         return if (optional != null) {
@@ -85,9 +83,9 @@ internal class ReflectionCache(reflectionCacheSize: Int) : Serializable {
             // If the return value of the getter is a value class,
             // it will be serialized properly without doing anything.
             // TODO: Verify the case where a value class encompasses another value class.
-            if (method.returnType.isUnboxableValueClass()) return null
+            if (getter.returnType.isUnboxableValueClass()) return null
 
-            val value = Optional.ofNullable(method.getValueClassReturnType())
+            val value = Optional.ofNullable(getter.getValueClassReturnType())
             putIfAbsent(key, value)
         }.orElse(null)
     }

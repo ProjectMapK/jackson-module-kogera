@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 
 class KotlinModuleTest {
     @Test
@@ -33,6 +35,47 @@ class KotlinModuleTest {
         assertFalse(builder.isEnabled(KotlinFeature.StrictNullChecks))
         assertFalse(builder.isEnabled(KotlinFeature.CopySyntheticConstructorParameterAnnotations))
         assertFalse(builder.isEnabled(KotlinFeature.UseJavaDurationConversion))
+    }
+
+    @Nested
+    inner class SetCacheSizesTest {
+        @Test
+        fun `Cannot set initialCacheSize to a value larger than maxCacheSize`() {
+            assertThrows<IllegalArgumentException> {
+                KotlinModule.Builder().apply {
+                    withInitialCacheSize(maxCacheSize + 1)
+                }
+            }
+        }
+
+        @Test
+        fun `Cannot set maxCacheSize to a value smaller than initialCacheSize`() {
+            assertThrows<IllegalArgumentException> {
+                KotlinModule.Builder().apply {
+                    withMaxCacheSize(initialCacheSize - 1)
+                }
+            }
+        }
+
+        @Test
+        fun `Cannot set maxCacheSize to a value smaller than 15`() {
+            assertThrows<IllegalArgumentException> {
+                KotlinModule.Builder().apply {
+                    withInitialCacheSize(0)
+                    withMaxCacheSize(15)
+                }
+            }
+        }
+
+        @Test
+        fun test() {
+            assertDoesNotThrow {
+                KotlinModule.Builder().apply {
+                    withInitialCacheSize(0)
+                    withMaxCacheSize(16)
+                }
+            }
+        }
     }
 
     @Test

@@ -19,7 +19,7 @@ class KotlinModuleTest {
     fun builderDefaultsMatchFeatures() {
         val module = KotlinModule.Builder().build()
 
-        assertEquals(module.reflectionCacheSize, 512)
+        assertEquals(module.initialCacheSize, 512)
         assertFalse(module.nullToEmptyCollection)
         assertFalse(module.nullToEmptyMap)
         assertFalse(module.nullIsSameAsDefault)
@@ -31,7 +31,7 @@ class KotlinModuleTest {
     fun builder_Defaults() {
         val module = KotlinModule.Builder().build()
 
-        assertEquals(512, module.reflectionCacheSize)
+        assertEquals(512, module.maxCacheSize)
         assertFalse(module.nullToEmptyCollection)
         assertFalse(module.nullToEmptyMap)
         assertFalse(module.nullIsSameAsDefault)
@@ -42,7 +42,7 @@ class KotlinModuleTest {
     @Test
     fun builder_SetAll() {
         val module = KotlinModule.Builder().apply {
-            withReflectionCacheSize(123)
+            withInitialCacheSize(123)
             enable(NullToEmptyCollection)
             enable(NullToEmptyMap)
             enable(NullIsSameAsDefault)
@@ -50,7 +50,7 @@ class KotlinModuleTest {
             enable(StrictNullChecks)
         }.build()
 
-        assertEquals(123, module.reflectionCacheSize)
+        assertEquals(123, module.initialCacheSize)
         assertTrue(module.nullToEmptyCollection)
         assertTrue(module.nullToEmptyMap)
         assertTrue(module.nullIsSameAsDefault)

@@ -38,7 +38,8 @@ class KotlinModuleTest {
     @Test
     fun jdkSerializabilityTest() {
         val module = KotlinModule.Builder().apply {
-            withReflectionCacheSize(123)
+            withInitialCacheSize(123)
+            withMaxCacheSize(321)
 
             KotlinFeature.values().forEach {
                 enable(it)
@@ -51,7 +52,8 @@ class KotlinModuleTest {
             val deserialized = jdkDeserialize<KotlinModule>(serialized)
 
             assertNotNull(deserialized)
-            assertEquals(123, deserialized.reflectionCacheSize)
+            assertEquals(123, deserialized.initialCacheSize)
+            assertEquals(321, deserialized.maxCacheSize)
             assertEquals(module.nullToEmptyCollection, deserialized.nullToEmptyCollection)
             assertEquals(module.nullToEmptyMap, deserialized.nullToEmptyMap)
             assertEquals(module.nullIsSameAsDefault, deserialized.nullIsSameAsDefault)

@@ -14,7 +14,7 @@ private class InheritanceTest {
 
     private class X : A(), J
 
-    val cache = ReflectionCache(5)
+    val cache = ReflectionCache(5, 5)
 
     @Test
     fun test() {

@@ -118,25 +118,23 @@ internal class KotlinInstantiators(
         deserConfig: DeserializationConfig,
         beanDescriptor: BeanDescription,
         defaultInstantiator: ValueInstantiator
-    ): ValueInstantiator {
-        return if (cache.getJmClass(beanDescriptor.beanClass) != null) {
-            if (defaultInstantiator::class == StdValueInstantiator::class) {
-                KotlinValueInstantiator(
-                    defaultInstantiator as StdValueInstantiator,
-                    cache,
-                    nullToEmptyCollection,
-                    nullToEmptyMap,
-                    nullIsSameAsDefault
-                )
-            } else {
-                // TODO: return defaultInstantiator and let default method parameters and nullability go unused?
-                //       or die with exception:
-                throw IllegalStateException(
-                    "KotlinValueInstantiator requires that the default ValueInstantiator is StdValueInstantiator"
-                )
-            }
+    ): ValueInstantiator = if (cache.getJmClass(beanDescriptor.beanClass) != null) {
+        if (defaultInstantiator::class == StdValueInstantiator::class) {
+            KotlinValueInstantiator(
+                defaultInstantiator as StdValueInstantiator,
+                cache,
+                nullToEmptyCollection,
+                nullToEmptyMap,
+                nullIsSameAsDefault
+            )
         } else {
-            defaultInstantiator
+            // TODO: return defaultInstantiator and let default method parameters and nullability go unused?
+            //       or die with exception:
+            throw IllegalStateException(
+                "KotlinValueInstantiator requires that the default ValueInstantiator is StdValueInstantiator"
+            )
         }
+    } else {
+        defaultInstantiator
     }
 }

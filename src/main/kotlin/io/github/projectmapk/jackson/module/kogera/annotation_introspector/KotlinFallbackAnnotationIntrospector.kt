@@ -48,6 +48,9 @@ internal class KotlinFallbackAnnotationIntrospector(
             else -> null
         }?.let { it[param.index] }
 
+    private fun findKotlinParameter(param: Annotated): KmValueParameter? =
+        (param as? AnnotatedParameter)?.let { findKotlinParameter(it) }
+
     // since 2.4
     override fun findImplicitPropertyName(member: AnnotatedMember): String? = when (member) {
         is AnnotatedMethod -> if (member.parameterCount == 0) {
@@ -60,9 +63,8 @@ internal class KotlinFallbackAnnotationIntrospector(
     }
 
     // returns Converter when the argument on Java is an unboxed value class
-    override fun findDeserializationConverter(a: Annotated): Any? = (a as? AnnotatedParameter)?.let {
-        findKotlinParameter(it)?.createValueClassUnboxConverterOrNull(a.rawType)
-    }
+    override fun findDeserializationConverter(a: Annotated): Any? =
+        findKotlinParameter(a)?.createValueClassUnboxConverterOrNull(a.rawType)
 
     override fun findSerializationConverter(a: Annotated): Converter<*, *>? = when (a) {
         // Find a converter to handle the case where the getter returns an unboxed value from the value class.
@@ -105,9 +107,8 @@ internal class KotlinFallbackAnnotationIntrospector(
         }
     }
 
-    override fun findSetterInfo(ann: Annotated): JsonSetter.Value = (ann as? AnnotatedParameter)
-        ?.takeIf { strictNullChecks }
-        ?.let {
+    override fun findSetterInfo(ann: Annotated): JsonSetter.Value = ann.takeIf { strictNullChecks }
+        ?.let { _ ->
             findKotlinParameter(ann)?.let { valueParameter ->
                 if (valueParameter.requireStrictNullCheck(ann.type)) {
                     JsonSetter.Value.forContentNulls(Nulls.FAIL)

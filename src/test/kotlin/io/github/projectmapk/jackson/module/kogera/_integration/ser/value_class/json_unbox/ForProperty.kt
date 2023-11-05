@@ -1,6 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera._integration.ser.value_class.json_unbox
 
-import io.github.projectmapk.jackson.module.kogera.annotation.JsonUnbox
+import io.github.projectmapk.jackson.module.kogera.annotation.JsonKUnbox
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -16,25 +16,25 @@ class ForProperty {
     value class NullableObject(val v: String?)
 
     data class Dto(
-        @get:JsonUnbox
+        @get:JsonKUnbox
         val p0: Primitive = Primitive(0),
-        @get:JsonUnbox
+        @get:JsonKUnbox
         val p1: Primitive? = Primitive(1),
-        @get:JsonUnbox
+        @get:JsonKUnbox
         val p2: Primitive? = null,
-        @get:JsonUnbox
+        @get:JsonKUnbox
         val nno0: NonNullObject = NonNullObject("0"),
-        @get:JsonUnbox
+        @get:JsonKUnbox
         val nno1: NonNullObject? = NonNullObject("1"),
-        @get:JsonUnbox
+        @get:JsonKUnbox
         val nno2: NonNullObject? = null,
-        @get:JsonUnbox
+        @get:JsonKUnbox
         val no0: NullableObject = NullableObject("0"),
-        @get:JsonUnbox
+        @get:JsonKUnbox
         val no1: NullableObject = NullableObject(null),
-        @get:JsonUnbox
+        @get:JsonKUnbox
         val no2: NullableObject? = NullableObject("2"),
-        @get:JsonUnbox
+        @get:JsonKUnbox
         val no3: NullableObject? = null
     )
 

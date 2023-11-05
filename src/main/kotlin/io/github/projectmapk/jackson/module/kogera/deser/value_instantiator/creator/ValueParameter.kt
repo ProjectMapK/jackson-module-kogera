@@ -10,7 +10,7 @@ internal class ValueParameter(param: KmValueParameter) {
     val name: String = param.name
     val type: KmType = param.type
     val isOptional: Boolean = Flag.ValueParameter.DECLARES_DEFAULT_VALUE(param.flags)
-    val isPrimitive: Boolean = Flag.IS_PRIVATE(param.type.flags)
+    val isPrimitive: Boolean = Flag.IS_PRIVATE(param.flags)
     val isNullable: Boolean = type.isNullable()
     val isGenericType: Boolean = param.type.classifier is KmClassifier.TypeParameter
 

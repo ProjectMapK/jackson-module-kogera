@@ -53,7 +53,9 @@ public enum class KotlinFeature(internal val enabledByDefault: Boolean) {
      *
      * With this disabled, the default, collections which are typed to disallow null members (e.g. `List<String>`)
      * may contain null values after deserialization.
-     * Enabling it protects against this but has performance impact.
+     * Enabling it protects against this, but it impairs performance a bit.
+     *
+     * Also, if contentNulls are custom from findSetterInfo in AnnotationIntrospector, there may be a conflict.
      */
     StrictNullChecks(enabledByDefault = false),
 

@@ -44,17 +44,11 @@ jobs:
           - name: '1.8.22'
             version: '1.8.22'
             k2: false
-          - name: '1.9.10'
-            version: '1.9.10'
+          - name: '1.9.20'
+            version: '1.9.20'
             k2: false
-          - name: '1.9.10 K2'
-            version: '1.9.10'
-            k2: true
-          - name: '1.9.20-Beta'
-            version: '1.9.20-Beta'
-            k2: false
-          - name: '1.9.20-Beta K2'
-            version: '1.9.20-Beta'
+          - name: '1.9.20 K2'
+            version: '1.9.20'
             k2: true
     env:
       KOTLIN_VERSION: ${{ matrix.kotlin.version }}

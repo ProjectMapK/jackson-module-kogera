@@ -51,3 +51,5 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: test
+      - name: Run snapshot action
+        uses: mikepenz/gradle-dependency-submission@0.9

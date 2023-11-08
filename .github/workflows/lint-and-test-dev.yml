@@ -51,5 +51,6 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: test
+      # TODO: Prepare a separate WF to be executed only when there is a change in build.gradle.
       - name: Run snapshot action
-        uses: mikepenz/gradle-dependency-submission@0.9
+        uses: mikepenz/gradle-dependency-submission@0.9.1

@@ -63,7 +63,6 @@ java {
 kotlinter {
     // see https://github.com/pinterest/ktlint/blob/master/docs/rules/standard.md
     this.disabledRules = arrayOf(
-        "package-name", // This project allows for the inclusion of _ to represent the package name in the snake case.
         "filename" // For clarity in future extensions, this rule is disabled.
     )
 }

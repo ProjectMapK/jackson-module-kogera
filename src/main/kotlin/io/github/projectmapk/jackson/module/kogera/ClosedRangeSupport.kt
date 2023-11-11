@@ -1,8 +1,37 @@
 package io.github.projectmapk.jackson.module.kogera
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.AbstractTypeResolver
 import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.JavaType
+
+internal abstract class ClosedRangeMixin<T> @JsonCreator constructor(
+    public val start: T,
+    @get:JsonProperty("end") public val endInclusive: T
+) {
+    @JsonIgnore
+    public abstract fun getEnd(): T
+
+    @JsonIgnore
+    public abstract fun getFirst(): T
+
+    @JsonIgnore
+    public abstract fun getLast(): T
+
+    @JsonIgnore
+    public abstract fun getIncrement(): T
+
+    @JsonIgnore
+    public abstract fun isEmpty(): Boolean
+
+    @JsonIgnore
+    public abstract fun getStep(): T
+
+    @JsonIgnore
+    public abstract fun getEndExclusive(): T
+}
 
 /*
  * ClosedRange, which is not a concrete type like IntRange, does not have a type to deserialize to,

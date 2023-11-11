@@ -14,7 +14,7 @@ val jacksonVersion = "2.15.3"
 val generatedSrcPath = "${layout.buildDirectory.get()}/generated/kotlin"
 
 group = groupStr
-version = "${jacksonVersion}-beta6"
+version = "${jacksonVersion}-beta7"
 
 repositories {
     mavenCentral()
@@ -28,7 +28,7 @@ dependencies {
     api("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
 
     // test libs
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("io.mockk:mockk:1.13.7")
 

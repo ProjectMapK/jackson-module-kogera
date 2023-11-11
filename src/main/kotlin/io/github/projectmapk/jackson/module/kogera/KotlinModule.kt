@@ -9,12 +9,12 @@ import io.github.projectmapk.jackson.module.kogera.KotlinFeature.NullToEmptyMap
 import io.github.projectmapk.jackson.module.kogera.KotlinFeature.SingletonSupport
 import io.github.projectmapk.jackson.module.kogera.KotlinFeature.StrictNullChecks
 import io.github.projectmapk.jackson.module.kogera.KotlinFeature.UseJavaDurationConversion
-import io.github.projectmapk.jackson.module.kogera.annotation_introspector.KotlinFallbackAnnotationIntrospector
-import io.github.projectmapk.jackson.module.kogera.annotation_introspector.KotlinPrimaryAnnotationIntrospector
+import io.github.projectmapk.jackson.module.kogera.annotationIntrospector.KotlinFallbackAnnotationIntrospector
+import io.github.projectmapk.jackson.module.kogera.annotationIntrospector.KotlinPrimaryAnnotationIntrospector
 import io.github.projectmapk.jackson.module.kogera.deser.deserializers.KotlinDeserializers
 import io.github.projectmapk.jackson.module.kogera.deser.deserializers.KotlinKeyDeserializers
-import io.github.projectmapk.jackson.module.kogera.deser.singleton_support.KotlinBeanDeserializerModifier
-import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.KotlinInstantiators
+import io.github.projectmapk.jackson.module.kogera.deser.singletonSupport.KotlinBeanDeserializerModifier
+import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.KotlinInstantiators
 import io.github.projectmapk.jackson.module.kogera.ser.serializers.KotlinKeySerializers
 import io.github.projectmapk.jackson.module.kogera.ser.serializers.KotlinSerializers
 import java.util.*

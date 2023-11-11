@@ -60,14 +60,15 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-kotlinter {
-    // see https://github.com/pinterest/ktlint/blob/master/docs/rules/standard.md
-    this.disabledRules = arrayOf(
-        "filename" // For clarity in future extensions, this rule is disabled.
-    )
-}
-
 tasks {
+    // For ported tests, they are excluded from the formatting because they are not new code.
+    lintKotlinTest {
+        exclude { it.path.contains("zPorted") }
+    }
+    formatKotlinTest {
+        exclude { it.path.contains("zPorted") }
+    }
+
     // Task to generate version file
     val generateKogeraVersion by registering(Copy::class) {
         val packageStr = "$groupStr.jackson.module.kogera"

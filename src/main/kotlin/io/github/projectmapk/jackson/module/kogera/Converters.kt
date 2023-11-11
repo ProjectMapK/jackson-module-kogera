@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.util.StdConverter
  * A converter that only performs box processing for the value class.
  * Note that constructor-impl is not called.
  * @param S is nullable because value corresponds to a nullable value class.
- *   see [io.github.projectmapk.jackson.module.kogera.annotation_introspector.KotlinFallbackAnnotationIntrospector.findNullSerializer]
+ *   see [io.github.projectmapk.jackson.module.kogera.annotationIntrospector.KotlinFallbackAnnotationIntrospector.findNullSerializer]
  */
 internal class ValueClassBoxConverter<S : Any?, D : Any>(
     unboxedClass: Class<S>,

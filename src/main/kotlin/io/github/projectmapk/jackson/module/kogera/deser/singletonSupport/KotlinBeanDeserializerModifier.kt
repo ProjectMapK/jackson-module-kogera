@@ -1,4 +1,4 @@
-package io.github.projectmapk.jackson.module.kogera.deser.singleton_support
+package io.github.projectmapk.jackson.module.kogera.deser.singletonSupport
 
 import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.DeserializationConfig

@@ -1,4 +1,4 @@
-package io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.creator
+package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator
 
 import io.github.projectmapk.jackson.module.kogera.isNullable
 import kotlinx.metadata.Flag

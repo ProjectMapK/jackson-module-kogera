@@ -1,6 +1,6 @@
-package io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.argument_bucket
+package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket
 
-import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.calcMaskSize
+import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.calcMaskSize
 import java.lang.reflect.Array as ReflectArray
 
 private fun defaultPrimitiveValue(type: Class<*>): Any = when (type) {

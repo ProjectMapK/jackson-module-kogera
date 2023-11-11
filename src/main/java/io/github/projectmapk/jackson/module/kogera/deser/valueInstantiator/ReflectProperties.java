@@ -1,4 +1,4 @@
-package io.github.projectmapk.jackson.module.kogera.deser.value_instantiator;
+package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator;
 
 import kotlin.jvm.functions.Function0;
 import org.jetbrains.annotations.NotNull;

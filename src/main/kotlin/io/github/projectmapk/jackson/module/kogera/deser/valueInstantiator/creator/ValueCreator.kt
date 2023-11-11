@@ -1,13 +1,13 @@
-package io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.creator
+package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator
 
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.MapperFeature
-import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.argument_bucket.ArgumentBucket
-import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.argument_bucket.BucketGenerator
+import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket.ArgumentBucket
+import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket.BucketGenerator
 
 /**
  * A class that abstracts the creation of instances by calling KFunction.
- * @see io.github.projectmapk.jackson.module.kogera.deser.value_instantiator
+ * @see io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator
  */
 internal sealed class ValueCreator<T> {
     /**

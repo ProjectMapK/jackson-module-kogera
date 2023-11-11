@@ -2,8 +2,8 @@ package io.github.projectmapk.jackson.module.kogera._ported
 
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
-import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.KotlinInstantiators
-import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.KotlinValueInstantiator
+import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.KotlinInstantiators
+import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.KotlinValueInstantiator
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

@@ -1,4 +1,4 @@
-package io.github.projectmapk.jackson.module.kogera.annotation_introspector
+package io.github.projectmapk.jackson.module.kogera.annotationIntrospector
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty

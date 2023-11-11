@@ -1,10 +1,10 @@
-package io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.creator
+package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator
 
 import io.github.projectmapk.jackson.module.kogera.JmClass
 import io.github.projectmapk.jackson.module.kogera.call
-import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.argument_bucket.ArgumentBucket
-import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.argument_bucket.BucketGenerator
-import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.calcMaskSize
+import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket.ArgumentBucket
+import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket.BucketGenerator
+import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.calcMaskSize
 import io.github.projectmapk.jackson.module.kogera.getDeclaredMethodBy
 import io.github.projectmapk.jackson.module.kogera.hasVarargParam
 import kotlinx.metadata.KmFunction

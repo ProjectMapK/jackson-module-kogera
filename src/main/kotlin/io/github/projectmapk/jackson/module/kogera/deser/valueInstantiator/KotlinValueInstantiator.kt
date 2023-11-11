@@ -1,4 +1,4 @@
-package io.github.projectmapk.jackson.module.kogera.deser.value_instantiator
+package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator
 
 import com.fasterxml.jackson.annotation.Nulls
 import com.fasterxml.jackson.databind.BeanDescription
@@ -14,9 +14,9 @@ import com.fasterxml.jackson.databind.deser.impl.PropertyValueBuffer
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
-import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.creator.ConstructorValueCreator
-import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.creator.MethodValueCreator
-import io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.creator.ValueCreator
+import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.ConstructorValueCreator
+import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.MethodValueCreator
+import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.ValueCreator
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method

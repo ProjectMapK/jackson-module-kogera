@@ -1,4 +1,4 @@
-package io.github.projectmapk.jackson.module.kogera.deser.value_instantiator.argument_bucket
+package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket
 
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals

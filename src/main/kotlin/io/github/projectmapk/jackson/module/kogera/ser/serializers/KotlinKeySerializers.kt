@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializationConfig
 import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.ser.Serializers
+import com.fasterxml.jackson.databind.module.SimpleSerializers
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter
@@ -64,7 +64,7 @@ internal class ValueClassStaticJsonKeySerializer<T : Any>(
     }
 }
 
-internal class KotlinKeySerializers(private val cache: ReflectionCache) : Serializers.Base() {
+internal class KotlinKeySerializers(private val cache: ReflectionCache) : SimpleSerializers() {
     override fun findSerializer(
         config: SerializationConfig,
         type: JavaType,

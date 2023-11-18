@@ -3,9 +3,9 @@ package io.github.projectmapk.jackson.module.kogera
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.AbstractTypeResolver
 import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.JavaType
+import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver
 
 internal abstract class ClosedRangeMixin<T> @JsonCreator constructor(
     public val start: T,
@@ -41,7 +41,7 @@ internal abstract class ClosedRangeMixin<T> @JsonCreator constructor(
  * The target of processing is ClosedRange and interfaces or abstract classes that inherit from it.
  * As of Kotlin 1.5.32, ClosedRange and ClosedFloatingPointRange are processed.
  */
-internal object ClosedRangeResolver : AbstractTypeResolver() {
+internal object ClosedRangeResolver : SimpleAbstractTypeResolver() {
     // At present, it depends on the private class, but if it is made public, it must be switched to a direct reference.
     // see https://youtrack.jetbrains.com/issue/KT-55376
     val closedDoubleRangeRef: Class<*> by lazy {

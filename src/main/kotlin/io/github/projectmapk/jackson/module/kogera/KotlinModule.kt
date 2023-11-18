@@ -72,12 +72,35 @@ public class KotlinModule private constructor(
     public constructor() : this(Builder())
 
     private val cache: ReflectionCache
+    private val primaryAnnotationIntrospector: KotlinPrimaryAnnotationIntrospector
+    private val fallbackAnnotationIntrospector: KotlinFallbackAnnotationIntrospector
 
     init {
         checkMaxCacheSize(maxCacheSize)
         checkCacheSize(initialCacheSize, maxCacheSize)
 
         cache = ReflectionCache(initialCacheSize, maxCacheSize)
+
+        _serializers = KotlinSerializers(cache)
+        _deserializers = KotlinDeserializers(cache, useJavaDurationConversion)
+
+        _keySerializers = KotlinKeySerializers(cache)
+        _keyDeserializers = KotlinKeyDeserializers
+
+        _abstractTypes = ClosedRangeResolver
+
+        _valueInstantiators = KotlinInstantiators(cache, nullToEmptyCollection, nullToEmptyMap, nullIsSameAsDefault)
+
+        if (singletonSupport) {
+            _deserializerModifier = KotlinBeanDeserializerModifier(cache)
+        }
+
+        setMixInAnnotation(ClosedRange::class.java, ClosedRangeMixin::class.java)
+
+        primaryAnnotationIntrospector =
+            KotlinPrimaryAnnotationIntrospector(nullToEmptyCollection, nullToEmptyMap, cache)
+        fallbackAnnotationIntrospector =
+            KotlinFallbackAnnotationIntrospector(strictNullChecks, useJavaDurationConversion, cache)
     }
 
     public companion object {
@@ -106,33 +129,12 @@ public class KotlinModule private constructor(
             )
         }
 
-        context.addValueInstantiators(
-            KotlinInstantiators(cache, nullToEmptyCollection, nullToEmptyMap, nullIsSameAsDefault)
-        )
-
-        if (singletonSupport) {
-            context.addBeanDeserializerModifier(KotlinBeanDeserializerModifier(cache))
-        }
-
-        context.insertAnnotationIntrospector(
-            KotlinPrimaryAnnotationIntrospector(nullToEmptyCollection, nullToEmptyMap, cache)
-        )
-        context.appendAnnotationIntrospector(
-            KotlinFallbackAnnotationIntrospector(strictNullChecks, useJavaDurationConversion, cache)
-        )
+        context.insertAnnotationIntrospector(primaryAnnotationIntrospector)
+        context.appendAnnotationIntrospector(fallbackAnnotationIntrospector)
 
         if (copySyntheticConstructorParameterAnnotations) {
             context.setClassIntrospector(KotlinClassIntrospector)
         }
-
-        context.addDeserializers(KotlinDeserializers(cache, useJavaDurationConversion))
-        context.addKeyDeserializers(KotlinKeyDeserializers)
-        context.addSerializers(KotlinSerializers(cache))
-        context.addKeySerializers(KotlinKeySerializers(cache))
-
-        // ranges
-        context.setMixInAnnotations(ClosedRange::class.java, ClosedRangeMixin::class.java)
-        context.addAbstractTypeResolver(ClosedRangeResolver)
     }
 
     public class Builder {

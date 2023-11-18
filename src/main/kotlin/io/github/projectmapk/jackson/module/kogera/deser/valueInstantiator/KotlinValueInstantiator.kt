@@ -8,11 +8,11 @@ import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty
 import com.fasterxml.jackson.databind.deser.ValueInstantiator
-import com.fasterxml.jackson.databind.deser.ValueInstantiators
 import com.fasterxml.jackson.databind.deser.impl.NullsAsEmptyProvider
 import com.fasterxml.jackson.databind.deser.impl.PropertyValueBuffer
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
+import com.fasterxml.jackson.databind.module.SimpleValueInstantiators
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.ConstructorValueCreator
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.MethodValueCreator
@@ -113,7 +113,7 @@ internal class KotlinInstantiators(
     private val nullToEmptyCollection: Boolean,
     private val nullToEmptyMap: Boolean,
     private val nullIsSameAsDefault: Boolean
-) : ValueInstantiators {
+) : SimpleValueInstantiators() {
     override fun findValueInstantiator(
         deserConfig: DeserializationConfig,
         beanDescriptor: BeanDescription,

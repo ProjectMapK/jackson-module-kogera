@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.KeyDeserializer
 import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer
-import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializers
+import com.fasterxml.jackson.databind.module.SimpleKeyDeserializers
 import java.math.BigInteger
 
 // The reason why key is treated as nullable is to match the tentative behavior of StdKeyDeserializer.
@@ -32,7 +32,9 @@ internal object ULongKeyDeserializer : StdKeyDeserializer(-1, ULong::class.java)
         key?.let { ULongChecker.readWithRangeCheck(null, BigInteger(it)) }
 }
 
-internal object KotlinKeyDeserializers : StdKeyDeserializers() {
+internal object KotlinKeyDeserializers : SimpleKeyDeserializers() {
+    private fun readResolve(): Any = KotlinKeyDeserializers
+
     override fun findKeyDeserializer(
         type: JavaType,
         config: DeserializationConfig?,

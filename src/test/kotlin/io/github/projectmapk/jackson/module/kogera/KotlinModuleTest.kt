@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 class KotlinModuleTest {
     @Test
@@ -78,14 +80,15 @@ class KotlinModuleTest {
         }
     }
 
-    @Test
-    fun jdkSerializabilityTest() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun jdkSerializabilityTest(enabled: Boolean) {
         val module = KotlinModule.Builder().apply {
             withInitialCacheSize(123)
             withMaxCacheSize(321)
 
             KotlinFeature.values().forEach {
-                enable(it)
+                configure(it, enabled)
             }
         }.build()
 

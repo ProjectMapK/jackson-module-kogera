@@ -6,9 +6,9 @@ import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
+import com.fasterxml.jackson.databind.module.SimpleDeserializers
 import io.github.projectmapk.jackson.module.kogera.JmClass
 import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
@@ -130,7 +130,7 @@ private fun findValueCreator(type: JavaType, clazz: Class<*>, jmClass: JmClass):
 internal class KotlinDeserializers(
     private val cache: ReflectionCache,
     private val useJavaDurationConversion: Boolean
-) : Deserializers.Base() {
+) : SimpleDeserializers() {
     override fun findBeanDeserializer(
         type: JavaType,
         config: DeserializationConfig?,

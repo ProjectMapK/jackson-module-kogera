@@ -17,21 +17,29 @@ import java.lang.reflect.Modifier
 import java.math.BigInteger
 
 internal object UByteSerializer : StdSerializer<UByte>(UByte::class.java) {
+    private fun readResolve(): Any = UByteSerializer
+
     override fun serialize(value: UByte, gen: JsonGenerator, provider: SerializerProvider) =
         gen.writeNumber(value.toShort())
 }
 
 internal object UShortSerializer : StdSerializer<UShort>(UShort::class.java) {
+    private fun readResolve(): Any = UShortSerializer
+
     override fun serialize(value: UShort, gen: JsonGenerator, provider: SerializerProvider) =
         gen.writeNumber(value.toInt())
 }
 
 internal object UIntSerializer : StdSerializer<UInt>(UInt::class.java) {
+    private fun readResolve(): Any = UIntSerializer
+
     override fun serialize(value: UInt, gen: JsonGenerator, provider: SerializerProvider) =
         gen.writeNumber(value.toLong())
 }
 
 internal object ULongSerializer : StdSerializer<ULong>(ULong::class.java) {
+    private fun readResolve(): Any = ULongSerializer
+
     override fun serialize(value: ULong, gen: JsonGenerator, provider: SerializerProvider) {
         val longValue = value.toLong()
         when {

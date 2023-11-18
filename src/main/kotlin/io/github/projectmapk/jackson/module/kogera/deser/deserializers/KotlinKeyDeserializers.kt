@@ -33,6 +33,8 @@ internal object ULongKeyDeserializer : StdKeyDeserializer(-1, ULong::class.java)
 }
 
 internal object KotlinKeyDeserializers : SimpleKeyDeserializers() {
+    private fun readResolve(): Any = KotlinKeyDeserializers
+
     override fun findKeyDeserializer(
         type: JavaType,
         config: DeserializationConfig?,

@@ -6,9 +6,18 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import kotlinx.metadata.Flag
+import java.io.Serializable
 
 // [module-kotlin#225]: keep Kotlin singletons as singletons
-internal class KotlinBeanDeserializerModifier(private val cache: ReflectionCache) : BeanDeserializerModifier() {
+internal class KotlinBeanDeserializerModifier(
+    private val cache: ReflectionCache
+) : BeanDeserializerModifier(), Serializable {
+    companion object {
+        // Increment is required when properties that use LRUMap are changed.
+        @Suppress("ConstPropertyName")
+        private const val serialVersionUID = 1L
+    }
+
     private fun objectSingletonInstance(beanClass: Class<*>): Any? = cache.getJmClass(beanClass)?.let {
         val flags = it.flags
 

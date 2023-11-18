@@ -42,6 +42,8 @@ internal abstract class ClosedRangeMixin<T> @JsonCreator constructor(
  * As of Kotlin 1.5.32, ClosedRange and ClosedFloatingPointRange are processed.
  */
 internal object ClosedRangeResolver : SimpleAbstractTypeResolver() {
+    private fun readResolve(): Any = ClosedRangeResolver
+
     // At present, it depends on the private class, but if it is made public, it must be switched to a direct reference.
     // see https://youtrack.jetbrains.com/issue/KT-55376
     val closedDoubleRangeRef: Class<*> by lazy {

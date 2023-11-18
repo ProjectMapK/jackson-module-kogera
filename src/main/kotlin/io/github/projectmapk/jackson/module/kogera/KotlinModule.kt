@@ -71,9 +71,13 @@ public class KotlinModule private constructor(
     )
     public constructor() : this(Builder())
 
+    private val cache: ReflectionCache
+
     init {
         checkMaxCacheSize(maxCacheSize)
         checkCacheSize(initialCacheSize, maxCacheSize)
+
+        cache = ReflectionCache(initialCacheSize, maxCacheSize)
     }
 
     public companion object {
@@ -101,8 +105,6 @@ public class KotlinModule private constructor(
                 "The Jackson Kotlin module requires USE_ANNOTATIONS to be true or it cannot function"
             )
         }
-
-        val cache = ReflectionCache(initialCacheSize, maxCacheSize)
 
         context.addValueInstantiators(
             KotlinInstantiators(cache, nullToEmptyCollection, nullToEmptyMap, nullIsSameAsDefault)

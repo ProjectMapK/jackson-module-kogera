@@ -94,7 +94,7 @@ public class KotlinModule private constructor(
 
     public companion object {
         @Suppress("ConstPropertyName")
-        private const val serialVersionUID = 2L
+        private const val serialVersionUID = 3L
     }
 
     override fun setupModule(context: SetupContext) {

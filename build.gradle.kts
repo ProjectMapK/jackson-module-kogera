@@ -1,7 +1,7 @@
 plugins {
     `maven-publish` // for JitPack
 
-    val kotlinVersion: String = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() } ?: "1.7.21"
+    val kotlinVersion: String = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() } ?: "1.8.22"
     kotlin("jvm") version kotlinVersion
 
     java
@@ -10,7 +10,7 @@ plugins {
 
 // Since group cannot be obtained by generateKogeraVersion, it is defined as a constant.
 val groupStr = "io.github.projectmapk"
-val jacksonVersion = "2.15.3"
+val jacksonVersion = "2.16.0"
 val generatedSrcPath = "${layout.buildDirectory.get()}/generated/kotlin"
 
 group = groupStr
@@ -22,7 +22,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.7.0")
 
     api("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
     api("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")

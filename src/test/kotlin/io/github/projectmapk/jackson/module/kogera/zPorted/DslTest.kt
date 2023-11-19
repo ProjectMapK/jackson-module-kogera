@@ -7,6 +7,7 @@ import io.github.projectmapk.jackson.module.kogera.KotlinFeature.NullToEmptyColl
 import io.github.projectmapk.jackson.module.kogera.KotlinFeature.NullToEmptyMap
 import io.github.projectmapk.jackson.module.kogera.KotlinFeature.SingletonSupport
 import io.github.projectmapk.jackson.module.kogera.KotlinFeature.StrictNullChecks
+import io.github.projectmapk.jackson.module.kogera.KotlinModule
 import io.github.projectmapk.jackson.module.kogera.jsonMapper
 import io.github.projectmapk.jackson.module.kogera.kotlinModule
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -32,7 +33,7 @@ class DslTest {
     @Test
     fun createModuleWithBuilderOptions() {
         val module = kotlinModule {
-            withInitialCacheSize(123)
+            withCacheSize(KotlinModule.CacheSize(123))
             enable(NullToEmptyCollection)
             enable(NullToEmptyMap)
             enable(NullIsSameAsDefault)
@@ -41,7 +42,7 @@ class DslTest {
         }
 
         assertNotNull(module)
-        assertEquals(module.initialCacheSize, 123)
+        assertEquals(module.cacheSize, KotlinModule.CacheSize(123, 123))
         assertTrue(module.nullToEmptyCollection)
         assertTrue(module.nullToEmptyMap)
         assertTrue(module.nullIsSameAsDefault)

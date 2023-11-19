@@ -45,7 +45,7 @@ class KotlinModuleTest {
         fun `Cannot set initialCacheSize to a value larger than maxCacheSize`() {
             assertThrows<IllegalArgumentException> {
                 KotlinModule.Builder().apply {
-                    withInitialCacheSize(maxCacheSize + 1)
+                    withCacheSize(KotlinModule.CacheSize(initialCacheSize = KotlinModule.Builder.DEFAULT_CACHE_SIZE + 1))
                 }
             }
         }
@@ -54,7 +54,7 @@ class KotlinModuleTest {
         fun `Cannot set maxCacheSize to a value smaller than initialCacheSize`() {
             assertThrows<IllegalArgumentException> {
                 KotlinModule.Builder().apply {
-                    withMaxCacheSize(initialCacheSize - 1)
+                    withCacheSize(KotlinModule.CacheSize(maxCacheSize = KotlinModule.Builder.DEFAULT_CACHE_SIZE - 1))
                 }
             }
         }
@@ -63,8 +63,7 @@ class KotlinModuleTest {
         fun `Cannot set maxCacheSize to a value smaller than 15`() {
             assertThrows<IllegalArgumentException> {
                 KotlinModule.Builder().apply {
-                    withInitialCacheSize(0)
-                    withMaxCacheSize(15)
+                    KotlinModule.CacheSize(0, 15)
                 }
             }
         }
@@ -73,8 +72,7 @@ class KotlinModuleTest {
         fun test() {
             assertDoesNotThrow {
                 KotlinModule.Builder().apply {
-                    withInitialCacheSize(0)
-                    withMaxCacheSize(16)
+                    KotlinModule.CacheSize(0, 16)
                 }
             }
         }
@@ -84,8 +82,7 @@ class KotlinModuleTest {
     @ValueSource(booleans = [true, false])
     fun jdkSerializabilityTest(enabled: Boolean) {
         val module = KotlinModule.Builder().apply {
-            withInitialCacheSize(123)
-            withMaxCacheSize(321)
+            withCacheSize(KotlinModule.CacheSize(123, 321))
 
             KotlinFeature.values().forEach {
                 configure(it, enabled)
@@ -98,8 +95,7 @@ class KotlinModuleTest {
             val deserialized = jdkDeserialize<KotlinModule>(serialized)
 
             assertNotNull(deserialized)
-            assertEquals(123, deserialized.initialCacheSize)
-            assertEquals(321, deserialized.maxCacheSize)
+            assertEquals(KotlinModule.CacheSize(123, 321), deserialized.cacheSize)
             assertEquals(module.nullToEmptyCollection, deserialized.nullToEmptyCollection)
             assertEquals(module.nullToEmptyMap, deserialized.nullToEmptyMap)
             assertEquals(module.nullIsSameAsDefault, deserialized.nullIsSameAsDefault)

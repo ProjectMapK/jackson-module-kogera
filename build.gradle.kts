@@ -22,7 +22,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.7.0")
 
     api("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
     api("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")

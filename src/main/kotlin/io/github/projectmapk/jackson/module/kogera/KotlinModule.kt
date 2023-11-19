@@ -95,18 +95,6 @@ public class KotlinModule private constructor(
     public companion object {
         @Suppress("ConstPropertyName")
         private const val serialVersionUID = 2L
-
-        private fun checkMaxCacheSize(maxCacheSize: Int) {
-            if (maxCacheSize < 16) throw IllegalArgumentException("16 or higher must be specified")
-        }
-
-        private fun checkCacheSize(initialCacheSize: Int, maxCacheSize: Int) {
-            if (maxCacheSize < initialCacheSize) {
-                throw IllegalArgumentException(
-                    "maxCacheSize($maxCacheSize) was less than initialCacheSize($initialCacheSize)."
-                )
-            }
-        }
     }
 
     override fun setupModule(context: SetupContext) {

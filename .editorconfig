@@ -1,0 +1,6 @@
+# https://editorconfig.org
+root = true
+
+[*.{kt,kts}]
+ij_kotlin_allow_trailing_comma = false
+ij_kotlin_allow_trailing_comma_on_call_site = false

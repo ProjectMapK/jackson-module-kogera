@@ -5,7 +5,7 @@ plugins {
     kotlin("jvm") version kotlinVersion
 
     java
-    id("org.jmailen.kotlinter") version "3.13.0"
+    id("org.jmailen.kotlinter") version "3.16.0"
 }
 
 // Since group cannot be obtained by generateKogeraVersion, it is defined as a constant.

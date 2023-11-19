@@ -1,20 +1,20 @@
 plugins {
     `maven-publish` // for JitPack
 
-    val kotlinVersion: String = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() } ?: "1.7.21"
+    val kotlinVersion: String = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() } ?: "1.8.22"
     kotlin("jvm") version kotlinVersion
 
     java
-    id("org.jmailen.kotlinter") version "3.13.0"
+    id("org.jmailen.kotlinter") version "3.16.0"
 }
 
 // Since group cannot be obtained by generateKogeraVersion, it is defined as a constant.
 val groupStr = "io.github.projectmapk"
-val jacksonVersion = "2.15.3"
+val jacksonVersion = "2.16.0"
 val generatedSrcPath = "${layout.buildDirectory.get()}/generated/kotlin"
 
 group = groupStr
-version = "${jacksonVersion}-beta6"
+version = "${jacksonVersion}-beta7"
 
 repositories {
     mavenCentral()
@@ -22,13 +22,14 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.7.0")
 
     api("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
     api("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
 
     // test libs
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("io.mockk:mockk:1.13.7")
 
@@ -60,15 +61,15 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-kotlinter {
-    // see https://github.com/pinterest/ktlint/blob/master/docs/rules/standard.md
-    this.disabledRules = arrayOf(
-        "package-name", // This project allows for the inclusion of _ to represent the package name in the snake case.
-        "filename" // For clarity in future extensions, this rule is disabled.
-    )
-}
-
 tasks {
+    // For ported tests, they are excluded from the formatting because they are not new code.
+    lintKotlinTest {
+        exclude { it.path.contains("zPorted") }
+    }
+    formatKotlinTest {
+        exclude { it.path.contains("zPorted") }
+    }
+
     // Task to generate version file
     val generateKogeraVersion by registering(Copy::class) {
         val packageStr = "$groupStr.jackson.module.kogera"

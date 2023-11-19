@@ -34,9 +34,9 @@ This project makes several disruptive changes to achieve more `Kotlin-like` beha
 Details are summarized in [KogeraSpecificImplementations](./docs/KogeraSpecificImplementations.md).
 
 # Compatibility
-- `jackson 2.15.0`
+- `jackson 2.16.x`
 - `Java 8+`
-- `Kotlin 1.7.21+`
+- `Kotlin 1.8.22+`
 
 ## About compatibility checks
 Compatibility checks for `Java` and `Kotlin` are done by `CI` grid tests.
@@ -44,9 +44,8 @@ Compatibility checks for `Java` and `Kotlin` are done by `CI` grid tests.
 The `Java` test covers all currently supported LTS versions and the latest versions.  
 Currently 8,11,17 and 20 are covered.
 
-`Kotlin` is tested on the latest patch version and the latest `Beta` or `RC` version within each minor version since 1.7.21.  
-Currently 1.7.21 and 1.9.20-Beta are covered.  
-I hope to lower this version in the future, but currently the minimum `Kotlin` version that can be supported is 1.7 due to `kotlinx-metadata-jvm` constraints.
+`Kotlin` is tested with the latest patch version and the latest `Beta` or `RC` version within each minor version after the minimum version.  
+The `Kotlin` version is the lowest version available with the latest `kotlinx-metadata-jvm`.
 
 # Installation
 The package is temporarily published in `JitPack`.  

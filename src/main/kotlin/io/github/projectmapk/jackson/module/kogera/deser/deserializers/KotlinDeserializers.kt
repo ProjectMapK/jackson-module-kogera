@@ -6,9 +6,9 @@ import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
+import com.fasterxml.jackson.databind.module.SimpleDeserializers
 import io.github.projectmapk.jackson.module.kogera.JmClass
 import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
@@ -23,12 +23,16 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 internal object SequenceDeserializer : StdDeserializer<Sequence<*>>(Sequence::class.java) {
+    private fun readResolve(): Any = SequenceDeserializer
+
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Sequence<*> {
         return ctxt.readValue(p, List::class.java).asSequence()
     }
 }
 
 internal object RegexDeserializer : StdDeserializer<Regex>(Regex::class.java) {
+    private fun readResolve(): Any = RegexDeserializer
+
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Regex {
         val node = ctxt.readTree(p)
 
@@ -57,21 +61,29 @@ internal object RegexDeserializer : StdDeserializer<Regex>(Regex::class.java) {
 }
 
 internal object UByteDeserializer : StdDeserializer<UByte>(UByte::class.java) {
+    private fun readResolve(): Any = UByteDeserializer
+
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext) =
         UByteChecker.readWithRangeCheck(p, p.intValue)
 }
 
 internal object UShortDeserializer : StdDeserializer<UShort>(UShort::class.java) {
+    private fun readResolve(): Any = UShortDeserializer
+
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext) =
         UShortChecker.readWithRangeCheck(p, p.intValue)
 }
 
 internal object UIntDeserializer : StdDeserializer<UInt>(UInt::class.java) {
+    private fun readResolve(): Any = UIntDeserializer
+
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext) =
         UIntChecker.readWithRangeCheck(p, p.longValue)
 }
 
 internal object ULongDeserializer : StdDeserializer<ULong>(ULong::class.java) {
+    private fun readResolve(): Any = ULongDeserializer
+
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext) =
         ULongChecker.readWithRangeCheck(p, p.bigIntegerValue)
 }
@@ -130,7 +142,7 @@ private fun findValueCreator(type: JavaType, clazz: Class<*>, jmClass: JmClass):
 internal class KotlinDeserializers(
     private val cache: ReflectionCache,
     private val useJavaDurationConversion: Boolean
-) : Deserializers.Base() {
+) : SimpleDeserializers() {
     override fun findBeanDeserializer(
         type: JavaType,
         config: DeserializationConfig?,

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializationConfig
 import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.ser.Serializers
+import com.fasterxml.jackson.databind.module.SimpleSerializers
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter
@@ -17,21 +17,29 @@ import java.lang.reflect.Modifier
 import java.math.BigInteger
 
 internal object UByteSerializer : StdSerializer<UByte>(UByte::class.java) {
+    private fun readResolve(): Any = UByteSerializer
+
     override fun serialize(value: UByte, gen: JsonGenerator, provider: SerializerProvider) =
         gen.writeNumber(value.toShort())
 }
 
 internal object UShortSerializer : StdSerializer<UShort>(UShort::class.java) {
+    private fun readResolve(): Any = UShortSerializer
+
     override fun serialize(value: UShort, gen: JsonGenerator, provider: SerializerProvider) =
         gen.writeNumber(value.toInt())
 }
 
 internal object UIntSerializer : StdSerializer<UInt>(UInt::class.java) {
+    private fun readResolve(): Any = UIntSerializer
+
     override fun serialize(value: UInt, gen: JsonGenerator, provider: SerializerProvider) =
         gen.writeNumber(value.toLong())
 }
 
 internal object ULongSerializer : StdSerializer<ULong>(ULong::class.java) {
+    private fun readResolve(): Any = ULongSerializer
+
     override fun serialize(value: ULong, gen: JsonGenerator, provider: SerializerProvider) {
         val longValue = value.toLong()
         when {
@@ -67,7 +75,7 @@ internal class ValueClassStaticJsonValueSerializer<T : Any>(
     }
 }
 
-internal class KotlinSerializers(private val cache: ReflectionCache) : Serializers.Base() {
+internal class KotlinSerializers(private val cache: ReflectionCache) : SimpleSerializers() {
     override fun findSerializer(
         config: SerializationConfig?,
         type: JavaType,

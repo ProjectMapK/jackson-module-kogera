@@ -3,10 +3,10 @@ There are three types of tests in `jacksom-module-kogera`: unit tests, integrati
 These are placed in the following packages respectively.
 
 - unit tests: (package in which the test target is located)
-- integration tests: `_integration`
-- ported tests: `_ported`
+- integration tests: `zIntegration`
+- ported tests: `zPorted`
 
-Do not create new tests in the `_ported` package.
+Do not create new tests in the `zPorted` package.
 
 # Failing tests
 

@@ -1,7 +1,7 @@
 plugins {
     `maven-publish` // for JitPack
 
-    val kotlinVersion: String = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() } ?: "1.7.21"
+    val kotlinVersion: String = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() } ?: "1.8.22"
     kotlin("jvm") version kotlinVersion
 
     java

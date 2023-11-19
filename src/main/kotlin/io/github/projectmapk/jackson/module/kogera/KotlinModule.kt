@@ -125,7 +125,7 @@ public class KotlinModule private constructor(
     public data class CacheSize(
         val initialCacheSize: Int = Builder.DEFAULT_CACHE_SIZE,
         val maxCacheSize: Int = Builder.DEFAULT_CACHE_SIZE
-    ): Serializable {
+    ) : Serializable {
         /**
          * Set the same size for [initialCacheSize] and [maxCacheSize].
          */

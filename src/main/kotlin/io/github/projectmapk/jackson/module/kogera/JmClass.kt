@@ -75,7 +75,7 @@ internal sealed interface JmClass {
                 companionClass.getAnnotation(Metadata::class.java)!!.accept(this)
             }
 
-            override fun visitFunction(flags: Flags, name: String): KmFunctionVisitor? = KmFunction(flags, name)
+            override fun visitFunction(flags: Flags, name: String): KmFunctionVisitor = KmFunction(flags, name)
                 .apply { functions.add(this) }
         }
 

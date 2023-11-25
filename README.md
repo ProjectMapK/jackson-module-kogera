@@ -41,11 +41,12 @@ Details are summarized in [KogeraSpecificImplementations](./docs/KogeraSpecificI
 ## About compatibility checks
 Compatibility checks for `Java` and `Kotlin` are done by `CI` grid tests.
 
-The `Java` test covers all currently supported LTS versions and the latest versions.  
-Currently 8,11,17 and 20 are covered.
+The `Java` test covers all currently supported LTS versions and the latest versions.
 
 `Kotlin` is tested with the latest patch version and the latest `Beta` or `RC` version within each minor version after the minimum version.  
 The `Kotlin` version is the lowest version available with the latest `kotlinx-metadata-jvm`.
+
+See [Workflow](./.github/workflows/test-main.yml) for the currently tested versions.
 
 # Installation
 The package is temporarily published in `JitPack`.  

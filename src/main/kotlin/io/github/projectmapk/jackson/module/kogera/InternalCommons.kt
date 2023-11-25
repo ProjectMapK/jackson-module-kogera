@@ -1,7 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmType
 import kotlinx.metadata.KmValueParameter
@@ -82,8 +81,6 @@ internal fun String.reconstructClass(): Class<*> {
 
 internal fun KmType.reconstructClassOrNull(): Class<*>? = (classifier as? KmClassifier.Class)
     ?.let { kotlin.runCatching { it.name.reconstructClass() }.getOrNull() }
-
-internal fun KmType.isNullable(): Boolean = Flag.Type.IS_NULLABLE(this.flags)
 
 internal fun AnnotatedElement.hasCreatorAnnotation(): Boolean = getAnnotation(JsonCreator::class.java)
     ?.let { it.mode != JsonCreator.Mode.DISABLED }

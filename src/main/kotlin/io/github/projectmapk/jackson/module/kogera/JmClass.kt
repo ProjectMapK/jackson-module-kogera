@@ -166,7 +166,7 @@ private class JmClassImpl(
 
         // Constructors always have the same name, so only desc is compared
         return constructors.find {
-            val targetDesc = it.signature?.desc
+            val targetDesc = it.signature?.descriptor
             targetDesc == desc || targetDesc == valueDesc
         }
     }

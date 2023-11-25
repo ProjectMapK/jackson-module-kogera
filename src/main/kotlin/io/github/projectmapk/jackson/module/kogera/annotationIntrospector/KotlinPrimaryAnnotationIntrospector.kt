@@ -15,13 +15,14 @@ import com.fasterxml.jackson.databind.jsontype.NamedType
 import io.github.projectmapk.jackson.module.kogera.JmClass
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
-import io.github.projectmapk.jackson.module.kogera.isNullable
 import io.github.projectmapk.jackson.module.kogera.reconstructClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
-import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmProperty
 import kotlinx.metadata.KmValueParameter
+import kotlinx.metadata.declaresDefaultValue
+import kotlinx.metadata.isNullable
+import kotlinx.metadata.isSecondary
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.setterSignature
 import kotlinx.metadata.jvm.signature
@@ -69,11 +70,11 @@ internal class KotlinPrimaryAnnotationIntrospector(
             // only a check for the existence of a getter is performed.
             // https://youtrack.jetbrains.com/issue/KT-6519
             ?.let {
-                if (it.getterSignature == null) !(it.returnType.isNullable() || type.hasDefaultEmptyValue()) else null
+                if (it.getterSignature == null) !(it.returnType.isNullable || type.hasDefaultEmptyValue()) else null
             }
     }
 
-    private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable()
+    private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable
 
     private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(jmClass: JmClass): Boolean? =
         when (parameterCount) {
@@ -99,9 +100,9 @@ internal class KotlinPrimaryAnnotationIntrospector(
         // non required if...
         return when {
             // Argument definition is nullable
-            paramDef.type.isNullable() -> false
+            paramDef.type.isNullable -> false
             // Default argument are defined
-            Flag.ValueParameter.DECLARES_DEFAULT_VALUE(paramDef.flags) -> false
+            paramDef.declaresDefaultValue -> false
             // The conversion in case of null is defined.
             type.hasDefaultEmptyValue() -> false
             else -> true
@@ -138,7 +139,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
 }
 
 private fun Constructor<*>.isPrimarilyConstructorOf(jmClass: JmClass): Boolean = jmClass.findKmConstructor(this)
-    ?.let { !Flag.Constructor.IS_SECONDARY(it.flags) || jmClass.constructors.size == 1 }
+    ?.let { !it.isSecondary || jmClass.constructors.size == 1 }
     ?: false
 
 private fun KmClassifier.isString(): Boolean = this is KmClassifier.Class && this.name == "kotlin/String"
@@ -152,10 +153,10 @@ private fun isPossibleSingleString(
     javaFunction.parameters[0].annotations.none { it is JsonProperty }
 
 private fun hasCreatorConstructor(clazz: Class<*>, jmClass: JmClass, propertyNames: Set<String>): Boolean {
-    val kmConstructorMap = jmClass.constructors.associateBy { it.signature?.desc }
+    val kmConstructorMap = jmClass.constructors.associateBy { it.signature?.descriptor }
 
     return clazz.constructors.any { constructor ->
-        val kmConstructor = kmConstructorMap[constructor.toSignature().desc] ?: return@any false
+        val kmConstructor = kmConstructorMap[constructor.toSignature().descriptor] ?: return@any false
 
         !isPossibleSingleString(kmConstructor.valueParameters, constructor, propertyNames) &&
             constructor.hasCreatorAnnotation()

@@ -107,4 +107,21 @@ private class ArgumentBucketTest {
         (0..32).forEach { assertEquals(it.toString(), sut.arguments[it]) }
         assertTrue(sut.isFullInitialized)
     }
+
+    @JvmInline
+    value class V(val value: Int)
+
+    @Test
+    fun unboxTest() {
+        @Suppress("UNCHECKED_CAST")
+        val converter = ValueClassUnboxConverter(V::class.java) as ValueClassUnboxConverter<Any>
+        val generator = BucketGenerator(listOf(Int::class.java, V::class.java), false, listOf(converter, null))
+        val bucket = generator.generate()
+
+        bucket[0] = V(0)
+        bucket[1] = 1
+
+        assertEquals(0, bucket.arguments[0])
+        assertEquals(1, bucket.arguments[1])
+    }
 }

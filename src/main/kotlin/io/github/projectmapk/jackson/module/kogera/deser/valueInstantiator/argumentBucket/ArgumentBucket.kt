@@ -65,11 +65,10 @@ internal class ArgumentBucket(
      * Note that, arguments defined in the value class must be passed as boxed.
      */
     operator fun set(index: Int, arg: Any?) {
-        val actualArg = if (arg != null) {
+        val actualArg = arg?.let {
             // unbox by converter
-            converters[index]?.convert(arg) ?: arg
-        } else {
-            arg
+            val converter = converters[index] ?: return@let arg
+            converter.convert(arg)
         }
 
         // Since there is no multiple initialization in the use case, the key check is omitted.

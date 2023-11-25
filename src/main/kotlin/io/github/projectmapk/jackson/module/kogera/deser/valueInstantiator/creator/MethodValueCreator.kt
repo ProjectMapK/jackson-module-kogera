@@ -1,6 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator
 
 import io.github.projectmapk.jackson.module.kogera.JmClass
+import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.call
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket.ArgumentBucket
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket.BucketGenerator
@@ -10,7 +11,11 @@ import io.github.projectmapk.jackson.module.kogera.hasVarargParam
 import kotlinx.metadata.KmFunction
 import java.lang.reflect.Method
 
-internal class MethodValueCreator<T>(private val method: Method, declaringJmClass: JmClass) : ValueCreator<T>() {
+internal class MethodValueCreator<T>(
+    private val method: Method,
+    declaringJmClass: JmClass,
+    cache: ReflectionCache
+) : ValueCreator<T>() {
     private val companion: JmClass.CompanionObject = declaringJmClass.companion!!
     override val isAccessible: Boolean = method.isAccessible && companion.isAccessible
     override val callableName: String = method.name
@@ -22,8 +27,15 @@ internal class MethodValueCreator<T>(private val method: Method, declaringJmClas
         if (!method.isAccessible) method.isAccessible = true
 
         val kmFunction: KmFunction = companion.findFunctionByMethod(method)!!
-        valueParameters = kmFunction.valueParameters.map { ValueParameter(it) }
-        bucketGenerator = BucketGenerator(method.parameterTypes.asList(), kmFunction.valueParameters.hasVarargParam())
+        val kmParameters = kmFunction.valueParameters
+
+        valueParameters = kmParameters.map { ValueParameter(it) }
+        val rawTypes = method.parameterTypes.asList()
+        bucketGenerator = BucketGenerator(
+            rawTypes,
+            kmParameters.hasVarargParam(),
+            kmParameters.mapToConverters(rawTypes, cache)
+        )
     }
 
     private val defaultCaller: (args: ArgumentBucket) -> Any? by lazy {

@@ -1,5 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket
 
+import io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.calcMaskSize
 import java.lang.reflect.Array as ReflectArray
 
@@ -22,7 +23,8 @@ private fun defaultEmptyArray(arrayType: Class<*>): Any =
 // @see https://github.com/JetBrains/kotlin/blob/4c925d05883a8073e6732bca95bf575beb031a59/core/reflection.jvm/src/kotlin/reflect/jvm/internal/KCallableImpl.kt#L114
 internal class BucketGenerator(
     parameterTypes: List<Class<*>>,
-    hasVarargParam: Boolean
+    hasVarargParam: Boolean,
+    private val converters: List<ValueClassUnboxConverter<Any>?>
 ) {
     private val valueParameterSize: Int = parameterTypes.size
     private val originalAbsentArgs: Array<Any?> = Array(valueParameterSize) { i ->
@@ -42,13 +44,14 @@ internal class BucketGenerator(
     }
 
     fun generate(): ArgumentBucket =
-        ArgumentBucket(valueParameterSize, originalAbsentArgs.clone(), originalMasks.clone())
+        ArgumentBucket(valueParameterSize, originalAbsentArgs.clone(), originalMasks.clone(), converters)
 }
 
 internal class ArgumentBucket(
     val valueParameterSize: Int,
     val arguments: Array<Any?>,
-    val masks: IntArray
+    val masks: IntArray,
+    private val converters: List<ValueClassUnboxConverter<Any>?>
 ) {
     companion object {
         // List of Int with only 1 bit enabled.
@@ -57,9 +60,20 @@ internal class ArgumentBucket(
 
     private var count = 0
 
+    /**
+     * Sets the argument corresponding to index.
+     * Note that, arguments defined in the value class must be passed as boxed.
+     */
     operator fun set(index: Int, arg: Any?) {
+        val actualArg = if (arg != null) {
+            // unbox by converter
+            converters[index]?.convert(arg) ?: arg
+        } else {
+            arg
+        }
+
         // Since there is no multiple initialization in the use case, the key check is omitted.
-        arguments[index] = arg
+        arguments[index] = actualArg
 
         val maskIndex = index / Integer.SIZE
         masks[maskIndex] = masks[maskIndex] and BIT_FLAGS[index % Integer.SIZE]

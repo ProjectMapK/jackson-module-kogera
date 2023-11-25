@@ -1,5 +1,8 @@
 package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket
 
+import io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -8,11 +11,15 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 private class ArgumentBucketTest {
+    val mockConverters: List<ValueClassUnboxConverter<Any>?> = mockk {
+        every { this@mockk[any()] } returns null
+    }
+
     @Nested
     inner class BucketGeneratorTest {
         @Test
         fun basic() {
-            val generator = BucketGenerator((0..31).map { String::class.java }, false)
+            val generator = BucketGenerator((0..31).map { String::class.java }, false, mockConverters)
             val result = generator.generate()
 
             assertEquals(32, result.valueParameterSize)
@@ -34,7 +41,8 @@ private class ArgumentBucketTest {
                     Long::class.java,
                     Double::class.java
                 ),
-                false
+                false,
+                mockConverters
             )
             val result = generator.generate()
 
@@ -50,7 +58,7 @@ private class ArgumentBucketTest {
 
         @Test
         fun maskSize() {
-            val generator = BucketGenerator((0..32).map { String::class.java }, false)
+            val generator = BucketGenerator((0..32).map { String::class.java }, false, mockConverters)
             val result = generator.generate()
 
             assertEquals(33, result.valueParameterSize)
@@ -62,7 +70,7 @@ private class ArgumentBucketTest {
 
         @Test
         fun hasVararg() {
-            val primitiveGenerator = BucketGenerator(listOf(IntArray::class.java), true)
+            val primitiveGenerator = BucketGenerator(listOf(IntArray::class.java), true, mockConverters)
             val primitiveResult = primitiveGenerator.generate()
 
             assertEquals(1, primitiveResult.valueParameterSize)
@@ -70,7 +78,7 @@ private class ArgumentBucketTest {
             assertEquals(1, primitiveResult.masks.size)
             assertEquals(-1, primitiveResult.masks[0])
 
-            val objectGenerator = BucketGenerator(listOf(Array<Int>::class.java), true)
+            val objectGenerator = BucketGenerator(listOf(Array<Int>::class.java), true, mockConverters)
             val objectResult = objectGenerator.generate()
             assertEquals(1, objectResult.valueParameterSize)
             @Suppress("UNCHECKED_CAST")
@@ -82,7 +90,7 @@ private class ArgumentBucketTest {
 
     @Test
     fun test() {
-        val generator = BucketGenerator((0..32).map { String::class.java }, false)
+        val generator = BucketGenerator((0..32).map { String::class.java }, false, mockConverters)
         val sut = generator.generate()
 
         sut[0] = "0"
@@ -98,5 +106,22 @@ private class ArgumentBucketTest {
         assertEquals(-2, sut.masks[1])
         (0..32).forEach { assertEquals(it.toString(), sut.arguments[it]) }
         assertTrue(sut.isFullInitialized)
+    }
+
+    @JvmInline
+    value class V(val value: Int)
+
+    @Test
+    fun unboxTest() {
+        @Suppress("UNCHECKED_CAST")
+        val converter = ValueClassUnboxConverter(V::class.java) as ValueClassUnboxConverter<Any>
+        val generator = BucketGenerator(listOf(Int::class.java, V::class.java), false, listOf(converter, null))
+        val bucket = generator.generate()
+
+        bucket[0] = V(0)
+        bucket[1] = 1
+
+        assertEquals(0, bucket.arguments[0])
+        assertEquals(1, bucket.arguments[1])
     }
 }

@@ -42,8 +42,8 @@ internal class KotlinValueInstantiator(
         val jmClass = cache.getJmClass(creator.declaringClass) ?: return@lazySoft null
 
         when (creator) {
-            is Constructor<*> -> ConstructorValueCreator(creator, jmClass)
-            is Method -> MethodValueCreator<Any?>(creator, jmClass)
+            is Constructor<*> -> ConstructorValueCreator(creator, jmClass, cache)
+            is Method -> MethodValueCreator<Any?>(creator, jmClass, cache)
             else -> throw IllegalStateException(
                 "Expected a constructor or method to create a Kotlin object, instead found ${creator.javaClass.name}"
             )

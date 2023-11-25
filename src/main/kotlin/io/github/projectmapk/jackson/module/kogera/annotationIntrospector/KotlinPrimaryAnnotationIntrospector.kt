@@ -15,13 +15,13 @@ import com.fasterxml.jackson.databind.jsontype.NamedType
 import io.github.projectmapk.jackson.module.kogera.JmClass
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
-import io.github.projectmapk.jackson.module.kogera.isNullable
 import io.github.projectmapk.jackson.module.kogera.reconstructClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
 import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmProperty
 import kotlinx.metadata.KmValueParameter
+import kotlinx.metadata.isNullable
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.setterSignature
 import kotlinx.metadata.jvm.signature
@@ -69,11 +69,11 @@ internal class KotlinPrimaryAnnotationIntrospector(
             // only a check for the existence of a getter is performed.
             // https://youtrack.jetbrains.com/issue/KT-6519
             ?.let {
-                if (it.getterSignature == null) !(it.returnType.isNullable() || type.hasDefaultEmptyValue()) else null
+                if (it.getterSignature == null) !(it.returnType.isNullable || type.hasDefaultEmptyValue()) else null
             }
     }
 
-    private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable()
+    private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable
 
     private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(jmClass: JmClass): Boolean? =
         when (parameterCount) {
@@ -99,7 +99,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
         // non required if...
         return when {
             // Argument definition is nullable
-            paramDef.type.isNullable() -> false
+            paramDef.type.isNullable -> false
             // Default argument are defined
             Flag.ValueParameter.DECLARES_DEFAULT_VALUE(paramDef.flags) -> false
             // The conversion in case of null is defined.

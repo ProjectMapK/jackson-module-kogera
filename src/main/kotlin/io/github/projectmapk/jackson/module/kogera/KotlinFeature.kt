@@ -44,7 +44,6 @@ public enum class KotlinFeature(internal val enabledByDefault: Boolean) {
      * Deserializing a singleton overwrites the value of the single instance.
      *
      * See [jackson-module-kotlin#225]: keep Kotlin singletons as singletons.
-     * @see io.github.projectmapk.jackson.module.kogera.SingletonSupport
      */
     SingletonSupport(enabledByDefault = false),
 

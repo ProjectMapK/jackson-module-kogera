@@ -9,7 +9,7 @@ import kotlin.time.toKotlinDuration
 /**
  * Currently it is not possible to deduce type of [kotlin.time.Duration] fields therefore explicit annotation is needed on fields in order to properly deserialize POJO.
  *
- * @see [com.fasterxml.jackson.module.kotlin.test.DurationTests]
+ * @see [io.github.projectmapk.jackson.module.kogera.zIntegration.DurationTest]
  */
 internal object JavaToKotlinDurationConverter : StdConverter<JavaDuration, KotlinDuration>() {
     override fun convert(value: JavaDuration) = value.toKotlinDuration()

@@ -56,6 +56,7 @@ internal class KotlinValueInstantiator(
         buffer: PropertyValueBuffer
     ): Any? {
         val valueCreator: ValueCreator<*> = valueCreator ?: return super.createFromObjectWith(ctxt, props, buffer)
+        valueCreator.checkAccessibility(ctxt)
 
         val bucket = valueCreator.generateBucket()
 
@@ -101,7 +102,6 @@ internal class KotlinValueInstantiator(
             bucket[idx] = paramVal
         }
 
-        valueCreator.checkAccessibility(ctxt)
         return valueCreator.callBy(bucket)
     }
 

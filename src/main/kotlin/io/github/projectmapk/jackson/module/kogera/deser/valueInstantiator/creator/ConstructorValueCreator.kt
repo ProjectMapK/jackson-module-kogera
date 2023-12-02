@@ -1,6 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator
 
 import io.github.projectmapk.jackson.module.kogera.JmClass
+import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.call
 import io.github.projectmapk.jackson.module.kogera.defaultConstructorMarker
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket.ArgumentBucket
@@ -12,7 +13,8 @@ import java.lang.reflect.Constructor
 
 internal class ConstructorValueCreator<T : Any>(
     private val constructor: Constructor<T>,
-    declaringJmClass: JmClass
+    declaringJmClass: JmClass,
+    cache: ReflectionCache
 ) : ValueCreator<T>() {
     private val declaringClass: Class<T> = constructor.declaringClass
 
@@ -28,7 +30,12 @@ internal class ConstructorValueCreator<T : Any>(
         val constructorParameters = declaringJmClass.findKmConstructor(constructor)!!.valueParameters
 
         valueParameters = constructorParameters.map { ValueParameter(it) }
-        bucketGenerator = BucketGenerator(constructor.parameterTypes.asList(), constructorParameters.hasVarargParam())
+        val rawTypes = constructor.parameterTypes.asList()
+        bucketGenerator = BucketGenerator(
+            rawTypes,
+            constructorParameters.hasVarargParam(),
+            constructorParameters.mapToConverters(rawTypes, cache)
+        )
     }
 
     private val defaultConstructor: Constructor<T> by lazy {

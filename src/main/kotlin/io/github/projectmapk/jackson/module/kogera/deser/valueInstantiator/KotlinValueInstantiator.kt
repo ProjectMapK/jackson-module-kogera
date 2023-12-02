@@ -34,6 +34,8 @@ internal class KotlinValueInstantiator(
     private fun JavaType.requireEmptyValue() =
         (nullToEmptyCollection && this.isCollectionLikeType) || (nullToEmptyMap && this.isMapLikeType)
 
+    private fun SettableBeanProperty.hasInjectableValueId(): Boolean = injectableValueId != null
+
     private fun SettableBeanProperty.skipNulls(): Boolean =
         nullIsSameAsDefault || (metadata.valueNulls == Nulls.SKIP)
 
@@ -42,8 +44,8 @@ internal class KotlinValueInstantiator(
         val jmClass = cache.getJmClass(creator.declaringClass) ?: return@lazySoft null
 
         when (creator) {
-            is Constructor<*> -> ConstructorValueCreator(creator, jmClass)
-            is Method -> MethodValueCreator<Any?>(creator, jmClass)
+            is Constructor<*> -> ConstructorValueCreator(creator, jmClass, cache)
+            is Method -> MethodValueCreator<Any?>(creator, jmClass, cache)
             else -> throw IllegalStateException(
                 "Expected a constructor or method to create a Kotlin object, instead found ${creator.javaClass.name}"
             )
@@ -56,6 +58,7 @@ internal class KotlinValueInstantiator(
         buffer: PropertyValueBuffer
     ): Any? {
         val valueCreator: ValueCreator<*> = valueCreator ?: return super.createFromObjectWith(ctxt, props, buffer)
+        valueCreator.checkAccessibility(ctxt)
 
         val bucket = valueCreator.generateBucket()
 
@@ -67,7 +70,7 @@ internal class KotlinValueInstantiator(
                 return@forEachIndexed
             }
 
-            var paramVal = if (!isMissing || paramDef.isPrimitive || jsonProp.hasInjectableValueId()) {
+            var paramVal = if (!isMissing || jsonProp.hasInjectableValueId()) {
                 buffer.getParameter(jsonProp).apply {
                     if (this == null && jsonProp.skipNulls() && paramDef.isOptional) return@forEachIndexed
                 }
@@ -101,11 +104,8 @@ internal class KotlinValueInstantiator(
             bucket[idx] = paramVal
         }
 
-        valueCreator.checkAccessibility(ctxt)
         return valueCreator.callBy(bucket)
     }
-
-    private fun SettableBeanProperty.hasInjectableValueId(): Boolean = injectableValueId != null
 }
 
 internal class KotlinInstantiators(

@@ -17,7 +17,7 @@ import io.github.projectmapk.jackson.module.kogera.deser.JavaToKotlinDurationCon
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
-import kotlinx.metadata.Flag
+import kotlinx.metadata.isSecondary
 import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -115,7 +115,7 @@ private fun invalidCreatorMessage(m: Method): String =
 
 private fun findValueCreator(type: JavaType, clazz: Class<*>, jmClass: JmClass): Method? {
     val primaryKmConstructorSignature =
-        jmClass.constructors.first { !Flag.Constructor.IS_SECONDARY(it.flags) }.signature
+        jmClass.constructors.first { !it.isSecondary }.signature
     var primaryConstructor: Method? = null
 
     clazz.declaredMethods.forEach { method ->

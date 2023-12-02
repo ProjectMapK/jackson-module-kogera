@@ -41,11 +41,12 @@ Details are summarized in [KogeraSpecificImplementations](./docs/KogeraSpecificI
 ## About compatibility checks
 Compatibility checks for `Java` and `Kotlin` are done by `CI` grid tests.
 
-The `Java` test covers all currently supported LTS versions and the latest versions.  
-Currently 8,11,17 and 20 are covered.
+The `Java` test covers all currently supported LTS versions and the latest versions.
 
 `Kotlin` is tested with the latest patch version and the latest `Beta` or `RC` version within each minor version after the minimum version.  
 The `Kotlin` version is the lowest version available with the latest `kotlinx-metadata-jvm`.
+
+See [Workflow](./.github/workflows/test-main.yml) for the currently tested versions.
 
 # Installation
 The package is temporarily published in `JitPack`.  
@@ -81,12 +82,10 @@ You can check if your project's dependencies include `jackson-module-kotlin` by 
 If you find any problems, it would be appreciated if you could share them in an `issue`.
 
 # About the future
-Currently, this project is in `beta`.  
-I intend to develop the following
+I will not be treating this project as "stable".
 
-- Migration to more efficient reflection cache.
-- Resolve as many known bugs related to `value class` as possible.
-- Fixing other bugs.
+This project currently serves as a testing ground for all improvements to `jackson-module-kotlin`.  
+In prototyping, it is important to be willing to make disruptive changes.
 
 # About license
 This project is based on `jackson-module-kotlin`, so the license follows `jackson-module-kotlin`.  

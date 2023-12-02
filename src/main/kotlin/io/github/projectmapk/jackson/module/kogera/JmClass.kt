@@ -75,7 +75,7 @@ internal sealed interface JmClass {
                 companionClass.getAnnotation(Metadata::class.java)!!.accept(this)
             }
 
-            override fun visitFunction(flags: Flags, name: String): KmFunctionVisitor? = KmFunction(flags, name)
+            override fun visitFunction(flags: Flags, name: String): KmFunctionVisitor = KmFunction(flags, name)
                 .apply { functions.add(this) }
         }
 
@@ -117,7 +117,7 @@ private class JmClassImpl(
     private val allPropsMap: MutableMap<String, KmProperty> = mutableMapOf()
 
     // Defined as non-lazy because it is always read in both serialization and deserialization
-    final override val properties: List<KmProperty>
+    override val properties: List<KmProperty>
 
     private var companionPropName: String? = null
     override var flags: Flags = flagsOf()
@@ -166,7 +166,7 @@ private class JmClassImpl(
 
         // Constructors always have the same name, so only desc is compared
         return constructors.find {
-            val targetDesc = it.signature?.desc
+            val targetDesc = it.signature?.descriptor
             targetDesc == desc || targetDesc == valueDesc
         }
     }

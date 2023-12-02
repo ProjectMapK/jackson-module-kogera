@@ -35,6 +35,8 @@ internal class KotlinBeanDescription(coll: POJOPropertiesCollector) : BasicBeanD
 
 // Almost all copies of super @2.14.1
 internal object KotlinClassIntrospector : BasicClassIntrospector() {
+    private fun readResolve(): Any = KotlinClassIntrospector
+
     override fun forSerialization(
         config: SerializationConfig,
         type: JavaType,

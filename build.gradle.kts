@@ -1,40 +1,44 @@
 plugins {
     `maven-publish` // for JitPack
 
-    val kotlinVersion: String = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() } ?: "1.8.22"
+    val kotlinVersion: String = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() }
+        ?: libs.versions.kotlin.get()
+
     kotlin("jvm") version kotlinVersion
 
     java
-    id("org.jmailen.kotlinter") version "3.16.0"
+    alias(libs.plugins.kotlinter)
 }
 
 // Since group cannot be obtained by generateKogeraVersion, it is defined as a constant.
 val groupStr = "io.github.projectmapk"
-val jacksonVersion = "2.16.0"
+val jacksonVersion = libs.versions.jackson.get()
 val generatedSrcPath = "${layout.buildDirectory.get()}/generated/kotlin"
 
 group = groupStr
-version = "${jacksonVersion}-beta7"
+version = "${jacksonVersion}-beta8"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.7.0")
+    val kotlinVersion: String = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() }
+        ?: libs.versions.kotlin.get()
+    implementation("${libs.kotlin.stdlib.get()}:${kotlinVersion}")
+    implementation(libs.kotlinx.metadata.jvm)
 
-    api("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
-    api("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
+    api(libs.jackson.databind)
+    api(libs.jackson.annotations)
 
     // test libs
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    testImplementation("io.mockk:mockk:1.13.7")
+    testImplementation(libs.junit.api)
+    testImplementation(libs.junit.params)
+    testRuntimeOnly(libs.junit.engine)
+    testImplementation(libs.mockk)
 
-    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
-    testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    testImplementation(libs.jackson.xml)
+    testImplementation(libs.jackson.jsr310)
 }
 
 kotlin {

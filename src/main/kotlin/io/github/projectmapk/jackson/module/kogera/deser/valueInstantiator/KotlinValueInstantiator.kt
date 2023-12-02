@@ -70,7 +70,7 @@ internal class KotlinValueInstantiator(
                 return@forEachIndexed
             }
 
-            var paramVal = if (!isMissing || paramDef.isPrimitive || jsonProp.hasInjectableValueId()) {
+            var paramVal = if (!isMissing || jsonProp.hasInjectableValueId()) {
                 buffer.getParameter(jsonProp).apply {
                     if (this == null && jsonProp.skipNulls() && paramDef.isOptional) return@forEachIndexed
                 }

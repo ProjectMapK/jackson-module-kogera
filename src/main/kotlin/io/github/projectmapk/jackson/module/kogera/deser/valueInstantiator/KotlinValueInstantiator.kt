@@ -34,6 +34,8 @@ internal class KotlinValueInstantiator(
     private fun JavaType.requireEmptyValue() =
         (nullToEmptyCollection && this.isCollectionLikeType) || (nullToEmptyMap && this.isMapLikeType)
 
+    private fun SettableBeanProperty.hasInjectableValueId(): Boolean = injectableValueId != null
+
     private fun SettableBeanProperty.skipNulls(): Boolean =
         nullIsSameAsDefault || (metadata.valueNulls == Nulls.SKIP)
 
@@ -68,7 +70,7 @@ internal class KotlinValueInstantiator(
                 return@forEachIndexed
             }
 
-            var paramVal = if (!isMissing || paramDef.isPrimitive || jsonProp.hasInjectableValueId()) {
+            var paramVal = if (!isMissing || jsonProp.hasInjectableValueId()) {
                 buffer.getParameter(jsonProp).apply {
                     if (this == null && jsonProp.skipNulls() && paramDef.isOptional) return@forEachIndexed
                 }
@@ -104,8 +106,6 @@ internal class KotlinValueInstantiator(
 
         return valueCreator.callBy(bucket)
     }
-
-    private fun SettableBeanProperty.hasInjectableValueId(): Boolean = injectableValueId != null
 }
 
 internal class KotlinInstantiators(

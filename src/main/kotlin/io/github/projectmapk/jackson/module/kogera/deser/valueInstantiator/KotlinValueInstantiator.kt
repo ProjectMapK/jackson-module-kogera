@@ -66,21 +66,17 @@ internal class KotlinValueInstantiator(
             val jsonProp = props[idx]
             val isMissing = !buffer.hasParameter(jsonProp)
 
-            if (isMissing && paramDef.isOptional) {
-                return@forEachIndexed
-            }
-
             var paramVal = if (!isMissing || jsonProp.hasInjectableValueId()) {
                 buffer.getParameter(jsonProp).apply {
                     if (this == null && jsonProp.skipNulls() && paramDef.isOptional) return@forEachIndexed
                 }
             } else {
-                if (paramDef.isNullable) {
+                when {
+                    paramDef.isOptional -> return@forEachIndexed
                     // do not try to create any object if it is nullable and the value is missing
-                    null
-                } else {
+                    paramDef.isNullable -> null
                     // to get suitable "missing" value provided by deserializer
-                    jsonProp.valueDeserializer?.getAbsentValue(ctxt)
+                    else -> jsonProp.valueDeserializer?.getAbsentValue(ctxt)
                 }
             }
 

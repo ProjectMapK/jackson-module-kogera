@@ -1,6 +1,5 @@
 package io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.deserializer
 
-import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.databind.module.SimpleModule
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
@@ -9,7 +8,6 @@ import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass
 import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.Primitive
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 class SpecifiedForObjectMapperTest {
     companion object {
@@ -56,52 +54,27 @@ class SpecifiedForObjectMapperTest {
         assertEquals(expected, result)
     }
 
-    // region Kogera42
-    // After https://github.com/ProjectMapK/jackson-module-kogera/issues/42 is resolved, modify the test.
-    data class WithoutNoNn(
-        val pNn: Primitive,
-        val pN: Primitive?,
-        val nnoNn: NonNullObject,
-        val nnoN: NonNullObject?,
-        // val noNn: NullableObject,
-        val noN: NullableObject?
-    )
-
     @Test
     fun withNull() {
-        val base = WithoutNoNn(
+        val base = Dst(
             Primitive(1),
             null,
             NonNullObject("foo"),
             null,
-            // NullableObject(null),
+            NullableObject(null),
             null
         )
         val src = mapper.writeValueAsString(base)
-        val result = mapper.readValue<WithoutNoNn>(src)
+        val result = mapper.readValue<Dst>(src)
 
-        val expected = WithoutNoNn(
+        val expected = Dst(
             Primitive(101),
             null,
             NonNullObject("foo-deser"),
             null,
-            // NullableObject(null),
+            NullableObject("null-value-deser"),
             null
         )
         assertEquals(expected, result)
     }
-
-    data class Failing(val noNn: NullableObject)
-
-    @Test
-    fun failing() {
-        val expected = Failing(NullableObject(null))
-        val src = mapper.writeValueAsString(expected)
-
-        assertThrows<MismatchedInputException>("Kogera #42 is fixed") {
-            val result = mapper.readValue<Failing>(src)
-            assertEquals(expected, result)
-        }
-    }
-    // endregion
 }

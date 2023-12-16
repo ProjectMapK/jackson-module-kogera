@@ -43,6 +43,29 @@ The same policy applies to deserialization.
 This policy was decided with reference to the behavior as of `jackson-module-kotlin 2.14.1` and [kotlinx-serialization](https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/value-classes.md#serializable-value-classes).  
 However, these are just basic policies, and the behavior can be overridden with `JsonSerializer` or `JsonDeserializer`.
 
+### Handling of `value class` that wraps nullable
+When deserializing a `value class` that wraps a nullable as a parameter, if the input is `null`,
+there is a problem in determining whether the value should be `null` or wrapped.  
+`Kogera` provides special handling of such cases to make the behavior as intuitive as possible.  
+Note that such handling is applied only when the input is `null`, not when it is `undefined`.
+
+First, it tries to use the `nullValue` set in the deserializer, regardless of the nullability of the parameter.  
+This is the behavior defined by `Jackson` and is difficult to change.
+
+If the value retrieved here is `null`, the behavior will diverge depending on the nullability of the parameter.
+
+If the parameter is defined as non-null, then `ValueClassDeserializer.boxedNullValue` is used.  
+By default, this will be a wrapped `null` (cached value after the second time).
+
+The `ValueClassDeserializer` is a `StdDeserializer` defined by `Kogera` to handle such cases.  
+You can also set your own `boxedNullValue` by inheriting from it.  
+Note that this class is defined in `Java` for compatibility.
+
+If a parameter is defined as nullable, it will be `null`.
+
+Finally, if the retrieved value is `null`, a `Nulls.SKIP` decision is made.  
+However, the call with the default argument will fail until #51 is resolved.
+
 ### Serialization performance improvement using `JsonUnbox`
 In `jackson-module-kogera`, the `jackson` functionality is modified by reflection so that the `Jackson` functionality works for `value class` as well.
 These are executed on all calls.

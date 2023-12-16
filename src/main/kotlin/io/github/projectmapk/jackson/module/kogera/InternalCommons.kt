@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmType
 import kotlinx.metadata.KmValueParameter
+import kotlinx.metadata.isNullable
 import kotlinx.metadata.jvm.JvmMethodSignature
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
@@ -13,6 +14,9 @@ internal typealias JavaDuration = java.time.Duration
 internal typealias KotlinDuration = kotlin.time.Duration
 
 internal fun Class<*>.isUnboxableValueClass() = this.getAnnotation(JvmInline::class.java) != null
+
+// JmClass must be value class.
+internal fun JmClass.wrapsNullValueClass() = inlineClassUnderlyingType!!.isNullable
 
 private val primitiveClassToDesc = mapOf(
     Byte::class.javaPrimitiveType to 'B',

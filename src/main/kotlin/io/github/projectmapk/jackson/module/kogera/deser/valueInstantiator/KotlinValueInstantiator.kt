@@ -8,10 +8,9 @@ import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty
 import com.fasterxml.jackson.databind.deser.ValueInstantiator
-import com.fasterxml.jackson.databind.deser.impl.NullsAsEmptyProvider
 import com.fasterxml.jackson.databind.deser.impl.PropertyValueBuffer
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
-import com.fasterxml.jackson.databind.exc.MismatchedInputException
+import com.fasterxml.jackson.databind.exc.InvalidNullException
 import com.fasterxml.jackson.databind.module.SimpleValueInstantiators
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.ConstructorValueCreator
@@ -82,17 +81,15 @@ internal class KotlinValueInstantiator(
 
             if (paramVal == null) {
                 if (jsonProp.type.requireEmptyValue()) {
-                    paramVal = NullsAsEmptyProvider(jsonProp.valueDeserializer).getNullValue(ctxt)
+                    paramVal = jsonProp.valueDeserializer!!.getEmptyValue(ctxt)
                 } else {
                     val isMissingAndRequired = isMissing && jsonProp.isRequired
                     if (isMissingAndRequired || !(paramDef.isNullable || paramDef.isGenericType)) {
-                        throw MismatchedInputException.from(
-                            ctxt.parser,
-                            jsonProp.type,
-                            "Instantiation of $valueTypeDesc value failed for JSON property ${jsonProp.name} " +
-                                "due to missing (therefore NULL) value for creator parameter ${paramDef.name} " +
-                                "which is a non-nullable type"
-                        ).wrapWithPath(this.valueClass, jsonProp.name)
+                        InvalidNullException.from(ctxt, jsonProp.fullName, jsonProp.type)
+
+                        throw InvalidNullException
+                            .from(ctxt, jsonProp.fullName, jsonProp.type)
+                            .wrapWithPath(this.valueClass, jsonProp.name)
                     }
                 }
             }

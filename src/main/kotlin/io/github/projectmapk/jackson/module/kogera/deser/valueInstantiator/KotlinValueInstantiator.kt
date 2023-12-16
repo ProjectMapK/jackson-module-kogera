@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JavaType
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty
 import com.fasterxml.jackson.databind.deser.ValueInstantiator
@@ -13,9 +14,11 @@ import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.exc.InvalidNullException
 import com.fasterxml.jackson.databind.module.SimpleValueInstantiators
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
+import io.github.projectmapk.jackson.module.kogera.deser.ValueClassDeserializer
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.ConstructorValueCreator
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.MethodValueCreator
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.ValueCreator
+import io.github.projectmapk.jackson.module.kogera.wrapsNullValueClass
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
@@ -37,6 +40,15 @@ internal class KotlinValueInstantiator(
 
     private fun SettableBeanProperty.skipNulls(): Boolean =
         nullIsSameAsDefault || (metadata.valueNulls == Nulls.SKIP)
+
+    // If the argument is a value class that wraps nullable and non-null,
+    // and the input is explicit null, the value class is instantiated with null as input.
+    private fun requireValueClassSpecialNullValue(
+        isNullableParam: Boolean,
+        valueDeserializer: JsonDeserializer<*>?
+    ): Boolean = !isNullableParam &&
+        valueDeserializer is ValueClassDeserializer<*> &&
+        cache.getJmClass(valueDeserializer.handledType())!!.wrapsNullValueClass()
 
     private val valueCreator: ValueCreator<*>? by ReflectProperties.lazySoft {
         val creator = _withArgsCreator.annotated as Executable
@@ -64,10 +76,16 @@ internal class KotlinValueInstantiator(
         valueCreator.valueParameters.forEachIndexed { idx, paramDef ->
             val jsonProp = props[idx]
             val isMissing = !buffer.hasParameter(jsonProp)
+            val valueDeserializer: JsonDeserializer<*>? by lazy { jsonProp.valueDeserializer }
 
             var paramVal = if (!isMissing || jsonProp.hasInjectableValueId()) {
-                buffer.getParameter(jsonProp).apply {
-                    if (this == null && jsonProp.skipNulls() && paramDef.isOptional) return@forEachIndexed
+                buffer.getParameter(jsonProp) ?: when {
+                    // Deserializer.getNullValue could not be used because there is no way to get and parse parameters
+                    // from the BeanDescription and using AnnotationIntrospector would override user customization.
+                    requireValueClassSpecialNullValue(paramDef.isNullable, valueDeserializer) ->
+                        (valueDeserializer as ValueClassDeserializer<*>).boxedNullValue
+                    jsonProp.skipNulls() && paramDef.isOptional -> return@forEachIndexed
+                    else -> null
                 }
             } else {
                 when {
@@ -75,13 +93,13 @@ internal class KotlinValueInstantiator(
                     // do not try to create any object if it is nullable and the value is missing
                     paramDef.isNullable -> null
                     // to get suitable "missing" value provided by deserializer
-                    else -> jsonProp.valueDeserializer?.getAbsentValue(ctxt)
+                    else -> valueDeserializer?.getAbsentValue(ctxt)
                 }
             }
 
             if (paramVal == null) {
                 if (jsonProp.type.requireEmptyValue()) {
-                    paramVal = jsonProp.valueDeserializer!!.getEmptyValue(ctxt)
+                    paramVal = valueDeserializer!!.getEmptyValue(ctxt)
                 } else {
                     val isMissingAndRequired = isMissing && jsonProp.isRequired
                     if (isMissingAndRequired || !(paramDef.isNullable || paramDef.isGenericType)) {

@@ -79,13 +79,16 @@ internal class KotlinValueInstantiator(
             val valueDeserializer: JsonDeserializer<*>? by lazy { jsonProp.valueDeserializer }
 
             var paramVal = if (!isMissing || jsonProp.hasInjectableValueId()) {
-                buffer.getParameter(jsonProp) ?: when {
+                buffer.getParameter(jsonProp) ?: run {
                     // Deserializer.getNullValue could not be used because there is no way to get and parse parameters
                     // from the BeanDescription and using AnnotationIntrospector would override user customization.
-                    requireValueClassSpecialNullValue(paramDef.isNullable, valueDeserializer) ->
-                        (valueDeserializer as ValueClassDeserializer<*>).boxedNullValue
-                    jsonProp.skipNulls() && paramDef.isOptional -> return@forEachIndexed
-                    else -> null
+                    if (requireValueClassSpecialNullValue(paramDef.isNullable, valueDeserializer)) {
+                        (valueDeserializer as ValueClassDeserializer<*>).boxedNullValue?.let { return@run it }
+                    }
+
+                    if (jsonProp.skipNulls() && paramDef.isOptional) return@forEachIndexed
+
+                    null
                 }
             } else {
                 when {

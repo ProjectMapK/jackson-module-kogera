@@ -6,6 +6,7 @@ import io.github.projectmapk.jackson.module.kogera.deser.deserializers.ValueClas
 import kotlin.jvm.JvmClassMappingKt;
 import kotlin.reflect.KClass;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An interface to be inherited by JsonDeserializer that handles value classes that may wrap nullable.
@@ -40,6 +41,7 @@ public abstract class ValueClassDeserializer<D> extends StdDeserializer<D> {
      * If the parameter definition is a value class that wraps a nullable and is non-null,
      * and the input to JSON is explicitly null, this value is used.
      */
-    @NotNull
+    // It is defined so that null can also be returned so that Nulls.SKIP can be applied.
+    @Nullable
     public abstract D getBoxedNullValue();
 }

@@ -91,7 +91,7 @@ internal object ULongDeserializer : StdDeserializer<ULong>(ULong::class.java) {
 internal class ValueClassBoxDeserializer<S, D : Any>(
     private val creator: Method,
     private val converter: ValueClassBoxConverter<S, D>
-) : StdDeserializer<D>(converter.valueClass) {
+) : StdDeserializer<D>(converter.boxedClass) {
     private val inputType: Class<*> = creator.parameterTypes[0]
 
     init {

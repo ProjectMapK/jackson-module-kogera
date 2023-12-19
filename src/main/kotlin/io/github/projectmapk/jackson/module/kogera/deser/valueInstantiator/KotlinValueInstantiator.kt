@@ -92,7 +92,7 @@ internal class KotlinValueInstantiator(
                 }
             } else {
                 when {
-                    paramDef.isOptional -> return@forEachIndexed
+                    paramDef.isOptional || paramDef.isVararg -> return@forEachIndexed
                     // do not try to create any object if it is nullable and the value is missing
                     paramDef.isNullable -> null
                     // to get suitable "missing" value provided by deserializer

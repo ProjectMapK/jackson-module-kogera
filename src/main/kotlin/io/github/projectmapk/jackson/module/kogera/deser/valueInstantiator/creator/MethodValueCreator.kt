@@ -7,7 +7,6 @@ import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argum
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket.BucketGenerator
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.calcMaskSize
 import io.github.projectmapk.jackson.module.kogera.getDeclaredMethodBy
-import io.github.projectmapk.jackson.module.kogera.hasVarargParam
 import kotlinx.metadata.KmFunction
 import java.lang.reflect.Method
 
@@ -33,7 +32,7 @@ internal class MethodValueCreator<T>(
         val rawTypes = method.parameterTypes.asList()
         bucketGenerator = BucketGenerator(
             rawTypes,
-            kmParameters.hasVarargParam(),
+            valueParameters,
             kmParameters.mapToConverters(rawTypes, cache)
         )
     }

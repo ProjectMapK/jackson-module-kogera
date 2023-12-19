@@ -2,6 +2,7 @@ package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argu
 
 import io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.calcMaskSize
+import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.ValueParameter
 import java.lang.reflect.Array as ReflectArray
 
 private fun defaultPrimitiveValue(type: Class<*>): Any = when (type) {
@@ -20,26 +21,69 @@ private fun defaultPrimitiveValue(type: Class<*>): Any = when (type) {
 private fun defaultEmptyArray(arrayType: Class<*>): Any =
     ReflectArray.newInstance(arrayType.componentType, 0)
 
+// List of Int with only 1 bit enabled.
+private val BIT_FLAGS: List<Int> = IntArray(Int.SIZE_BITS) { (1 shl it).inv() }.asList()
+
+private enum class MaskOperation {
+    // Set argument.
+    SET {
+        override fun invoke(i: Int, j: Int) = i and j
+    },
+
+    // Mark the argument as uninitialized.
+    // A vararg argument that has no default value need not be given and is therefore marked as initialized.
+    INIT {
+        override fun invoke(i: Int, j: Int): Int = i or j.inv()
+    };
+
+    abstract operator fun invoke(i: Int, j: Int): Int
+}
+
+private fun IntArray.update(index: Int, operation: MaskOperation) {
+    val maskIndex = index / Integer.SIZE
+    this[maskIndex] = operation(this[maskIndex], BIT_FLAGS[index % Integer.SIZE])
+}
+
 // @see https://github.com/JetBrains/kotlin/blob/4c925d05883a8073e6732bca95bf575beb031a59/core/reflection.jvm/src/kotlin/reflect/jvm/internal/KCallableImpl.kt#L114
 internal class BucketGenerator(
     parameterTypes: List<Class<*>>,
-    hasVarargParam: Boolean,
+    valueParameters: List<ValueParameter>,
     private val converters: List<ValueClassUnboxConverter<Any>?>
 ) {
     private val valueParameterSize: Int = parameterTypes.size
-    private val originalAbsentArgs: Array<Any?> = Array(valueParameterSize) { i ->
-        // Set values of primitive arguments to the boxed default values (such as 0, 0.0, false) instead of nulls.
-        parameterTypes[i].takeIf { it.isPrimitive }?.let { defaultPrimitiveValue(it) }
-    }
+    private val originalAbsentArgs: Array<Any?>
 
-    // -1 is the filled bit mask.
-    private val originalMasks: IntArray = IntArray(calcMaskSize(parameterTypes.size)) { -1 }
+    // Mask initialized to 0 when all arguments are set.
+    // The contents are initialized in the init block.
+    private val originalMasks: IntArray = IntArray(calcMaskSize(parameterTypes.size)) { 0 }
 
     init {
-        if (hasVarargParam) {
-            // vararg argument is always at the end of the arguments.
-            val i = valueParameterSize - 1
-            originalAbsentArgs[i] = defaultEmptyArray(parameterTypes[i])
+        originalAbsentArgs = Array(valueParameterSize) { i ->
+            val paramType = parameterTypes[i]
+            val metaParam = valueParameters[i]
+
+            when {
+                // In Kotlin, it is possible to define non-tail arguments with vararg,
+                // which cannot be determined by Java reflection, so they are read from Metadata.
+                metaParam.isVararg -> {
+                    // If no default arguments are set,
+                    // the call may be made with an empty array even if no arguments are passed,
+                    // so it is treated as initialized.
+                    // Conversely, if default arguments are set,
+                    // the initial value is treated as uninitialized to detect that no arguments has passed.
+                    if (metaParam.isOptional) originalMasks.update(i, MaskOperation.INIT)
+                    defaultEmptyArray(paramType)
+                }
+                // Set values of primitive arguments to the boxed default values (such as 0, 0.0, false) instead of nulls.
+                paramType.isPrimitive -> {
+                    originalMasks.update(i, MaskOperation.INIT)
+                    defaultPrimitiveValue(paramType)
+                }
+                else -> {
+                    originalMasks.update(i, MaskOperation.INIT)
+                    null
+                }
+            }
         }
     }
 
@@ -53,13 +97,6 @@ internal class ArgumentBucket(
     val masks: IntArray,
     private val converters: List<ValueClassUnboxConverter<Any>?>
 ) {
-    companion object {
-        // List of Int with only 1 bit enabled.
-        private val BIT_FLAGS: List<Int> = IntArray(Int.SIZE_BITS) { (1 shl it).inv() }.asList()
-    }
-
-    private var count = 0
-
     /**
      * Sets the argument corresponding to index.
      * Note that, arguments defined in the value class must be passed as boxed.
@@ -77,8 +114,8 @@ internal class ArgumentBucket(
         val maskIndex = index / Integer.SIZE
         masks[maskIndex] = masks[maskIndex] and BIT_FLAGS[index % Integer.SIZE]
 
-        count++
+        masks.update(index, MaskOperation.SET)
     }
 
-    val isFullInitialized: Boolean get() = count == valueParameterSize
+    val isFullInitialized: Boolean get() = masks.all { it == 0 }
 }

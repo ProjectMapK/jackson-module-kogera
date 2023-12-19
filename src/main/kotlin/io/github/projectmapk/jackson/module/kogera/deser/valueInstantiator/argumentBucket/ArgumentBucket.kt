@@ -53,7 +53,8 @@ internal class BucketGenerator(
     private val valueParameterSize: Int = parameterTypes.size
     private val originalAbsentArgs: Array<Any?>
 
-    // -1 is the filled bit mask.
+    // Mask initialized to 0 when all arguments are set.
+    // The contents are initialized in the init block.
     private val originalMasks: IntArray = IntArray(calcMaskSize(parameterTypes.size)) { 0 }
 
     init {

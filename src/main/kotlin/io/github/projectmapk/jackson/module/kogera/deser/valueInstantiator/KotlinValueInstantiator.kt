@@ -106,8 +106,6 @@ internal class KotlinValueInstantiator(
                 } else {
                     val isMissingAndRequired = isMissing && jsonProp.isRequired
                     if (isMissingAndRequired || !(paramDef.isNullable || paramDef.isGenericType)) {
-                        InvalidNullException.from(ctxt, jsonProp.fullName, jsonProp.type)
-
                         throw InvalidNullException
                             .from(ctxt, jsonProp.fullName, jsonProp.type)
                             .wrapWithPath(this.valueClass, jsonProp.name)

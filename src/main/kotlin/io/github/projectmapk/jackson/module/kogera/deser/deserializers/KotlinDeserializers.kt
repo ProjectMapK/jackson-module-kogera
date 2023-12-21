@@ -14,6 +14,7 @@ import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.ValueClassBoxConverter
 import io.github.projectmapk.jackson.module.kogera.deser.JavaToKotlinDurationConverter
+import io.github.projectmapk.jackson.module.kogera.deser.ValueClassDeserializer
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
@@ -91,20 +92,28 @@ internal object ULongDeserializer : StdDeserializer<ULong>(ULong::class.java) {
 internal class ValueClassBoxDeserializer<S, D : Any>(
     private val creator: Method,
     private val converter: ValueClassBoxConverter<S, D>
-) : StdDeserializer<D>(converter.valueClass) {
+) : ValueClassDeserializer<D>(converter.boxedClass) {
     private val inputType: Class<*> = creator.parameterTypes[0]
 
     init {
         creator.apply { if (!this.isAccessible) this.isAccessible = true }
     }
 
+    // Cache the result of wrapping null, since the result is always expected to be the same.
+    @get:JvmName("boxedNullValue")
+    private val boxedNullValue: D by lazy { instantiate(null) }
+
+    override fun getBoxedNullValue(): D = boxedNullValue
+
+    // To instantiate the value class in the same way as other classes,
+    // it is necessary to call creator(e.g. constructor-impl) -> box-impl in that order.
+    // Input is null only when called from KotlinValueInstantiator.
+    @Suppress("UNCHECKED_CAST")
+    private fun instantiate(input: Any?): D = converter.convert(creator.invoke(null, input) as S)
+
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): D {
         val input = p.readValueAs(inputType)
-
-        // To instantiate the value class in the same way as other classes,
-        // it is necessary to call creator(e.g. constructor-impl) -> box-impl in that order.
-        @Suppress("UNCHECKED_CAST")
-        return converter.convert(creator.invoke(null, input) as S)
+        return instantiate(input)
     }
 }
 

@@ -27,12 +27,13 @@ class HasRequiredMarkerTest {
             .build()
     )
 
-    data class ConstructorParamTarget(
+    class ConstructorParamTarget(
         val nullable: String?,
         val hasDefault: String = "default",
         val collection: Collection<*>,
         val map: Map<*, *>,
-        val nonNull: Any
+        val nonNull: Any,
+        vararg val vararg: Int
     )
 
     @Nested
@@ -46,6 +47,7 @@ class HasRequiredMarkerTest {
             assertTrue(desc.isRequired("collection"))
             assertTrue(desc.isRequired("map"))
             assertTrue(desc.isRequired("nonNull"))
+            assertFalse(desc.isRequired("vararg"))
         }
 
         @Test
@@ -57,6 +59,7 @@ class HasRequiredMarkerTest {
             assertFalse(desc.isRequired("collection"))
             assertFalse(desc.isRequired("map"))
             assertTrue(desc.isRequired("nonNull"))
+            assertFalse(desc.isRequired("vararg"))
         }
     }
 
@@ -113,7 +116,7 @@ class HasRequiredMarkerTest {
         }
     }
 
-    data class AnnotationTarget(
+    class AnnotationTarget(
         @param:JsonProperty(required = true)
         val nullableParam: String?,
         @param:JsonProperty(required = true)
@@ -121,7 +124,9 @@ class HasRequiredMarkerTest {
         @param:JsonProperty(required = true)
         val collectionParam: Collection<*>,
         @param:JsonProperty(required = true)
-        val mapParam: Map<*, *>
+        val mapParam: Map<*, *>,
+        @param:JsonProperty(required = true)
+        vararg val vararg: Int
     ) {
         @set:JsonProperty(required = true)
         var nullableProp: String? = null
@@ -153,6 +158,7 @@ class HasRequiredMarkerTest {
         assertTrue(desc.isRequired("hasDefaultParam"))
         assertTrue(desc.isRequired("collectionParam"))
         assertTrue(desc.isRequired("mapParam"))
+        assertTrue(desc.isRequired("vararg"))
 
         assertTrue(desc.isRequired("nullableProp"))
         assertTrue(desc.isRequired("nullableField"))
@@ -167,7 +173,8 @@ class HasRequiredMarkerTest {
         val hasDefault: String,
         val collection: Collection<*>,
         val map: Map<*, *>,
-        val nonNull: Any
+        val nonNull: Any,
+        val vararg: List<Int>
     ) {
         companion object {
             @JvmStatic
@@ -177,13 +184,14 @@ class HasRequiredMarkerTest {
                 hasDefault: String = "default",
                 collection: Collection<*>,
                 map: Map<*, *>,
-                nonNull: Any
-            ) = FactoryParamTarget(nullable, hasDefault, collection, map, nonNull)
+                nonNull: Any,
+                vararg vararg: Int
+            ) = FactoryParamTarget(nullable, hasDefault, collection, map, nonNull, vararg.asList())
         }
     }
 
     @Nested
-    inner class ParamTest {
+    inner class FactoryParamTest {
         @Test
         fun defaultParam() {
             val desc = defaultMapper.introspectDeser<FactoryParamTarget>()
@@ -193,6 +201,7 @@ class HasRequiredMarkerTest {
             assertTrue(desc.isRequired("collection"))
             assertTrue(desc.isRequired("map"))
             assertTrue(desc.isRequired("nonNull"))
+            assertFalse(desc.isRequired("vararg"))
         }
 
         @Test
@@ -204,14 +213,16 @@ class HasRequiredMarkerTest {
             assertFalse(desc.isRequired("collection"))
             assertFalse(desc.isRequired("map"))
             assertTrue(desc.isRequired("nonNull"))
+            assertFalse(desc.isRequired("vararg"))
         }
     }
 
-    data class FactoryAnnotationTarget(
+    class FactoryAnnotationTarget(
         val nullableParam: String?,
         val hasDefaultParam: String = "default",
         val collectionParam: Collection<*>,
-        val mapParam: Map<*, *>
+        val mapParam: Map<*, *>,
+        val vararg: List<Int>
     ) {
         companion object {
             @JvmStatic
@@ -224,8 +235,10 @@ class HasRequiredMarkerTest {
                 @JsonProperty(required = true)
                 collectionParam: Collection<*>,
                 @JsonProperty(required = true)
-                mapParam: Map<*, *>
-            ) = FactoryAnnotationTarget(nullableParam, hasDefaultParam, collectionParam, mapParam)
+                mapParam: Map<*, *>,
+                @JsonProperty(required = true)
+                vararg vararg: Int
+            ) = FactoryAnnotationTarget(nullableParam, hasDefaultParam, collectionParam, mapParam, vararg.asList())
         }
     }
 
@@ -237,5 +250,6 @@ class HasRequiredMarkerTest {
         assertTrue(desc.isRequired("hasDefaultParam"))
         assertTrue(desc.isRequired("collectionParam"))
         assertTrue(desc.isRequired("mapParam"))
+        assertTrue(desc.isRequired("vararg"))
     }
 }

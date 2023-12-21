@@ -11,7 +11,6 @@ internal class ValueParameter(param: KmValueParameter) {
     val type: KmType = param.type
     val isOptional: Boolean = param.declaresDefaultValue
     val isNullable: Boolean = type.isNullable
-    val isVararg: Boolean = param.varargElementType != null
     val isGenericType: Boolean = type.classifier is KmClassifier.TypeParameter
 
     // TODO: Formatting into a form that is easy to understand as an error message with reference to KParameter

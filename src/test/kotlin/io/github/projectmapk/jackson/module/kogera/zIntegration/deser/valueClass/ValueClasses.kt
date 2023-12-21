@@ -3,7 +3,6 @@ package io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClas
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import io.github.projectmapk.jackson.module.kogera.deser.ValueClassDeserializer
 
 @JvmInline
 value class Primitive(val v: Int) {
@@ -22,10 +21,11 @@ value class NonNullObject(val v: String) {
 
 @JvmInline
 value class NullableObject(val v: String?) {
-    class Deserializer : ValueClassDeserializer<NullableObject>(NullableObject::class) {
+    class Deserializer : StdDeserializer<NullableObject>(NullableObject::class.java) {
+        // After https://github.com/ProjectMapK/jackson-module-kogera/issues/42 is resolved, uncomment out
+        // override fun getNullValue(ctxt: DeserializationContext): NullableObject = NullableObject(null)
+
         override fun deserialize(p: JsonParser, ctxt: DeserializationContext): NullableObject =
             NullableObject(p.valueAsString + "-deser")
-
-        override fun getBoxedNullValue(): NullableObject = NullableObject("null-value-deser")
     }
 }

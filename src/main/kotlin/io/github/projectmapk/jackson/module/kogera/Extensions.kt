@@ -33,19 +33,10 @@ public fun jsonMapper(initializer: JsonMapper.Builder.() -> Unit = {}): JsonMapp
     return builder.build()
 }
 
-// region: JvmOverloads is set for bytecode compatibility for versions below 2.17.
-@JvmOverloads
-public fun jacksonObjectMapper(initializer: KotlinModule.Builder.() -> Unit = {}): ObjectMapper =
-    jsonMapper { addModule(kotlinModule(initializer)) }
+public fun jacksonObjectMapper(): ObjectMapper = jsonMapper { addModule(kotlinModule()) }
+public fun jacksonMapperBuilder(): JsonMapper.Builder = JsonMapper.builder().addModule(kotlinModule())
 
-@JvmOverloads
-public fun jacksonMapperBuilder(initializer: KotlinModule.Builder.() -> Unit = {}): JsonMapper.Builder =
-    JsonMapper.builder().addModule(kotlinModule(initializer))
-
-@JvmOverloads
-public fun ObjectMapper.registerKotlinModule(initializer: KotlinModule.Builder.() -> Unit = {}): ObjectMapper =
-    this.registerModule(kotlinModule(initializer))
-// endregion
+public fun ObjectMapper.registerKotlinModule(): ObjectMapper = this.registerModule(kotlinModule())
 
 public inline fun <reified T> jacksonTypeRef(): TypeReference<T> = object : TypeReference<T>() {}
 

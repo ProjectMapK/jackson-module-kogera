@@ -103,6 +103,8 @@ internal class KotlinPrimaryAnnotationIntrospector(
             paramDef.type.isNullable -> false
             // Default argument are defined
             paramDef.declaresDefaultValue -> false
+            // vararg is treated as an empty array because undefined input is allowed
+            paramDef.varargElementType != null -> false
             // The conversion in case of null is defined.
             type.hasDefaultEmptyValue() -> false
             else -> true

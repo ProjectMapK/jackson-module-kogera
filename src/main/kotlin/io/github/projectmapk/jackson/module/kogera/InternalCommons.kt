@@ -3,7 +3,7 @@ package io.github.projectmapk.jackson.module.kogera
 import com.fasterxml.jackson.annotation.JsonCreator
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmType
-import kotlinx.metadata.KmValueParameter
+import kotlinx.metadata.isNullable
 import kotlinx.metadata.jvm.JvmMethodSignature
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
@@ -13,6 +13,9 @@ internal typealias JavaDuration = java.time.Duration
 internal typealias KotlinDuration = kotlin.time.Duration
 
 internal fun Class<*>.isUnboxableValueClass() = this.getAnnotation(JvmInline::class.java) != null
+
+// JmClass must be value class.
+internal fun JmClass.wrapsNullValueClass() = inlineClassUnderlyingType!!.isNullable
 
 private val primitiveClassToDesc = mapOf(
     Byte::class.javaPrimitiveType to 'B',
@@ -52,9 +55,6 @@ internal fun Constructor<*>.toSignature(): JvmMethodSignature =
 
 internal fun Method.toSignature(): JvmMethodSignature =
     JvmMethodSignature(this.name, parameterTypes.toDescBuilder().appendDescriptor(this.returnType).toString())
-
-internal fun List<KmValueParameter>.hasVarargParam(): Boolean =
-    lastOrNull()?.let { it.varargElementType != null } ?: false
 
 internal val defaultConstructorMarker: Class<*> by lazy {
     Class.forName("kotlin.jvm.internal.DefaultConstructorMarker")

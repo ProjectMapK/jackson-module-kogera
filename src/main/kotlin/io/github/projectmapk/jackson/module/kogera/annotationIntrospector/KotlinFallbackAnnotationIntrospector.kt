@@ -20,6 +20,7 @@ import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
 import io.github.projectmapk.jackson.module.kogera.ser.KotlinDurationValueToJavaDurationConverter
 import io.github.projectmapk.jackson.module.kogera.ser.KotlinToJavaDurationConverter
 import io.github.projectmapk.jackson.module.kogera.ser.SequenceToIteratorConverter
+import io.github.projectmapk.jackson.module.kogera.wrapsNullValueClass
 import kotlinx.metadata.KmTypeProjection
 import kotlinx.metadata.KmValueParameter
 import kotlinx.metadata.isNullable
@@ -100,8 +101,7 @@ internal class KotlinFallbackAnnotationIntrospector(
 
     // Determine if the unbox result of value class is nullable
     // @see findNullSerializer
-    private fun Class<*>.requireRebox(): Boolean =
-        cache.getJmClass(this)!!.inlineClassUnderlyingType!!.isNullable
+    private fun Class<*>.requireRebox(): Boolean = cache.getJmClass(this)!!.wrapsNullValueClass()
 
     // Perform proper serialization even if the value wrapped by the value class is null.
     // If value is a non-null object type, it must not be reboxing.

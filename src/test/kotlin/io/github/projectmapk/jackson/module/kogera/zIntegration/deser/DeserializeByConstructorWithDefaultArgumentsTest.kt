@@ -1,5 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.zIntegration.deser
 
+import io.github.projectmapk.jackson.module.kogera.assertReflectEquals
 import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -8,7 +9,7 @@ import org.junit.jupiter.api.Test
 /**
  * Up to argument size 32 there is one mask argument for the default argument,
  * 33 ~ 64 there are two, and 65 there are three, so each boundary value is tested.
- * Also, if the default argument is set, the maximum argument size that can be set in the constructor is 244,
+ * Also, if the default argument is set, the maximum argument size that can be set in the constructor is 245,
  * so that case is tested as well.
  */
 class DeserializeByConstructorWithDefaultArgumentsTest {
@@ -238,7 +239,8 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
         assertEquals(Dst65(), defaultMapper.readValue<Dst65>("{}"))
     }
 
-    data class DstMax(
+    // It cannot be a data class because the generated method would exceed the argument size limit.
+    class DstMax(
         val p000: String = "0",
         val p001: String = "1",
         val p002: String = "2",
@@ -488,6 +490,6 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
 
     @Test
     fun testMax() {
-        assertEquals(DstMax(), defaultMapper.readValue<DstMax>("{}"))
+        assertReflectEquals(DstMax(), defaultMapper.readValue<DstMax>("{}"))
     }
 }

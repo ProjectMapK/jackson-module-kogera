@@ -12,7 +12,7 @@ import java.lang.reflect.Method
 internal typealias JavaDuration = java.time.Duration
 internal typealias KotlinDuration = kotlin.time.Duration
 
-internal fun Class<*>.isUnboxableValueClass() = this.getAnnotation(JvmInline::class.java) != null
+internal fun Class<*>.isUnboxableValueClass() = this.isAnnotationPresent(JvmInline::class.java)
 
 // JmClass must be value class.
 internal fun JmClass.wrapsNullValueClass() = inlineClassUnderlyingType!!.isNullable

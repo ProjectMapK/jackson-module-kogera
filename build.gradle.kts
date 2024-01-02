@@ -32,6 +32,7 @@ dependencies {
     api(libs.jackson.annotations)
 
     // test libs
+    testImplementation("${libs.kotlin.reflect.get()}:${kotlinVersion}")
     testImplementation(libs.junit.api)
     testImplementation(libs.junit.params)
     testRuntimeOnly(libs.junit.engine)

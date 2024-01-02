@@ -13,3 +13,5 @@ internal val LF_PRINTER: DefaultPrettyPrinter =
 internal fun ObjectMapper.testPrettyWriter(): ObjectWriter = this.writer(LF_PRINTER)
 
 internal fun Class<*>.isKotlinClass() = declaredAnnotations.any { it is Metadata }
+
+internal val defaultMapper = jacksonObjectMapper()

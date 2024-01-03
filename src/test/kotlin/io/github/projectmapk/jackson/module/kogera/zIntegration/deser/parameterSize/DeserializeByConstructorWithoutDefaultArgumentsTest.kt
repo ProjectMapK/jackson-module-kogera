@@ -1,7 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.zIntegration.deser.parameterSize
 
 import io.github.projectmapk.jackson.module.kogera.assertReflectEquals
-import io.github.projectmapk.jackson.module.kogera.callPrimaryConstructorByParamName
+import io.github.projectmapk.jackson.module.kogera.callPrimaryConstructor
 import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions
@@ -50,7 +50,7 @@ class DeserializeByConstructorWithoutDefaultArgumentsTest {
 
     @Test
     fun test32() {
-        val expected = callPrimaryConstructorByParamName<Dst32>()
+        val expected = callPrimaryConstructor<Dst32>()
         val src = defaultMapper.writeValueAsString(expected)
         Assertions.assertEquals(expected, defaultMapper.readValue<Dst32>(src))
     }
@@ -93,7 +93,7 @@ class DeserializeByConstructorWithoutDefaultArgumentsTest {
 
     @Test
     fun test33() {
-        val expected = callPrimaryConstructorByParamName<Dst33>()
+        val expected = callPrimaryConstructor<Dst33>()
         val src = defaultMapper.writeValueAsString(expected)
         Assertions.assertEquals(expected, defaultMapper.readValue<Dst33>(src))
     }
@@ -167,7 +167,7 @@ class DeserializeByConstructorWithoutDefaultArgumentsTest {
 
     @Test
     fun test64() {
-        val expected = callPrimaryConstructorByParamName<Dst64>()
+        val expected = callPrimaryConstructor<Dst64>()
         val src = defaultMapper.writeValueAsString(expected)
         Assertions.assertEquals(expected, defaultMapper.readValue<Dst64>(src))
     }
@@ -242,7 +242,7 @@ class DeserializeByConstructorWithoutDefaultArgumentsTest {
 
     @Test
     fun test65() {
-        val expected = callPrimaryConstructorByParamName<Dst65>()
+        val expected = callPrimaryConstructor<Dst65>()
         val src = defaultMapper.writeValueAsString(expected)
         Assertions.assertEquals(expected, defaultMapper.readValue<Dst65>(src))
     }
@@ -507,7 +507,7 @@ class DeserializeByConstructorWithoutDefaultArgumentsTest {
 
     @Test
     fun testMax() {
-        val expected = callPrimaryConstructorByParamName<DstMax>()
+        val expected = callPrimaryConstructor<DstMax>()
         val src = defaultMapper.writeValueAsString(expected)
         assertReflectEquals(expected, defaultMapper.readValue<DstMax>(src))
     }

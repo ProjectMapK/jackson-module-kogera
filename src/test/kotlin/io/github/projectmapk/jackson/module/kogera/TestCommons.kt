@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ObjectWriter
 import org.junit.jupiter.api.Assertions.assertEquals
+import kotlin.reflect.KParameter
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 
@@ -19,10 +20,11 @@ internal fun Class<*>.isKotlinClass() = declaredAnnotations.any { it is Metadata
 
 internal val defaultMapper = jacksonObjectMapper()
 
-internal inline fun <reified T : Any> callPrimaryConstructorByParamName(): T = T::class.primaryConstructor!!.run {
-    val args = parameters.associateWith { it.name }
-    return callBy(args)
-}
+internal inline fun <reified T : Any> callPrimaryConstructor(mapper: (KParameter) -> Any? = { it.name }): T =
+    T::class.primaryConstructor!!.run {
+        val args = parameters.associateWith { mapper(it) }
+        callBy(args)
+    }
 
 // Function for comparing non-data classes.
 internal inline fun <reified T : Any> assertReflectEquals(expected: T, actual: T) {

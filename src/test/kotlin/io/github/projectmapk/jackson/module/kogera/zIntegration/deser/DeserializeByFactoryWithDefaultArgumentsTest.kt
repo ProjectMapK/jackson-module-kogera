@@ -13,7 +13,7 @@ private fun replacePQ(src: String) = src.replace(Regex("""p\d+":""")) { "q" + it
 /**
  * Up to argument size 32 there is one mask argument for the default argument,
  * 33 ~ 64 there are two, and 65 there are three, so each boundary value is tested.
- * Also, the maximum argument size that can be set in the constructor is 254, so that case is tested as well.
+ * Also, the maximum argument size that can be set in the constructor is 244, so that case is tested as well.
  */
 class DeserializeByFactoryWithDefaultArgumentsTest {
     data class Dst32(

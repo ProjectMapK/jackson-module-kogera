@@ -1,9 +1,9 @@
-package io.github.projectmapk.jackson.module.kogera.zIntegration.deser
+package io.github.projectmapk.jackson.module.kogera.zIntegration.deser.parameterSize
 
 import io.github.projectmapk.jackson.module.kogera.assertReflectEquals
 import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 /**
@@ -50,7 +50,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
 
     @Test
     fun test32() {
-        assertEquals(Dst32(), defaultMapper.readValue<Dst32>("{}"))
+        Assertions.assertEquals(Dst32(), defaultMapper.readValue<Dst32>("{}"))
     }
 
     data class Dst33(
@@ -91,7 +91,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
 
     @Test
     fun test33() {
-        assertEquals(Dst33(), defaultMapper.readValue<Dst33>("{}"))
+        Assertions.assertEquals(Dst33(), defaultMapper.readValue<Dst33>("{}"))
     }
 
     data class Dst64(
@@ -163,7 +163,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
 
     @Test
     fun test64() {
-        assertEquals(Dst64(), defaultMapper.readValue<Dst64>("{}"))
+        Assertions.assertEquals(Dst64(), defaultMapper.readValue<Dst64>("{}"))
     }
 
     data class Dst65(
@@ -236,7 +236,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
 
     @Test
     fun test65() {
-        assertEquals(Dst65(), defaultMapper.readValue<Dst65>("{}"))
+        Assertions.assertEquals(Dst65(), defaultMapper.readValue<Dst65>("{}"))
     }
 
     // It cannot be a data class because the generated method would exceed the argument size limit.

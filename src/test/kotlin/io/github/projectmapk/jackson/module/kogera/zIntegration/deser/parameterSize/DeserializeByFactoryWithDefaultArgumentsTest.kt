@@ -1,4 +1,4 @@
-package io.github.projectmapk.jackson.module.kogera.zIntegration.deser
+package io.github.projectmapk.jackson.module.kogera.zIntegration.deser.parameterSize
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import io.github.projectmapk.jackson.module.kogera.assertReflectEquals
@@ -7,13 +7,10 @@ import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-// Convert the property p to q (but not the value) to make it an input to the factory function.
-private fun replacePQ(src: String) = src.replace(Regex("""p\d+":""")) { "q" + it.value.substring(1) }
-
 /**
  * Up to argument size 32 there is one mask argument for the default argument,
  * 33 ~ 64 there are two, and 65 there are three, so each boundary value is tested.
- * Also, the maximum argument size that can be set in the constructor is 254, so that case is tested as well.
+ * Also, the maximum argument size that can be set in the constructor is 244, so that case is tested as well.
  */
 class DeserializeByFactoryWithDefaultArgumentsTest {
     data class Dst32(

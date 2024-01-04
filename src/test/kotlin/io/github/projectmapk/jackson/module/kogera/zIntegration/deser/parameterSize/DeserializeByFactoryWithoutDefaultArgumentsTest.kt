@@ -1,11 +1,11 @@
-package io.github.projectmapk.jackson.module.kogera.zIntegration.deser
+package io.github.projectmapk.jackson.module.kogera.zIntegration.deser.parameterSize
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import io.github.projectmapk.jackson.module.kogera.assertReflectEquals
-import io.github.projectmapk.jackson.module.kogera.callPrimaryConstructorByParamName
+import io.github.projectmapk.jackson.module.kogera.callPrimaryConstructor
 import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 // Convert the property p to q (but not the value) to make it an input to the factory function.
@@ -126,9 +126,9 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
 
     @Test
     fun test32() {
-        val expected = callPrimaryConstructorByParamName<Dst32>()
+        val expected = callPrimaryConstructor<Dst32>()
         val src = replacePQ(defaultMapper.writeValueAsString(expected))
-        assertEquals(expected, defaultMapper.readValue<Dst32>(src))
+        Assertions.assertEquals(expected, defaultMapper.readValue<Dst32>(src))
     }
 
     data class Dst33(
@@ -243,9 +243,9 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
 
     @Test
     fun test33() {
-        val expected = callPrimaryConstructorByParamName<Dst33>()
+        val expected = callPrimaryConstructor<Dst33>()
         val src = replacePQ(defaultMapper.writeValueAsString(expected))
-        assertEquals(expected, defaultMapper.readValue<Dst33>(src))
+        Assertions.assertEquals(expected, defaultMapper.readValue<Dst33>(src))
     }
 
     data class Dst64(
@@ -453,9 +453,9 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
 
     @Test
     fun test64() {
-        val expected = callPrimaryConstructorByParamName<Dst64>()
+        val expected = callPrimaryConstructor<Dst64>()
         val src = replacePQ(defaultMapper.writeValueAsString(expected))
-        assertEquals(expected, defaultMapper.readValue<Dst64>(src))
+        Assertions.assertEquals(expected, defaultMapper.readValue<Dst64>(src))
     }
 
     data class Dst65(
@@ -666,9 +666,9 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
 
     @Test
     fun test65() {
-        val expected = callPrimaryConstructorByParamName<Dst65>()
+        val expected = callPrimaryConstructor<Dst65>()
         val src = replacePQ(defaultMapper.writeValueAsString(expected))
-        assertEquals(expected, defaultMapper.readValue<Dst65>(src))
+        Assertions.assertEquals(expected, defaultMapper.readValue<Dst65>(src))
     }
 
     // It cannot be a data class because the generated method would exceed the argument size limit.
@@ -1447,7 +1447,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
 
     @Test
     fun testMax() {
-        val expected = callPrimaryConstructorByParamName<DstMax>()
+        val expected = callPrimaryConstructor<DstMax>()
         val src = replacePQ(defaultMapper.writeValueAsString(expected))
         assertReflectEquals(expected, defaultMapper.readValue<DstMax>(src))
     }

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 // Test for Creator that can be handled by the Jackson mechanism.
-class ValueClassByJacksonCreatorTest {
+class HandledByJacksonTest {
     @JvmInline
     value class PrimitiveNullableCreator(val value: Int) {
         companion object {

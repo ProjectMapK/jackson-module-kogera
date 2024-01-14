@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 // Test on the case of deserialization by ValueClassBoxDeserializer
-class ValueClassByOriginalCreatorTest {
+class HandledByKogeraTest {
     @JvmInline
     value class Primary(val primary: String)
 

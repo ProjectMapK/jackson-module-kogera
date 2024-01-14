@@ -1,17 +1,53 @@
 package io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass
 
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.lang.reflect.InvocationTargetException
 
-class NoSpecifiedTest {
+class WithoutCustomDeserializeMethodTest {
     companion object {
         val mapper = jacksonObjectMapper()
         val throwable = IllegalArgumentException("test")
+    }
+
+    @Nested
+    inner class DirectDeserializeTest {
+        @Test
+        fun primitive() {
+            val result = defaultMapper.readValue<Primitive>("1")
+            assertEquals(Primitive(1), result)
+        }
+
+        @Test
+        fun nonNullObject() {
+            val result = defaultMapper.readValue<NonNullObject>(""""foo"""")
+            assertEquals(NonNullObject("foo"), result)
+        }
+
+        @Suppress("ClassName")
+        @Nested
+        inner class NullableObject_ {
+            @Test
+            fun value() {
+                val result = defaultMapper.readValue<NullableObject>(""""foo"""")
+                assertEquals(NullableObject("foo"), result)
+            }
+
+            // failing
+            @Test
+            fun nullString() {
+                assertThrows<NullPointerException>("#209 has been fixed.") {
+                    val result = defaultMapper.readValue<NullableObject>("null")
+                    assertEquals(NullableObject(null), result)
+                }
+            }
+        }
     }
 
     data class Dst(
@@ -24,7 +60,7 @@ class NoSpecifiedTest {
     )
 
     @Test
-    fun nonNull() {
+    fun withoutNull() {
         val expected = Dst(
             Primitive(1),
             Primitive(2),
@@ -56,15 +92,17 @@ class NoSpecifiedTest {
     }
 
     @JvmInline
-    value class HasCheck(val value: Int) {
+    value class HasCheckConstructor(val value: Int) {
         init {
             if (value < 0) throw throwable
         }
     }
 
     @Test
-    fun callCheckTest() {
-        val e = assertThrows<InvocationTargetException> { mapper.readValue<HasCheck>("-1") }
-        assertTrue(e.cause === throwable)
+    fun callConstructorCheckTest() {
+        val e = assertThrows<InvocationTargetException> { defaultMapper.readValue<HasCheckConstructor>("-1") }
+        Assertions.assertTrue(e.cause === throwable)
     }
+
+    // If all JsonCreator tests are OK, no need to check throws from factory functions.
 }

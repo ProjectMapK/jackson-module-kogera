@@ -7,7 +7,9 @@ import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass
 import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.NullableObject
 import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.Primitive
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class SpecifiedForObjectMapperTest {
     companion object {
@@ -18,6 +20,40 @@ class SpecifiedForObjectMapperTest {
                 this.addDeserializer(NullableObject::class.java, NullableObject.Deserializer())
             }
             this.registerModule(module)
+        }
+    }
+
+    @Nested
+    inner class DirectDeserialize {
+        @Test
+        fun primitive() {
+            val result = mapper.readValue<Primitive>("1")
+            assertEquals(Primitive(101), result)
+        }
+
+        @Test
+        fun nonNullObject() {
+            val result = mapper.readValue<NonNullObject>(""""foo"""")
+            assertEquals(NonNullObject("foo-deser"), result)
+        }
+
+        @Suppress("ClassName")
+        @Nested
+        inner class NullableObject_ {
+            @Test
+            fun value() {
+                val result = mapper.readValue<NullableObject>(""""foo"""")
+                assertEquals(NullableObject("foo-deser"), result)
+            }
+
+            // failing
+            @Test
+            fun nullString() {
+                assertThrows<NullPointerException>("#209 has been fixed.") {
+                    val result = mapper.readValue<NullableObject>("null")
+                    assertEquals(NullableObject("null-value-deser"), result)
+                }
+            }
         }
     }
 

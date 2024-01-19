@@ -14,7 +14,7 @@ import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.ValueClassBoxConverter
 import io.github.projectmapk.jackson.module.kogera.deser.JavaToKotlinDurationConverter
-import io.github.projectmapk.jackson.module.kogera.deser.ValueClassDeserializer
+import io.github.projectmapk.jackson.module.kogera.deser.WrapsNullableValueClassDeserializer
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
@@ -89,10 +89,10 @@ internal object ULongDeserializer : StdDeserializer<ULong>(ULong::class.java) {
         ULongChecker.readWithRangeCheck(p, p.bigIntegerValue)
 }
 
-internal class ValueClassBoxDeserializer<S, D : Any>(
+internal class WrapsNullableValueClassBoxDeserializer<S, D : Any>(
     private val creator: Method,
     private val converter: ValueClassBoxConverter<S, D>
-) : ValueClassDeserializer<D>(converter.boxedClass) {
+) : WrapsNullableValueClassDeserializer<D>(converter.boxedClass) {
     private val inputType: Class<*> = creator.parameterTypes[0]
 
     init {
@@ -171,7 +171,7 @@ internal class KotlinDeserializers(
             rawClass.isUnboxableValueClass() -> findValueCreator(type, rawClass, cache.getJmClass(rawClass)!!)?.let {
                 val unboxedClass = cache.getValueClassUnboxConverter(rawClass).unboxedClass
                 val converter = cache.getValueClassBoxConverter(unboxedClass, rawClass)
-                ValueClassBoxDeserializer(it, converter)
+                WrapsNullableValueClassBoxDeserializer(it, converter)
             }
             else -> null
         }

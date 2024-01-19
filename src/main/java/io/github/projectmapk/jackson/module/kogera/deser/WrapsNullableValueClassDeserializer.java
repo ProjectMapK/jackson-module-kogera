@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
  * An interface to be inherited by JsonDeserializer that handles value classes that may wrap nullable.
  * @see WrapsNullableValueClassBoxDeserializer for implementation.
  */
-// To ensure maximum compatibility with StdDeserializer, this class is defined in Java.
+// To ensure maximum compatibility with StdDeserializer, this class is written in Java.
 public abstract class WrapsNullableValueClassDeserializer<D> extends StdDeserializer<D> {
     protected WrapsNullableValueClassDeserializer(@NotNull KClass<?> vc) {
         super(JvmClassMappingKt.getJavaClass(vc));

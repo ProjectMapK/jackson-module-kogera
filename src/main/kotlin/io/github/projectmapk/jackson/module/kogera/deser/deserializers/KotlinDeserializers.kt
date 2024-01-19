@@ -169,7 +169,7 @@ internal class KotlinDeserializers(
             rawClass == KotlinDuration::class.java ->
                 JavaToKotlinDurationConverter.takeIf { useJavaDurationConversion }?.delegatingDeserializer
             rawClass.isUnboxableValueClass() -> findValueCreator(type, rawClass, cache.getJmClass(rawClass)!!)?.let {
-                val unboxedClass = cache.getValueClassUnboxConverter(rawClass).unboxedClass
+                val unboxedClass = it.returnType
                 val converter = cache.getValueClassBoxConverter(unboxedClass, rawClass)
                 WrapsNullableValueClassBoxDeserializer(it, converter)
             }

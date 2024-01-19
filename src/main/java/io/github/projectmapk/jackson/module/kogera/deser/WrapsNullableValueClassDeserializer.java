@@ -1,5 +1,8 @@
 package io.github.projectmapk.jackson.module.kogera.deser;
 
+import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import io.github.projectmapk.jackson.module.kogera.deser.deserializers.WrapsNullableValueClassBoxDeserializer;
@@ -7,6 +10,8 @@ import kotlin.jvm.JvmClassMappingKt;
 import kotlin.reflect.KClass;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
 
 /**
  * An interface to be inherited by JsonDeserializer that handles value classes that may wrap nullable.
@@ -44,4 +49,8 @@ public abstract class WrapsNullableValueClassDeserializer<D> extends StdDeserial
     // It is defined so that null can also be returned so that Nulls.SKIP can be applied.
     @Nullable
     public abstract D getBoxedNullValue();
+
+    @Override
+    public abstract D deserialize(@NotNull JsonParser p, @NotNull DeserializationContext ctxt)
+            throws IOException, JacksonException;
 }

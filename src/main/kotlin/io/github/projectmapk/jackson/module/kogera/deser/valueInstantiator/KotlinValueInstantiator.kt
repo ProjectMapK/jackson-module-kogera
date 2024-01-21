@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.exc.InvalidNullException
 import com.fasterxml.jackson.databind.module.SimpleValueInstantiators
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
-import io.github.projectmapk.jackson.module.kogera.deser.ValueClassDeserializer
+import io.github.projectmapk.jackson.module.kogera.deser.WrapsNullableValueClassDeserializer
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.ConstructorValueCreator
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.MethodValueCreator
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.ValueCreator
@@ -47,7 +47,7 @@ internal class KotlinValueInstantiator(
         isNullableParam: Boolean,
         valueDeserializer: JsonDeserializer<*>?
     ): Boolean = !isNullableParam &&
-        valueDeserializer is ValueClassDeserializer<*> &&
+        valueDeserializer is WrapsNullableValueClassDeserializer<*> &&
         cache.getJmClass(valueDeserializer.handledType())!!.wrapsNullValueClass()
 
     private val valueCreator: ValueCreator<*>? by ReflectProperties.lazySoft {
@@ -83,7 +83,7 @@ internal class KotlinValueInstantiator(
                     // Deserializer.getNullValue could not be used because there is no way to get and parse parameters
                     // from the BeanDescription and using AnnotationIntrospector would override user customization.
                     if (requireValueClassSpecialNullValue(paramDef.isNullable, valueDeserializer)) {
-                        (valueDeserializer as ValueClassDeserializer<*>).boxedNullValue?.let { return@run it }
+                        (valueDeserializer as WrapsNullableValueClassDeserializer<*>).boxedNullValue?.let { return@run it }
                     }
 
                     if (jsonProp.skipNulls() && paramDef.isOptional) return@forEachIndexed

@@ -28,12 +28,12 @@ class HasRequiredMarkerTest {
     )
 
     class ConstructorParamTarget(
+        vararg val vararg: Int, // Kotlin allows vararg to be set other than at the tail.
         val nullable: String?,
         val hasDefault: String = "default",
         val collection: Collection<*>,
         val map: Map<*, *>,
-        val nonNull: Any,
-        vararg val vararg: Int
+        val nonNull: Any
     )
 
     @Nested
@@ -42,24 +42,24 @@ class HasRequiredMarkerTest {
         fun defaultParam() {
             val desc = defaultMapper.introspectDeser<ConstructorParamTarget>()
 
+            assertFalse(desc.isRequired("vararg"))
             assertFalse(desc.isRequired("nullable"))
             assertFalse(desc.isRequired("hasDefault"))
             assertTrue(desc.isRequired("collection"))
             assertTrue(desc.isRequired("map"))
             assertTrue(desc.isRequired("nonNull"))
-            assertFalse(desc.isRequired("vararg"))
         }
 
         @Test
         fun nullToDefaultParam() {
             val desc = nullToDefaultMapper.introspectDeser<ConstructorParamTarget>()
 
+            assertFalse(desc.isRequired("vararg"))
             assertFalse(desc.isRequired("nullable"))
             assertFalse(desc.isRequired("hasDefault"))
             assertFalse(desc.isRequired("collection"))
             assertFalse(desc.isRequired("map"))
             assertTrue(desc.isRequired("nonNull"))
-            assertFalse(desc.isRequired("vararg"))
         }
     }
 

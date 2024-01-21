@@ -1,6 +1,6 @@
 [versions]
 kotlin = "1.8.22" # Mainly for CI, it can be rewritten by environment variable.
-jackson = "2.16.0"
+jackson = "2.16.1"
 
 # test libs
 junit = "5.10.1"
@@ -12,6 +12,7 @@ jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", ver
 jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
 
 # test libs
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }

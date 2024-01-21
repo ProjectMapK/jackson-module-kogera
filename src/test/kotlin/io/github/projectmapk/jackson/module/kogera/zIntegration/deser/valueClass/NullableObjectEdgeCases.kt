@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.exc.ValueInstantiationException
-import io.github.projectmapk.jackson.module.kogera.deser.ValueClassDeserializer
+import io.github.projectmapk.jackson.module.kogera.deser.WrapsNullableValueClassDeserializer
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -42,7 +42,7 @@ class NullableObjectEdgeCases {
         assertEquals(NullValue(NullValueDeserializer.nv, NullValueDeserializer.nv), result)
     }
 
-    class NullsSkipDeserializer : ValueClassDeserializer<VC>(VC::class) {
+    class NullsSkipDeserializerWrapsNullable : WrapsNullableValueClassDeserializer<VC>(VC::class) {
         override fun deserialize(p: JsonParser, ctxt: DeserializationContext): VC {
             TODO("Not yet implemented")
         }
@@ -52,7 +52,7 @@ class NullableObjectEdgeCases {
 
     data class NullsSkip(
         @field:JsonSetter(nulls = Nulls.SKIP)
-        @field:JsonDeserialize(using = NullsSkipDeserializer::class)
+        @field:JsonDeserialize(using = NullsSkipDeserializerWrapsNullable::class)
         val nn: VC = VC("skip"),
         @field:JsonSetter(nulls = Nulls.SKIP)
         val n: VC? = VC("skip")

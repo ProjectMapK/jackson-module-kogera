@@ -82,7 +82,7 @@ internal class KotlinFallbackAnnotationIntrospector(
                 }
             } else {
                 // If JsonUnbox is specified, the unboxed getter is used as is.
-                if (a.hasAnnotation(JsonKUnbox::class.java) || it.getAnnotation(JsonKUnbox::class.java) != null) {
+                if (a.hasAnnotation(JsonKUnbox::class.java) || it.isAnnotationPresent(JsonKUnbox::class.java)) {
                     null
                 } else {
                     cache.getValueClassBoxConverter(a.rawReturnType, it)

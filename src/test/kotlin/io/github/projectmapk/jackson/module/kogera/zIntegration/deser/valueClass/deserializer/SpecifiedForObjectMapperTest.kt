@@ -17,7 +17,7 @@ class SpecifiedForObjectMapperTest {
             val module = SimpleModule().apply {
                 this.addDeserializer(Primitive::class.java, Primitive.Deserializer())
                 this.addDeserializer(NonNullObject::class.java, NonNullObject.Deserializer())
-                this.addDeserializer(NullableObject::class.java, NullableObject.Deserializer())
+                this.addDeserializer(NullableObject::class.java, NullableObject.DeserializerWrapsNullable())
             }
             this.registerModule(module)
         }

@@ -14,9 +14,9 @@ class NullableObjectTest {
     }
 
     data class NonNull(
-        @get:JsonDeserialize(using = NullableObject.Deserializer::class)
+        @get:JsonDeserialize(using = NullableObject.DeserializerWrapsNullable::class)
         val getterAnn: NullableObject,
-        @field:JsonDeserialize(using = NullableObject.Deserializer::class)
+        @field:JsonDeserialize(using = NullableObject.DeserializerWrapsNullable::class)
         val fieldAnn: NullableObject
     )
 
@@ -34,9 +34,9 @@ class NullableObjectTest {
     }
 
     data class Nullable(
-        @get:JsonDeserialize(using = NullableObject.Deserializer::class)
+        @get:JsonDeserialize(using = NullableObject.DeserializerWrapsNullable::class)
         val getterAnn: NullableObject?,
-        @field:JsonDeserialize(using = NullableObject.Deserializer::class)
+        @field:JsonDeserialize(using = NullableObject.DeserializerWrapsNullable::class)
         val fieldAnn: NullableObject?
     )
 

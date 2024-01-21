@@ -3,7 +3,7 @@ package io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClas
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import io.github.projectmapk.jackson.module.kogera.deser.ValueClassDeserializer
+import io.github.projectmapk.jackson.module.kogera.deser.WrapsNullableValueClassDeserializer
 
 @JvmInline
 value class Primitive(val v: Int) {
@@ -22,7 +22,7 @@ value class NonNullObject(val v: String) {
 
 @JvmInline
 value class NullableObject(val v: String?) {
-    class Deserializer : ValueClassDeserializer<NullableObject>(NullableObject::class) {
+    class DeserializerWrapsNullable : WrapsNullableValueClassDeserializer<NullableObject>(NullableObject::class) {
         override fun deserialize(p: JsonParser, ctxt: DeserializationContext): NullableObject =
             NullableObject(p.valueAsString + "-deser")
 

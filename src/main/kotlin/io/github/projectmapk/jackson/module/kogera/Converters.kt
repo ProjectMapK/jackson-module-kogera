@@ -29,7 +29,6 @@ internal class ValueClassUnboxConverter<T : Any>(val valueClass: Class<T>) : Std
     private val unboxMethod = valueClass.getDeclaredMethod("unbox-impl").apply {
         if (!this.isAccessible) this.isAccessible = true
     }
-    val unboxedClass: Class<*> = unboxMethod.returnType
 
     override fun convert(value: T): Any? = unboxMethod.invoke(value)
 

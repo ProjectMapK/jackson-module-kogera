@@ -98,6 +98,11 @@ public val kogeraVersion: Version = VersionUtil.parseVersion("$version", "$group
         into(file("$generatedSrcPath/${packageStr.replace(".", "/")}"))
     }
 
+    // Added to avoid failure in generating dependency graphs in CI.
+    lintKotlinMain {
+        dependsOn.add(generateKogeraVersion)
+    }
+
     compileKotlin {
         dependsOn.add(generateKogeraVersion)
         kotlinOptions.jvmTarget = "1.8"

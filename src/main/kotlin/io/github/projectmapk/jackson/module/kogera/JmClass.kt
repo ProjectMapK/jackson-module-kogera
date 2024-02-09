@@ -1,5 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera
 
+import kotlinx.metadata.ClassKind
 import kotlinx.metadata.ClassName
 import kotlinx.metadata.ExperimentalContextReceivers
 import kotlinx.metadata.Flags
@@ -18,7 +19,6 @@ import kotlinx.metadata.KmTypeParameterVisitor
 import kotlinx.metadata.KmTypeVisitor
 import kotlinx.metadata.KmVariance
 import kotlinx.metadata.KmVersionRequirementVisitor
-import kotlinx.metadata.flagsOf
 import kotlinx.metadata.internal.accept
 import kotlinx.metadata.internal.metadata.jvm.deserialization.JvmProtoBufUtil
 import kotlinx.metadata.jvm.getterSignature
@@ -26,6 +26,7 @@ import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
+import kotlinx.metadata.internal.metadata.deserialization.Flags as ProtoFlags
 
 // KmClassVisitor with all processing disabled as much as possible to reduce load
 internal sealed class ReducedKmClassVisitor : KmClassVisitor() {
@@ -95,7 +96,7 @@ internal sealed interface JmClass {
         }
     }
 
-    val flags: Flags
+    val kind: ClassKind
     val constructors: List<KmConstructor>
     val sealedSubclasses: List<ClassName>
     val inlineClassUnderlyingType: KmType?
@@ -120,7 +121,7 @@ private class JmClassImpl(
     override val properties: List<KmProperty>
 
     private var companionPropName: String? = null
-    override var flags: Flags = flagsOf()
+    override lateinit var kind: ClassKind
     override val constructors: MutableList<KmConstructor> = mutableListOf()
     override val sealedSubclasses: MutableList<ClassName> = mutableListOf()
     override var inlineClassUnderlyingType: KmType? = null
@@ -181,7 +182,7 @@ private class JmClassImpl(
 
     // KmClassVisitor
     override fun visit(flags: Flags, name: ClassName) {
-        this.flags = flags
+        kind = ClassKind.values()[ProtoFlags.CLASS_KIND.get(flags).number]
     }
 
     override fun visitProperty(flags: Flags, name: String, getterFlags: Flags, setterFlags: Flags): KmPropertyVisitor =

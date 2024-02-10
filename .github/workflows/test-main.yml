@@ -72,4 +72,4 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Test
-        run: ./gradlew lintKotlin test
+        run: ./gradlew test

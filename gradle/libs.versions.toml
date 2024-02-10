@@ -7,7 +7,7 @@ junit = "5.10.1"
 
 [libraries]
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
-kotlinx-metadata-jvm = "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.7.0"
+kotlinx-metadata-jvm = "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.9.0"
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
 

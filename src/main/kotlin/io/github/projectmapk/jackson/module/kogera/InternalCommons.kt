@@ -1,16 +1,22 @@
 package io.github.projectmapk.jackson.module.kogera
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmType
 import kotlinx.metadata.isNullable
 import kotlinx.metadata.jvm.JvmMethodSignature
+import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 
 internal typealias JavaDuration = java.time.Duration
 internal typealias KotlinDuration = kotlin.time.Duration
+
+internal fun Class<*>.toKmClass(): KmClass? = getAnnotation(Metadata::class.java)?.let {
+    (KotlinClassMetadata.readStrict(it) as KotlinClassMetadata.Class).kmClass
+}
 
 internal fun Class<*>.isUnboxableValueClass() = this.isAnnotationPresent(JvmInline::class.java)
 

@@ -16,7 +16,7 @@ val jacksonVersion = libs.versions.jackson.get()
 val generatedSrcPath = "${layout.buildDirectory.get()}/generated/kotlin"
 
 group = groupStr
-version = "${jacksonVersion}-beta10"
+version = "${jacksonVersion}-beta11"
 
 repositories {
     mavenCentral()
@@ -96,6 +96,11 @@ public val kogeraVersion: Version = VersionUtil.parseVersion("$version", "$group
         }
 
         into(file("$generatedSrcPath/${packageStr.replace(".", "/")}"))
+    }
+
+    // Added to avoid failure in generating dependency graphs in CI.
+    lintKotlinMain {
+        dependsOn.add(generateKogeraVersion)
     }
 
     compileKotlin {

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
-import kotlinx.metadata.Flag
+import kotlinx.metadata.ClassKind
 import java.io.Serializable
 
 // [module-kotlin#225]: keep Kotlin singletons as singletons
@@ -19,10 +19,8 @@ internal class KotlinBeanDeserializerModifier(
     }
 
     private fun objectSingletonInstance(beanClass: Class<*>): Any? = cache.getJmClass(beanClass)?.let {
-        val flags = it.flags
-
         // It is not assumed that the companion object is the target
-        if (Flag.Class.IS_OBJECT(flags) && !Flag.Class.IS_COMPANION_OBJECT(flags)) {
+        if (it.kind == ClassKind.OBJECT) {
             beanClass.getDeclaredField("INSTANCE").get(null)
         } else {
             null

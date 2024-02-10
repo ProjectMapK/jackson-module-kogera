@@ -48,7 +48,7 @@ internal class ReflectionCache(initialCacheSize: Int, maxCacheSize: Int) : Seria
 
     fun getJmClass(clazz: Class<*>): JmClass? {
         return find(clazz) ?: run {
-            val metadata = clazz.getAnnotation(Metadata::class.java) ?: return null
+            val kmClass = clazz.toKmClass() ?: return null
 
             // Do not parse super class for interfaces.
             val superJmClass = if (!clazz.isInterface) {
@@ -61,7 +61,7 @@ internal class ReflectionCache(initialCacheSize: Int, maxCacheSize: Int) : Seria
             }
             val interfaceJmClasses = clazz.interfaces.mapNotNull { getJmClass(it) }
 
-            val value = JmClass(clazz, metadata, superJmClass, interfaceJmClasses)
+            val value = JmClass(clazz, kmClass, superJmClass, interfaceJmClasses)
             putIfAbsent(clazz, value)
         }
     }

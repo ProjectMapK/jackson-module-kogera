@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.type.TypeFactory
 import com.fasterxml.jackson.databind.util.StdConverter
 import io.github.projectmapk.jackson.module.kogera.JavaDuration
+import io.github.projectmapk.jackson.module.kogera.KOTLIN_DURATION_CLASS
 import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ValueClassBoxConverter
 import kotlin.time.toJavaDuration
@@ -20,7 +21,7 @@ internal class SequenceToIteratorConverter(private val input: JavaType) : StdCon
 }
 
 internal object KotlinDurationValueToJavaDurationConverter : StdConverter<Long, JavaDuration>() {
-    private val boxConverter by lazy { ValueClassBoxConverter(Long::class.java, KotlinDuration::class.java) }
+    private val boxConverter by lazy { ValueClassBoxConverter(Long::class.java, KOTLIN_DURATION_CLASS) }
 
     override fun convert(value: Long): JavaDuration = KotlinToJavaDurationConverter.convert(boxConverter.convert(value))
 }

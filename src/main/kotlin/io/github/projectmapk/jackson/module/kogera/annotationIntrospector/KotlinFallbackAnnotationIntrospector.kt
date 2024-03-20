@@ -12,9 +12,9 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import com.fasterxml.jackson.databind.util.Converter
-import io.github.projectmapk.jackson.module.kogera.KotlinDuration
+import io.github.projectmapk.jackson.module.kogera.JSON_K_UNBOX_CLASS
+import io.github.projectmapk.jackson.module.kogera.KOTLIN_DURATION_CLASS
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
-import io.github.projectmapk.jackson.module.kogera.annotation.JsonKUnbox
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
 import io.github.projectmapk.jackson.module.kogera.ser.KotlinDurationValueToJavaDurationConverter
@@ -74,15 +74,15 @@ internal class KotlinFallbackAnnotationIntrospector(
     override fun findSerializationConverter(a: Annotated): Converter<*, *>? = when (a) {
         // Find a converter to handle the case where the getter returns an unboxed value from the value class.
         is AnnotatedMethod -> cache.findBoxedReturnType(a.member)?.let {
-            if (useJavaDurationConversion && it == KotlinDuration::class.java) {
-                if (a.rawReturnType == KotlinDuration::class.java) {
+            if (useJavaDurationConversion && it == KOTLIN_DURATION_CLASS) {
+                if (a.rawReturnType == KOTLIN_DURATION_CLASS) {
                     KotlinToJavaDurationConverter
                 } else {
                     KotlinDurationValueToJavaDurationConverter
                 }
             } else {
                 // If JsonUnbox is specified, the unboxed getter is used as is.
-                if (a.hasAnnotation(JsonKUnbox::class.java) || it.isAnnotationPresent(JsonKUnbox::class.java)) {
+                if (a.hasAnnotation(JSON_K_UNBOX_CLASS) || it.isAnnotationPresent(JSON_K_UNBOX_CLASS)) {
                     null
                 } else {
                     cache.getValueClassBoxConverter(a.rawReturnType, it)
@@ -95,7 +95,7 @@ internal class KotlinFallbackAnnotationIntrospector(
 
     private fun lookupKotlinTypeConverter(a: AnnotatedClass) = when {
         Sequence::class.java.isAssignableFrom(a.rawType) -> SequenceToIteratorConverter(a.type)
-        KotlinDuration::class.java == a.rawType -> KotlinToJavaDurationConverter.takeIf { useJavaDurationConversion }
+        KOTLIN_DURATION_CLASS == a.rawType -> KotlinToJavaDurationConverter.takeIf { useJavaDurationConversion }
         else -> null
     }
 

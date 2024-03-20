@@ -45,7 +45,7 @@ internal class ConstructorValueCreator<T : Any>(
             val parameterSize = it.size
             val temp = it.copyOf(parameterSize + maskSize + 1)
             for (i in 0 until maskSize) {
-                temp[it.size + i] = Int::class.javaPrimitiveType
+                temp[it.size + i] = Int::class.java
             }
             temp[parameterSize + maskSize] = defaultConstructorMarker
 

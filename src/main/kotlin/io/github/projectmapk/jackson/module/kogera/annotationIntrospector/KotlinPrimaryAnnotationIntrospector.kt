@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import com.fasterxml.jackson.databind.jsontype.NamedType
+import io.github.projectmapk.jackson.module.kogera.JSON_PROPERTY_CLASS
 import io.github.projectmapk.jackson.module.kogera.JmClass
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
@@ -42,7 +43,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
     // If JsonProperty.required is true, the behavior is clearly specified and the result is paramount.
     // Otherwise, the required is determined from the configuration and the definition on Kotlin.
     override fun hasRequiredMarker(m: AnnotatedMember): Boolean? {
-        val byAnnotation = _findAnnotation(m, JsonProperty::class.java)
+        val byAnnotation = _findAnnotation(m, JSON_PROPERTY_CLASS)
             ?.let { if (it.required) return true else false }
 
         return cache.getJmClass(m.member.declaringClass)?.let {

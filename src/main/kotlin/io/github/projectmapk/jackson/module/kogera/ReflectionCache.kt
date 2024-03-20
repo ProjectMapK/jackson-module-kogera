@@ -54,7 +54,7 @@ internal class ReflectionCache(initialCacheSize: Int, maxCacheSize: Int) : Seria
             val superJmClass = if (!clazz.isInterface) {
                 clazz.superclass?.let {
                     // Stop parsing when `Object` is reached
-                    if (it != Any::class.java) getJmClass(it) else null
+                    if (it != ANY_CLASS) getJmClass(it) else null
                 }
             } else {
                 null

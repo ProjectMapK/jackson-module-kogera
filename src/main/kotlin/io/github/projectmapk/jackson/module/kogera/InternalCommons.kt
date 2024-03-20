@@ -1,6 +1,8 @@
 package io.github.projectmapk.jackson.module.kogera
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.github.projectmapk.jackson.module.kogera.annotation.JsonKUnbox
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmType
@@ -14,11 +16,11 @@ import java.lang.reflect.Method
 internal typealias JavaDuration = java.time.Duration
 internal typealias KotlinDuration = kotlin.time.Duration
 
-internal fun Class<*>.toKmClass(): KmClass? = getAnnotation(Metadata::class.java)?.let {
+internal fun Class<*>.toKmClass(): KmClass? = getAnnotation(METADATA_CLASS)?.let {
     (KotlinClassMetadata.readStrict(it) as KotlinClassMetadata.Class).kmClass
 }
 
-internal fun Class<*>.isUnboxableValueClass() = this.isAnnotationPresent(JvmInline::class.java)
+internal fun Class<*>.isUnboxableValueClass() = this.isAnnotationPresent(JVM_INLINE_CLASS)
 
 // JmClass must be value class.
 internal fun JmClass.wrapsNullValueClass() = inlineClassUnderlyingType!!.isNullable
@@ -88,6 +90,20 @@ internal fun String.reconstructClass(): Class<*> {
 internal fun KmType.reconstructClassOrNull(): Class<*>? = (classifier as? KmClassifier.Class)
     ?.let { kotlin.runCatching { it.name.reconstructClass() }.getOrNull() }
 
-internal fun AnnotatedElement.hasCreatorAnnotation(): Boolean = getAnnotation(JsonCreator::class.java)
+internal fun AnnotatedElement.hasCreatorAnnotation(): Boolean = getAnnotation(JSON_CREATOR_CLASS)
     ?.let { it.mode != JsonCreator.Mode.DISABLED }
     ?: false
+
+// Instantiating Java Class as a static property is expected to improve first-time execution performance.
+// However, maybe this improvement is limited to Java Classes that are not used to initialize static content.
+// Also, for classes that are read at the time of initialization of static content or module initialization,
+// optimization seems unnecessary because caching is effective.
+internal val METADATA_CLASS = Metadata::class.java
+internal val JVM_INLINE_CLASS = JvmInline::class.java
+internal val JSON_CREATOR_CLASS = JsonCreator::class.java
+internal val JSON_PROPERTY_CLASS = JsonProperty::class.java
+internal val JSON_K_UNBOX_CLASS = JsonKUnbox::class.java
+internal val KOTLIN_DURATION_CLASS = KotlinDuration::class.java
+// internal val CLOSED_RANGE_CLASS = ClosedRange::class.java // called during module initialization
+internal val CLOSED_FLOATING_POINT_RANGE_CLASS = ClosedFloatingPointRange::class.java
+internal val ANY_CLASS = Any::class.java

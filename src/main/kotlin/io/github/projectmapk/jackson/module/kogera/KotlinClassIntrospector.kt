@@ -50,7 +50,7 @@ internal object KotlinClassIntrospector : BasicClassIntrospector() {
             ?: run {
                 val coll = collectProperties(config, type, r, true)
 
-                if (type.rawClass.isAnnotationPresent(Metadata::class.java)) {
+                if (type.rawClass.isAnnotationPresent(METADATA_CLASS)) {
                     KotlinBeanDescription(coll)
                 } else {
                     BasicBeanDescription.forDeserialization(coll)
@@ -71,7 +71,7 @@ internal object KotlinClassIntrospector : BasicClassIntrospector() {
             ?: run {
                 val coll = collectProperties(config, type, r, false)
 
-                if (type.rawClass.isAnnotationPresent(Metadata::class.java)) {
+                if (type.rawClass.isAnnotationPresent(METADATA_CLASS)) {
                     KotlinBeanDescription(coll)
                 } else {
                     BasicBeanDescription.forDeserialization(coll)

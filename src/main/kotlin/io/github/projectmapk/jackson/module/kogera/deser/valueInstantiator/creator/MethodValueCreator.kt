@@ -50,7 +50,7 @@ internal class MethodValueCreator<T>(
             temp[0] = companionObjectClass // companion object
             parameterTypes.copyInto(temp, 1) // parameter types
             for (i in (valueParameterSize + 1)..(valueParameterSize + maskSize)) { // masks
-                temp[i] = Int::class.javaPrimitiveType
+                temp[i] = Int::class.java
             }
             temp[valueParameterSize + maskSize + 1] = Object::class.java // maker
             temp

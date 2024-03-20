@@ -55,8 +55,8 @@ internal object ClosedRangeResolver : SimpleAbstractTypeResolver() {
     }
 
     fun findClosedFloatingPointRangeRef(contentType: Class<*>): Class<*>? = when (contentType) {
-        Double::class.javaPrimitiveType, Double::class.javaObjectType -> closedDoubleRangeRef
-        Float::class.javaPrimitiveType, Float::class.javaObjectType -> closedFloatRangeRef
+        Double::class.java, Double::class.javaObjectType -> closedDoubleRangeRef
+        Float::class.java, Float::class.javaObjectType -> closedFloatRangeRef
         else -> null
     }
 

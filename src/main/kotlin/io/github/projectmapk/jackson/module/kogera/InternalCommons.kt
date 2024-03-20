@@ -24,15 +24,15 @@ internal fun Class<*>.isUnboxableValueClass() = this.isAnnotationPresent(JvmInli
 internal fun JmClass.wrapsNullValueClass() = inlineClassUnderlyingType!!.isNullable
 
 private val primitiveClassToDesc = mapOf(
-    Byte::class.javaPrimitiveType to 'B',
-    Char::class.javaPrimitiveType to 'C',
-    Double::class.javaPrimitiveType to 'D',
-    Float::class.javaPrimitiveType to 'F',
-    Int::class.javaPrimitiveType to 'I',
-    Long::class.javaPrimitiveType to 'J',
-    Short::class.javaPrimitiveType to 'S',
-    Boolean::class.javaPrimitiveType to 'Z',
-    Void::class.javaPrimitiveType to 'V'
+    Byte::class.java to 'B',
+    Char::class.java to 'C',
+    Double::class.java to 'D',
+    Float::class.java to 'F',
+    Int::class.java to 'I',
+    Long::class.java to 'J',
+    Short::class.java to 'S',
+    Boolean::class.java to 'Z',
+    Void.TYPE to 'V'
 )
 
 // -> this.name.replace(".", "/")

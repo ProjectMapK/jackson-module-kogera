@@ -104,6 +104,5 @@ internal val JSON_CREATOR_CLASS = JsonCreator::class.java
 internal val JSON_PROPERTY_CLASS = JsonProperty::class.java
 internal val JSON_K_UNBOX_CLASS = JsonKUnbox::class.java
 internal val KOTLIN_DURATION_CLASS = KotlinDuration::class.java
-// internal val CLOSED_RANGE_CLASS = ClosedRange::class.java // called during module initialization
 internal val CLOSED_FLOATING_POINT_RANGE_CLASS = ClosedFloatingPointRange::class.java
 internal val ANY_CLASS = Any::class.java

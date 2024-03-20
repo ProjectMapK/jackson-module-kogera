@@ -14,9 +14,7 @@ import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import com.fasterxml.jackson.databind.util.Converter
 import io.github.projectmapk.jackson.module.kogera.JSON_K_UNBOX_CLASS
 import io.github.projectmapk.jackson.module.kogera.KOTLIN_DURATION_CLASS
-import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
-import io.github.projectmapk.jackson.module.kogera.annotation.JsonKUnbox
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
 import io.github.projectmapk.jackson.module.kogera.ser.KotlinDurationValueToJavaDurationConverter

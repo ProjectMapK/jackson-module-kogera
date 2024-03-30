@@ -111,9 +111,6 @@ internal class ArgumentBucket(
         // Since there is no multiple initialization in the use case, the key check is omitted.
         arguments[index] = actualArg
 
-        val maskIndex = index / Integer.SIZE
-        masks[maskIndex] = masks[maskIndex] and BIT_FLAGS[index % Integer.SIZE]
-
         masks.update(index, MaskOperation.SET)
     }
 

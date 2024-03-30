@@ -1,5 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator
 
+import io.github.projectmapk.jackson.module.kogera.ANY_CLASS
 import io.github.projectmapk.jackson.module.kogera.JmClass
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.call
@@ -50,9 +51,9 @@ internal class MethodValueCreator<T>(
             temp[0] = companionObjectClass // companion object
             parameterTypes.copyInto(temp, 1) // parameter types
             for (i in (valueParameterSize + 1)..(valueParameterSize + maskSize)) { // masks
-                temp[i] = Int::class.javaPrimitiveType
+                temp[i] = Int::class.java
             }
-            temp[valueParameterSize + maskSize + 1] = Object::class.java // maker
+            temp[valueParameterSize + maskSize + 1] = ANY_CLASS // maker
             temp
         } as Array<Class<*>>
 

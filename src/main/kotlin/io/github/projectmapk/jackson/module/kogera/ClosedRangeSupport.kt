@@ -55,8 +55,8 @@ internal object ClosedRangeResolver : SimpleAbstractTypeResolver() {
     }
 
     fun findClosedFloatingPointRangeRef(contentType: Class<*>): Class<*>? = when (contentType) {
-        Double::class.javaPrimitiveType, Double::class.javaObjectType -> closedDoubleRangeRef
-        Float::class.javaPrimitiveType, Float::class.javaObjectType -> closedFloatRangeRef
+        Double::class.java, Double::class.javaObjectType -> closedDoubleRangeRef
+        Float::class.java, Float::class.javaObjectType -> closedFloatRangeRef
         else -> null
     }
 
@@ -67,7 +67,7 @@ internal object ClosedRangeResolver : SimpleAbstractTypeResolver() {
     override fun findTypeMapping(config: DeserializationConfig, type: JavaType): JavaType? {
         val rawClass = type.rawClass
 
-        return if (rawClass == ClosedRange::class.java || rawClass == ClosedFloatingPointRange::class.java) {
+        return if (rawClass == ClosedRange::class.java || rawClass == CLOSED_FLOATING_POINT_RANGE_CLASS) {
             type.bindings.typeParameters.firstOrNull()
                 ?.let { typeParam ->
                     findClosedFloatingPointRangeRef(typeParam.rawClass)?.let {

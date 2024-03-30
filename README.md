@@ -23,10 +23,6 @@ First, by implementing the equivalent of https://github.com/FasterXML/jackson-mo
 The cache has also been reorganized based on [benchmark results](https://github.com/ProjectMapK/kogera-benchmark) to achieve smaller memory consumption.  
 The performance degradation when the `strictNullChecks` option is enabled is also [greatly reduced](https://github.com/ProjectMapK/jackson-module-kogera/pull/44).
 
-The next main feature is `value class` support.  
-The `jackson-module-kogera` supports many use cases for `value class`, including deserialization.  
-See [here](./docs/AboutValueClassSupport.md) for basic policies and notes on handling `value class`.
-
 [Here](./docs/FixedIssues.md) is a list of issues that are not resolved in `jackson-module-kotlin` but are or will be resolved in `kogera`.
 
 ## About intentional destructive changes

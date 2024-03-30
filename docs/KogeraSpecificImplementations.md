@@ -25,7 +25,3 @@ I will consider making the classes public again when we receive requests for the
 ## Remove old options and `deprecated` code
 Because `jackson-module-kotlin` is a framework with a long history, some old code and options remain.  
 In `kogera`, those options have been removed.
-
-# Value class support
-The `jackson-module-kogera` supports many use cases of `value class` (`inline class`).  
-This is summarized [here](./AboutValueClassSupport.md).

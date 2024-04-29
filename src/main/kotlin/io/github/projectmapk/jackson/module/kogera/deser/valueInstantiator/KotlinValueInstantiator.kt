@@ -18,7 +18,6 @@ import io.github.projectmapk.jackson.module.kogera.deser.WrapsNullableValueClass
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.ConstructorValueCreator
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.MethodValueCreator
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.ValueCreator
-import io.github.projectmapk.jackson.module.kogera.wrapsNullValueClass
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
@@ -48,7 +47,7 @@ internal class KotlinValueInstantiator(
         valueDeserializer: JsonDeserializer<*>?
     ): Boolean = !isNullableParam &&
         valueDeserializer is WrapsNullableValueClassDeserializer<*> &&
-        cache.getJmClass(valueDeserializer.handledType())!!.wrapsNullValueClass()
+        cache.getJmClass(valueDeserializer.handledType())!!.wrapsNullableIfValue
 
     private val valueCreator: ValueCreator<*>? by ReflectProperties.lazySoft {
         val creator = _withArgsCreator.annotated as Executable

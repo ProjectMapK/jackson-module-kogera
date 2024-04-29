@@ -6,7 +6,7 @@ import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmConstructor
 import kotlinx.metadata.KmFunction
 import kotlinx.metadata.KmProperty
-import kotlinx.metadata.KmType
+import kotlinx.metadata.isNullable
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
 import kotlinx.metadata.kind
@@ -33,13 +33,18 @@ internal sealed interface JmClass {
         }
     }
 
+    // region: from KmClass
     val kind: ClassKind
     val constructors: List<KmConstructor>
     val sealedSubclasses: List<ClassName>
-    val inlineClassUnderlyingType: KmType?
     val propertyNameSet: Set<String>
     val properties: List<KmProperty>
     val companion: CompanionObject?
+    // endregion
+
+    // region: computed props
+    val wrapsNullableIfValue: Boolean
+    // endregion
 
     fun findKmConstructor(constructor: Constructor<*>): KmConstructor?
     fun findPropertyByField(field: Field): KmProperty?
@@ -61,7 +66,8 @@ private class JmClassImpl(
     override val kind: ClassKind = kmClass.kind
     override val constructors: List<KmConstructor> = kmClass.constructors
     override val sealedSubclasses: List<ClassName> = kmClass.sealedSubclasses
-    override val inlineClassUnderlyingType: KmType? = kmClass.inlineClassUnderlyingType
+
+    override val wrapsNullableIfValue: Boolean = kmClass.inlineClassUnderlyingType?.isNullable ?: false
 
     init {
         // Add properties of inherited classes and interfaces

@@ -6,7 +6,6 @@ import io.github.projectmapk.jackson.module.kogera.annotation.JsonKUnbox
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmType
-import kotlinx.metadata.isNullable
 import kotlinx.metadata.jvm.JvmMethodSignature
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.lang.reflect.AnnotatedElement
@@ -21,9 +20,6 @@ internal fun Class<*>.toKmClass(): KmClass? = getAnnotation(METADATA_CLASS)?.let
 }
 
 internal fun Class<*>.isUnboxableValueClass() = this.isAnnotationPresent(JVM_INLINE_CLASS)
-
-// JmClass must be value class.
-internal fun JmClass.wrapsNullValueClass() = inlineClassUnderlyingType!!.isNullable
 
 private val primitiveClassToDesc = mapOf(
     Byte::class.java to 'B',

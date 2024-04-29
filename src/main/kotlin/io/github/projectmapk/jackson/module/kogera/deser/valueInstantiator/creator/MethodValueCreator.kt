@@ -1,13 +1,13 @@
 package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator
 
 import io.github.projectmapk.jackson.module.kogera.ANY_CLASS
-import io.github.projectmapk.jackson.module.kogera.JmClass
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.call
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket.ArgumentBucket
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket.BucketGenerator
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.calcMaskSize
 import io.github.projectmapk.jackson.module.kogera.getDeclaredMethodBy
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
 import kotlinx.metadata.KmFunction
 import java.lang.reflect.Method
 

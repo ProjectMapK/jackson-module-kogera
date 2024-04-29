@@ -1,5 +1,8 @@
-package io.github.projectmapk.jackson.module.kogera
+package io.github.projectmapk.jackson.module.kogera.jmClass
 
+import io.github.projectmapk.jackson.module.kogera.toDescBuilder
+import io.github.projectmapk.jackson.module.kogera.toKmClass
+import io.github.projectmapk.jackson.module.kogera.toSignature
 import kotlinx.metadata.ClassKind
 import kotlinx.metadata.ClassName
 import kotlinx.metadata.KmClass

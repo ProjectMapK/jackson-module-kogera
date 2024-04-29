@@ -1,6 +1,5 @@
 package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator
 
-import io.github.projectmapk.jackson.module.kogera.JmClass
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.call
 import io.github.projectmapk.jackson.module.kogera.defaultConstructorMarker
@@ -8,6 +7,7 @@ import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argum
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket.BucketGenerator
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.calcMaskSize
 import io.github.projectmapk.jackson.module.kogera.getDeclaredConstructorBy
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
 import java.lang.reflect.Constructor
 
 internal class ConstructorValueCreator<T : Any>(

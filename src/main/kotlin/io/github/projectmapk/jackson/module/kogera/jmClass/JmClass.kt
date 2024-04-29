@@ -7,9 +7,7 @@ import kotlinx.metadata.ClassKind
 import kotlinx.metadata.ClassName
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmFunction
-import kotlinx.metadata.KmProperty
 import kotlinx.metadata.isNullable
-import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
 import kotlinx.metadata.kind
 import java.lang.reflect.Constructor
@@ -40,7 +38,7 @@ internal sealed interface JmClass {
     val constructors: List<JmConstructor>
     val sealedSubclasses: List<ClassName>
     val propertyNameSet: Set<String>
-    val properties: List<KmProperty>
+    val properties: List<JmProperty>
     val companion: CompanionObject?
     // endregion
 
@@ -49,8 +47,8 @@ internal sealed interface JmClass {
     // endregion
 
     fun findKmConstructor(constructor: Constructor<*>): JmConstructor?
-    fun findPropertyByField(field: Field): KmProperty?
-    fun findPropertyByGetter(getter: Method): KmProperty?
+    fun findPropertyByField(field: Field): JmProperty?
+    fun findPropertyByGetter(getter: Method): JmProperty?
 }
 
 private class JmClassImpl(
@@ -59,10 +57,10 @@ private class JmClassImpl(
     superJmClass: JmClass?,
     interfaceJmClasses: List<JmClass>
 ) : JmClass {
-    private val allPropsMap: Map<String, KmProperty>
+    private val allPropsMap: Map<String, JmProperty>
 
     // Defined as non-lazy because it is always read in both serialization and deserialization
-    override val properties: List<KmProperty>
+    override val properties: List<JmProperty>
 
     private val companionPropName: String? = kmClass.companionObject
     override val kind: ClassKind = kmClass.kind
@@ -77,7 +75,7 @@ private class JmClassImpl(
         // it is necessary to obtain a more specific type, so always add it from the abstract class first.
         val tempPropsMap = ((superJmClass as JmClassImpl?)?.allPropsMap?.toMutableMap() ?: mutableMapOf()).apply {
             kmClass.properties.forEach {
-                this[it.name] = it
+                this[it.name] = JmProperty(it)
             }
         }
 
@@ -119,11 +117,11 @@ private class JmClassImpl(
     }
 
     // Field name always matches property name
-    override fun findPropertyByField(field: Field): KmProperty? = allPropsMap[field.name]
+    override fun findPropertyByField(field: Field): JmProperty? = allPropsMap[field.name]
 
-    override fun findPropertyByGetter(getter: Method): KmProperty? {
+    override fun findPropertyByGetter(getter: Method): JmProperty? {
         val getterName = getter.name
-        return properties.find { it.getterSignature?.name == getterName }
+        return properties.find { it.getterName == getterName }
     }
 }
 

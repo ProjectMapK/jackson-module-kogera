@@ -16,17 +16,13 @@ import io.github.projectmapk.jackson.module.kogera.JSON_PROPERTY_CLASS
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
 import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmProperty
 import io.github.projectmapk.jackson.module.kogera.reconstructClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
 import kotlinx.metadata.KmClassifier
-import kotlinx.metadata.KmProperty
 import kotlinx.metadata.KmValueParameter
 import kotlinx.metadata.declaresDefaultValue
 import kotlinx.metadata.isNullable
-import kotlinx.metadata.isSecondary
-import kotlinx.metadata.jvm.getterSignature
-import kotlinx.metadata.jvm.setterSignature
-import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
@@ -71,11 +67,11 @@ internal class KotlinPrimaryAnnotationIntrospector(
             // only a check for the existence of a getter is performed.
             // https://youtrack.jetbrains.com/issue/KT-6519
             ?.let {
-                if (it.getterSignature == null) !(it.returnType.isNullable || type.hasDefaultEmptyValue()) else null
+                if (it.getterName == null) !(it.returnType.isNullable || type.hasDefaultEmptyValue()) else null
             }
     }
 
-    private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable
+    private fun JmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable
 
     private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(jmClass: JmClass): Boolean? =
         when (parameterCount) {

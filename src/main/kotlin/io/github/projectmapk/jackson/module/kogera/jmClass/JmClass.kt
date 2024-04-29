@@ -6,7 +6,6 @@ import io.github.projectmapk.jackson.module.kogera.toSignature
 import kotlinx.metadata.ClassKind
 import kotlinx.metadata.ClassName
 import kotlinx.metadata.KmClass
-import kotlinx.metadata.KmConstructor
 import kotlinx.metadata.KmFunction
 import kotlinx.metadata.KmProperty
 import kotlinx.metadata.isNullable
@@ -38,7 +37,7 @@ internal sealed interface JmClass {
 
     // region: from KmClass
     val kind: ClassKind
-    val constructors: List<KmConstructor>
+    val constructors: List<JmConstructor>
     val sealedSubclasses: List<ClassName>
     val propertyNameSet: Set<String>
     val properties: List<KmProperty>
@@ -49,7 +48,7 @@ internal sealed interface JmClass {
     val wrapsNullableIfValue: Boolean
     // endregion
 
-    fun findKmConstructor(constructor: Constructor<*>): KmConstructor?
+    fun findKmConstructor(constructor: Constructor<*>): JmConstructor?
     fun findPropertyByField(field: Field): KmProperty?
     fun findPropertyByGetter(getter: Method): KmProperty?
 }
@@ -67,7 +66,7 @@ private class JmClassImpl(
 
     private val companionPropName: String? = kmClass.companionObject
     override val kind: ClassKind = kmClass.kind
-    override val constructors: List<KmConstructor> = kmClass.constructors
+    override val constructors: List<JmConstructor> = kmClass.constructors.map { JmConstructor(it) }
     override val sealedSubclasses: List<ClassName> = kmClass.sealedSubclasses
 
     override val wrapsNullableIfValue: Boolean = kmClass.inlineClassUnderlyingType?.isNullable ?: false
@@ -99,7 +98,7 @@ private class JmClassImpl(
         companionPropName?.let { JmClass.CompanionObject(clazz, it) }
     }
 
-    override fun findKmConstructor(constructor: Constructor<*>): KmConstructor? {
+    override fun findKmConstructor(constructor: Constructor<*>): JmConstructor? {
         val descHead = constructor.parameterTypes.toDescBuilder()
         val len = descHead.length
         val desc = CharArray(len + 1).apply {

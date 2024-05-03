@@ -1,5 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.jmClass
 
+import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
 import io.github.projectmapk.jackson.module.kogera.toDescBuilder
 import io.github.projectmapk.jackson.module.kogera.toKmClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
@@ -20,7 +21,13 @@ internal sealed interface JmClass {
         private val companionField: Field = declaringClass.getDeclaredField(companionObject)
         val type: Class<*> = companionField.type
         val isAccessible: Boolean = companionField.isAccessible
-        private val functions by lazy { type.toKmClass()!!.functions }
+        private val factoryFunctions by lazy {
+            // Since it is a user-defined factory function that is processed,
+            // it always has arguments and the return value is the same as declaringClass.
+            type.toKmClass()!!.functions.filter {
+                it.valueParameters.isNotEmpty() && it.returnType.reconstructClassOrNull() == declaringClass
+            }
+        }
         val instance: Any by lazy {
             // To prevent the call from failing, save the initial value and then rewrite the flag.
             if (!companionField.isAccessible) companionField.isAccessible = true
@@ -29,7 +36,7 @@ internal sealed interface JmClass {
 
         fun findFunctionByMethod(method: Method): KmFunction? {
             val signature = method.toSignature()
-            return functions.find { it.signature == signature }
+            return factoryFunctions.find { it.signature == signature }
         }
     }
 

@@ -8,6 +8,7 @@ import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argum
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.calcMaskSize
 import io.github.projectmapk.jackson.module.kogera.getDeclaredMethodBy
 import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmValueParameter
 import java.lang.reflect.Method
 
 internal class MethodValueCreator<T>(
@@ -18,7 +19,7 @@ internal class MethodValueCreator<T>(
     private val companion: JmClass.CompanionObject = declaringJmClass.companion!!
     override val isAccessible: Boolean = method.isAccessible && companion.isAccessible
     override val callableName: String = method.name
-    override val valueParameters: List<ValueParameter>
+    override val valueParameters: List<JmValueParameter>
     override val bucketGenerator: BucketGenerator
 
     init {
@@ -26,14 +27,13 @@ internal class MethodValueCreator<T>(
         if (!method.isAccessible) method.isAccessible = true
 
         val function = companion.findFunctionByMethod(method)!!
-        val kmParameters = function.valueParameters
 
-        valueParameters = kmParameters.map { ValueParameter(it) }
+        valueParameters = function.valueParameters
         val rawTypes = method.parameterTypes.asList()
         bucketGenerator = BucketGenerator(
             rawTypes,
             valueParameters,
-            kmParameters.mapToConverters(rawTypes, cache)
+            valueParameters.mapToConverters(rawTypes, cache)
         )
     }
 

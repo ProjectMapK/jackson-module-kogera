@@ -8,6 +8,7 @@ import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argum
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.calcMaskSize
 import io.github.projectmapk.jackson.module.kogera.getDeclaredConstructorBy
 import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmValueParameter
 import java.lang.reflect.Constructor
 
 internal class ConstructorValueCreator<T : Any>(
@@ -19,21 +20,19 @@ internal class ConstructorValueCreator<T : Any>(
 
     override val isAccessible: Boolean = constructor.isAccessible
     override val callableName: String = constructor.name
-    override val valueParameters: List<ValueParameter>
+    override val valueParameters: List<JmValueParameter>
     override val bucketGenerator: BucketGenerator
 
     init {
         // To prevent the call from failing, save the initial value and then rewrite the flag.
         if (!isAccessible) constructor.isAccessible = true
 
-        val constructorParameters = declaringJmClass.findJmConstructor(constructor)!!.valueParameters
-
-        valueParameters = constructorParameters.map { ValueParameter(it) }
+        valueParameters = declaringJmClass.findJmConstructor(constructor)!!.valueParameters
         val rawTypes = constructor.parameterTypes.asList()
         bucketGenerator = BucketGenerator(
             rawTypes,
             valueParameters,
-            constructorParameters.mapToConverters(rawTypes, cache)
+            valueParameters.mapToConverters(rawTypes, cache)
         )
     }
 

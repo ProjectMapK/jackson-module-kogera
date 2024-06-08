@@ -17,11 +17,10 @@ import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
 import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
 import io.github.projectmapk.jackson.module.kogera.jmClass.JmProperty
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmValueParameter
 import io.github.projectmapk.jackson.module.kogera.reconstructClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
 import kotlinx.metadata.KmClassifier
-import kotlinx.metadata.KmValueParameter
-import kotlinx.metadata.declaresDefaultValue
 import kotlinx.metadata.isNullable
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
@@ -97,11 +96,11 @@ internal class KotlinPrimaryAnnotationIntrospector(
         // non required if...
         return when {
             // Argument definition is nullable
-            paramDef.type.isNullable -> false
+            paramDef.isNullable -> false
             // Default argument are defined
-            paramDef.declaresDefaultValue -> false
+            paramDef.isOptional -> false
             // vararg is treated as an empty array because undefined input is allowed
-            paramDef.varargElementType != null -> false
+            paramDef.isVararg -> false
             // The conversion in case of null is defined.
             type.hasDefaultEmptyValue() -> false
             else -> true
@@ -144,11 +143,11 @@ private fun Constructor<*>.isPrimarilyConstructorOf(jmClass: JmClass): Boolean =
 private fun KmClassifier.isString(): Boolean = this is KmClassifier.Class && this.name == "kotlin/String"
 
 private fun isPossibleSingleString(
-    kotlinParams: List<KmValueParameter>,
+    kotlinParams: List<JmValueParameter>,
     javaFunction: Executable,
     propertyNames: Set<String>
 ): Boolean = kotlinParams.size == 1 &&
-    kotlinParams[0].let { it.name !in propertyNames && it.type.classifier.isString() } &&
+    kotlinParams[0].let { it.name !in propertyNames && it.isString } &&
     javaFunction.parameters[0].annotations.none { it is JsonProperty }
 
 private fun hasCreatorConstructor(clazz: Class<*>, jmClass: JmClass, propertyNames: Set<String>): Boolean {

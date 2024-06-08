@@ -16,12 +16,11 @@ import io.github.projectmapk.jackson.module.kogera.JSON_K_UNBOX_CLASS
 import io.github.projectmapk.jackson.module.kogera.KOTLIN_DURATION_CLASS
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
-import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmValueParameter
 import io.github.projectmapk.jackson.module.kogera.ser.KotlinDurationValueToJavaDurationConverter
 import io.github.projectmapk.jackson.module.kogera.ser.KotlinToJavaDurationConverter
 import io.github.projectmapk.jackson.module.kogera.ser.SequenceToIteratorConverter
 import kotlinx.metadata.KmTypeProjection
-import kotlinx.metadata.KmValueParameter
 import kotlinx.metadata.isNullable
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
@@ -35,7 +34,7 @@ internal class KotlinFallbackAnnotationIntrospector(
     private val useJavaDurationConversion: Boolean,
     private val cache: ReflectionCache
 ) : NopAnnotationIntrospector() {
-    private fun findKotlinParameter(param: AnnotatedParameter): KmValueParameter? =
+    private fun findKotlinParameter(param: AnnotatedParameter): JmValueParameter? =
         when (val owner = param.owner.member) {
             is Constructor<*> -> cache.getJmClass(param.declaringClass)?.findJmConstructor(owner)?.valueParameters
             is Method -> if (Modifier.isStatic(owner.modifiers)) {
@@ -48,7 +47,7 @@ internal class KotlinFallbackAnnotationIntrospector(
             else -> null
         }?.let { it[param.index] }
 
-    private fun findKotlinParameter(param: Annotated): KmValueParameter? =
+    private fun findKotlinParameter(param: Annotated): JmValueParameter? =
         (param as? AnnotatedParameter)?.let { findKotlinParameter(it) }
 
     // since 2.4
@@ -65,7 +64,7 @@ internal class KotlinFallbackAnnotationIntrospector(
     override fun refineDeserializationType(config: MapperConfig<*>, a: Annotated, baseType: JavaType): JavaType =
         findKotlinParameter(a)?.let { param ->
             val rawType = a.rawType
-            param.type.reconstructClassOrNull()
+            param.reconstructedClassOrNull
                 ?.takeIf { it.isUnboxableValueClass() && it != rawType }
                 ?.let { config.constructType(it) }
         } ?: baseType
@@ -123,11 +122,11 @@ internal class KotlinFallbackAnnotationIntrospector(
         ?: super.findSetterInfo(ann)
 }
 
-private fun KmValueParameter.isNullishTypeAt(index: Int): Boolean = type.arguments.getOrNull(index)?.let {
+private fun JmValueParameter.isNullishTypeAt(index: Int): Boolean = arguments.getOrNull(index)?.let {
     // If it is not a StarProjection, type is not null
     it === KmTypeProjection.STAR || it.type!!.isNullable
 } ?: true // If a type argument cannot be taken, treat it as nullable to avoid unexpected failure.
 
-private fun KmValueParameter.requireStrictNullCheck(type: JavaType): Boolean =
+private fun JmValueParameter.requireStrictNullCheck(type: JavaType): Boolean =
     ((type.isArrayType || type.isCollectionLikeType) && !this.isNullishTypeAt(0)) ||
         (type.isMapLikeType && !this.isNullishTypeAt(1))

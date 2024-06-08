@@ -83,8 +83,9 @@ internal fun String.reconstructClass(): Class<*> {
     return Class.forName(String(replaced))
 }
 
-internal fun KmType.reconstructClassOrNull(): Class<*>? = (classifier as? KmClassifier.Class)
-    ?.let { kotlin.runCatching { it.name.reconstructClass() }.getOrNull() }
+internal fun KmType.reconstructClassOrNull(): Class<*>? = (classifier as? KmClassifier.Class)?.reconstructClassOrNull()
+internal fun KmClassifier.Class.reconstructClassOrNull(): Class<*>? =
+    runCatching { name.reconstructClass() }.getOrNull()
 
 internal fun AnnotatedElement.hasCreatorAnnotation(): Boolean = getAnnotation(JSON_CREATOR_CLASS)
     ?.let { it.mode != JsonCreator.Mode.DISABLED }

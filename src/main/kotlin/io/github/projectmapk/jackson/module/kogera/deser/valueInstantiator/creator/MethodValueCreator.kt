@@ -8,7 +8,6 @@ import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argum
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.calcMaskSize
 import io.github.projectmapk.jackson.module.kogera.getDeclaredMethodBy
 import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
-import kotlinx.metadata.KmFunction
 import java.lang.reflect.Method
 
 internal class MethodValueCreator<T>(
@@ -26,8 +25,8 @@ internal class MethodValueCreator<T>(
         // To prevent the call from failing, save the initial value and then rewrite the flag.
         if (!method.isAccessible) method.isAccessible = true
 
-        val kmFunction: KmFunction = companion.findFunctionByMethod(method)!!
-        val kmParameters = kmFunction.valueParameters
+        val function = companion.findFunctionByMethod(method)!!
+        val kmParameters = function.valueParameters
 
         valueParameters = kmParameters.map { ValueParameter(it) }
         val rawTypes = method.parameterTypes.asList()

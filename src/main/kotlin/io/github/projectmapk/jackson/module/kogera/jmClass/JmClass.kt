@@ -7,7 +7,6 @@ import io.github.projectmapk.jackson.module.kogera.toSignature
 import kotlinx.metadata.ClassKind
 import kotlinx.metadata.ClassName
 import kotlinx.metadata.KmClass
-import kotlinx.metadata.KmFunction
 import kotlinx.metadata.isNullable
 import kotlinx.metadata.jvm.signature
 import kotlinx.metadata.kind
@@ -24,8 +23,12 @@ internal sealed interface JmClass {
         private val factoryFunctions by lazy {
             // Since it is a user-defined factory function that is processed,
             // it always has arguments and the return value is the same as declaringClass.
-            type.toKmClass()!!.functions.filter {
-                it.valueParameters.isNotEmpty() && it.returnType.reconstructClassOrNull() == declaringClass
+            type.toKmClass()!!.functions.mapNotNull { func ->
+                func
+                    .takeIf {
+                        func.valueParameters.isNotEmpty() && func.returnType.reconstructClassOrNull() == declaringClass
+                    }
+                    ?.let { JmFunction(it) }
             }
         }
         val instance: Any by lazy {
@@ -34,7 +37,7 @@ internal sealed interface JmClass {
             companionField.get(null)
         }
 
-        fun findFunctionByMethod(method: Method): KmFunction? {
+        fun findFunctionByMethod(method: Method): JmFunction? {
             val signature = method.toSignature()
             return factoryFunctions.find { it.signature == signature }
         }

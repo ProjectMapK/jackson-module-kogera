@@ -1,6 +1,3 @@
-// Visitor API has already been deprecated, but the error is being suppressed for now.
-@file:Suppress("DEPRECATION_ERROR")
-
 package io.github.projectmapk.jackson.module.kogera
 
 import kotlinx.metadata.ClassKind
@@ -12,10 +9,10 @@ import kotlinx.metadata.KmProperty
 import kotlinx.metadata.KmType
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
+import kotlinx.metadata.kind
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
-import kotlinx.metadata.internal.metadata.deserialization.Flags as ProtoFlags
 
 // Jackson Metadata Class
 internal sealed interface JmClass {
@@ -61,7 +58,7 @@ private class JmClassImpl(
     override val properties: List<KmProperty>
 
     private val companionPropName: String? = kmClass.companionObject
-    override val kind: ClassKind = ClassKind.values()[ProtoFlags.CLASS_KIND.get(kmClass.flags).number]
+    override val kind: ClassKind = kmClass.kind
     override val constructors: List<KmConstructor> = kmClass.constructors
     override val sealedSubclasses: List<ClassName> = kmClass.sealedSubclasses
     override val inlineClassUnderlyingType: KmType? = kmClass.inlineClassUnderlyingType

@@ -89,7 +89,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
 
     private fun AnnotatedParameter.hasRequiredMarker(jmClass: JmClass): Boolean? {
         val paramDef = when (val member = member) {
-            is Constructor<*> -> jmClass.findKmConstructor(member)?.valueParameters
+            is Constructor<*> -> jmClass.findJmConstructor(member)?.valueParameters
             is Method -> jmClass.companion?.findFunctionByMethod(member)?.valueParameters
             else -> null
         }?.let { it[index] } ?: return null // Return null if function on Kotlin cannot be determined
@@ -137,7 +137,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
     }
 }
 
-private fun Constructor<*>.isPrimarilyConstructorOf(jmClass: JmClass): Boolean = jmClass.findKmConstructor(this)
+private fun Constructor<*>.isPrimarilyConstructorOf(jmClass: JmClass): Boolean = jmClass.findJmConstructor(this)
     ?.let { !it.isSecondary || jmClass.constructors.size == 1 }
     ?: false
 

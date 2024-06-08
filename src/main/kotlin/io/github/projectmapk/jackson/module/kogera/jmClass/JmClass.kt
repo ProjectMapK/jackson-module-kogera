@@ -53,7 +53,7 @@ internal sealed interface JmClass {
     val wrapsNullableIfValue: Boolean
     // endregion
 
-    fun findKmConstructor(constructor: Constructor<*>): JmConstructor?
+    fun findJmConstructor(constructor: Constructor<*>): JmConstructor?
     fun findPropertyByField(field: Field): JmProperty?
     fun findPropertyByGetter(getter: Method): JmProperty?
 }
@@ -103,7 +103,7 @@ private class JmClassImpl(
         companionPropName?.let { JmClass.CompanionObject(clazz, it) }
     }
 
-    override fun findKmConstructor(constructor: Constructor<*>): JmConstructor? {
+    override fun findJmConstructor(constructor: Constructor<*>): JmConstructor? {
         val descHead = constructor.parameterTypes.toDescBuilder()
         val len = descHead.length
         val desc = CharArray(len + 1).apply {

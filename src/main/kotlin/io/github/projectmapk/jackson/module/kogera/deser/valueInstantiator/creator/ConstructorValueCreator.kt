@@ -26,7 +26,7 @@ internal class ConstructorValueCreator<T : Any>(
         // To prevent the call from failing, save the initial value and then rewrite the flag.
         if (!isAccessible) constructor.isAccessible = true
 
-        val constructorParameters = declaringJmClass.findKmConstructor(constructor)!!.valueParameters
+        val constructorParameters = declaringJmClass.findJmConstructor(constructor)!!.valueParameters
 
         valueParameters = constructorParameters.map { ValueParameter(it) }
         val rawTypes = constructor.parameterTypes.asList()

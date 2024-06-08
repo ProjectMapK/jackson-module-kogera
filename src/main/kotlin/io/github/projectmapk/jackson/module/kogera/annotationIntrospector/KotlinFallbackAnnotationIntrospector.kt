@@ -37,7 +37,7 @@ internal class KotlinFallbackAnnotationIntrospector(
 ) : NopAnnotationIntrospector() {
     private fun findKotlinParameter(param: AnnotatedParameter): KmValueParameter? =
         when (val owner = param.owner.member) {
-            is Constructor<*> -> cache.getJmClass(param.declaringClass)?.findKmConstructor(owner)?.valueParameters
+            is Constructor<*> -> cache.getJmClass(param.declaringClass)?.findJmConstructor(owner)?.valueParameters
             is Method -> if (Modifier.isStatic(owner.modifiers)) {
                 cache.getJmClass(param.declaringClass)
                     ?.companion

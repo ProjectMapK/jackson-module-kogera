@@ -1,14 +1,14 @@
 package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator
 
 import io.github.projectmapk.jackson.module.kogera.ANY_CLASS
-import io.github.projectmapk.jackson.module.kogera.JmClass
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.call
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket.ArgumentBucket
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket.BucketGenerator
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.calcMaskSize
 import io.github.projectmapk.jackson.module.kogera.getDeclaredMethodBy
-import kotlinx.metadata.KmFunction
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmValueParameter
 import java.lang.reflect.Method
 
 internal class MethodValueCreator<T>(
@@ -19,22 +19,21 @@ internal class MethodValueCreator<T>(
     private val companion: JmClass.CompanionObject = declaringJmClass.companion!!
     override val isAccessible: Boolean = method.isAccessible && companion.isAccessible
     override val callableName: String = method.name
-    override val valueParameters: List<ValueParameter>
+    override val valueParameters: List<JmValueParameter>
     override val bucketGenerator: BucketGenerator
 
     init {
         // To prevent the call from failing, save the initial value and then rewrite the flag.
         if (!method.isAccessible) method.isAccessible = true
 
-        val kmFunction: KmFunction = companion.findFunctionByMethod(method)!!
-        val kmParameters = kmFunction.valueParameters
+        val function = companion.findFunctionByMethod(method)!!
 
-        valueParameters = kmParameters.map { ValueParameter(it) }
+        valueParameters = function.valueParameters
         val rawTypes = method.parameterTypes.asList()
         bucketGenerator = BucketGenerator(
             rawTypes,
             valueParameters,
-            kmParameters.mapToConverters(rawTypes, cache)
+            valueParameters.mapToConverters(rawTypes, cache)
         )
     }
 

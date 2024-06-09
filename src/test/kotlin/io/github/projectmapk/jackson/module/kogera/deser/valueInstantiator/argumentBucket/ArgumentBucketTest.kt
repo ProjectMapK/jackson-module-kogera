@@ -1,7 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket
 
 import io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter
-import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.ValueParameter
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmValueParameter
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -15,7 +15,7 @@ private class ArgumentBucketTest {
         every { this@mockk[any()] } returns null
     }
 
-    fun mockValueParameter(mockVararg: Boolean = false, mockOptional: Boolean = false) = mockk<ValueParameter> {
+    fun mockValueParameter(mockVararg: Boolean = false, mockOptional: Boolean = false) = mockk<JmValueParameter> {
         every { isVararg } returns mockVararg
         every { isOptional } returns mockOptional
     }

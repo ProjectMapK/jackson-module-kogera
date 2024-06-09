@@ -13,20 +13,15 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import io.github.projectmapk.jackson.module.kogera.JSON_PROPERTY_CLASS
-import io.github.projectmapk.jackson.module.kogera.JmClass
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmProperty
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmValueParameter
 import io.github.projectmapk.jackson.module.kogera.reconstructClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
 import kotlinx.metadata.KmClassifier
-import kotlinx.metadata.KmProperty
-import kotlinx.metadata.KmValueParameter
-import kotlinx.metadata.declaresDefaultValue
 import kotlinx.metadata.isNullable
-import kotlinx.metadata.isSecondary
-import kotlinx.metadata.jvm.getterSignature
-import kotlinx.metadata.jvm.setterSignature
-import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
@@ -71,11 +66,11 @@ internal class KotlinPrimaryAnnotationIntrospector(
             // only a check for the existence of a getter is performed.
             // https://youtrack.jetbrains.com/issue/KT-6519
             ?.let {
-                if (it.getterSignature == null) !(it.returnType.isNullable || type.hasDefaultEmptyValue()) else null
+                if (it.getterName == null) !(it.returnType.isNullable || type.hasDefaultEmptyValue()) else null
             }
     }
 
-    private fun KmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable
+    private fun JmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable
 
     private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(jmClass: JmClass): Boolean? =
         when (parameterCount) {
@@ -93,7 +88,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
 
     private fun AnnotatedParameter.hasRequiredMarker(jmClass: JmClass): Boolean? {
         val paramDef = when (val member = member) {
-            is Constructor<*> -> jmClass.findKmConstructor(member)?.valueParameters
+            is Constructor<*> -> jmClass.findJmConstructor(member)?.valueParameters
             is Method -> jmClass.companion?.findFunctionByMethod(member)?.valueParameters
             else -> null
         }?.let { it[index] } ?: return null // Return null if function on Kotlin cannot be determined
@@ -101,11 +96,11 @@ internal class KotlinPrimaryAnnotationIntrospector(
         // non required if...
         return when {
             // Argument definition is nullable
-            paramDef.type.isNullable -> false
+            paramDef.isNullable -> false
             // Default argument are defined
-            paramDef.declaresDefaultValue -> false
+            paramDef.isOptional -> false
             // vararg is treated as an empty array because undefined input is allowed
-            paramDef.varargElementType != null -> false
+            paramDef.isVararg -> false
             // The conversion in case of null is defined.
             type.hasDefaultEmptyValue() -> false
             else -> true
@@ -141,18 +136,18 @@ internal class KotlinPrimaryAnnotationIntrospector(
     }
 }
 
-private fun Constructor<*>.isPrimarilyConstructorOf(jmClass: JmClass): Boolean = jmClass.findKmConstructor(this)
+private fun Constructor<*>.isPrimarilyConstructorOf(jmClass: JmClass): Boolean = jmClass.findJmConstructor(this)
     ?.let { !it.isSecondary || jmClass.constructors.size == 1 }
     ?: false
 
 private fun KmClassifier.isString(): Boolean = this is KmClassifier.Class && this.name == "kotlin/String"
 
 private fun isPossibleSingleString(
-    kotlinParams: List<KmValueParameter>,
+    kotlinParams: List<JmValueParameter>,
     javaFunction: Executable,
     propertyNames: Set<String>
 ): Boolean = kotlinParams.size == 1 &&
-    kotlinParams[0].let { it.name !in propertyNames && it.type.classifier.isString() } &&
+    kotlinParams[0].let { it.name !in propertyNames && it.isString } &&
     javaFunction.parameters[0].annotations.none { it is JsonProperty }
 
 private fun hasCreatorConstructor(clazz: Class<*>, jmClass: JmClass, propertyNames: Set<String>): Boolean {

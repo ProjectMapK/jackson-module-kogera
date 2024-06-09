@@ -2,7 +2,7 @@ package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argu
 
 import io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.calcMaskSize
-import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.ValueParameter
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmValueParameter
 import java.lang.reflect.Array as ReflectArray
 
 private fun defaultPrimitiveValue(type: Class<*>): Any = when (type) {
@@ -47,7 +47,7 @@ private fun IntArray.update(index: Int, operation: MaskOperation) {
 // @see https://github.com/JetBrains/kotlin/blob/4c925d05883a8073e6732bca95bf575beb031a59/core/reflection.jvm/src/kotlin/reflect/jvm/internal/KCallableImpl.kt#L114
 internal class BucketGenerator(
     parameterTypes: List<Class<*>>,
-    valueParameters: List<ValueParameter>,
+    valueParameters: List<JmValueParameter>,
     private val converters: List<ValueClassUnboxConverter<Any>?>
 ) {
     private val valueParameterSize: Int = parameterTypes.size

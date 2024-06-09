@@ -6,7 +6,6 @@ import io.github.projectmapk.jackson.module.kogera.annotation.JsonKUnbox
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmType
-import kotlinx.metadata.isNullable
 import kotlinx.metadata.jvm.JvmMethodSignature
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.lang.reflect.AnnotatedElement
@@ -21,9 +20,6 @@ internal fun Class<*>.toKmClass(): KmClass? = getAnnotation(METADATA_CLASS)?.let
 }
 
 internal fun Class<*>.isUnboxableValueClass() = this.isAnnotationPresent(JVM_INLINE_CLASS)
-
-// JmClass must be value class.
-internal fun JmClass.wrapsNullValueClass() = inlineClassUnderlyingType!!.isNullable
 
 private val primitiveClassToDesc = mapOf(
     Byte::class.java to 'B',
@@ -87,8 +83,9 @@ internal fun String.reconstructClass(): Class<*> {
     return Class.forName(String(replaced))
 }
 
-internal fun KmType.reconstructClassOrNull(): Class<*>? = (classifier as? KmClassifier.Class)
-    ?.let { kotlin.runCatching { it.name.reconstructClass() }.getOrNull() }
+internal fun KmType.reconstructClassOrNull(): Class<*>? = (classifier as? KmClassifier.Class)?.reconstructClassOrNull()
+internal fun KmClassifier.Class.reconstructClassOrNull(): Class<*>? =
+    runCatching { name.reconstructClass() }.getOrNull()
 
 internal fun AnnotatedElement.hasCreatorAnnotation(): Boolean = getAnnotation(JSON_CREATOR_CLASS)
     ?.let { it.mode != JsonCreator.Mode.DISABLED }

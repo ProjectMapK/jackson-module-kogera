@@ -7,8 +7,7 @@ import io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket.ArgumentBucket
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.argumentBucket.BucketGenerator
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
-import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
-import kotlinx.metadata.KmValueParameter
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmValueParameter
 
 /**
  * A class that abstracts the creation of instances by calling KFunction.
@@ -28,7 +27,7 @@ internal sealed class ValueCreator<T> {
     /**
      * ValueParameters of the KFunction to be called.
      */
-    abstract val valueParameters: List<ValueParameter>
+    abstract val valueParameters: List<JmValueParameter>
 
     protected abstract val bucketGenerator: BucketGenerator
 
@@ -61,12 +60,12 @@ internal sealed class ValueCreator<T> {
 }
 
 @Suppress("UNCHECKED_CAST")
-internal fun List<KmValueParameter>.mapToConverters(
+internal fun List<JmValueParameter>.mapToConverters(
     rawTypes: List<Class<*>>,
     cache: ReflectionCache
 ): List<ValueClassUnboxConverter<Any>?> =
     mapIndexed { i, param ->
-        param.type.reconstructClassOrNull()
+        param.reconstructedClassOrNull
             ?.takeIf { it.isUnboxableValueClass() && rawTypes[i] != it }
             ?.let { cache.getValueClassUnboxConverter(it) }
     } as List<ValueClassUnboxConverter<Any>?> // Cast to cheat generics

@@ -1,6 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera
 
 import com.fasterxml.jackson.databind.util.LRUMap
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
 import java.io.Serializable
 import java.lang.reflect.Method
 import java.util.Optional

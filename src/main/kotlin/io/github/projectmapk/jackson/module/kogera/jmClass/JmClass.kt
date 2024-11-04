@@ -4,15 +4,15 @@ import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
 import io.github.projectmapk.jackson.module.kogera.toDescBuilder
 import io.github.projectmapk.jackson.module.kogera.toKmClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
-import kotlinx.metadata.ClassKind
-import kotlinx.metadata.ClassName
-import kotlinx.metadata.KmClass
-import kotlinx.metadata.isNullable
-import kotlinx.metadata.jvm.signature
-import kotlinx.metadata.kind
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
+import kotlin.metadata.ClassKind
+import kotlin.metadata.ClassName
+import kotlin.metadata.KmClass
+import kotlin.metadata.isNullable
+import kotlin.metadata.jvm.signature
+import kotlin.metadata.kind
 
 // Jackson Metadata Class
 internal sealed interface JmClass {

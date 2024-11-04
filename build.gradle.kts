@@ -26,7 +26,7 @@ dependencies {
     val kotlinVersion: String = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() }
         ?: libs.versions.kotlin.get()
     implementation("${libs.kotlin.stdlib.get()}:${kotlinVersion}")
-    implementation(libs.kotlinx.metadata.jvm)
+    implementation("${libs.kotlin.metadata.jvm.get()}:$kotlinVersion")
 
     api(libs.jackson.databind)
     api(libs.jackson.annotations)
@@ -49,8 +49,8 @@ kotlin {
         kotlin.srcDir(generatedSrcPath)
     }
 
-    val useK2 = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() }
-        ?.let { it.toBoolean() } ?: false
+    val useK2 = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() }?.toBoolean()
+        ?: false
 
     sourceSets.all {
         languageSettings {

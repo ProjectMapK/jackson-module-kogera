@@ -1,10 +1,10 @@
 package io.github.projectmapk.jackson.module.kogera.jmClass
 
-import kotlinx.metadata.KmProperty
-import kotlinx.metadata.KmType
-import kotlinx.metadata.jvm.JvmMemberSignature
-import kotlinx.metadata.jvm.getterSignature
-import kotlinx.metadata.jvm.setterSignature
+import kotlin.metadata.KmProperty
+import kotlin.metadata.KmType
+import kotlin.metadata.jvm.JvmMemberSignature
+import kotlin.metadata.jvm.getterSignature
+import kotlin.metadata.jvm.setterSignature
 
 internal data class JmProperty(
     val name: String?,

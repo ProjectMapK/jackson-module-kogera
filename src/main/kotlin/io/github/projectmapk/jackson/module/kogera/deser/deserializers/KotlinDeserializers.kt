@@ -18,10 +18,10 @@ import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
-import kotlinx.metadata.isSecondary
-import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import kotlin.metadata.isSecondary
+import kotlin.metadata.jvm.signature
 
 internal object SequenceDeserializer : StdDeserializer<Sequence<*>>(Sequence::class.java) {
     private fun readResolve(): Any = SequenceDeserializer

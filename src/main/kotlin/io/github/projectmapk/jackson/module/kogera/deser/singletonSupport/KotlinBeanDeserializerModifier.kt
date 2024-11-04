@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
-import kotlinx.metadata.ClassKind
 import java.io.Serializable
+import kotlin.metadata.ClassKind
 
 // [module-kotlin#225]: keep Kotlin singletons as singletons
 internal class KotlinBeanDeserializerModifier(

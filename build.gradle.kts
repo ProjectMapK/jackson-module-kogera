@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+
 plugins {
     `maven-publish` // for JitPack
 
@@ -59,11 +61,15 @@ kotlin {
             }
         }
     }
+
+    compilerOptions {
+        apiVersion.set(KotlinVersion.KOTLIN_2_0)
+    }
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 tasks {
@@ -105,11 +111,9 @@ public val kogeraVersion: Version = VersionUtil.parseVersion("$version", "$group
 
     compileKotlin {
         dependsOn.add(generateKogeraVersion)
-        kotlinOptions.jvmTarget = "1.8"
     }
-
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+    compileJava {
+        options.compilerArgs.add("-Xlint:unchecked")
     }
 
     test {

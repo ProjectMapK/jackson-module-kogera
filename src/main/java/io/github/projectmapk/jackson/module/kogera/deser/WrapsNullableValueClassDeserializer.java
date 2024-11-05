@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * An interface to be inherited by JsonDeserializer that handles value classes that may wrap nullable.
@@ -37,9 +38,8 @@ public abstract class WrapsNullableValueClassDeserializer<D> extends StdDeserial
 
     @Override
     @NotNull
-    public final Class<D> handledType() {
-        //noinspection unchecked
-        return (Class<D>) super.handledType();
+    public final Class<?> handledType() {
+        return Objects.requireNonNull(super.handledType());
     }
 
     /**

@@ -16,6 +16,7 @@ internal class ValueClassBoxConverter<S : Any?, D : Any>(
     val boxedClass: Class<D>
 ) : StdConverter<S, D>() {
     private val boxMethod = boxedClass.getDeclaredMethod("box-impl", unboxedClass).apply {
+        @Suppress("DEPRECATION")
         if (!this.isAccessible) this.isAccessible = true
     }
 
@@ -27,6 +28,7 @@ internal class ValueClassBoxConverter<S : Any?, D : Any>(
 
 internal class ValueClassUnboxConverter<T : Any>(val valueClass: Class<T>) : StdConverter<T, Any?>() {
     private val unboxMethod = valueClass.getDeclaredMethod("unbox-impl").apply {
+        @Suppress("DEPRECATION")
         if (!this.isAccessible) this.isAccessible = true
     }
 

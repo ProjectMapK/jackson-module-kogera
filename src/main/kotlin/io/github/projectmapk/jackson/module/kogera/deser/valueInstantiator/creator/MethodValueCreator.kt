@@ -17,6 +17,8 @@ internal class MethodValueCreator<T>(
     cache: ReflectionCache
 ) : ValueCreator<T>() {
     private val companion: JmClass.CompanionObject = declaringJmClass.companion!!
+
+    @Suppress("DEPRECATION")
     override val isAccessible: Boolean = method.isAccessible && companion.isAccessible
     override val callableName: String = method.name
     override val valueParameters: List<JmValueParameter>
@@ -24,6 +26,7 @@ internal class MethodValueCreator<T>(
 
     init {
         // To prevent the call from failing, save the initial value and then rewrite the flag.
+        @Suppress("DEPRECATION")
         if (!method.isAccessible) method.isAccessible = true
 
         val function = companion.findFunctionByMethod(method)!!

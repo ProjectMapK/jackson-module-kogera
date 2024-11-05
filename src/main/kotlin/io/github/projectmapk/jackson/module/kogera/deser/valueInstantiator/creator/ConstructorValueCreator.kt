@@ -18,6 +18,7 @@ internal class ConstructorValueCreator<T : Any>(
 ) : ValueCreator<T>() {
     private val declaringClass: Class<T> = constructor.declaringClass
 
+    @Suppress("DEPRECATION")
     override val isAccessible: Boolean = constructor.isAccessible
     override val callableName: String = constructor.name
     override val valueParameters: List<JmValueParameter>
@@ -52,6 +53,7 @@ internal class ConstructorValueCreator<T : Any>(
         } as Array<Class<*>>
 
         declaringClass.getDeclaredConstructorBy(defaultTypes).apply {
+            @Suppress("DEPRECATION")
             if (!this.isAccessible) this.isAccessible = true
         }
     }

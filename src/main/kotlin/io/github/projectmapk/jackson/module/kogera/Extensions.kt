@@ -62,7 +62,7 @@ public inline fun <reified T> ObjectMapper.readValue(src: ByteArray): T = readVa
 
 public inline fun <reified T> ObjectMapper.treeToValue(n: TreeNode): T =
     readValue(this.treeAsTokens(n), jacksonTypeRef<T>())
-public inline fun <reified T> ObjectMapper.convertValue(from: Any): T = convertValue(from, jacksonTypeRef<T>())
+public inline fun <reified T> ObjectMapper.convertValue(from: Any?): T = convertValue(from, jacksonTypeRef<T>())
 
 public inline fun <reified T> ObjectReader.readValueTyped(jp: JsonParser): T = readValue(jp, jacksonTypeRef<T>())
 public inline fun <reified T> ObjectReader.readValuesTyped(jp: JsonParser): Iterator<T> =

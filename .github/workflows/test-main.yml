@@ -35,23 +35,27 @@ jobs:
       fail-fast: false
       matrix:
         # LTS versions, latest version (if exists)
-        java-version: [ '8', '11', '17', '21', '22' ]
+        java-version: [ '8', '11', '17', '21', '23' ]
         # Minimum version, latest release version, latest pre-release version (if exists)
         kotlin:
           - name: '1.8.22'
             version: '1.8.22'
             k2: false
-          - name: '1.9.23'
-            version: '1.9.23'
+          - name: '1.9.25'
+            version: '1.9.25'
             k2: false
-          - name: '1.9.23 K2'
-            version: '1.9.23'
+          - name: '1.9.25 K2'
+            version: '1.9.25'
             k2: true
-          - name: '2.0.0-Beta5'
-            version: '2.0.0-Beta5'
+          - name: '2.0.21'
+            version: '2.0.21'
             k2: false
-          - name: '2.0.0-Beta5 K2'
-            version: '2.0.0-Beta5'
+          - name: '2.0.21 K2'
+            version: '2.0.21'
+            k2: true
+          - name: '2.1.0-RC'
+            k2: false
+          - name: '2.1.0-RC K2'
             k2: true
     env:
       KOTLIN_VERSION: ${{ matrix.kotlin.version }}
@@ -63,7 +67,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v2
+        uses: gradle/actions/wrapper-validation@v3
       - name: 'Set up java ${{ matrix.java-version }}'
         uses: actions/setup-java@v4
         with:

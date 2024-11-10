@@ -1,13 +1,13 @@
-package io.github.projectmapk.jackson.module.kogera
+package io.github.projectmapk.jackson.module.kogera.jmClass
 
+import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
+import io.github.projectmapk.jackson.module.kogera.toDescBuilder
+import io.github.projectmapk.jackson.module.kogera.toKmClass
+import io.github.projectmapk.jackson.module.kogera.toSignature
 import kotlinx.metadata.ClassKind
 import kotlinx.metadata.ClassName
 import kotlinx.metadata.KmClass
-import kotlinx.metadata.KmConstructor
-import kotlinx.metadata.KmFunction
-import kotlinx.metadata.KmProperty
-import kotlinx.metadata.KmType
-import kotlinx.metadata.jvm.getterSignature
+import kotlinx.metadata.isNullable
 import kotlinx.metadata.jvm.signature
 import kotlinx.metadata.kind
 import java.lang.reflect.Constructor
@@ -20,30 +20,45 @@ internal sealed interface JmClass {
         private val companionField: Field = declaringClass.getDeclaredField(companionObject)
         val type: Class<*> = companionField.type
         val isAccessible: Boolean = companionField.isAccessible
-        private val functions by lazy { type.toKmClass()!!.functions }
+        private val factoryFunctions by lazy {
+            // Since it is a user-defined factory function that is processed,
+            // it always has arguments and the return value is the same as declaringClass.
+            type.toKmClass()!!.functions.mapNotNull { func ->
+                func
+                    .takeIf {
+                        func.valueParameters.isNotEmpty() && func.returnType.reconstructClassOrNull() == declaringClass
+                    }
+                    ?.let { JmFunction(it) }
+            }
+        }
         val instance: Any by lazy {
             // To prevent the call from failing, save the initial value and then rewrite the flag.
             if (!companionField.isAccessible) companionField.isAccessible = true
             companionField.get(null)
         }
 
-        fun findFunctionByMethod(method: Method): KmFunction? {
+        fun findFunctionByMethod(method: Method): JmFunction? {
             val signature = method.toSignature()
-            return functions.find { it.signature == signature }
+            return factoryFunctions.find { it.signature == signature }
         }
     }
 
+    // region: from KmClass
     val kind: ClassKind
-    val constructors: List<KmConstructor>
+    val constructors: List<JmConstructor>
     val sealedSubclasses: List<ClassName>
-    val inlineClassUnderlyingType: KmType?
     val propertyNameSet: Set<String>
-    val properties: List<KmProperty>
+    val properties: List<JmProperty>
     val companion: CompanionObject?
+    // endregion
 
-    fun findKmConstructor(constructor: Constructor<*>): KmConstructor?
-    fun findPropertyByField(field: Field): KmProperty?
-    fun findPropertyByGetter(getter: Method): KmProperty?
+    // region: computed props
+    val wrapsNullableIfValue: Boolean
+    // endregion
+
+    fun findJmConstructor(constructor: Constructor<*>): JmConstructor?
+    fun findPropertyByField(field: Field): JmProperty?
+    fun findPropertyByGetter(getter: Method): JmProperty?
 }
 
 private class JmClassImpl(
@@ -52,16 +67,17 @@ private class JmClassImpl(
     superJmClass: JmClass?,
     interfaceJmClasses: List<JmClass>
 ) : JmClass {
-    private val allPropsMap: Map<String, KmProperty>
+    private val allPropsMap: Map<String, JmProperty>
 
     // Defined as non-lazy because it is always read in both serialization and deserialization
-    override val properties: List<KmProperty>
+    override val properties: List<JmProperty>
 
     private val companionPropName: String? = kmClass.companionObject
     override val kind: ClassKind = kmClass.kind
-    override val constructors: List<KmConstructor> = kmClass.constructors
+    override val constructors: List<JmConstructor> = kmClass.constructors.map { JmConstructor(it) }
     override val sealedSubclasses: List<ClassName> = kmClass.sealedSubclasses
-    override val inlineClassUnderlyingType: KmType? = kmClass.inlineClassUnderlyingType
+
+    override val wrapsNullableIfValue: Boolean = kmClass.inlineClassUnderlyingType?.isNullable ?: false
 
     init {
         // Add properties of inherited classes and interfaces
@@ -69,7 +85,7 @@ private class JmClassImpl(
         // it is necessary to obtain a more specific type, so always add it from the abstract class first.
         val tempPropsMap = ((superJmClass as JmClassImpl?)?.allPropsMap?.toMutableMap() ?: mutableMapOf()).apply {
             kmClass.properties.forEach {
-                this[it.name] = it
+                this[it.name] = JmProperty(it)
             }
         }
 
@@ -90,7 +106,7 @@ private class JmClassImpl(
         companionPropName?.let { JmClass.CompanionObject(clazz, it) }
     }
 
-    override fun findKmConstructor(constructor: Constructor<*>): KmConstructor? {
+    override fun findJmConstructor(constructor: Constructor<*>): JmConstructor? {
         val descHead = constructor.parameterTypes.toDescBuilder()
         val len = descHead.length
         val desc = CharArray(len + 1).apply {
@@ -111,11 +127,11 @@ private class JmClassImpl(
     }
 
     // Field name always matches property name
-    override fun findPropertyByField(field: Field): KmProperty? = allPropsMap[field.name]
+    override fun findPropertyByField(field: Field): JmProperty? = allPropsMap[field.name]
 
-    override fun findPropertyByGetter(getter: Method): KmProperty? {
+    override fun findPropertyByGetter(getter: Method): JmProperty? {
         val getterName = getter.name
-        return properties.find { it.getterSignature?.name == getterName }
+        return properties.find { it.getterName == getterName }
     }
 }
 

@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
 import com.fasterxml.jackson.databind.module.SimpleDeserializers
-import io.github.projectmapk.jackson.module.kogera.JmClass
 import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.ValueClassBoxConverter
@@ -17,6 +16,7 @@ import io.github.projectmapk.jackson.module.kogera.deser.JavaToKotlinDurationCon
 import io.github.projectmapk.jackson.module.kogera.deser.WrapsNullableValueClassDeserializer
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
 import kotlinx.metadata.isSecondary
 import kotlinx.metadata.jvm.signature

@@ -20,7 +20,6 @@ import io.github.projectmapk.jackson.module.kogera.jmClass.JmProperty
 import io.github.projectmapk.jackson.module.kogera.jmClass.JmValueParameter
 import io.github.projectmapk.jackson.module.kogera.reconstructClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
-import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.isNullable
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
@@ -137,10 +136,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
 }
 
 private fun Constructor<*>.isPrimarilyConstructorOf(jmClass: JmClass): Boolean = jmClass.findJmConstructor(this)
-    ?.let { !it.isSecondary || jmClass.constructors.size == 1 }
-    ?: false
-
-private fun KmClassifier.isString(): Boolean = this is KmClassifier.Class && this.name == "kotlin/String"
+    ?.let { !it.isSecondary || jmClass.constructors.size == 1 } == true
 
 private fun isPossibleSingleString(
     kotlinParams: List<JmValueParameter>,

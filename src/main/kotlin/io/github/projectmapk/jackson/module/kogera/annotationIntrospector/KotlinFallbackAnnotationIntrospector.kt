@@ -125,7 +125,7 @@ internal class KotlinFallbackAnnotationIntrospector(
 private fun JmValueParameter.isNullishTypeAt(index: Int): Boolean = arguments.getOrNull(index)?.let {
     // If it is not a StarProjection, type is not null
     it === KmTypeProjection.STAR || it.type!!.isNullable
-} ?: true // If a type argument cannot be taken, treat it as nullable to avoid unexpected failure.
+} != false // If a type argument cannot be taken, treat it as nullable to avoid unexpected failure.
 
 private fun JmValueParameter.requireStrictNullCheck(type: JavaType): Boolean =
     ((type.isArrayType || type.isCollectionLikeType) && !this.isNullishTypeAt(0)) ||

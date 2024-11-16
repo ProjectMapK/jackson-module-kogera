@@ -136,8 +136,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
 }
 
 private fun Constructor<*>.isPrimarilyConstructorOf(jmClass: JmClass): Boolean = jmClass.findJmConstructor(this)
-    ?.let { !it.isSecondary || jmClass.constructors.size == 1 }
-    ?: false
+    ?.let { !it.isSecondary || jmClass.constructors.size == 1 } == true
 
 private fun isPossibleSingleString(
     kotlinParams: List<JmValueParameter>,

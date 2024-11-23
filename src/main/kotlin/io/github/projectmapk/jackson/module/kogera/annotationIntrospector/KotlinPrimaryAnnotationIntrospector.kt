@@ -1,11 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.annotationIntrospector
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JavaType
-import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.introspect.Annotated
-import com.fasterxml.jackson.databind.introspect.AnnotatedConstructor
 import com.fasterxml.jackson.databind.introspect.AnnotatedField
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
@@ -14,18 +10,13 @@ import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import io.github.projectmapk.jackson.module.kogera.JSON_PROPERTY_CLASS
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
-import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
 import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
 import io.github.projectmapk.jackson.module.kogera.jmClass.JmProperty
-import io.github.projectmapk.jackson.module.kogera.jmClass.JmValueParameter
 import io.github.projectmapk.jackson.module.kogera.reconstructClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
-import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.isNullable
 import java.lang.reflect.Constructor
-import java.lang.reflect.Executable
 import java.lang.reflect.Method
-import java.lang.reflect.Modifier
 
 // AnnotationIntrospector that overrides the behavior of the default AnnotationIntrospector
 // (in most cases, JacksonAnnotationIntrospector).
@@ -116,57 +107,4 @@ internal class KotlinPrimaryAnnotationIntrospector(
     override fun findSubtypes(a: Annotated): List<NamedType>? = cache.getJmClass(a.rawType)?.let { jmClass ->
         jmClass.sealedSubclasses.map { NamedType(it.reconstructClass()) }.ifEmpty { null }
     }
-
-    // Return Mode.DEFAULT if ann is a Primary Constructor and the condition is satisfied.
-    // Currently, there is no way to define the priority of a Creator,
-    // so the presence or absence of a JsonCreator is included in the decision.
-    // The reason for overriding the JacksonAnnotationIntrospector is to reduce overhead.
-    // In rare cases, a problem may occur,
-    // but it is assumed that the problem can be solved by adjusting the order of module registration.
-    override fun findCreatorAnnotation(config: MapperConfig<*>, ann: Annotated): JsonCreator.Mode? {
-        (ann as? AnnotatedConstructor)?.takeIf { 0 < it.parameterCount } ?: return null
-
-        val declaringClass = ann.declaringClass
-        val jmClass = declaringClass.takeIf { !it.isEnum }
-            ?.let { cache.getJmClass(it) }
-            ?: return null
-
-        return JsonCreator.Mode.DEFAULT
-            .takeIf { ann.annotated.isPrimarilyConstructorOf(jmClass) && !hasCreator(declaringClass, jmClass) }
-    }
-}
-
-private fun Constructor<*>.isPrimarilyConstructorOf(jmClass: JmClass): Boolean = jmClass.findJmConstructor(this)
-    ?.let { !it.isSecondary || jmClass.constructors.size == 1 }
-    ?: false
-
-private fun KmClassifier.isString(): Boolean = this is KmClassifier.Class && this.name == "kotlin/String"
-
-private fun isPossibleSingleString(
-    kotlinParams: List<JmValueParameter>,
-    javaFunction: Executable,
-    propertyNames: Set<String>
-): Boolean = kotlinParams.size == 1 &&
-    kotlinParams[0].let { it.name !in propertyNames && it.isString } &&
-    javaFunction.parameters[0].annotations.none { it is JsonProperty }
-
-private fun hasCreatorConstructor(clazz: Class<*>, jmClass: JmClass, propertyNames: Set<String>): Boolean {
-    val kmConstructorMap = jmClass.constructors.associateBy { it.signature?.descriptor }
-
-    return clazz.constructors.any { constructor ->
-        val kmConstructor = kmConstructorMap[constructor.toSignature().descriptor] ?: return@any false
-
-        !isPossibleSingleString(kmConstructor.valueParameters, constructor, propertyNames) &&
-            constructor.hasCreatorAnnotation()
-    }
-}
-
-// In the original, `isPossibleSingleString` comparison was disabled,
-// and if enabled, the behavior would have changed, so the comparison is skipped.
-private fun hasCreatorFunction(clazz: Class<*>): Boolean = clazz.declaredMethods
-    .any { Modifier.isStatic(it.modifiers) && it.hasCreatorAnnotation() }
-
-private fun hasCreator(clazz: Class<*>, jmClass: JmClass): Boolean {
-    val propertyNames = jmClass.propertyNameSet
-    return hasCreatorConstructor(clazz, jmClass, propertyNames) || hasCreatorFunction(clazz)
 }

@@ -1,5 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.annotationIntrospector
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSetter
 import com.fasterxml.jackson.annotation.Nulls
 import com.fasterxml.jackson.databind.JavaType
@@ -11,11 +12,14 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMember
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.introspect.AnnotatedParameter
 import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector
+import com.fasterxml.jackson.databind.introspect.PotentialCreator
 import com.fasterxml.jackson.databind.util.Converter
 import io.github.projectmapk.jackson.module.kogera.JSON_K_UNBOX_CLASS
 import io.github.projectmapk.jackson.module.kogera.KOTLIN_DURATION_CLASS
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
+import io.github.projectmapk.jackson.module.kogera.jmClass.JmConstructor
 import io.github.projectmapk.jackson.module.kogera.jmClass.JmValueParameter
 import io.github.projectmapk.jackson.module.kogera.ser.KotlinDurationValueToJavaDurationConverter
 import io.github.projectmapk.jackson.module.kogera.ser.KotlinToJavaDurationConverter
@@ -120,13 +124,57 @@ internal class KotlinFallbackAnnotationIntrospector(
             }
         }
         ?: super.findSetterInfo(ann)
+
+    // If it is not a Kotlin class or an Enum, Creator is not used
+    private fun AnnotatedClass.creatableKotlinClass(): JmClass? = annotated
+        .takeIf { !it.isEnum }
+        ?.let { cache.getJmClass(it) }
+
+    override fun findDefaultCreator(
+        config: MapperConfig<*>,
+        valueClass: AnnotatedClass,
+        declaredConstructors: List<PotentialCreator>,
+        declaredFactories: List<PotentialCreator>
+    ): PotentialCreator? {
+        val jmClass = valueClass.creatableKotlinClass() ?: return null
+        val primarilyConstructor = jmClass.primarilyConstructor()
+            ?.takeIf { it.valueParameters.isNotEmpty() }
+            ?: return null
+        val isPossiblySingleString = isPossiblySingleString(primarilyConstructor, jmClass)
+
+        for (it in declaredConstructors) {
+            val javaConstructor = it.creator().annotated as Constructor<*>
+
+            if (primarilyConstructor.isMetadataFor(javaConstructor)) {
+                if (isPossibleSingleString(isPossiblySingleString, javaConstructor)) {
+                    break
+                } else {
+                    return it
+                }
+            }
+        }
+
+        return null
+    }
 }
 
 private fun JmValueParameter.isNullishTypeAt(index: Int): Boolean = arguments.getOrNull(index)?.let {
     // If it is not a StarProjection, type is not null
     it === KmTypeProjection.STAR || it.type!!.isNullable
-} ?: true // If a type argument cannot be taken, treat it as nullable to avoid unexpected failure.
+} != false // If a type argument cannot be taken, treat it as nullable to avoid unexpected failure.
 
 private fun JmValueParameter.requireStrictNullCheck(type: JavaType): Boolean =
     ((type.isArrayType || type.isCollectionLikeType) && !this.isNullishTypeAt(0)) ||
         (type.isMapLikeType && !this.isNullishTypeAt(1))
+
+private fun JmClass.primarilyConstructor() = constructors.find { !it.isSecondary } ?: constructors.singleOrNull()
+
+private fun isPossiblySingleString(
+    jmConstructor: JmConstructor,
+    jmClass: JmClass
+) = jmConstructor.valueParameters.singleOrNull()?.let { it.isString && it.name !in jmClass.propertyNameSet } == true
+
+private fun isPossibleSingleString(
+    isPossiblySingleString: Boolean,
+    javaConstructor: Constructor<*>
+): Boolean = isPossiblySingleString && javaConstructor.parameters[0].annotations.none { it is JsonProperty }

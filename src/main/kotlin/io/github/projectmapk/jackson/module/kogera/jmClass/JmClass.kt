@@ -1,7 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.jmClass
 
 import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
-import io.github.projectmapk.jackson.module.kogera.toDescBuilder
 import io.github.projectmapk.jackson.module.kogera.toKmClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
 import kotlinx.metadata.ClassKind
@@ -106,25 +105,8 @@ private class JmClassImpl(
         companionPropName?.let { JmClass.CompanionObject(clazz, it) }
     }
 
-    override fun findJmConstructor(constructor: Constructor<*>): JmConstructor? {
-        val descHead = constructor.parameterTypes.toDescBuilder()
-        val len = descHead.length
-        val desc = CharArray(len + 1).apply {
-            descHead.getChars(0, len, this, 0)
-            this[len] = 'V'
-        }.let { String(it) }
-
-        // Only constructors that take a value class as an argument have a DefaultConstructorMarker on the Signature.
-        val valueDesc = descHead
-            .replace(len - 1, len, "Lkotlin/jvm/internal/DefaultConstructorMarker;)V")
-            .toString()
-
-        // Constructors always have the same name, so only desc is compared
-        return constructors.find {
-            val targetDesc = it.signature?.descriptor
-            targetDesc == desc || targetDesc == valueDesc
-        }
-    }
+    override fun findJmConstructor(constructor: Constructor<*>): JmConstructor? =
+        constructors.find { it.isMetadataFor(constructor) }
 
     // Field name always matches property name
     override fun findPropertyByField(field: Field): JmProperty? = allPropsMap[field.name]

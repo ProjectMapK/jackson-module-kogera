@@ -53,9 +53,9 @@ jobs:
           - name: '2.0.21 K2'
             version: '2.0.21'
             k2: true
-          - name: '2.1.0-RC'
+          - name: '2.1.0-RC2'
             k2: false
-          - name: '2.1.0-RC K2'
+          - name: '2.1.0-RC2 K2'
             k2: true
     env:
       KOTLIN_VERSION: ${{ matrix.kotlin.version }}

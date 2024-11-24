@@ -1,0 +1,25 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      # Friday 19:00 JST
+      day: "saturday"
+      time: "04:00"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+    ignore:
+      # The version of Kotlin is fixed to the lowest, so it is not subject to automatic updates
+      - dependency-name: "kotlin"
+      - dependency-name: "kotlinx-metadata-jvm"
+      # linter is not subject to automatic renewal as it will be migrated to detekt in the future
+      - dependency-name: "kotlinter"

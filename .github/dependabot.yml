@@ -22,4 +22,4 @@ updates:
       - dependency-name: "kotlin"
       - dependency-name: "kotlinx-metadata-jvm"
       # linter is not subject to automatic renewal as it will be migrated to detekt in the future
-      - dependency-name: "kotlinter"
+      - dependency-name: "org.jmailen.kotlinter"

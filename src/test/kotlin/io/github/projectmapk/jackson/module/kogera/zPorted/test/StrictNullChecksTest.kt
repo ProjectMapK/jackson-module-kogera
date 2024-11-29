@@ -1,7 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.exc.MismatchedInputException
+import com.fasterxml.jackson.databind.exc.InvalidNullException
 import io.github.projectmapk.jackson.module.kogera.KotlinFeature.StrictNullChecks
 import io.github.projectmapk.jackson.module.kogera.kotlinModule
 import io.github.projectmapk.jackson.module.kogera.readValue
@@ -37,7 +37,7 @@ class StrictNullChecksTest {
     @Test
     fun testListOfInt() {
         val json = """{"samples":[1, null]}"""
-        assertThrows<MismatchedInputException> { mapper.readValue<ClassWithListOfInt>(json) }
+        assertThrows<InvalidNullException> { mapper.readValue<ClassWithListOfInt>(json) }
     }
 
     private data class ClassWithNullableListOfInt(val samples: List<Int>?)
@@ -65,7 +65,7 @@ class StrictNullChecksTest {
     @Test
     fun testArrayOfInt() {
         val json = """{"samples":[1, null]}"""
-        assertThrows<MismatchedInputException> { mapper.readValue<ClassWithArrayOfInt>(json) }
+        assertThrows<InvalidNullException> { mapper.readValue<ClassWithArrayOfInt>(json) }
     }
 
     private data class ClassWithNullableArrayOfInt(val samples: Array<Int>?)
@@ -93,7 +93,7 @@ class StrictNullChecksTest {
     @Test
     fun testMapOfStringToIntWithNullValue() {
         val json = """{ "samples": { "key": null } }"""
-        assertThrows<MismatchedInputException> { mapper.readValue<ClassWithMapOfStringToInt>(json) }
+        assertThrows<InvalidNullException> { mapper.readValue<ClassWithMapOfStringToInt>(json) }
     }
 
     private data class ClassWithNullableMapOfStringToInt(val samples: Map<String, Int>?)

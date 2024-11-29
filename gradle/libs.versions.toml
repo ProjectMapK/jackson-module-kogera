@@ -1,6 +1,6 @@
 [versions]
 kotlin = "1.9.25" # Mainly for CI, it can be rewritten by environment variable.
-jackson = "2.18.1"
+jackson = "2.18.2"
 
 # test libs
 junit = "5.11.3"

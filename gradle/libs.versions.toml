@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.8.22" # Mainly for CI, it can be rewritten by environment variable.
+kotlin = "1.9.25" # Mainly for CI, it can be rewritten by environment variable.
 jackson = "2.18.1"
 
 # test libs

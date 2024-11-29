@@ -38,9 +38,6 @@ jobs:
         java-version: [ '8', '11', '17', '21', '23' ]
         # Minimum version, latest release version, latest pre-release version (if exists)
         kotlin:
-          - name: '1.8.22'
-            version: '1.8.22'
-            k2: false
           - name: '1.9.25'
             version: '1.9.25'
             k2: false

@@ -32,7 +32,7 @@ Details are summarized in [KogeraSpecificImplementations](./docs/KogeraSpecificI
 # Compatibility
 - `jackson 2.18.x`
 - `Java 8+`
-- `Kotlin 1.8.22+`
+- `Kotlin 1.9.25+`
 
 ## About compatibility checks
 Compatibility checks for `Java` and `Kotlin` are done by `CI` grid tests.

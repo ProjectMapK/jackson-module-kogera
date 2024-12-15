@@ -89,7 +89,7 @@ public enum class KotlinFeature(internal val enabledByDefault: Boolean) {
 
     public companion object {
         internal val defaults
-            get() = values().fold(BitSet(Int.SIZE_BITS)) { acc, cur ->
+            get() = entries.fold(BitSet(Int.SIZE_BITS)) { acc, cur ->
                 acc.apply { if (cur.enabledByDefault) this.or(cur.bitSet) }
             }
     }

@@ -15,7 +15,7 @@ class KotlinModuleTest {
     @Test
     fun setKotlinFeatureTest() {
         val builder = KotlinModule.Builder().apply {
-            KotlinFeature.values().forEach { enable(it) }
+            KotlinFeature.entries.forEach { enable(it) }
         }
 
         assertTrue(builder.isEnabled(KotlinFeature.NullToEmptyCollection))
@@ -27,7 +27,7 @@ class KotlinModuleTest {
         assertTrue(builder.isEnabled(KotlinFeature.UseJavaDurationConversion))
 
         builder.apply {
-            KotlinFeature.values().forEach { disable(it) }
+            KotlinFeature.entries.forEach { disable(it) }
         }
 
         assertFalse(builder.isEnabled(KotlinFeature.NullToEmptyCollection))
@@ -84,7 +84,7 @@ class KotlinModuleTest {
         val module = KotlinModule.Builder().apply {
             withCacheSize(KotlinModule.CacheSize(123, 321))
 
-            KotlinFeature.values().forEach {
+            KotlinFeature.entries.forEach {
                 configure(it, enabled)
             }
         }.build()

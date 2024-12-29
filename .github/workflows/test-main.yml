@@ -38,9 +38,6 @@ jobs:
         java-version: [ '8', '11', '17', '21', '23' ]
         # Minimum version, latest release version, latest pre-release version (if exists)
         kotlin:
-          - name: '1.8.22'
-            version: '1.8.22'
-            k2: false
           - name: '1.9.25'
             version: '1.9.25'
             k2: false
@@ -53,9 +50,9 @@ jobs:
           - name: '2.0.21 K2'
             version: '2.0.21'
             k2: true
-          - name: '2.1.0-RC'
+          - name: '2.1.0-RC2'
             k2: false
-          - name: '2.1.0-RC K2'
+          - name: '2.1.0-RC2 K2'
             k2: true
     env:
       KOTLIN_VERSION: ${{ matrix.kotlin.version }}

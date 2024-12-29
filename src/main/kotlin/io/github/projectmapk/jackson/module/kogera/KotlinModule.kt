@@ -18,7 +18,7 @@ import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.Kotli
 import io.github.projectmapk.jackson.module.kogera.ser.serializers.KotlinKeySerializers
 import io.github.projectmapk.jackson.module.kogera.ser.serializers.KotlinSerializers
 import java.io.Serializable
-import java.util.*
+import java.util.BitSet
 
 /**
  * @param cacheSize

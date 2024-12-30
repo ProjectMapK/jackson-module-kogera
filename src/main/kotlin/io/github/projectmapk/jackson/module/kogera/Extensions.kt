@@ -75,37 +75,97 @@ public inline fun <reified T, reified U> ObjectMapper.addMixIn(): ObjectMapper =
 public inline fun <reified T, reified U> JsonMapper.Builder.addMixIn(): JsonMapper.Builder =
     this.addMixIn(T::class.java, U::class.java)
 
-public operator fun ArrayNode.plus(element: Boolean) { add(element) }
-public operator fun ArrayNode.plus(element: Short) { add(element) }
-public operator fun ArrayNode.plus(element: Int) { add(element) }
-public operator fun ArrayNode.plus(element: Long) { add(element) }
-public operator fun ArrayNode.plus(element: Float) { add(element) }
-public operator fun ArrayNode.plus(element: Double) { add(element) }
-public operator fun ArrayNode.plus(element: BigDecimal) { add(element) }
-public operator fun ArrayNode.plus(element: BigInteger) { add(element) }
-public operator fun ArrayNode.plus(element: String) { add(element) }
-public operator fun ArrayNode.plus(element: ByteArray) { add(element) }
-public operator fun ArrayNode.plus(element: JsonNode) { add(element) }
-public operator fun ArrayNode.plus(elements: ArrayNode) { addAll(elements) }
-public operator fun ArrayNode.plusAssign(element: Boolean) { add(element) }
-public operator fun ArrayNode.plusAssign(element: Short) { add(element) }
-public operator fun ArrayNode.plusAssign(element: Int) { add(element) }
-public operator fun ArrayNode.plusAssign(element: Long) { add(element) }
-public operator fun ArrayNode.plusAssign(element: Float) { add(element) }
-public operator fun ArrayNode.plusAssign(element: Double) { add(element) }
-public operator fun ArrayNode.plusAssign(element: BigDecimal) { add(element) }
-public operator fun ArrayNode.plusAssign(element: BigInteger) { add(element) }
-public operator fun ArrayNode.plusAssign(element: String) { add(element) }
-public operator fun ArrayNode.plusAssign(element: ByteArray) { add(element) }
-public operator fun ArrayNode.plusAssign(element: JsonNode) { add(element) }
-public operator fun ArrayNode.plusAssign(elements: ArrayNode) { addAll(elements) }
-public operator fun ArrayNode.minus(index: Int) { remove(index) }
-public operator fun ArrayNode.minusAssign(index: Int) { remove(index) }
+public operator fun ArrayNode.plus(element: Boolean) {
+    add(element)
+}
+public operator fun ArrayNode.plus(element: Short) {
+    add(element)
+}
+public operator fun ArrayNode.plus(element: Int) {
+    add(element)
+}
+public operator fun ArrayNode.plus(element: Long) {
+    add(element)
+}
+public operator fun ArrayNode.plus(element: Float) {
+    add(element)
+}
+public operator fun ArrayNode.plus(element: Double) {
+    add(element)
+}
+public operator fun ArrayNode.plus(element: BigDecimal) {
+    add(element)
+}
+public operator fun ArrayNode.plus(element: BigInteger) {
+    add(element)
+}
+public operator fun ArrayNode.plus(element: String) {
+    add(element)
+}
+public operator fun ArrayNode.plus(element: ByteArray) {
+    add(element)
+}
+public operator fun ArrayNode.plus(element: JsonNode) {
+    add(element)
+}
+public operator fun ArrayNode.plus(elements: ArrayNode) {
+    addAll(elements)
+}
+public operator fun ArrayNode.plusAssign(element: Boolean) {
+    add(element)
+}
+public operator fun ArrayNode.plusAssign(element: Short) {
+    add(element)
+}
+public operator fun ArrayNode.plusAssign(element: Int) {
+    add(element)
+}
+public operator fun ArrayNode.plusAssign(element: Long) {
+    add(element)
+}
+public operator fun ArrayNode.plusAssign(element: Float) {
+    add(element)
+}
+public operator fun ArrayNode.plusAssign(element: Double) {
+    add(element)
+}
+public operator fun ArrayNode.plusAssign(element: BigDecimal) {
+    add(element)
+}
+public operator fun ArrayNode.plusAssign(element: BigInteger) {
+    add(element)
+}
+public operator fun ArrayNode.plusAssign(element: String) {
+    add(element)
+}
+public operator fun ArrayNode.plusAssign(element: ByteArray) {
+    add(element)
+}
+public operator fun ArrayNode.plusAssign(element: JsonNode) {
+    add(element)
+}
+public operator fun ArrayNode.plusAssign(elements: ArrayNode) {
+    addAll(elements)
+}
+public operator fun ArrayNode.minus(index: Int) {
+    remove(index)
+}
+public operator fun ArrayNode.minusAssign(index: Int) {
+    remove(index)
+}
 
-public operator fun ObjectNode.minus(field: String) { remove(field) }
-public operator fun ObjectNode.minus(fields: Collection<String>) { remove(fields) }
-public operator fun ObjectNode.minusAssign(field: String) { remove(field) }
-public operator fun ObjectNode.minusAssign(fields: Collection<String>) { remove(fields) }
+public operator fun ObjectNode.minus(field: String) {
+    remove(field)
+}
+public operator fun ObjectNode.minus(fields: Collection<String>) {
+    remove(fields)
+}
+public operator fun ObjectNode.minusAssign(field: String) {
+    remove(field)
+}
+public operator fun ObjectNode.minusAssign(fields: Collection<String>) {
+    remove(fields)
+}
 
 public operator fun JsonNode.contains(field: String): Boolean = has(field)
 public operator fun JsonNode.contains(index: Int): Boolean = has(index)

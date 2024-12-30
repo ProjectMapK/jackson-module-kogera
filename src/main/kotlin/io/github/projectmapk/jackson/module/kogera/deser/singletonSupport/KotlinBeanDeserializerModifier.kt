@@ -11,7 +11,8 @@ import java.io.Serializable
 // [module-kotlin#225]: keep Kotlin singletons as singletons
 internal class KotlinBeanDeserializerModifier(
     private val cache: ReflectionCache
-) : BeanDeserializerModifier(), Serializable {
+) : BeanDeserializerModifier(),
+    Serializable {
     companion object {
         // Increment is required when properties that use LRUMap are changed.
         @Suppress("ConstPropertyName")

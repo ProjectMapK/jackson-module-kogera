@@ -2,5 +2,6 @@
 root = true
 
 [*.{kt,kts}]
+ktlint_code_style = intellij_idea
 ij_kotlin_allow_trailing_comma = false
 ij_kotlin_allow_trailing_comma_on_call_site = false

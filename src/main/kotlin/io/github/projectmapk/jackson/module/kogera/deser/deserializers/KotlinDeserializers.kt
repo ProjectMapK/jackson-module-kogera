@@ -26,9 +26,8 @@ import java.lang.reflect.Modifier
 internal object SequenceDeserializer : StdDeserializer<Sequence<*>>(Sequence::class.java) {
     private fun readResolve(): Any = SequenceDeserializer
 
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Sequence<*> {
-        return ctxt.readValue(p, List::class.java).asSequence()
-    }
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Sequence<*> =
+        ctxt.readValue(p, List::class.java).asSequence()
 }
 
 internal object RegexDeserializer : StdDeserializer<Regex>(Regex::class.java) {

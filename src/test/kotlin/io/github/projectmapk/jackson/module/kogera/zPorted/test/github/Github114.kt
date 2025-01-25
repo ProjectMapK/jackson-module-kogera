@@ -29,7 +29,7 @@ class TestGithub114 {
         println(foo)
 
         val fooWithStaticCreator = mapper.readValue<FooWithStaticCreator>("""{"baz": "bazValue"}""")
-        println(fooWithStaticCreator) // Expect FooWithStaticCreator(bar=default, baz=bazValue), result == MismatchedInputException: Missing required creator property 'bar' (index 0)
+        println(fooWithStaticCreator) // Expect FooWithStaticCreator(bar=default, baz=bazValue), result == InvalidNullException: Missing required creator property 'bar' (index 0)
         assertEquals(FooWithStaticCreator(FooWithStaticCreator.someValue, "bazValue"), fooWithStaticCreator)
     }
 

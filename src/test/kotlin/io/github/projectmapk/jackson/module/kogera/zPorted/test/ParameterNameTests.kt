@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import java.io.StringWriter
-import java.util.*
+import java.util.Date
 import kotlin.properties.Delegates
 
 class TestJacksonWithKotlin {

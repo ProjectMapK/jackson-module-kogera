@@ -1,7 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.exc.MismatchedInputException
+import com.fasterxml.jackson.databind.exc.InvalidNullException
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -20,7 +20,7 @@ class TestGithub168 {
 
     @Test
     fun testIfRequiredIsReallyRequiredWhenAbsent() {
-        assertThrows<MismatchedInputException> {
+        assertThrows<InvalidNullException> {
             jacksonObjectMapper().readValue<TestClass>("""{"baz":"whatever"}""")
         }
     }

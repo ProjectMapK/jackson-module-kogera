@@ -6,13 +6,21 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 private class InheritanceTest {
-    abstract class A { val a: Int get() = 0 }
+    abstract class A {
+        val a: Int get() = 0
+    }
 
-    interface I { val i: Int get() = -1 }
+    interface I {
+        val i: Int get() = -1
+    }
 
-    interface J : I { val j: Int get() = -2 }
+    interface J : I {
+        val j: Int get() = -2
+    }
 
-    private class X : A(), J
+    private class X :
+        A(),
+        J
 
     val cache = ReflectionCache(5, 5)
 

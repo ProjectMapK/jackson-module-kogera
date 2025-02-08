@@ -79,7 +79,7 @@ public class KotlinModule private constructor(
         _deserializers = KotlinDeserializers(cache, useJavaDurationConversion)
 
         _keySerializers = KotlinKeySerializers(cache)
-        _keyDeserializers = KotlinKeyDeserializers
+        _keyDeserializers = KotlinKeyDeserializers(cache)
 
         _abstractTypes = ClosedRangeResolver
 

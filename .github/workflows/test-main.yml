@@ -29,6 +29,11 @@ on:
       - "**.java"
       - .github/workflows/test-main.yml
   workflow_dispatch:
+
+permissions:
+  checks: write # for action-junit-report
+  pull-requests: write # for action-junit-report
+
 jobs:
   test-main:
     strategy:
@@ -72,3 +77,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: Test
         run: ./gradlew test
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v5
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'

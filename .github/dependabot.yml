@@ -6,13 +6,20 @@
 version: 2
 
 updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "19:00"
+      timezone: "Asia/Tokyo"
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
       interval: "weekly"
-      # Friday 19:00 JST
-      day: "saturday"
-      time: "04:00"
+      day: "friday"
+      time: "19:00"
+      timezone: "Asia/Tokyo"
     groups:
       dependencies:
         patterns:

@@ -31,14 +31,14 @@ on:
 
 permissions:
   contents: write # for Dependency submission
+  checks: write # for action-junit-report
+  pull-requests: write # for action-junit-report
 
 jobs:
   lint-and-test-dev:
     name: lint-and-test-dev
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    permissions: # for gradle-dependency-submission
-      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,4 +55,9 @@ jobs:
       - name: Lint
         run: ./gradlew lintKotlin
       - name: Test
-        run: ./gradlew lintKotlin test
+        run: ./gradlew test
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v5
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'

@@ -1,5 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -42,6 +43,20 @@ class Github464 {
         // val xyzzy: T get() = quux
     }
 
+    @JsonPropertyOrder(
+        "foo",
+        "bar",
+        "baz",
+        "qux",
+        "quux",
+        "corge",
+        "grault",
+        "garply",
+        "waldo",
+        "fred",
+        "plugh",
+        // "xyzzy"
+    )
     class Poko(
         val foo: ValueClass,
         val bar: ValueClass?,
@@ -150,20 +165,22 @@ class Github464 {
         }
     }
 
-    class SerializerPriorityTest {
-        @JvmInline
-        value class ValueBySerializer(val value: Int)
+    @JvmInline
+    value class ValueBySerializer(val value: Int)
 
-        object Serializer : StdSerializer<ValueBySerializer>(ValueBySerializer::class.java) {
-            override fun serialize(value: ValueBySerializer, gen: JsonGenerator, provider: SerializerProvider) {
-                gen.writeString(value.value.toString())
-            }
+    object Serializer : StdSerializer<ValueBySerializer>(ValueBySerializer::class.java) {
+        override fun serialize(value: ValueBySerializer, gen: JsonGenerator, provider: SerializerProvider) {
+            gen.writeString(value.value.toString())
         }
-        object KeySerializer : StdSerializer<ValueBySerializer>(ValueBySerializer::class.java) {
-            override fun serialize(value: ValueBySerializer, gen: JsonGenerator, provider: SerializerProvider) {
-                gen.writeFieldName(value.value.toString())
-            }
+    }
+    object KeySerializer : StdSerializer<ValueBySerializer>(ValueBySerializer::class.java) {
+        override fun serialize(value: ValueBySerializer, gen: JsonGenerator, provider: SerializerProvider) {
+            gen.writeFieldName(value.value.toString())
         }
+    }
+
+    @Nested
+    inner class SerializerPriorityTest {
 
         private val target = mapOf(ValueBySerializer(1) to ValueBySerializer(2))
         private val sm = SimpleModule()
@@ -172,8 +189,7 @@ class Github464 {
 
         @Test
         fun simpleTest() {
-            val om: ObjectMapper = jacksonMapperBuilder()
-                .addModule(sm).build()
+            val om: ObjectMapper = jacksonMapperBuilder().addModule(sm).build()
 
             assertEquals("""{"1":"2"}""", om.writeValueAsString(target))
         }

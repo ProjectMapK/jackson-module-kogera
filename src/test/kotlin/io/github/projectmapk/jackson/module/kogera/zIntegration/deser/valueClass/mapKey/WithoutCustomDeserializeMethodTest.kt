@@ -105,7 +105,9 @@ class WithoutCustomDeserializeMethodTest {
         val mapper = jacksonObjectMapper()
             .registerModule(
                 object : SimpleModule() {
-                    init { addKeyDeserializer(Wrapped::class.java, Wrapped.KeyDeserializer()) }
+                    init {
+                        addKeyDeserializer(Wrapped::class.java, Wrapped.KeyDeserializer())
+                    }
                 }
             )
 

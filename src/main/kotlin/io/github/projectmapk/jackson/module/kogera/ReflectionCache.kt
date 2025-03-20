@@ -10,7 +10,6 @@ import java.util.Optional
 internal class ReflectionCache(initialCacheSize: Int, maxCacheSize: Int) : Serializable {
     companion object {
         // Increment is required when properties that use LRUMap are changed.
-        @Suppress("ConstPropertyName")
         private const val serialVersionUID = 4L
     }
 

@@ -22,8 +22,8 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
 
-private fun JsonMappingException.wrapWithPath(refFrom: Any?, refFieldName: String) =
-    JsonMappingException.wrapWithPath(this, refFrom, refFieldName)
+private fun JsonMappingException.wrapWithPath(refFrom: Any?, refFieldName: String) = JsonMappingException
+    .wrapWithPath(this, refFrom, refFieldName)
 
 internal class KotlinValueInstantiator(
     src: StdValueInstantiator,
@@ -32,13 +32,12 @@ internal class KotlinValueInstantiator(
     private val nullToEmptyMap: Boolean,
     private val nullIsSameAsDefault: Boolean
 ) : StdValueInstantiator(src) {
-    private fun JavaType.requireEmptyValue() =
-        (nullToEmptyCollection && this.isCollectionLikeType) || (nullToEmptyMap && this.isMapLikeType)
+    private fun JavaType.requireEmptyValue() = (nullToEmptyCollection && this.isCollectionLikeType) ||
+        (nullToEmptyMap && this.isMapLikeType)
 
     private fun SettableBeanProperty.hasInjectableValueId(): Boolean = injectableValueId != null
 
-    private fun SettableBeanProperty.skipNulls(): Boolean =
-        nullIsSameAsDefault || (metadata.valueNulls == Nulls.SKIP)
+    private fun SettableBeanProperty.skipNulls(): Boolean = nullIsSameAsDefault || (metadata.valueNulls == Nulls.SKIP)
 
     // If the argument is a value class that wraps nullable and non-null,
     // and the input is explicit null, the value class is instantiated with null as input.

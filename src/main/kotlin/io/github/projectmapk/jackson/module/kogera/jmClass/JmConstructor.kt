@@ -19,8 +19,9 @@ internal data class JmConstructor(
     )
 
     // Only constructors that take a value class as an argument have a DefaultConstructorMarker on the Signature.
-    private fun StringBuilder.valueDesc(len: Int) =
-        replace(len - 1, len, "Lkotlin/jvm/internal/DefaultConstructorMarker;)V").toString()
+    private fun StringBuilder.valueDesc(
+        len: Int
+    ) = replace(len - 1, len, "Lkotlin/jvm/internal/DefaultConstructorMarker;)V").toString()
 
     fun isMetadataFor(constructor: Constructor<*>): Boolean {
         val targetDesc = signature?.descriptor

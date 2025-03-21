@@ -26,8 +26,9 @@ import java.lang.reflect.Modifier
 internal object SequenceDeserializer : StdDeserializer<Sequence<*>>(Sequence::class.java) {
     private fun readResolve(): Any = SequenceDeserializer
 
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Sequence<*> =
-        ctxt.readValue(p, List::class.java).asSequence()
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Sequence<*> = ctxt
+        .readValue(p, List::class.java)
+        .asSequence()
 }
 
 internal object RegexDeserializer : StdDeserializer<Regex>(Regex::class.java) {
@@ -63,29 +64,29 @@ internal object RegexDeserializer : StdDeserializer<Regex>(Regex::class.java) {
 internal object UByteDeserializer : StdDeserializer<UByte>(UByte::class.java) {
     private fun readResolve(): Any = UByteDeserializer
 
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext) =
-        UByteChecker.readWithRangeCheck(p, p.intValue)
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext) = UByteChecker
+        .readWithRangeCheck(p, p.intValue)
 }
 
 internal object UShortDeserializer : StdDeserializer<UShort>(UShort::class.java) {
     private fun readResolve(): Any = UShortDeserializer
 
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext) =
-        UShortChecker.readWithRangeCheck(p, p.intValue)
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext) = UShortChecker
+        .readWithRangeCheck(p, p.intValue)
 }
 
 internal object UIntDeserializer : StdDeserializer<UInt>(UInt::class.java) {
     private fun readResolve(): Any = UIntDeserializer
 
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext) =
-        UIntChecker.readWithRangeCheck(p, p.longValue)
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext) = UIntChecker
+        .readWithRangeCheck(p, p.longValue)
 }
 
 internal object ULongDeserializer : StdDeserializer<ULong>(ULong::class.java) {
     private fun readResolve(): Any = ULongDeserializer
 
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext) =
-        ULongChecker.readWithRangeCheck(p, p.bigIntegerValue)
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext) = ULongChecker
+        .readWithRangeCheck(p, p.bigIntegerValue)
 }
 
 internal class WrapsNullableValueClassBoxDeserializer<S, D : Any>(
@@ -116,10 +117,9 @@ internal class WrapsNullableValueClassBoxDeserializer<S, D : Any>(
     }
 }
 
-private fun invalidCreatorMessage(m: Method): String =
-    "The argument size of a Creator that does not return a value class on the JVM must be 1, " +
-        "please fix it or use JsonDeserializer.\n" +
-        "Detected: ${m.parameters.joinToString(prefix = "${m.name}(", separator = ", ", postfix = ")") { it.name }}"
+private fun invalidCreatorMessage(m: Method): String = "The argument size of a Creator that does not return a " +
+    "value class on the JVM must be 1, please fix it or use JsonDeserializer.\n" +
+    "Detected: ${m.parameters.joinToString(prefix = "${m.name}(", separator = ", ", postfix = ")") { it.name }}"
 
 private fun findValueCreator(type: JavaType, clazz: Class<*>, jmClass: JmClass): Method? {
     val primaryKmConstructorSignature =

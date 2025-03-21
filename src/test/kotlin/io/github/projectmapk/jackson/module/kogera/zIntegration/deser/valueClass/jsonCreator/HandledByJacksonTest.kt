@@ -14,8 +14,9 @@ class HandledByJacksonTest {
             // Avoiding unboxing by making the return value of Creator nullable
             @JvmStatic
             @JsonCreator
-            fun creator(first: Int, second: Int): PrimitiveMultiParamCreator? =
-                PrimitiveMultiParamCreator(first + second)
+            fun creator(first: Int, second: Int): PrimitiveMultiParamCreator? = PrimitiveMultiParamCreator(
+                first + second
+            )
         }
     }
 
@@ -32,8 +33,9 @@ class HandledByJacksonTest {
             // Avoiding unboxing by making the return value of Creator nullable
             @JvmStatic
             @JsonCreator
-            fun creator(first: Int, second: Int): NullableObjectMiltiParamCreator? =
-                NullableObjectMiltiParamCreator(first + second)
+            fun creator(first: Int, second: Int): NullableObjectMiltiParamCreator? = NullableObjectMiltiParamCreator(
+                first + second
+            )
         }
     }
 

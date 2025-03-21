@@ -11,11 +11,12 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class HasRequiredMarkerTest {
-    private inline fun <reified T> ObjectMapper.introspectSer(): BeanDescription =
-        serializationConfig.introspect(serializationConfig.constructType(T::class.java))
+    private inline fun <reified T> ObjectMapper.introspectSer(): BeanDescription = serializationConfig
+        .introspect(serializationConfig.constructType(T::class.java))
 
-    private fun BeanDescription.isRequired(propertyName: String): Boolean =
-        this.findProperties().find { it.name == propertyName }?.isRequired ?: false
+    private fun BeanDescription.isRequired(propertyName: String): Boolean = findProperties()
+        .find { it.name == propertyName }
+        ?.isRequired == true
 
     val mapper = jacksonObjectMapper()
 

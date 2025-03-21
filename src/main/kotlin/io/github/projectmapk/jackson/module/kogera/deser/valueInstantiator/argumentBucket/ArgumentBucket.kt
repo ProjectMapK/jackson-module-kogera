@@ -18,8 +18,7 @@ private fun defaultPrimitiveValue(type: Class<*>): Any = when (type) {
     else -> throw UnsupportedOperationException("Unknown primitive: $type")
 }
 
-private fun defaultEmptyArray(arrayType: Class<*>): Any =
-    ReflectArray.newInstance(arrayType.componentType, 0)
+private fun defaultEmptyArray(arrayType: Class<*>): Any = ReflectArray.newInstance(arrayType.componentType, 0)
 
 // List of Int with only 1 bit enabled.
 private val BIT_FLAGS: List<Int> = IntArray(Int.SIZE_BITS) { (1 shl it).inv() }.asList()
@@ -87,8 +86,12 @@ internal class BucketGenerator(
         }
     }
 
-    fun generate(): ArgumentBucket =
-        ArgumentBucket(valueParameterSize, originalAbsentArgs.clone(), originalMasks.clone(), converters)
+    fun generate(): ArgumentBucket = ArgumentBucket(
+        valueParameterSize,
+        originalAbsentArgs.clone(),
+        originalMasks.clone(),
+        converters
+    )
 }
 
 internal class ArgumentBucket(

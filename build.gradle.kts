@@ -57,14 +57,6 @@ java {
 }
 
 tasks {
-    // For ported tests, they are excluded from the formatting because they are not new code.
-    lintKotlinTest {
-        exclude { it.path.contains("zPorted") }
-    }
-    formatKotlinTest {
-        exclude { it.path.contains("zPorted") }
-    }
-
     // Task to generate version file
     val generateKogeraVersion by registering(Copy::class) {
         val packageStr = "$groupStr.jackson.module.kogera"
@@ -91,6 +83,14 @@ public val kogeraVersion: Version = VersionUtil.parseVersion("$version", "$group
     // Added to avoid failure in generating dependency graphs in CI.
     lintKotlinMain {
         dependsOn.add(generateKogeraVersion)
+    }
+
+    // For ported tests, they are excluded from the formatting because they are not new code.
+    lintKotlinTest {
+        exclude { it.path.contains("zPorted") }
+    }
+    formatKotlinTest {
+        exclude { it.path.contains("zPorted") }
     }
 
     compileKotlin {

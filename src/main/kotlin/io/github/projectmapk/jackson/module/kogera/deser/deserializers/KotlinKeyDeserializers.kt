@@ -24,29 +24,29 @@ import java.math.BigInteger
 internal object UByteKeyDeserializer : StdKeyDeserializer(TYPE_SHORT, UByte::class.java) {
     private fun readResolve(): Any = UByteKeyDeserializer
 
-    override fun deserializeKey(key: String?, ctxt: DeserializationContext): UByte? =
-        key?.let { UByteChecker.readWithRangeCheck(null, _parseInt(it)) }
+    override fun deserializeKey(key: String?, ctxt: DeserializationContext): UByte? = key
+        ?.let { UByteChecker.readWithRangeCheck(null, _parseInt(it)) }
 }
 
 internal object UShortKeyDeserializer : StdKeyDeserializer(TYPE_INT, UShort::class.java) {
     private fun readResolve(): Any = UShortKeyDeserializer
 
-    override fun deserializeKey(key: String?, ctxt: DeserializationContext): UShort? =
-        key?.let { UShortChecker.readWithRangeCheck(null, _parseInt(it)) }
+    override fun deserializeKey(key: String?, ctxt: DeserializationContext): UShort? = key
+        ?.let { UShortChecker.readWithRangeCheck(null, _parseInt(it)) }
 }
 
 internal object UIntKeyDeserializer : StdKeyDeserializer(TYPE_LONG, UInt::class.java) {
     private fun readResolve(): Any = UIntKeyDeserializer
 
-    override fun deserializeKey(key: String?, ctxt: DeserializationContext): UInt? =
-        key?.let { UIntChecker.readWithRangeCheck(null, _parseLong(it)) }
+    override fun deserializeKey(key: String?, ctxt: DeserializationContext): UInt? = key
+        ?.let { UIntChecker.readWithRangeCheck(null, _parseLong(it)) }
 }
 
 internal object ULongKeyDeserializer : StdKeyDeserializer(-1, ULong::class.java) {
     private fun readResolve(): Any = ULongKeyDeserializer
 
-    override fun deserializeKey(key: String?, ctxt: DeserializationContext): ULong? =
-        key?.let { ULongChecker.readWithRangeCheck(null, BigInteger(it)) }
+    override fun deserializeKey(key: String?, ctxt: DeserializationContext): ULong? = key
+        ?.let { ULongChecker.readWithRangeCheck(null, BigInteger(it)) }
 }
 
 // The implementation is designed to be compatible with various creators, just in case.
@@ -62,8 +62,8 @@ internal class ValueClassKeyDeserializer<S, D : Any>(
 
     // Based on databind error
     // https://github.com/FasterXML/jackson-databind/blob/341f8d360a5f10b5e609d6ee0ea023bf597ce98a/src/main/java/com/fasterxml/jackson/databind/deser/DeserializerCache.java#L624
-    private fun errorMessage(boxedType: JavaType): String =
-        "Could not find (Map) Key deserializer for types wrapped in $boxedType"
+    private fun errorMessage(boxedType: JavaType): String = "Could not find (Map) Key deserializer for types " +
+        "wrapped in $boxedType"
 
     override fun deserializeKey(key: String?, ctxt: DeserializationContext): Any {
         val unboxedJavaType = ctxt.constructType(unboxedClass)

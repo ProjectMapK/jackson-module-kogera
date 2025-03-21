@@ -105,8 +105,9 @@ private class JmClassImpl(
         companionPropName?.let { JmClass.CompanionObject(clazz, it) }
     }
 
-    override fun findJmConstructor(constructor: Constructor<*>): JmConstructor? =
-        constructors.find { it.isMetadataFor(constructor) }
+    override fun findJmConstructor(constructor: Constructor<*>): JmConstructor? = constructors.find {
+        it.isMetadataFor(constructor)
+    }
 
     // Field name always matches property name
     override fun findPropertyByField(field: Field): JmProperty? = allPropsMap[field.name]

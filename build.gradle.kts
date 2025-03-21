@@ -32,12 +32,13 @@ dependencies {
     api(libs.jackson.annotations)
 
     // test libs
-    testImplementation("${libs.kotlin.reflect.get()}:${kotlinVersion}")
-    testImplementation(libs.junit.api)
-    testImplementation(libs.junit.params)
-    testRuntimeOnly(libs.junit.engine)
+    testImplementation(platform(libs.junit.bom))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
     testImplementation(libs.mockk)
 
+    testImplementation("${libs.kotlin.reflect.get()}:${kotlinVersion}")
     testImplementation(libs.jackson.xml)
     testImplementation(libs.jackson.jsr310)
 }

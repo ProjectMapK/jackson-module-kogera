@@ -22,8 +22,8 @@ internal class ReflectionCache(initialCacheSize: Int, maxCacheSize: Int) : Seria
 
         // The comparison was implemented directly because the decompiled results showed subtle efficiency.
 
-        final override fun equals(other: Any?): Boolean =
-            (other as? OtherCacheKey<*, *>)?.let { it::class == this::class && it.key == key } ?: false
+        final override fun equals(other: Any?): Boolean = (other as? OtherCacheKey<*, *>)
+            ?.let { it::class == this::class && it.key == key } == true
 
         // If the hashCode matches the raw key, the search efficiency is reduced, so it is displaced.
         final override fun hashCode(): Int = key.hashCode() * 31

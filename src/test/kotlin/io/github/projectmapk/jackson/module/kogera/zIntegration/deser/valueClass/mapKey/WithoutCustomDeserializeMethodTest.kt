@@ -86,8 +86,9 @@ class WithoutCustomDeserializeMethodTest {
 
     data class Wrapped(val first: String, val second: String) {
         class KeyDeserializer : JacksonKeyDeserializer() {
-            override fun deserializeKey(key: String, ctxt: DeserializationContext) =
-                key.split("-").let { Wrapped(it[0], it[1]) }
+            override fun deserializeKey(key: String, ctxt: DeserializationContext) = key
+                .split("-")
+                .let { Wrapped(it[0], it[1]) }
         }
     }
 

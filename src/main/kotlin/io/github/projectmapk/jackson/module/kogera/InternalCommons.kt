@@ -54,11 +54,15 @@ internal fun Array<Class<*>>.toDescBuilder(): StringBuilder = this
     .fold(StringBuilder("(")) { acc, cur -> acc.appendDescriptor(cur) }
     .append(')')
 
-internal fun Constructor<*>.toSignature(): JvmMethodSignature =
-    JvmMethodSignature("<init>", parameterTypes.toDescBuilder().append('V').toString())
+internal fun Constructor<*>.toSignature(): JvmMethodSignature = JvmMethodSignature(
+    "<init>",
+    parameterTypes.toDescBuilder().append('V').toString()
+)
 
-internal fun Method.toSignature(): JvmMethodSignature =
-    JvmMethodSignature(this.name, parameterTypes.toDescBuilder().appendDescriptor(this.returnType).toString())
+internal fun Method.toSignature(): JvmMethodSignature = JvmMethodSignature(
+    this.name,
+    parameterTypes.toDescBuilder().appendDescriptor(this.returnType).toString()
+)
 
 internal val defaultConstructorMarker: Class<*> by lazy {
     Class.forName("kotlin.jvm.internal.DefaultConstructorMarker")
@@ -84,8 +88,7 @@ internal fun String.reconstructClass(): Class<*> {
 }
 
 internal fun KmType.reconstructClassOrNull(): Class<*>? = (classifier as? KmClassifier.Class)?.reconstructClassOrNull()
-internal fun KmClassifier.Class.reconstructClassOrNull(): Class<*>? =
-    runCatching { name.reconstructClass() }.getOrNull()
+internal fun KmClassifier.Class.reconstructClassOrNull(): Class<*>? = runCatching { name.reconstructClass() }.getOrNull()
 
 internal fun AnnotatedElement.hasCreatorAnnotation(): Boolean = getAnnotation(JSON_CREATOR_CLASS)
     ?.let { it.mode != JsonCreator.Mode.DISABLED }

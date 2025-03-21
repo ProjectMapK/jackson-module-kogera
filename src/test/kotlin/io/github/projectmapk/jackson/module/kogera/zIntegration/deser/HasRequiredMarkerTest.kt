@@ -13,11 +13,12 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class HasRequiredMarkerTest {
-    private inline fun <reified T> ObjectMapper.introspectDeser(): BeanDescription =
-        deserializationConfig.introspect(deserializationConfig.constructType(T::class.java))
+    private inline fun <reified T> ObjectMapper.introspectDeser(): BeanDescription = deserializationConfig
+        .introspect(deserializationConfig.constructType(T::class.java))
 
-    private fun BeanDescription.isRequired(propertyName: String): Boolean =
-        this.findProperties().find { it.name == propertyName }?.isRequired ?: false
+    private fun BeanDescription.isRequired(propertyName: String): Boolean = this.findProperties()
+        .find { it.name == propertyName }
+        ?.isRequired == true
 
     val defaultMapper = jacksonObjectMapper()
     val nullToDefaultMapper = ObjectMapper().registerModule(

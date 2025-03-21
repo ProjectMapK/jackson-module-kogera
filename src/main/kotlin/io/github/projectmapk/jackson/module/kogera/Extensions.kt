@@ -35,23 +35,27 @@ public fun jsonMapper(initializer: JsonMapper.Builder.() -> Unit = {}): JsonMapp
 
 // region: JvmOverloads is set for bytecode compatibility for versions below 2.17.
 @JvmOverloads
-public fun jacksonObjectMapper(initializer: KotlinModule.Builder.() -> Unit = {}): ObjectMapper =
-    jsonMapper { addModule(kotlinModule(initializer)) }
+public fun jacksonObjectMapper(initializer: KotlinModule.Builder.() -> Unit = {}): ObjectMapper = jsonMapper {
+    addModule(kotlinModule(initializer))
+}
 
 @JvmOverloads
-public fun jacksonMapperBuilder(initializer: KotlinModule.Builder.() -> Unit = {}): JsonMapper.Builder =
-    JsonMapper.builder().addModule(kotlinModule(initializer))
+public fun jacksonMapperBuilder(initializer: KotlinModule.Builder.() -> Unit = {}): JsonMapper.Builder = JsonMapper
+    .builder()
+    .addModule(kotlinModule(initializer))
 
 @JvmOverloads
-public fun ObjectMapper.registerKotlinModule(initializer: KotlinModule.Builder.() -> Unit = {}): ObjectMapper =
-    this.registerModule(kotlinModule(initializer))
+public fun ObjectMapper.registerKotlinModule(
+    initializer: KotlinModule.Builder.() -> Unit = {}
+): ObjectMapper = this.registerModule(kotlinModule(initializer))
 // endregion
 
 public inline fun <reified T> jacksonTypeRef(): TypeReference<T> = object : TypeReference<T>() {}
 
 public inline fun <reified T> ObjectMapper.readValue(jp: JsonParser): T = readValue(jp, jacksonTypeRef<T>())
-public inline fun <reified T> ObjectMapper.readValues(jp: JsonParser): MappingIterator<T> =
-    readValues(jp, jacksonTypeRef<T>())
+public inline fun <reified T> ObjectMapper.readValues(
+    jp: JsonParser
+): MappingIterator<T> = readValues(jp, jacksonTypeRef<T>())
 
 public inline fun <reified T> ObjectMapper.readValue(src: File): T = readValue(src, jacksonTypeRef<T>())
 public inline fun <reified T> ObjectMapper.readValue(src: URL): T = readValue(src, jacksonTypeRef<T>())
@@ -60,20 +64,22 @@ public inline fun <reified T> ObjectMapper.readValue(src: Reader): T = readValue
 public inline fun <reified T> ObjectMapper.readValue(src: InputStream): T = readValue(src, jacksonTypeRef<T>())
 public inline fun <reified T> ObjectMapper.readValue(src: ByteArray): T = readValue(src, jacksonTypeRef<T>())
 
-public inline fun <reified T> ObjectMapper.treeToValue(n: TreeNode): T =
-    readValue(this.treeAsTokens(n), jacksonTypeRef<T>())
+public inline fun <reified T> ObjectMapper.treeToValue(n: TreeNode): T = readValue(treeAsTokens(n), jacksonTypeRef<T>())
 public inline fun <reified T> ObjectMapper.convertValue(from: Any?): T = convertValue(from, jacksonTypeRef<T>())
 
 public inline fun <reified T> ObjectReader.readValueTyped(jp: JsonParser): T = readValue(jp, jacksonTypeRef<T>())
-public inline fun <reified T> ObjectReader.readValuesTyped(jp: JsonParser): Iterator<T> =
-    readValues(jp, jacksonTypeRef<T>())
-public inline fun <reified T> ObjectReader.treeToValue(n: TreeNode): T? =
-    readValue(this.treeAsTokens(n), jacksonTypeRef<T>())
+public inline fun <reified T> ObjectReader.readValuesTyped(
+    jp: JsonParser
+): Iterator<T> = readValues(jp, jacksonTypeRef<T>())
+public inline fun <reified T> ObjectReader.treeToValue(
+    n: TreeNode
+): T? = readValue(treeAsTokens(n), jacksonTypeRef<T>())
 
-public inline fun <reified T, reified U> ObjectMapper.addMixIn(): ObjectMapper =
-    this.addMixIn(T::class.java, U::class.java)
-public inline fun <reified T, reified U> JsonMapper.Builder.addMixIn(): JsonMapper.Builder =
-    this.addMixIn(T::class.java, U::class.java)
+public inline fun <reified T, reified U> ObjectMapper.addMixIn(): ObjectMapper = addMixIn(T::class.java, U::class.java)
+public inline fun <reified T, reified U> JsonMapper.Builder.addMixIn(): JsonMapper.Builder = addMixIn(
+    T::class.java,
+    U::class.java
+)
 
 public operator fun ArrayNode.plus(element: Boolean) {
     add(element)

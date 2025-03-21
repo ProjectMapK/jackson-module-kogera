@@ -20,11 +20,12 @@ internal fun Class<*>.isKotlinClass() = declaredAnnotations.any { it is Metadata
 
 internal val defaultMapper = jacksonObjectMapper()
 
-internal inline fun <reified T : Any> callPrimaryConstructor(mapper: (KParameter) -> Any? = { it.name }): T =
-    T::class.primaryConstructor!!.run {
-        val args = parameters.associateWith { mapper(it) }
-        callBy(args)
-    }
+internal inline fun <reified T : Any> callPrimaryConstructor(
+    mapper: (KParameter) -> Any? = { it.name }
+): T = T::class.primaryConstructor!!.run {
+    val args = parameters.associateWith { mapper(it) }
+    callBy(args)
+}
 
 // Function for comparing non-data classes.
 internal inline fun <reified T : Any> assertReflectEquals(expected: T, actual: T) {

@@ -38,21 +38,22 @@ internal class KotlinFallbackAnnotationIntrospector(
     private val useJavaDurationConversion: Boolean,
     private val cache: ReflectionCache
 ) : NopAnnotationIntrospector() {
-    private fun findKotlinParameter(param: AnnotatedParameter): JmValueParameter? =
-        when (val owner = param.owner.member) {
-            is Constructor<*> -> cache.getJmClass(param.declaringClass)?.findJmConstructor(owner)?.valueParameters
-            is Method -> if (Modifier.isStatic(owner.modifiers)) {
-                cache.getJmClass(param.declaringClass)
-                    ?.companion
-                    ?.let { it.findFunctionByMethod(owner)?.valueParameters }
-            } else {
-                null
-            }
-            else -> null
-        }?.let { it[param.index] }
+    private fun findKotlinParameter(
+        param: AnnotatedParameter
+    ): JmValueParameter? = when (val owner = param.owner.member) {
+        is Constructor<*> -> cache.getJmClass(param.declaringClass)?.findJmConstructor(owner)?.valueParameters
+        is Method -> if (Modifier.isStatic(owner.modifiers)) {
+            cache.getJmClass(param.declaringClass)
+                ?.companion
+                ?.let { it.findFunctionByMethod(owner)?.valueParameters }
+        } else {
+            null
+        }
+        else -> null
+    }?.let { it[param.index] }
 
-    private fun findKotlinParameter(param: Annotated): JmValueParameter? =
-        (param as? AnnotatedParameter)?.let { findKotlinParameter(it) }
+    private fun findKotlinParameter(param: Annotated): JmValueParameter? = (param as? AnnotatedParameter)
+        ?.let { findKotlinParameter(it) }
 
     // since 2.4
     override fun findImplicitPropertyName(member: AnnotatedMember): String? = when (member) {
@@ -65,13 +66,16 @@ internal class KotlinFallbackAnnotationIntrospector(
         else -> null
     }
 
-    override fun refineDeserializationType(config: MapperConfig<*>, a: Annotated, baseType: JavaType): JavaType =
-        findKotlinParameter(a)?.let { param ->
-            val rawType = a.rawType
-            param.reconstructedClassOrNull
-                ?.takeIf { it.isUnboxableValueClass() && it != rawType }
-                ?.let { config.constructType(it) }
-        } ?: baseType
+    override fun refineDeserializationType(
+        config: MapperConfig<*>,
+        a: Annotated,
+        baseType: JavaType
+    ): JavaType = findKotlinParameter(a)?.let { param ->
+        val rawType = a.rawType
+        param.reconstructedClassOrNull
+            ?.takeIf { it.isUnboxableValueClass() && it != rawType }
+            ?.let { config.constructType(it) }
+    } ?: baseType
 
     override fun findSerializationConverter(a: Annotated): Converter<*, *>? = when (a) {
         // Find a converter to handle the case where the getter returns an unboxed value from the value class.
@@ -163,9 +167,10 @@ private fun JmValueParameter.isNullishTypeAt(index: Int): Boolean = arguments.ge
     it === KmTypeProjection.STAR || it.type!!.isNullable
 } != false // If a type argument cannot be taken, treat it as nullable to avoid unexpected failure.
 
-private fun JmValueParameter.requireStrictNullCheck(type: JavaType): Boolean =
-    ((type.isArrayType || type.isCollectionLikeType) && !this.isNullishTypeAt(0)) ||
-        (type.isMapLikeType && !this.isNullishTypeAt(1))
+private fun JmValueParameter.requireStrictNullCheck(
+    type: JavaType
+): Boolean = ((type.isArrayType || type.isCollectionLikeType) && !this.isNullishTypeAt(0)) ||
+    (type.isMapLikeType && !this.isNullishTypeAt(1))
 
 private fun JmClass.primarilyConstructor() = constructors.find { !it.isSecondary } ?: constructors.singleOrNull()
 

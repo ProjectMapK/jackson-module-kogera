@@ -166,16 +166,13 @@ public class KotlinModule private constructor(
             bitSet.andNot(feature.bitSet)
         }
 
-        public fun configure(feature: KotlinFeature, enabled: Boolean): Builder =
-            when {
-                enabled -> enable(feature)
-                else -> disable(feature)
-            }
+        public fun configure(feature: KotlinFeature, enabled: Boolean): Builder = when {
+            enabled -> enable(feature)
+            else -> disable(feature)
+        }
 
-        public fun isEnabled(feature: KotlinFeature): Boolean =
-            bitSet.intersects(feature.bitSet)
+        public fun isEnabled(feature: KotlinFeature): Boolean = bitSet.intersects(feature.bitSet)
 
-        public fun build(): KotlinModule =
-            KotlinModule(this)
+        public fun build(): KotlinModule = KotlinModule(this)
     }
 }

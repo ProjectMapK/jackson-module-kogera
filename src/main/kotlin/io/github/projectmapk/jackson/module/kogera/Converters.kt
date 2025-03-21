@@ -33,8 +33,9 @@ internal class ValueClassUnboxConverter<T : Any>(val valueClass: Class<T>) : Std
     override fun convert(value: T): Any? = unboxMethod.invoke(value)
 
     override fun getInputType(typeFactory: TypeFactory): JavaType = typeFactory.constructType(valueClass)
-    override fun getOutputType(typeFactory: TypeFactory): JavaType =
-        typeFactory.constructType(unboxMethod.genericReturnType)
+    override fun getOutputType(
+        typeFactory: TypeFactory
+    ): JavaType = typeFactory.constructType(unboxMethod.genericReturnType)
 
     val delegatingSerializer: StdDelegatingSerializer by lazy { StdDelegatingSerializer(this) }
 }

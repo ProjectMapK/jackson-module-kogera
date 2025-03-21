@@ -50,7 +50,7 @@ kotlin {
         kotlin.srcDir(generatedSrcPath)
     }
 
-    val useK2 = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() }
+    val useK2 = System.getenv("USE_K2")?.takeIf { it.isNotEmpty() }
         ?.let { it.toBoolean() } ?: false
 
     sourceSets.all {

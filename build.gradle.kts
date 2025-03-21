@@ -49,17 +49,6 @@ kotlin {
     sourceSets["main"].apply {
         kotlin.srcDir(generatedSrcPath)
     }
-
-    val useK2 = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() }
-        ?.let { it.toBoolean() } ?: false
-
-    sourceSets.all {
-        languageSettings {
-            if (useK2) {
-                languageVersion = "2.0"
-            }
-        }
-    }
 }
 
 java {

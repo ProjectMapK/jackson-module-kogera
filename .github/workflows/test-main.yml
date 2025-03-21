@@ -42,27 +42,10 @@ jobs:
         # LTS versions, latest version (if exists)
         java-version: [ '8', '11', '17', '21', '23' ]
         # Minimum version, latest release version, latest pre-release version (if exists)
-        kotlin:
-          - name: '1.9.25'
-            version: '1.9.25'
-            k2: false
-          - name: '1.9.25 K2'
-            version: '1.9.25'
-            k2: true
-          - name: '2.0.21'
-            version: '2.0.21'
-            k2: false
-          - name: '2.0.21 K2'
-            version: '2.0.21'
-            k2: true
-          - name: '2.1.0-RC2'
-            k2: false
-          - name: '2.1.0-RC2 K2'
-            k2: true
+        kotlin: ['1.9.25', '2.0.21']
     env:
-      KOTLIN_VERSION: ${{ matrix.kotlin.version }}
-      USE_K2: ${{ matrix.kotlin.k2 }}
-    name: "Kotlin ${{ matrix.kotlin.name }} - Java ${{ matrix.java-version }}"
+      KOTLIN_VERSION: ${{ matrix.kotlin }}
+    name: "Kotlin ${{ matrix.kotlin }} - Java ${{ matrix.java-version }}"
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

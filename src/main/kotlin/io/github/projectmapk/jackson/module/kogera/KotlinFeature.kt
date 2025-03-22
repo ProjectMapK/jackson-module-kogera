@@ -37,11 +37,10 @@ public enum class KotlinFeature(internal val enabledByDefault: Boolean) {
     NullIsSameAsDefault(enabledByDefault = false),
 
     /**
-     * By default, there's no special handling of singletons (pre-2.10 behavior).
-     * Each time a Singleton object is deserialized a new instance is created.
-     *
      * When this feature is enabled, it will deserialize then canonicalize (was the default in 2.10).
      * Deserializing a singleton overwrites the value of the single instance.
+     *
+     * Prior to 2.18.3-beta18, the default was invalid and a new instance was created each time a singleton object was deserialized.
      *
      * See [jackson-module-kotlin#225]: keep Kotlin singletons as singletons.
      */
@@ -55,6 +54,8 @@ public enum class KotlinFeature(internal val enabledByDefault: Boolean) {
      * Enabling it protects against this, but it impairs performance a bit.
      *
      * Also, if contentNulls are custom from findSetterInfo in AnnotationIntrospector, there may be a conflict.
+     *
+     * Since 2.18.3-beta19, this option is enabled by default.
      */
     StrictNullChecks(enabledByDefault = true),
 

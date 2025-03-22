@@ -45,7 +45,7 @@ public enum class KotlinFeature(internal val enabledByDefault: Boolean) {
      *
      * See [jackson-module-kotlin#225]: keep Kotlin singletons as singletons.
      */
-    SingletonSupport(enabledByDefault = false),
+    SingletonSupport(enabledByDefault = true),
 
     /**
      * This feature represents whether to check deserialized collections.
@@ -56,7 +56,7 @@ public enum class KotlinFeature(internal val enabledByDefault: Boolean) {
      *
      * Also, if contentNulls are custom from findSetterInfo in AnnotationIntrospector, there may be a conflict.
      */
-    StrictNullChecks(enabledByDefault = false),
+    StrictNullChecks(enabledByDefault = true),
 
     /**
      * This feature represents whether to include in Jackson's parsing the annotations given to the parameters of

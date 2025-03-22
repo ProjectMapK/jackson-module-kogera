@@ -44,8 +44,8 @@ internal class KotlinPrimaryAnnotationIntrospector(
 
     // Functions that call this may return incorrect results for value classes whose value type is Collection or Map,
     // but this is a rare case and difficult to handle, so it is not supported.
-    private fun JavaType.hasDefaultEmptyValue() =
-        (nullToEmptyCollection && isCollectionLikeType) || (nullToEmptyMap && isMapLikeType)
+    private fun JavaType.hasDefaultEmptyValue() = (nullToEmptyCollection && isCollectionLikeType) ||
+        (nullToEmptyMap && isMapLikeType)
 
     // The nullToEmpty option also affects serialization,
     // but deserialization is preferred because there is currently no way to distinguish between contexts.
@@ -63,19 +63,20 @@ internal class KotlinPrimaryAnnotationIntrospector(
 
     private fun JmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable
 
-    private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(jmClass: JmClass): Boolean? =
-        when (parameterCount) {
-            0 -> jmClass.findPropertyByGetter(member)?.isRequiredByNullability()
-            1 -> {
-                if (this.getParameter(0).type.hasDefaultEmptyValue()) {
-                    false
-                } else {
-                    val memberSignature = member.toSignature()
-                    jmClass.properties.find { it.setterSignature == memberSignature }?.isRequiredByNullability()
-                }
+    private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(
+        jmClass: JmClass
+    ): Boolean? = when (parameterCount) {
+        0 -> jmClass.findPropertyByGetter(member)?.isRequiredByNullability()
+        1 -> {
+            if (this.getParameter(0).type.hasDefaultEmptyValue()) {
+                false
+            } else {
+                val memberSignature = member.toSignature()
+                jmClass.properties.find { it.setterSignature == memberSignature }?.isRequiredByNullability()
             }
-            else -> null
         }
+        else -> null
+    }
 
     private fun AnnotatedParameter.hasRequiredMarker(jmClass: JmClass): Boolean? {
         val paramDef = when (val member = member) {

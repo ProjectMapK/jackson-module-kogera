@@ -19,8 +19,7 @@ class NullableObjectEdgeCases {
     value class VC(val v: String?)
 
     class NullValueDeserializer : StdDeserializer<VC>(VC::class.java) {
-        override fun deserialize(p: JsonParser, ctxt: DeserializationContext): VC =
-            TODO("Not yet implemented")
+        override fun deserialize(p: JsonParser, ctxt: DeserializationContext): VC = TODO("Not yet implemented")
 
         override fun getNullValue(ctxt: DeserializationContext): VC = nv
 

@@ -20,8 +20,9 @@ value class Primitive(val v: Int) {
 @JvmInline
 value class NonNullObject(val v: String) {
     class Deserializer : StdDeserializer<NonNullObject>(NonNullObject::class.java) {
-        override fun deserialize(p: JsonParser, ctxt: DeserializationContext): NonNullObject =
-            NonNullObject(p.valueAsString + "-deser")
+        override fun deserialize(p: JsonParser, ctxt: DeserializationContext) = NonNullObject(
+            p.valueAsString + "-deser"
+        )
     }
 
     class KeyDeserializer : JacksonKeyDeserializer() {
@@ -32,8 +33,9 @@ value class NonNullObject(val v: String) {
 @JvmInline
 value class NullableObject(val v: String?) {
     class DeserializerWrapsNullable : WrapsNullableValueClassDeserializer<NullableObject>(NullableObject::class) {
-        override fun deserialize(p: JsonParser, ctxt: DeserializationContext): NullableObject =
-            NullableObject(p.valueAsString + "-deser")
+        override fun deserialize(p: JsonParser, ctxt: DeserializationContext) = NullableObject(
+            p.valueAsString + "-deser"
+        )
 
         override fun getBoxedNullValue(): NullableObject = NullableObject("null-value-deser")
     }

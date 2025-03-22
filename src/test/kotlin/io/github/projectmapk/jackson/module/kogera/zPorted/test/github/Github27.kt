@@ -3,6 +3,7 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import io.github.projectmapk.jackson.module.kogera.KotlinFeature
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import io.github.projectmapk.jackson.module.kogera.zPorted.test.expectFailure
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
 
 class TestGithub27 {
-    val mapper: ObjectMapper = jacksonObjectMapper()
+    val mapper: ObjectMapper = jacksonObjectMapper { disable(KotlinFeature.StrictNullChecks) }
         .configure(SerializationFeature.INDENT_OUTPUT, false)
 
     private data class ClassWithNullableInt(val sample: Int?)

@@ -23,8 +23,8 @@ class KotlinModuleTest {
         assertFalse(module.nullToEmptyCollection)
         assertFalse(module.nullToEmptyMap)
         assertFalse(module.nullIsSameAsDefault)
-        assertEquals(module.singletonSupport, false)
-        assertFalse(module.strictNullChecks)
+        assertTrue(module.singletonSupport)
+        assertTrue(module.strictNullChecks)
     }
 
     @Test
@@ -35,8 +35,8 @@ class KotlinModuleTest {
         assertFalse(module.nullToEmptyCollection)
         assertFalse(module.nullToEmptyMap)
         assertFalse(module.nullIsSameAsDefault)
-        assertEquals(false, module.singletonSupport)
-        assertFalse(module.strictNullChecks)
+        assertTrue(module.singletonSupport)
+        assertTrue(module.strictNullChecks)
     }
 
     @Test

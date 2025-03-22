@@ -16,7 +16,7 @@ val jacksonVersion = libs.versions.jackson.get()
 val generatedSrcPath = "${layout.buildDirectory.get()}/generated/kotlin"
 
 group = groupStr
-version = "${jacksonVersion}-beta18"
+version = "${jacksonVersion}-beta19"
 
 repositories {
     mavenCentral()
@@ -32,12 +32,13 @@ dependencies {
     api(libs.jackson.annotations)
 
     // test libs
-    testImplementation("${libs.kotlin.reflect.get()}:${kotlinVersion}")
-    testImplementation(libs.junit.api)
-    testImplementation(libs.junit.params)
-    testRuntimeOnly(libs.junit.engine)
+    testImplementation(platform(libs.junit.bom))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
     testImplementation(libs.mockk)
 
+    testImplementation("${libs.kotlin.reflect.get()}:${kotlinVersion}")
     testImplementation(libs.jackson.xml)
     testImplementation(libs.jackson.jsr310)
 }
@@ -48,17 +49,6 @@ kotlin {
     sourceSets["main"].apply {
         kotlin.srcDir(generatedSrcPath)
     }
-
-    val useK2 = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() }
-        ?.let { it.toBoolean() } ?: false
-
-    sourceSets.all {
-        languageSettings {
-            if (useK2) {
-                languageVersion = "2.0"
-            }
-        }
-    }
 }
 
 java {
@@ -67,14 +57,6 @@ java {
 }
 
 tasks {
-    // For ported tests, they are excluded from the formatting because they are not new code.
-    lintKotlinTest {
-        exclude { it.path.contains("zPorted") }
-    }
-    formatKotlinTest {
-        exclude { it.path.contains("zPorted") }
-    }
-
     // Task to generate version file
     val generateKogeraVersion by registering(Copy::class) {
         val packageStr = "$groupStr.jackson.module.kogera"
@@ -101,6 +83,14 @@ public val kogeraVersion: Version = VersionUtil.parseVersion("$version", "$group
     // Added to avoid failure in generating dependency graphs in CI.
     lintKotlinMain {
         dependsOn.add(generateKogeraVersion)
+    }
+
+    // For ported tests, they are excluded from the formatting because they are not new code.
+    lintKotlinTest {
+        exclude { it.path.contains("zPorted") }
+    }
+    formatKotlinTest {
+        exclude { it.path.contains("zPorted") }
     }
 
     compileKotlin {

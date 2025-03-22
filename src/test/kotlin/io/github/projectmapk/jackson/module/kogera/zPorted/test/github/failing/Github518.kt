@@ -1,5 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github.failing
 
+import io.github.projectmapk.jackson.module.kogera.KotlinFeature
 import io.github.projectmapk.jackson.module.kogera.KotlinFeature.SingletonSupport
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.jsonMapper
@@ -30,7 +31,7 @@ class TestGithub518 {
     @Test
     fun deserializeEmptyObjectToSingletonUnitFails() {
         expectFailure<AssertionError>("GitHub #518 has been fixed!") {
-            assertSame(jacksonObjectMapper().readValue<Unit?>("{}"), Unit)
+            assertSame(jacksonObjectMapper { disable(SingletonSupport) }.readValue<Unit?>("{}"), Unit)
         }
     }
 

@@ -1,5 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator
 
+import com.fasterxml.jackson.databind.util.ClassUtil
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.call
 import io.github.projectmapk.jackson.module.kogera.defaultConstructorMarker
@@ -25,7 +26,7 @@ internal class ConstructorValueCreator<T : Any>(
 
     init {
         // To prevent the call from failing, save the initial value and then rewrite the flag.
-        if (!isAccessible) constructor.isAccessible = true
+        ClassUtil.checkAndFixAccess(constructor, false)
 
         valueParameters = declaringJmClass.findJmConstructor(constructor)!!.valueParameters
         val rawTypes = constructor.parameterTypes.asList()
@@ -52,7 +53,7 @@ internal class ConstructorValueCreator<T : Any>(
         } as Array<Class<*>>
 
         declaringClass.getDeclaredConstructorBy(defaultTypes).apply {
-            if (!this.isAccessible) this.isAccessible = true
+            ClassUtil.checkAndFixAccess(this, false)
         }
     }
 

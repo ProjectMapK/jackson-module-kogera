@@ -1,5 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.jmClass
 
+import com.fasterxml.jackson.databind.util.ClassUtil
 import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
 import io.github.projectmapk.jackson.module.kogera.toKmClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
@@ -32,7 +33,7 @@ internal sealed interface JmClass {
         }
         val instance: Any by lazy {
             // To prevent the call from failing, save the initial value and then rewrite the flag.
-            if (!companionField.isAccessible) companionField.isAccessible = true
+            ClassUtil.checkAndFixAccess(companionField, false)
             companionField.get(null)
         }
 

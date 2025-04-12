@@ -7,9 +7,9 @@ import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass
 import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.NullableObject
 import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.Primitive
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 class SpecifiedForObjectMapperTest {
     companion object {
@@ -49,10 +49,8 @@ class SpecifiedForObjectMapperTest {
             // failing
             @Test
             fun nullString() {
-                assertThrows<NullPointerException>("#209 has been fixed.") {
-                    val result = mapper.readValue<NullableObject>("null")
-                    assertEquals(NullableObject("null-value-deser"), result)
-                }
+                val result = mapper.readValue<NullableObject?>("null")
+                assertNotEquals(NullableObject("null-value-deser"), result, "#209 has been fixed.")
             }
         }
     }

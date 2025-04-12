@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
 import com.fasterxml.jackson.databind.module.SimpleDeserializers
+import com.fasterxml.jackson.databind.util.ClassUtil
 import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.ValueClassBoxConverter
@@ -96,7 +97,7 @@ internal class WrapsNullableValueClassBoxDeserializer<S, D : Any>(
     private val inputType: Class<*> = creator.parameterTypes[0]
 
     init {
-        creator.apply { if (!this.isAccessible) this.isAccessible = true }
+        ClassUtil.checkAndFixAccess(creator, false)
     }
 
     // Cache the result of wrapping null, since the result is always expected to be the same.

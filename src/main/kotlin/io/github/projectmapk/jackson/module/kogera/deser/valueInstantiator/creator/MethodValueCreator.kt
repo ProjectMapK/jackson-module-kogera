@@ -1,5 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator
 
+import com.fasterxml.jackson.databind.util.ClassUtil
 import io.github.projectmapk.jackson.module.kogera.ANY_CLASS
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.call
@@ -24,7 +25,7 @@ internal class MethodValueCreator<T>(
 
     init {
         // To prevent the call from failing, save the initial value and then rewrite the flag.
-        if (!method.isAccessible) method.isAccessible = true
+        ClassUtil.checkAndFixAccess(method, false)
 
         val function = companion.findFunctionByMethod(method)!!
 

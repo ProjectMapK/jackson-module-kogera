@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.KeyDeserializer
 import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
 import com.fasterxml.jackson.databind.module.SimpleKeyDeserializers
+import com.fasterxml.jackson.databind.util.ClassUtil
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.ValueClassBoxConverter
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
@@ -57,7 +58,7 @@ internal class ValueClassKeyDeserializer<S, D : Any>(
     private val unboxedClass: Class<*> = creator.parameterTypes[0]
 
     init {
-        creator.apply { if (!this.isAccessible) this.isAccessible = true }
+        creator.apply { ClassUtil.checkAndFixAccess(this, false) }
     }
 
     // Based on databind error

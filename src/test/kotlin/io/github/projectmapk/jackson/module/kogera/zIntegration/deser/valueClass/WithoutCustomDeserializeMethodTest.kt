@@ -5,6 +5,7 @@ import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -42,10 +43,8 @@ class WithoutCustomDeserializeMethodTest {
             // failing
             @Test
             fun nullString() {
-                assertThrows<NullPointerException>("#209 has been fixed.") {
-                    val result = defaultMapper.readValue<NullableObject>("null")
-                    assertEquals(NullableObject(null), result)
-                }
+                val result = defaultMapper.readValue<NullableObject?>("null")
+                assertNotEquals(NullableObject(null), result, "#209 has been fixed.")
             }
         }
     }

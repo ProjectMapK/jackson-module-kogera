@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.MappingIterator
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ObjectReader
+import com.fasterxml.jackson.databind.RuntimeJsonMappingException
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.ArrayNode
@@ -52,28 +53,138 @@ public fun ObjectMapper.registerKotlinModule(
 
 public inline fun <reified T> jacksonTypeRef(): TypeReference<T> = object : TypeReference<T>() {}
 
+/**
+ * It is public due to Kotlin restrictions, but should not be used externally.
+ */
+public inline fun <reified T> Any?.checkTypeMismatch(): T {
+    // Basically, this check assumes that T is non-null and the value is null.
+    // Since this can be caused by both input or ObjectMapper implementation errors,
+    // a more abstract RuntimeJsonMappingException is thrown.
+    if (this !is T) {
+        val nullability = if (null is T) "?" else "(non-null)"
+
+        // Since the databind implementation of MappingIterator throws RuntimeJsonMappingException,
+        // JsonMappingException was not used to unify the behavior.
+        throw RuntimeJsonMappingException(
+            "Deserialized value did not match the specified type; " +
+                "specified ${T::class.qualifiedName}$nullability but was ${this?.let { it::class.qualifiedName }}"
+        )
+    }
+    return this
+}
+
+/**
+ * Shorthand for [ObjectMapper.readValue].
+ * @throws RuntimeJsonMappingException Especially if [T] is non-null and the value read is null.
+ *   Other cases where the read value is of a different type than [T]
+ *   due to an incorrect customization to [ObjectMapper].
+ */
 public inline fun <reified T> ObjectMapper.readValue(jp: JsonParser): T = readValue(jp, jacksonTypeRef<T>())
+    .checkTypeMismatch()
+
+// TODO: After importing 2.19, import the changes in kotlin-module and uncomment the tests.
 public inline fun <reified T> ObjectMapper.readValues(
     jp: JsonParser
 ): MappingIterator<T> = readValues(jp, jacksonTypeRef<T>())
 
+/**
+ * Shorthand for [ObjectMapper.readValue].
+ * @throws RuntimeJsonMappingException Especially if [T] is non-null and the value read is null.
+ *   Other cases where the read value is of a different type than [T]
+ *   due to an incorrect customization to [ObjectMapper].
+ */
 public inline fun <reified T> ObjectMapper.readValue(src: File): T = readValue(src, jacksonTypeRef<T>())
+    .checkTypeMismatch()
+
+/**
+ * Shorthand for [ObjectMapper.readValue].
+ * @throws RuntimeJsonMappingException Especially if [T] is non-null and the value read is null.
+ *   Other cases where the read value is of a different type than [T]
+ *   due to an incorrect customization to [ObjectMapper].
+ */
 public inline fun <reified T> ObjectMapper.readValue(src: URL): T = readValue(src, jacksonTypeRef<T>())
+    .checkTypeMismatch()
+
+/**
+ * Shorthand for [ObjectMapper.readValue].
+ * @throws RuntimeJsonMappingException Especially if [T] is non-null and the value read is null.
+ *   Other cases where the read value is of a different type than [T]
+ *   due to an incorrect customization to [ObjectMapper].
+ */
 public inline fun <reified T> ObjectMapper.readValue(content: String): T = readValue(content, jacksonTypeRef<T>())
+    .checkTypeMismatch()
+
+/**
+ * Shorthand for [ObjectMapper.readValue].
+ * @throws RuntimeJsonMappingException Especially if [T] is non-null and the value read is null.
+ *   Other cases where the read value is of a different type than [T]
+ *   due to an incorrect customization to [ObjectMapper].
+ */
 public inline fun <reified T> ObjectMapper.readValue(src: Reader): T = readValue(src, jacksonTypeRef<T>())
+    .checkTypeMismatch()
+
+/**
+ * Shorthand for [ObjectMapper.readValue].
+ * @throws RuntimeJsonMappingException Especially if [T] is non-null and the value read is null.
+ *   Other cases where the read value is of a different type than [T]
+ *   due to an incorrect customization to [ObjectMapper].
+ */
 public inline fun <reified T> ObjectMapper.readValue(src: InputStream): T = readValue(src, jacksonTypeRef<T>())
+    .checkTypeMismatch()
+
+/**
+ * Shorthand for [ObjectMapper.readValue].
+ * @throws RuntimeJsonMappingException Especially if [T] is non-null and the value read is null.
+ *   Other cases where the read value is of a different type than [T]
+ *   due to an incorrect customization to [ObjectMapper].
+ */
 public inline fun <reified T> ObjectMapper.readValue(src: ByteArray): T = readValue(src, jacksonTypeRef<T>())
+    .checkTypeMismatch()
 
-public inline fun <reified T> ObjectMapper.treeToValue(n: TreeNode): T = readValue(treeAsTokens(n), jacksonTypeRef<T>())
+/**
+ * Shorthand for [ObjectMapper.readValue].
+ * @throws RuntimeJsonMappingException Especially if [T] is non-null and the value read is null.
+ *   Other cases where the read value is of a different type than [T]
+ *   due to an incorrect customization to [ObjectMapper].
+ */
+public inline fun <reified T> ObjectMapper.treeToValue(
+    n: TreeNode
+): T = readValue(this.treeAsTokens(n), jacksonTypeRef<T>()).checkTypeMismatch()
+
+/**
+ * Shorthand for [ObjectMapper.convertValue].
+ * @throws RuntimeJsonMappingException Especially if [T] is non-null and the value read is null.
+ *   Other cases where the read value is of a different type than [T]
+ *   due to an incorrect customization to [ObjectMapper].
+ */
 public inline fun <reified T> ObjectMapper.convertValue(from: Any?): T = convertValue(from, jacksonTypeRef<T>())
+    .checkTypeMismatch()
 
+/**
+ * Shorthand for [ObjectReader.readValue].
+ * @throws RuntimeJsonMappingException Especially if [T] is non-null and the value read is null.
+ *   Other cases where the read value is of a different type than [T]
+ *   due to an incorrect customization to [ObjectReader].
+ */
 public inline fun <reified T> ObjectReader.readValueTyped(jp: JsonParser): T = readValue(jp, jacksonTypeRef<T>())
-public inline fun <reified T> ObjectReader.readValuesTyped(
-    jp: JsonParser
-): Iterator<T> = readValues(jp, jacksonTypeRef<T>())
+    .checkTypeMismatch()
+
+/**
+ * Shorthand for [ObjectReader.readValues].
+ * @throws RuntimeJsonMappingException Especially if [T] is non-null and the value read is null.
+ *   Other cases where the read value is of a different type than [T]
+ *   due to an incorrect customization to [ObjectReader].
+ */
+public inline fun <reified T> ObjectReader.readValuesTyped(jp: JsonParser): Iterator<T> {
+    val values = readValues(jp, jacksonTypeRef<T>())
+
+    return object : Iterator<T> by values {
+        override fun next(): T = values.next().checkTypeMismatch<T>()
+    }
+}
 public inline fun <reified T> ObjectReader.treeToValue(
     n: TreeNode
-): T? = readValue(treeAsTokens(n), jacksonTypeRef<T>())
+): T? = readValue(this.treeAsTokens(n), jacksonTypeRef<T>())
 
 public inline fun <reified T, reified U> ObjectMapper.addMixIn(): ObjectMapper = addMixIn(T::class.java, U::class.java)
 public inline fun <reified T, reified U> JsonMapper.Builder.addMixIn(): JsonMapper.Builder = addMixIn(

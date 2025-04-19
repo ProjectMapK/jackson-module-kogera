@@ -40,6 +40,7 @@ dependencies {
 
     testImplementation("${libs.kotlin.reflect.get()}:${kotlinVersion}")
     testImplementation(libs.jackson.xml)
+    testImplementation(libs.jackson.csv)
     testImplementation(libs.jackson.jsr310)
 }
 

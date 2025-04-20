@@ -3,6 +3,7 @@ package io.github.projectmapk.jackson.module.kogera
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer
 import com.fasterxml.jackson.databind.type.TypeFactory
+import com.fasterxml.jackson.databind.util.ClassUtil
 import com.fasterxml.jackson.databind.util.StdConverter
 
 /**
@@ -16,7 +17,7 @@ internal class ValueClassBoxConverter<S : Any?, D : Any>(
     val boxedClass: Class<D>
 ) : StdConverter<S, D>() {
     private val boxMethod = boxedClass.getDeclaredMethod("box-impl", unboxedClass).apply {
-        if (!this.isAccessible) this.isAccessible = true
+        ClassUtil.checkAndFixAccess(this, false)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -27,7 +28,7 @@ internal class ValueClassBoxConverter<S : Any?, D : Any>(
 
 internal class ValueClassUnboxConverter<T : Any>(val valueClass: Class<T>) : StdConverter<T, Any?>() {
     private val unboxMethod = valueClass.getDeclaredMethod("unbox-impl").apply {
-        if (!this.isAccessible) this.isAccessible = true
+        ClassUtil.checkAndFixAccess(this, false)
     }
 
     override fun convert(value: T): Any? = unboxMethod.invoke(value)

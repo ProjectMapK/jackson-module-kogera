@@ -16,7 +16,7 @@ val jacksonVersion = libs.versions.jackson.get()
 val generatedSrcPath = "${layout.buildDirectory.get()}/generated/kotlin"
 
 group = groupStr
-version = "${jacksonVersion}-beta19"
+version = "${jacksonVersion}-beta20"
 
 repositories {
     mavenCentral()
@@ -40,6 +40,7 @@ dependencies {
 
     testImplementation("${libs.kotlin.reflect.get()}:${kotlinVersion}")
     testImplementation(libs.jackson.xml)
+    testImplementation(libs.jackson.csv)
     testImplementation(libs.jackson.jsr310)
 }
 

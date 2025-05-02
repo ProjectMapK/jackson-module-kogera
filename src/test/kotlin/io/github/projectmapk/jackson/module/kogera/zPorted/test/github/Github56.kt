@@ -62,8 +62,10 @@ private class TestGithub56 {
     }
 
     @Test
-    fun deserializesWithError() {
-        assertThrows<InvalidDefinitionException> { mapper.readValue<TestGalleryWidget_BAD>(validJson) }
+    fun deserializesSuccessful() {
+        val obj = mapper.readValue<TestGalleryWidget_BAD>(validJson)
+        assertEquals("widgetReferenceId", obj.widgetReferenceId)
+        assertEquals(gallery, obj.gallery)
     }
 
     @Test

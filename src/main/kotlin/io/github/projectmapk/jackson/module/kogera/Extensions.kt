@@ -82,10 +82,19 @@ internal inline fun <reified T> Any?.checkTypeMismatch(): T {
 public inline fun <reified T> ObjectMapper.readValue(jp: JsonParser): T = readValue(jp, jacksonTypeRef<T>())
     .checkTypeMismatch()
 
-// TODO: After importing 2.19, import the changes in kotlin-module and uncomment the tests.
-public inline fun <reified T> ObjectMapper.readValues(
-    jp: JsonParser
-): MappingIterator<T> = readValues(jp, jacksonTypeRef<T>())
+/**
+ * Shorthand for [ObjectMapper.readValues].
+ * @throws RuntimeJsonMappingException Especially if [T] is non-null and the value read is null.
+ *   Other cases where the read value is of a different type than [T]
+ *   due to an incorrect customization to [ObjectMapper].
+ */
+public inline fun <reified T> ObjectMapper.readValues(jp: JsonParser): MappingIterator<T> {
+    val values = readValues(jp, jacksonTypeRef<T>())
+
+    return object : MappingIterator<T>(values) {
+        override fun nextValue(): T = super.nextValue().checkTypeMismatch()
+    }
+}
 
 /**
  * Shorthand for [ObjectMapper.readValue].

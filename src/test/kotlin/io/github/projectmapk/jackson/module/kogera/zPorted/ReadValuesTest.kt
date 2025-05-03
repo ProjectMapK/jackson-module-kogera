@@ -38,9 +38,7 @@ class ReadValuesTest {
             val itr = mapper.readValues<String>(src)
 
             assertEquals("foo", itr.next())
-            // TODO: It is expected to be checked after importing 2.19.
-            // assertThrows<RuntimeJsonMappingException> {
-            assertDoesNotThrow {
+            assertThrows<RuntimeJsonMappingException> {
                 itr.next()
             }
         }
@@ -51,9 +49,7 @@ class ReadValuesTest {
             val itr = mapper.readValues<String>(src)
 
             assertEquals("foo", itr.nextValue())
-            // TODO: It is expected to be checked after importing 2.19.
-            // assertThrows<RuntimeJsonMappingException> {
-            assertDoesNotThrow {
+            assertThrows<RuntimeJsonMappingException> {
                 itr.nextValue()
             }
         }

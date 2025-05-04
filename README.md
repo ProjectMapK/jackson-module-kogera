@@ -30,7 +30,7 @@ This project makes several disruptive changes to achieve more `Kotlin-like` beha
 Details are summarized in [KogeraSpecificImplementations](./docs/KogeraSpecificImplementations.md).
 
 # Compatibility
-- `jackson 2.18.x`
+- `jackson 2.19.x`
 - `Java 8+`
 - `Kotlin 1.9.25+`
 

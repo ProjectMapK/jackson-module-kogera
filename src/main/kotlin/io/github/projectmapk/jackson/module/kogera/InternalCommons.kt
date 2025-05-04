@@ -3,14 +3,14 @@ package io.github.projectmapk.jackson.module.kogera
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.projectmapk.jackson.module.kogera.annotation.JsonKUnbox
-import kotlinx.metadata.KmClass
-import kotlinx.metadata.KmClassifier
-import kotlinx.metadata.KmType
-import kotlinx.metadata.jvm.JvmMethodSignature
-import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
+import kotlin.metadata.KmClass
+import kotlin.metadata.KmClassifier
+import kotlin.metadata.KmType
+import kotlin.metadata.jvm.JvmMethodSignature
+import kotlin.metadata.jvm.KotlinClassMetadata
 
 internal typealias JavaDuration = java.time.Duration
 internal typealias KotlinDuration = kotlin.time.Duration

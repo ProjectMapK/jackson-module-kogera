@@ -1,11 +1,11 @@
 package io.github.projectmapk.jackson.module.kogera.jmClass
 
 import io.github.projectmapk.jackson.module.kogera.toDescBuilder
-import kotlinx.metadata.KmConstructor
-import kotlinx.metadata.isSecondary
-import kotlinx.metadata.jvm.JvmMethodSignature
-import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Constructor
+import kotlin.metadata.KmConstructor
+import kotlin.metadata.isSecondary
+import kotlin.metadata.jvm.JvmMethodSignature
+import kotlin.metadata.jvm.signature
 
 internal data class JmConstructor(
     val isSecondary: Boolean,

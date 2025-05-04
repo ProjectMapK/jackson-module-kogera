@@ -1,12 +1,12 @@
 package io.github.projectmapk.jackson.module.kogera.jmClass
 
 import io.github.projectmapk.jackson.module.kogera.reconstructClassOrNull
-import kotlinx.metadata.KmClassifier
-import kotlinx.metadata.KmType
-import kotlinx.metadata.KmTypeProjection
-import kotlinx.metadata.KmValueParameter
-import kotlinx.metadata.declaresDefaultValue
-import kotlinx.metadata.isNullable
+import kotlin.metadata.KmClassifier
+import kotlin.metadata.KmType
+import kotlin.metadata.KmTypeProjection
+import kotlin.metadata.KmValueParameter
+import kotlin.metadata.declaresDefaultValue
+import kotlin.metadata.isNullable
 
 internal class JmValueParameter(
     val name: String,

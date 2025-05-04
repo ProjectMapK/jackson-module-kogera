@@ -1,6 +1,11 @@
 name: release
 on:
   workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   gitPrRelease:
     name: git-pr-release

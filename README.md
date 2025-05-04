@@ -1,5 +1,11 @@
 jackson-module-kogera
 ====
+
+Since `beta-23`, newer versions of `Kotlin` and `Java` than the original have been used to validate changes for `Jackson 3.x`.  
+See #Compatibility for details.
+
+---
+
 `jackson-module-kogera` is an experimental project to develop `jackson-module-kotlin`.  
 This project has the following features compared to `jackson-module-kotlin`.
 
@@ -31,7 +37,7 @@ Details are summarized in [KogeraSpecificImplementations](./docs/KogeraSpecificI
 
 # Compatibility
 - `jackson 2.19.x`
-- `Java 8+`
+- `Java 17+`
 - `Kotlin 2.0.21+`
 
 ## About compatibility checks

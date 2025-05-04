@@ -55,8 +55,8 @@ kotlin {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 tasks {
@@ -98,11 +98,11 @@ public val kogeraVersion: Version = VersionUtil.parseVersion("$version", "$group
 
     compileKotlin {
         dependsOn.add(generateKogeraVersion)
-        compilerOptions.jvmTarget.set(JvmTarget.JVM_1_8)
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
     }
 
     compileTestKotlin {
-        compilerOptions.jvmTarget.set(JvmTarget.JVM_1_8)
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
     }
 
     test {

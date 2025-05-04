@@ -59,8 +59,6 @@ internal class KotlinPrimaryAnnotationIntrospector(
     private fun JavaType.hasDefaultEmptyValue() = (nullToEmptyCollection && isCollectionLikeType) ||
         (nullToEmptyMap && isMapLikeType)
 
-    // The nullToEmpty option also affects serialization,
-    // but deserialization is preferred because there is currently no way to distinguish between contexts.
     private fun AnnotatedField.hasRequiredMarker(jmClass: JmClass): Boolean? {
         // Direct access to `AnnotatedField` is only performed if there is no accessor (defined as JvmField),
         // so if an accessor is defined, it is ignored.
@@ -69,7 +67,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
             // only a check for the existence of a getter is performed.
             // https://youtrack.jetbrains.com/issue/KT-6519
             ?.let {
-                if (it.getterName == null) !(it.returnType.isNullable || type.hasDefaultEmptyValue()) else null
+                if (it.getterName == null) !it.returnType.isNullable else null
             }
     }
 
@@ -80,12 +78,8 @@ internal class KotlinPrimaryAnnotationIntrospector(
     ): Boolean? = when (parameterCount) {
         0 -> jmClass.findPropertyByGetter(member)?.isRequiredByNullability()
         1 -> {
-            if (this.getParameter(0).type.hasDefaultEmptyValue()) {
-                false
-            } else {
-                val memberSignature = member.toSignature()
-                jmClass.properties.find { it.setterSignature == memberSignature }?.isRequiredByNullability()
-            }
+            val memberSignature = member.toSignature()
+            jmClass.properties.find { it.setterSignature == memberSignature }?.isRequiredByNullability()
         }
         else -> null
     }

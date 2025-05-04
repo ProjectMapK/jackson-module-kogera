@@ -108,10 +108,10 @@ class HasRequiredMarkerTest {
 
             assertFalse(desc.isRequired("nullableProp"))
             assertFalse(desc.isRequired("nullableField"))
-            assertFalse(desc.isRequired("collectionProp"))
-            assertFalse(desc.isRequired("collectionField"))
-            assertFalse(desc.isRequired("mapProp"))
-            assertFalse(desc.isRequired("mapField"))
+            assertTrue(desc.isRequired("collectionProp"))
+            assertTrue(desc.isRequired("collectionField"))
+            assertTrue(desc.isRequired("mapProp"))
+            assertTrue(desc.isRequired("mapField"))
             assertTrue(desc.isRequired("nonNullProp"))
             assertTrue(desc.isRequired("nonNullField"))
         }

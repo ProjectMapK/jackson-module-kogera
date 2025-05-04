@@ -67,9 +67,8 @@ class HasRequiredMarkerTest {
         val map: Map<*, *> = emptyMap<Any, Any>()
     }
 
-    // @see KotlinPrimaryAnnotationIntrospector::AnnotatedField.hasRequiredMarker
     @Test
-    fun failing() {
+    fun `nullToEmpty does not affect for field`() {
         val nullToDefaultMapper = ObjectMapper().registerModule(
             KotlinModule.Builder()
                 .enable(KotlinFeature.NullToEmptyCollection)
@@ -78,13 +77,7 @@ class HasRequiredMarkerTest {
         )
         val desc = nullToDefaultMapper.introspectSer<NullToDefaultTarget>()
 
-        assertFalse(
-            desc.isRequired("collection"),
-            "KotlinPrimaryAnnotationIntrospector::AnnotatedField.hasRequiredMarker fixed"
-        )
-        assertFalse(
-            desc.isRequired("map"),
-            "KotlinPrimaryAnnotationIntrospector::AnnotatedField.hasRequiredMarker fixed"
-        )
+        assertTrue(desc.isRequired("collection"))
+        assertTrue(desc.isRequired("map"))
     }
 }

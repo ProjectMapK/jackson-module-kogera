@@ -1,5 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.annotationIntrospector
 
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.OptBoolean
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.introspect.Annotated
 import com.fasterxml.jackson.databind.introspect.AnnotatedField
@@ -26,20 +28,30 @@ internal class KotlinPrimaryAnnotationIntrospector(
     private val nullToEmptyMap: Boolean,
     private val cache: ReflectionCache
 ) : NopAnnotationIntrospector() {
+    // If a new isRequired is explicitly specified or the old required is true, those values take precedence.
+    // In other cases, override is done by KotlinModule.
+    private fun JsonProperty.forceRequiredByAnnotation(): Boolean? = when {
+        isRequired != OptBoolean.DEFAULT -> isRequired.asBoolean()
+        required -> true
+        else -> null
+    }
+
     // If JsonProperty.required is true, the behavior is clearly specified and the result is paramount.
     // Otherwise, the required is determined from the configuration and the definition on Kotlin.
     override fun hasRequiredMarker(m: AnnotatedMember): Boolean? {
-        val byAnnotation = _findAnnotation(m, JSON_PROPERTY_CLASS)
-            ?.let { if (it.required) return true else false }
+        return cache.getJmClass(m.member.declaringClass)?.let { jmClass ->
+            // To avoid overwriting processing by other modules, annotations are checked after JmClass has been obtained
+            _findAnnotation(m, JSON_PROPERTY_CLASS)
+                ?.forceRequiredByAnnotation()
+                ?.let { return it }
 
-        return cache.getJmClass(m.member.declaringClass)?.let {
             when (m) {
-                is AnnotatedField -> m.hasRequiredMarker(it)
-                is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(it)
-                is AnnotatedParameter -> m.hasRequiredMarker(it)
+                is AnnotatedField -> m.hasRequiredMarker(jmClass)
+                is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(jmClass)
+                is AnnotatedParameter -> m.hasRequiredMarker(jmClass)
                 else -> null
             }
-        } ?: byAnnotation // If a JsonProperty is available, use it to reduce processing costs.
+        }
     }
 
     // Functions that call this may return incorrect results for value classes whose value type is Collection or Map,
@@ -47,8 +59,6 @@ internal class KotlinPrimaryAnnotationIntrospector(
     private fun JavaType.hasDefaultEmptyValue() = (nullToEmptyCollection && isCollectionLikeType) ||
         (nullToEmptyMap && isMapLikeType)
 
-    // The nullToEmpty option also affects serialization,
-    // but deserialization is preferred because there is currently no way to distinguish between contexts.
     private fun AnnotatedField.hasRequiredMarker(jmClass: JmClass): Boolean? {
         // Direct access to `AnnotatedField` is only performed if there is no accessor (defined as JvmField),
         // so if an accessor is defined, it is ignored.
@@ -57,7 +67,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
             // only a check for the existence of a getter is performed.
             // https://youtrack.jetbrains.com/issue/KT-6519
             ?.let {
-                if (it.getterName == null) !(it.returnType.isNullable || type.hasDefaultEmptyValue()) else null
+                if (it.getterName == null) !it.returnType.isNullable else null
             }
     }
 
@@ -68,12 +78,8 @@ internal class KotlinPrimaryAnnotationIntrospector(
     ): Boolean? = when (parameterCount) {
         0 -> jmClass.findPropertyByGetter(member)?.isRequiredByNullability()
         1 -> {
-            if (this.getParameter(0).type.hasDefaultEmptyValue()) {
-                false
-            } else {
-                val memberSignature = member.toSignature()
-                jmClass.properties.find { it.setterSignature == memberSignature }?.isRequiredByNullability()
-            }
+            val memberSignature = member.toSignature()
+            jmClass.properties.find { it.setterSignature == memberSignature }?.isRequiredByNullability()
         }
         else -> null
     }

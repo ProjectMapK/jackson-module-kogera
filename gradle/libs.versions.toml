@@ -1,6 +1,6 @@
 [versions]
 kotlin = "1.9.25" # Mainly for CI, it can be rewritten by environment variable.
-jackson = "2.18.3"
+jackson = "2.19.0"
 
 # test libs
 junit = "5.12.2"
@@ -14,10 +14,10 @@ jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations
 # test libs
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
-mockk = "io.mockk:mockk:1.14.0"
+mockk = "io.mockk:mockk:1.14.2"
 jackson-xml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version.ref = "jackson" }
 jackson-csv = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-csv", version.ref = "jackson" }
 jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 
 [plugins]
-kotlinter = { id = "org.jmailen.kotlinter", version = "5.0.1" }
+kotlinter = { id = "org.jmailen.kotlinter", version = "5.0.2" }

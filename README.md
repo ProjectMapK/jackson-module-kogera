@@ -15,8 +15,8 @@ Especially when it comes to deserialization throughput, it is several times high
 This project is experimental, but passes all the tests implemented in `jackson-module-kotlin` except for the intentional incompatibility.
 
 # Features of `jackson-module-kogera`
-The main feature of `jackson-module-kogera` is that it replaces `kotlin-reflect` with `kotlinx.metadata.jvm`.  
-As of `1.7.21`, `kotlin-reflect` is a huge library(3MB), and replacing it with `kotlinx.metadata.jvm`(1MB) makes it lightweight.
+The main feature of `jackson-module-kogera` is that it replaces `kotlin-reflect` with `kotlin.metadata.jvm`.  
+As of `1.7.21`, `kotlin-reflect` is a huge library(3MB), and replacing it with `kotlin.metadata.jvm`(1MB) makes it lightweight.
 
 Several performance improvements have also been made.
 First, by implementing the equivalent of https://github.com/FasterXML/jackson-module-kotlin/pull/439, deserialization is now up to three times faster, depending on the use case.  

@@ -24,11 +24,11 @@ import io.github.projectmapk.jackson.module.kogera.jmClass.JmValueParameter
 import io.github.projectmapk.jackson.module.kogera.ser.KotlinDurationValueToJavaDurationConverter
 import io.github.projectmapk.jackson.module.kogera.ser.KotlinToJavaDurationConverter
 import io.github.projectmapk.jackson.module.kogera.ser.SequenceToIteratorConverter
-import kotlinx.metadata.KmTypeProjection
-import kotlinx.metadata.isNullable
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import kotlin.metadata.KmTypeProjection
+import kotlin.metadata.isNullable
 
 // AnnotationIntrospector to be run after default AnnotationIntrospector
 // (in most cases, JacksonAnnotationIntrospector).

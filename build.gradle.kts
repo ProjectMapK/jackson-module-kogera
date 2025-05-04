@@ -16,7 +16,7 @@ val jacksonVersion = libs.versions.jackson.get()
 val generatedSrcPath = "${layout.buildDirectory.get()}/generated/kotlin"
 
 group = groupStr
-version = "${jacksonVersion}-beta21"
+version = "${jacksonVersion}-beta22"
 
 repositories {
     mavenCentral()
@@ -26,7 +26,7 @@ dependencies {
     val kotlinVersion: String = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() }
         ?: libs.versions.kotlin.get()
     implementation("${libs.kotlin.stdlib.get()}:${kotlinVersion}")
-    implementation(libs.kotlinx.metadata.jvm)
+    implementation("${libs.kotlin.metadata.jvm.get()}:${kotlinVersion}")
 
     api(libs.jackson.databind)
     api(libs.jackson.annotations)

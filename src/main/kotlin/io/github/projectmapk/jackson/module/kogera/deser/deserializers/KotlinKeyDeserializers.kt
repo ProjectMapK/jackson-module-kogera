@@ -14,10 +14,10 @@ import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.ValueClassBoxConverter
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
-import kotlinx.metadata.isSecondary
-import kotlinx.metadata.jvm.signature
 import java.lang.reflect.Method
 import java.math.BigInteger
+import kotlin.metadata.isSecondary
+import kotlin.metadata.jvm.signature
 
 // The reason why key is treated as nullable is to match the tentative behavior of StdKeyDeserializer.
 // If StdKeyDeserializer is modified, need to modify this too.

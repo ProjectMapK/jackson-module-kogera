@@ -15,8 +15,8 @@ Especially when it comes to deserialization throughput, it is several times high
 This project is experimental, but passes all the tests implemented in `jackson-module-kotlin` except for the intentional incompatibility.
 
 # Features of `jackson-module-kogera`
-The main feature of `jackson-module-kogera` is that it replaces `kotlin-reflect` with `kotlinx.metadata.jvm`.  
-As of `1.7.21`, `kotlin-reflect` is a huge library(3MB), and replacing it with `kotlinx.metadata.jvm`(1MB) makes it lightweight.
+The main feature of `jackson-module-kogera` is that it replaces `kotlin-reflect` with `kotlin.metadata.jvm`.  
+As of `1.7.21`, `kotlin-reflect` is a huge library(3MB), and replacing it with `kotlin.metadata.jvm`(1MB) makes it lightweight.
 
 Several performance improvements have also been made.
 First, by implementing the equivalent of https://github.com/FasterXML/jackson-module-kotlin/pull/439, deserialization is now up to three times faster, depending on the use case.  
@@ -30,9 +30,9 @@ This project makes several disruptive changes to achieve more `Kotlin-like` beha
 Details are summarized in [KogeraSpecificImplementations](./docs/KogeraSpecificImplementations.md).
 
 # Compatibility
-- `jackson 2.18.x`
+- `jackson 2.19.x`
 - `Java 8+`
-- `Kotlin 1.9.25+`
+- `Kotlin 2.0.21+`
 
 ## About compatibility checks
 Compatibility checks for `Java` and `Kotlin` are done by `CI` grid tests.
@@ -40,7 +40,7 @@ Compatibility checks for `Java` and `Kotlin` are done by `CI` grid tests.
 The `Java` test covers all currently supported LTS versions and the latest versions.
 
 `Kotlin` is tested with the latest patch version and the latest `Beta` or `RC` version within each minor version after the minimum version.  
-The `Kotlin` version is the lowest version available with the latest `kotlinx-metadata-jvm`.
+The `Kotlin` version is the lowest version available.
 
 See [Workflow](./.github/workflows/test-main.yml) for the currently tested versions.
 

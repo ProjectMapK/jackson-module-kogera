@@ -16,9 +16,9 @@ import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
 import io.github.projectmapk.jackson.module.kogera.jmClass.JmProperty
 import io.github.projectmapk.jackson.module.kogera.reconstructClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
-import kotlinx.metadata.isNullable
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
+import kotlin.metadata.isNullable
 
 // AnnotationIntrospector that overrides the behavior of the default AnnotationIntrospector
 // (in most cases, JacksonAnnotationIntrospector).

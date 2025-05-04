@@ -27,6 +27,6 @@ updates:
     ignore:
       # The version of Kotlin is fixed to the lowest, so it is not subject to automatic updates
       - dependency-name: "kotlin"
-      - dependency-name: "kotlinx-metadata-jvm"
+      - dependency-name: "kotlin-metadata-jvm"
       # linter is not subject to automatic renewal as it will be migrated to detekt in the future
       - dependency-name: "org.jmailen.kotlinter"

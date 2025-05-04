@@ -1,8 +1,8 @@
 package io.github.projectmapk.jackson.module.kogera.jmClass
 
-import kotlinx.metadata.KmFunction
-import kotlinx.metadata.jvm.JvmMethodSignature
-import kotlinx.metadata.jvm.signature
+import kotlin.metadata.KmFunction
+import kotlin.metadata.jvm.JvmMethodSignature
+import kotlin.metadata.jvm.signature
 
 internal class JmFunction(
     val signature: JvmMethodSignature?,

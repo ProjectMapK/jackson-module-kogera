@@ -11,10 +11,6 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 private class ArgumentBucketTest {
-    val mockConverters: List<ValueClassUnboxConverter<Any>?> = mockk {
-        every { this@mockk[any()] } returns null
-    }
-
     fun mockValueParameter(mockVararg: Boolean = false, mockOptional: Boolean = false) = mockk<JmValueParameter> {
         every { isVararg } returns mockVararg
         every { isOptional } returns mockOptional
@@ -27,7 +23,7 @@ private class ArgumentBucketTest {
             val generator = BucketGenerator(
                 (0..31).map { String::class.java },
                 (0..31).map { mockValueParameter() },
-                mockConverters
+                emptyList()
             )
             val result = generator.generate()
 
@@ -51,7 +47,7 @@ private class ArgumentBucketTest {
                     Double::class.java
                 ),
                 (1..8).map { mockValueParameter() },
-                mockConverters
+                emptyList()
             )
             val result = generator.generate()
 
@@ -70,7 +66,7 @@ private class ArgumentBucketTest {
             val generator = BucketGenerator(
                 (0..32).map { String::class.java },
                 (0..32).map { mockValueParameter() },
-                mockConverters
+                emptyList()
             )
             val result = generator.generate()
 
@@ -89,7 +85,7 @@ private class ArgumentBucketTest {
         val generator = BucketGenerator(
             (0..32).map { String::class.java },
             (0..32).map { mockValueParameter() },
-            mockConverters
+            List(33) { null }
         )
         val sut = generator.generate()
 

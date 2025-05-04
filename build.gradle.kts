@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     `maven-publish` // for JitPack
 
@@ -96,11 +98,11 @@ public val kogeraVersion: Version = VersionUtil.parseVersion("$version", "$group
 
     compileKotlin {
         dependsOn.add(generateKogeraVersion)
-        kotlinOptions.jvmTarget = "1.8"
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_1_8)
     }
 
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_1_8)
     }
 
     test {

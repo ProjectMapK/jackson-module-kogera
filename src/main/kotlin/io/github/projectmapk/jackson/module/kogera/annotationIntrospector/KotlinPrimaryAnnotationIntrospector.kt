@@ -1,5 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.annotationIntrospector
 
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.OptBoolean
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.introspect.Annotated
 import com.fasterxml.jackson.databind.introspect.AnnotatedField
@@ -26,13 +28,22 @@ internal class KotlinPrimaryAnnotationIntrospector(
     private val nullToEmptyMap: Boolean,
     private val cache: ReflectionCache
 ) : NopAnnotationIntrospector() {
+    // If a new isRequired is explicitly specified or the old required is true, those values take precedence.
+    // In other cases, override is done by KotlinModule.
+    private fun JsonProperty.forceRequiredByAnnotation(): Boolean? = when {
+        isRequired != OptBoolean.DEFAULT -> isRequired.asBoolean()
+        required -> true
+        else -> null
+    }
+
     // If JsonProperty.required is true, the behavior is clearly specified and the result is paramount.
     // Otherwise, the required is determined from the configuration and the definition on Kotlin.
     override fun hasRequiredMarker(m: AnnotatedMember): Boolean? {
         return cache.getJmClass(m.member.declaringClass)?.let { jmClass ->
             // To avoid overwriting processing by other modules, annotations are checked after JmClass has been obtained
             _findAnnotation(m, JSON_PROPERTY_CLASS)
-                ?.let { if (it.required) return true }
+                ?.forceRequiredByAnnotation()
+                ?.let { return it }
 
             when (m) {
                 is AnnotatedField -> m.hasRequiredMarker(jmClass)

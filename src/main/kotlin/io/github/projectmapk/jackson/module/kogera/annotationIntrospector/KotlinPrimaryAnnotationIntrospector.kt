@@ -29,17 +29,18 @@ internal class KotlinPrimaryAnnotationIntrospector(
     // If JsonProperty.required is true, the behavior is clearly specified and the result is paramount.
     // Otherwise, the required is determined from the configuration and the definition on Kotlin.
     override fun hasRequiredMarker(m: AnnotatedMember): Boolean? {
-        val byAnnotation = _findAnnotation(m, JSON_PROPERTY_CLASS)
-            ?.let { if (it.required) return true else false }
+        return cache.getJmClass(m.member.declaringClass)?.let { jmClass ->
+            // To avoid overwriting processing by other modules, annotations are checked after JmClass has been obtained
+            _findAnnotation(m, JSON_PROPERTY_CLASS)
+                ?.let { if (it.required) return true }
 
-        return cache.getJmClass(m.member.declaringClass)?.let {
             when (m) {
-                is AnnotatedField -> m.hasRequiredMarker(it)
-                is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(it)
-                is AnnotatedParameter -> m.hasRequiredMarker(it)
+                is AnnotatedField -> m.hasRequiredMarker(jmClass)
+                is AnnotatedMethod -> m.getRequiredMarkerFromCorrespondingAccessor(jmClass)
+                is AnnotatedParameter -> m.hasRequiredMarker(jmClass)
                 else -> null
             }
-        } ?: byAnnotation // If a JsonProperty is available, use it to reduce processing costs.
+        }
     }
 
     // Functions that call this may return incorrect results for value classes whose value type is Collection or Map,

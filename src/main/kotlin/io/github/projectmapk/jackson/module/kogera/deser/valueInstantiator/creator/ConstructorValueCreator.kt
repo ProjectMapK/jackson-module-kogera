@@ -20,7 +20,7 @@ internal class ConstructorValueCreator<T : Any>(
     private val declaringClass: Class<T> = constructor.declaringClass
 
     override val isAccessible: Boolean = constructor.isAccessible
-    override val callableName: String = constructor.name
+    override val callableName: String get() = constructor.name
     override val valueParameters: List<JmValueParameter>
     override val bucketGenerator: BucketGenerator
 

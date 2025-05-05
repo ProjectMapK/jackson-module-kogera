@@ -19,7 +19,7 @@ internal class MethodValueCreator<T>(
 ) : ValueCreator<T>() {
     private val companion: JmClass.CompanionObject = declaringJmClass.companion!!
     override val isAccessible: Boolean = method.isAccessible && companion.isAccessible
-    override val callableName: String = method.name
+    override val callableName: String get() = method.name
     override val valueParameters: List<JmValueParameter>
     override val bucketGenerator: BucketGenerator
 

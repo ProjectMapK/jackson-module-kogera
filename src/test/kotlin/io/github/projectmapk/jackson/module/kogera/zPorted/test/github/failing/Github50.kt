@@ -1,10 +1,8 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github.failing
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped
-import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
-import io.github.projectmapk.jackson.module.kogera.zPorted.test.expectFailure
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

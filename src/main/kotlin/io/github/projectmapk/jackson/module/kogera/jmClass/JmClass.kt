@@ -11,7 +11,6 @@ import kotlin.metadata.ClassKind
 import kotlin.metadata.ClassName
 import kotlin.metadata.KmClass
 import kotlin.metadata.isNullable
-import kotlin.metadata.jvm.signature
 import kotlin.metadata.kind
 
 // Jackson Metadata Class

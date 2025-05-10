@@ -11,7 +11,8 @@ class JsonIncludeNonNullTest {
     data class Dto(
         val pN: Primitive? = null,
         val nnoN: NonNullObject? = null,
-        val noN1: NullableObject? = null
+        val noN1: NullableObject? = null,
+        val tupN: TwoUnitPrimitive? = null
     )
 
     @Test

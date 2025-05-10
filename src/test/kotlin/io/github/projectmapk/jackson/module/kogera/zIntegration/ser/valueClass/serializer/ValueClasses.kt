@@ -30,3 +30,12 @@ value class NullableObject(val v: String?) {
         }
     }
 }
+
+@JvmInline
+value class TwoUnitPrimitive(val v: Double) {
+    class Serializer : StdSerializer<TwoUnitPrimitive>(TwoUnitPrimitive::class.java) {
+        override fun serialize(value: TwoUnitPrimitive, gen: JsonGenerator, provider: SerializerProvider) {
+            gen.writeNumber(value.v + 100)
+        }
+    }
+}

@@ -55,13 +55,13 @@ class KotlinInstantiatorsTest {
 
         val subClassInstantiator = object : StdValueInstantiator(
             deserConfig,
-            deserConfig.constructType(DefaultClass::class.java)
+            defaultMapper.constructType(DefaultClass::class.java)
         ) {}
 
         assertThrows<IllegalStateException> {
             kotlinInstantiators.findValueInstantiator(
                 deserConfig,
-                deserConfig.introspect(deserConfig.constructType(TestClass::class.java)),
+                deserConfig.introspect(defaultMapper.constructType(TestClass::class.java)),
                 subClassInstantiator
             )
         }

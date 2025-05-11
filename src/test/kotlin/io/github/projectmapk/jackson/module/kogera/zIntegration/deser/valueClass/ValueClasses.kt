@@ -18,17 +18,6 @@ value class Primitive(val v: Int) {
 }
 
 @JvmInline
-value class TwoUnitPrimitive(val v: Long) {
-    class Deserializer : StdDeserializer<TwoUnitPrimitive>(TwoUnitPrimitive::class.java) {
-        override fun deserialize(p: JsonParser, ctxt: DeserializationContext): TwoUnitPrimitive = TwoUnitPrimitive(p.longValue + 100)
-    }
-
-    class KeyDeserializer : JacksonKeyDeserializer() {
-        override fun deserializeKey(key: String, ctxt: DeserializationContext) = TwoUnitPrimitive(key.toLong() + 100)
-    }
-}
-
-@JvmInline
 value class NonNullObject(val v: String) {
     class Deserializer : StdDeserializer<NonNullObject>(NonNullObject::class.java) {
         override fun deserialize(p: JsonParser, ctxt: DeserializationContext) = NonNullObject(
@@ -53,5 +42,16 @@ value class NullableObject(val v: String?) {
 
     class KeyDeserializer : JacksonKeyDeserializer() {
         override fun deserializeKey(key: String, ctxt: DeserializationContext) = NullableObject("$key-deser")
+    }
+}
+
+@JvmInline
+value class TwoUnitPrimitive(val v: Long) {
+    class Deserializer : StdDeserializer<TwoUnitPrimitive>(TwoUnitPrimitive::class.java) {
+        override fun deserialize(p: JsonParser, ctxt: DeserializationContext): TwoUnitPrimitive = TwoUnitPrimitive(p.longValue + 100)
+    }
+
+    class KeyDeserializer : JacksonKeyDeserializer() {
+        override fun deserializeKey(key: String, ctxt: DeserializationContext) = TwoUnitPrimitive(key.toLong() + 100)
     }
 }

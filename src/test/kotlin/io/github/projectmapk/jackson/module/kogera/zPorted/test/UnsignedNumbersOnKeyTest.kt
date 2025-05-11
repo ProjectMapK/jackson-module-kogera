@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.exc.InputCoercionException
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigInteger
@@ -13,7 +14,8 @@ internal class UnsignedNumbersOnKeyTest {
         val MAPPER = jacksonObjectMapper()
     }
 
-    class ForUByte {
+    @Nested
+    inner class ForUByte {
         private fun makeSrc(v: Int): String = MAPPER.writeValueAsString(mapOf(v to 0))
 
         @Test
@@ -37,7 +39,8 @@ internal class UnsignedNumbersOnKeyTest {
         }
     }
 
-    class ForUShort {
+    @Nested
+    inner class ForUShort {
         private fun makeSrc(v: Int): String = MAPPER.writeValueAsString(mapOf(v to 0))
 
         @Test
@@ -61,7 +64,8 @@ internal class UnsignedNumbersOnKeyTest {
         }
     }
 
-    class ForUInt {
+    @Nested
+    inner class ForUInt {
         private fun makeSrc(v: Long): String = MAPPER.writeValueAsString(mapOf(v to 0))
 
         @Test
@@ -85,7 +89,8 @@ internal class UnsignedNumbersOnKeyTest {
         }
     }
 
-    class ForULong {
+    @Nested
+    inner class ForULong {
         private fun makeSrc(v: BigInteger): String = MAPPER.writeValueAsString(mapOf(v to 0))
 
         @Test

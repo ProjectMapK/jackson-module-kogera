@@ -47,6 +47,12 @@ class WithoutCustomDeserializeMethodTest {
                 assertNotEquals(NullableObject(null), result, "#209 has been fixed.")
             }
         }
+
+        @Test
+        fun twoUnitPrimitive() {
+            val result = defaultMapper.readValue<TwoUnitPrimitive>("1")
+            assertEquals(TwoUnitPrimitive(1), result)
+        }
     }
 
     data class Dst(
@@ -55,7 +61,9 @@ class WithoutCustomDeserializeMethodTest {
         val nnoNn: NonNullObject,
         val nnoN: NonNullObject?,
         val noNn: NullableObject,
-        val noN: NullableObject?
+        val noN: NullableObject?,
+        val tupNn: TwoUnitPrimitive,
+        val tupN: TwoUnitPrimitive?
     )
 
     @Test
@@ -66,7 +74,9 @@ class WithoutCustomDeserializeMethodTest {
             NonNullObject("foo"),
             NonNullObject("bar"),
             NullableObject("baz"),
-            NullableObject("qux")
+            NullableObject("qux"),
+            TwoUnitPrimitive(3),
+            TwoUnitPrimitive(4)
         )
         val src = mapper.writeValueAsString(expected)
         val result = mapper.readValue<Dst>(src)
@@ -82,6 +92,8 @@ class WithoutCustomDeserializeMethodTest {
             NonNullObject("foo"),
             null,
             NullableObject(null),
+            null,
+            TwoUnitPrimitive(3),
             null
         )
         val src = mapper.writeValueAsString(expected)

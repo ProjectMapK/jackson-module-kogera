@@ -26,7 +26,11 @@ class JacksonInjectTest {
         @get:JacksonInject("noNNn")
         val noNNn: NullableObject?,
         @get:JacksonInject("noNN")
-        val noNN: NullableObject?
+        val noNN: NullableObject?,
+        @get:JacksonInject("tupNn")
+        val tupNn: TwoUnitPrimitive,
+        @get:JacksonInject("tupN")
+        val tupN: TwoUnitPrimitive?
     )
 
     @Test
@@ -39,7 +43,9 @@ class JacksonInjectTest {
             "noNnNn" to NullableObject("noNnNn"),
             "noNnN" to NullableObject(null),
             "noNNn" to NullableObject("noNNn"),
-            "noNN" to NullableObject(null)
+            "noNN" to NullableObject(null),
+            "tupNn" to TwoUnitPrimitive(3),
+            "tupN" to TwoUnitPrimitive(4)
         )
 
         val reader = jacksonObjectMapper()

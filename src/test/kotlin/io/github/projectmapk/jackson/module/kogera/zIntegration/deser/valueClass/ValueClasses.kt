@@ -44,3 +44,14 @@ value class NullableObject(val v: String?) {
         override fun deserializeKey(key: String, ctxt: DeserializationContext) = NullableObject("$key-deser")
     }
 }
+
+@JvmInline
+value class TwoUnitPrimitive(val v: Long) {
+    class Deserializer : StdDeserializer<TwoUnitPrimitive>(TwoUnitPrimitive::class.java) {
+        override fun deserialize(p: JsonParser, ctxt: DeserializationContext): TwoUnitPrimitive = TwoUnitPrimitive(p.longValue + 100)
+    }
+
+    class KeyDeserializer : JacksonKeyDeserializer() {
+        override fun deserializeKey(key: String, ctxt: DeserializationContext) = TwoUnitPrimitive(key.toLong() + 100)
+    }
+}

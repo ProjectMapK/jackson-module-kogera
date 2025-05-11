@@ -51,7 +51,7 @@ class WithoutCustomDeserializeMethodTest {
         @Test
         fun twoUnitPrimitive() {
             val result = defaultMapper.readValue<TwoUnitPrimitive>("1")
-            assertEquals(TwoUnitPrimitive(1.0), result)
+            assertEquals(TwoUnitPrimitive(1), result)
         }
     }
 
@@ -75,8 +75,8 @@ class WithoutCustomDeserializeMethodTest {
             NonNullObject("bar"),
             NullableObject("baz"),
             NullableObject("qux"),
-            TwoUnitPrimitive(3.0),
-            TwoUnitPrimitive(4.0)
+            TwoUnitPrimitive(3),
+            TwoUnitPrimitive(4)
         )
         val src = mapper.writeValueAsString(expected)
         val result = mapper.readValue<Dst>(src)
@@ -93,7 +93,7 @@ class WithoutCustomDeserializeMethodTest {
             null,
             NullableObject(null),
             null,
-            TwoUnitPrimitive(3.0),
+            TwoUnitPrimitive(3),
             null
         )
         val src = mapper.writeValueAsString(expected)

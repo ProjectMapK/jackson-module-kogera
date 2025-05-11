@@ -52,7 +52,7 @@ class DeserializeByConstructorWithoutDefaultArgumentsTest {
 
     @Test
     fun test32() {
-        val expected = callPrimaryConstructor<Dst32> { TwoUnitPrimitive(it.index.toDouble()) }
+        val expected = callPrimaryConstructor<Dst32> { TwoUnitPrimitive(it.index.toLong()) }
         val src = defaultMapper.writeValueAsString(expected)
         Assertions.assertEquals(expected, defaultMapper.readValue<Dst32>(src))
     }
@@ -95,7 +95,7 @@ class DeserializeByConstructorWithoutDefaultArgumentsTest {
 
     @Test
     fun test33() {
-        val expected = callPrimaryConstructor<Dst33> { TwoUnitPrimitive(it.index.toDouble()) }
+        val expected = callPrimaryConstructor<Dst33> { TwoUnitPrimitive(it.index.toLong()) }
         val src = defaultMapper.writeValueAsString(expected)
         Assertions.assertEquals(expected, defaultMapper.readValue<Dst33>(src))
     }
@@ -169,7 +169,7 @@ class DeserializeByConstructorWithoutDefaultArgumentsTest {
 
     @Test
     fun test64() {
-        val expected = callPrimaryConstructor<Dst64> { TwoUnitPrimitive(it.index.toDouble()) }
+        val expected = callPrimaryConstructor<Dst64> { TwoUnitPrimitive(it.index.toLong()) }
         val src = defaultMapper.writeValueAsString(expected)
         Assertions.assertEquals(expected, defaultMapper.readValue<Dst64>(src))
     }
@@ -244,7 +244,7 @@ class DeserializeByConstructorWithoutDefaultArgumentsTest {
 
     @Test
     fun test65() {
-        val expected = callPrimaryConstructor<Dst65> { TwoUnitPrimitive(it.index.toDouble()) }
+        val expected = callPrimaryConstructor<Dst65> { TwoUnitPrimitive(it.index.toLong()) }
         val src = defaultMapper.writeValueAsString(expected)
         Assertions.assertEquals(expected, defaultMapper.readValue<Dst65>(src))
     }
@@ -381,7 +381,7 @@ class DeserializeByConstructorWithoutDefaultArgumentsTest {
 
     @Test
     fun testMax() {
-        val expected = callPrimaryConstructor<DstMax> { TwoUnitPrimitive(it.index.toDouble()) }
+        val expected = callPrimaryConstructor<DstMax> { TwoUnitPrimitive(it.index.toLong()) }
         val src = defaultMapper.writeValueAsString(expected)
         assertReflectEquals(expected, defaultMapper.readValue<DstMax>(src))
     }

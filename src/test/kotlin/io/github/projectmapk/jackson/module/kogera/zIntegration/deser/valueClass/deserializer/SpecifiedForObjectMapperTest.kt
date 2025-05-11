@@ -59,7 +59,7 @@ class SpecifiedForObjectMapperTest {
         @Test
         fun twoUnitPrimitive() {
             val result = mapper.readValue<TwoUnitPrimitive>("1")
-            assertEquals(TwoUnitPrimitive(101.0), result)
+            assertEquals(TwoUnitPrimitive(101), result)
         }
     }
 
@@ -83,8 +83,8 @@ class SpecifiedForObjectMapperTest {
             NonNullObject("bar"),
             NullableObject("baz"),
             NullableObject("qux"),
-            TwoUnitPrimitive(3.0),
-            TwoUnitPrimitive(4.0)
+            TwoUnitPrimitive(3),
+            TwoUnitPrimitive(4)
         )
         val src = mapper.writeValueAsString(base)
         val result = mapper.readValue<Dst>(src)
@@ -96,8 +96,8 @@ class SpecifiedForObjectMapperTest {
             NonNullObject("bar-deser"),
             NullableObject("baz-deser"),
             NullableObject("qux-deser"),
-            TwoUnitPrimitive(103.0),
-            TwoUnitPrimitive(104.0)
+            TwoUnitPrimitive(103),
+            TwoUnitPrimitive(104)
         )
         assertEquals(expected, result)
     }
@@ -111,7 +111,7 @@ class SpecifiedForObjectMapperTest {
             null,
             NullableObject(null),
             null,
-            TwoUnitPrimitive(3.0),
+            TwoUnitPrimitive(3),
             null
         )
         val src = mapper.writeValueAsString(base)
@@ -124,7 +124,7 @@ class SpecifiedForObjectMapperTest {
             null,
             NullableObject("null-value-deser"),
             null,
-            TwoUnitPrimitive(103.0),
+            TwoUnitPrimitive(103),
             null
         )
         assertEquals(expected, result)

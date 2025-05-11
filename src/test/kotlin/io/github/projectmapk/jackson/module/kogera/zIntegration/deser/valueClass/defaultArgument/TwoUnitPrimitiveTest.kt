@@ -13,8 +13,8 @@ class TwoUnitPrimitiveTest {
     }
 
     data class ByConstructor(
-        val nn: TwoUnitPrimitive = TwoUnitPrimitive(1.0),
-        val nNn: TwoUnitPrimitive? = TwoUnitPrimitive(2.0),
+        val nn: TwoUnitPrimitive = TwoUnitPrimitive(1),
+        val nNn: TwoUnitPrimitive? = TwoUnitPrimitive(2),
         val nN: TwoUnitPrimitive? = null
     )
 
@@ -28,8 +28,8 @@ class TwoUnitPrimitiveTest {
             @JvmStatic
             @JsonCreator
             fun creator(
-                nn: TwoUnitPrimitive = TwoUnitPrimitive(1.0),
-                nNn: TwoUnitPrimitive? = TwoUnitPrimitive(2.0),
+                nn: TwoUnitPrimitive = TwoUnitPrimitive(1),
+                nNn: TwoUnitPrimitive? = TwoUnitPrimitive(2),
                 nN: TwoUnitPrimitive? = null
             ) = ByFactory(nn, nNn, nN)
         }

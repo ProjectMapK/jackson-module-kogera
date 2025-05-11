@@ -47,7 +47,7 @@ class WithoutCustomDeserializeMethodTest {
         @Test
         fun twoUnitPrimitive() {
             val result = defaultMapper.readValue<Map<TwoUnitPrimitive, String?>>("""{"1":null}""")
-            assertEquals(mapOf(TwoUnitPrimitive(1.0) to null), result)
+            assertEquals(mapOf(TwoUnitPrimitive(1) to null), result)
         }
     }
 
@@ -73,7 +73,7 @@ class WithoutCustomDeserializeMethodTest {
             mapOf(Primitive(1) to null),
             mapOf(NonNullObject("foo") to null),
             mapOf(NullableObject("bar") to null),
-            mapOf(TwoUnitPrimitive(2.0) to null)
+            mapOf(TwoUnitPrimitive(2) to null)
         )
 
         assertEquals(expected, result)

@@ -61,8 +61,8 @@ class InCreatorArgumentTest {
             NonNullObject("nnoN"),
             NullableObject("noNn"),
             NullableObject("noN"),
-            TwoUnitPrimitive(3.0),
-            TwoUnitPrimitive(4.0)
+            TwoUnitPrimitive(3),
+            TwoUnitPrimitive(4)
         )
         val result = mapper.readValue<Dst>(mapper.writeValueAsString(base))
 

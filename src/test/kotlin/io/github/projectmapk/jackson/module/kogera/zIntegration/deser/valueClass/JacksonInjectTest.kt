@@ -44,8 +44,8 @@ class JacksonInjectTest {
             "noNnN" to NullableObject(null),
             "noNNn" to NullableObject("noNNn"),
             "noNN" to NullableObject(null),
-            "tupNn" to TwoUnitPrimitive(3.0),
-            "tupN" to TwoUnitPrimitive(4.0)
+            "tupNn" to TwoUnitPrimitive(3),
+            "tupN" to TwoUnitPrimitive(4)
         )
 
         val reader = jacksonObjectMapper()

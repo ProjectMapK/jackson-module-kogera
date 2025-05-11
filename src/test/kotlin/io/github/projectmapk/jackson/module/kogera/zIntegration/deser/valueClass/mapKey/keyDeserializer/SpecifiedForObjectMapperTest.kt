@@ -47,7 +47,7 @@ class SpecifiedForObjectMapperTest {
         @Test
         fun twoUnitPrimitive() {
             val result = mapper.readValue<Map<TwoUnitPrimitive, String?>>("""{"1":null}""")
-            assertEquals(mapOf(TwoUnitPrimitive(101.0) to null), result)
+            assertEquals(mapOf(TwoUnitPrimitive(101) to null), result)
         }
     }
 
@@ -73,7 +73,7 @@ class SpecifiedForObjectMapperTest {
             mapOf(Primitive(101) to null),
             mapOf(NonNullObject("foo-deser") to null),
             mapOf(NullableObject("bar-deser") to null),
-            mapOf(TwoUnitPrimitive(101.0) to null)
+            mapOf(TwoUnitPrimitive(101) to null)
         )
 
         assertEquals(expected, result)

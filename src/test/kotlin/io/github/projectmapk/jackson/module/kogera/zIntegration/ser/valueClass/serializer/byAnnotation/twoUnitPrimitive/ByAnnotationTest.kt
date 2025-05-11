@@ -29,14 +29,14 @@ class ByAnnotationTest {
 
     @Test
     fun nonNull() {
-        val src = NonNullSrc(TwoUnitPrimitive(0.0), TwoUnitPrimitive(1.0), TwoUnitPrimitive(2.0))
+        val src = NonNullSrc(TwoUnitPrimitive(0), TwoUnitPrimitive(1), TwoUnitPrimitive(2))
 
         assertEquals(
             """
                 {
-                  "paramAnn" : 100.0,
-                  "getterAnn" : 101.0,
-                  "fieldAnn" : 102.0
+                  "paramAnn" : 100,
+                  "getterAnn" : 101,
+                  "fieldAnn" : 102
                 }
             """.trimIndent(),
             writer.writeValueAsString(src)
@@ -54,14 +54,14 @@ class ByAnnotationTest {
 
     @Test
     fun nullableWithoutNull() {
-        val src = NullableSrc(TwoUnitPrimitive(0.0), TwoUnitPrimitive(1.0), TwoUnitPrimitive(2.0))
+        val src = NullableSrc(TwoUnitPrimitive(0), TwoUnitPrimitive(1), TwoUnitPrimitive(2))
 
         assertEquals(
             """
                 {
-                  "paramAnn" : 100.0,
-                  "getterAnn" : 101.0,
-                  "fieldAnn" : 102.0
+                  "paramAnn" : 100,
+                  "getterAnn" : 101,
+                  "fieldAnn" : 102
                 }
             """.trimIndent(),
             writer.writeValueAsString(src)

@@ -30,7 +30,7 @@ class TwoUnitPrimitiveTest {
                 }
             """.trimIndent()
         )
-        assertEquals(NonNull(TwoUnitPrimitive(101.0), TwoUnitPrimitive(102.0)), result)
+        assertEquals(NonNull(TwoUnitPrimitive(101), TwoUnitPrimitive(102)), result)
     }
 
     data class Nullable(
@@ -52,7 +52,7 @@ class TwoUnitPrimitiveTest {
                 }
                 """.trimIndent()
             )
-            assertEquals(Nullable(TwoUnitPrimitive(101.0), TwoUnitPrimitive(102.0)), result)
+            assertEquals(Nullable(TwoUnitPrimitive(101), TwoUnitPrimitive(102)), result)
         }
 
         @Test

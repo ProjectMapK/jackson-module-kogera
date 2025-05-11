@@ -18,13 +18,13 @@ value class Primitive(val v: Int) {
 }
 
 @JvmInline
-value class TwoUnitPrimitive(val v: Double) {
+value class TwoUnitPrimitive(val v: Long) {
     class Deserializer : StdDeserializer<TwoUnitPrimitive>(TwoUnitPrimitive::class.java) {
-        override fun deserialize(p: JsonParser, ctxt: DeserializationContext): TwoUnitPrimitive = TwoUnitPrimitive(p.doubleValue + 100)
+        override fun deserialize(p: JsonParser, ctxt: DeserializationContext): TwoUnitPrimitive = TwoUnitPrimitive(p.longValue + 100)
     }
 
     class KeyDeserializer : JacksonKeyDeserializer() {
-        override fun deserializeKey(key: String, ctxt: DeserializationContext) = TwoUnitPrimitive(key.toDouble() + 100)
+        override fun deserializeKey(key: String, ctxt: DeserializationContext) = TwoUnitPrimitive(key.toLong() + 100)
     }
 }
 

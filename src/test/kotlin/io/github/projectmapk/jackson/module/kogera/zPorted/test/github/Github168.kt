@@ -13,7 +13,7 @@ class TestGithub168 {
     class TestClass(@JsonProperty(value = "foo", required = true) foo: String?, val baz: String)
 
     @Test
-    fun testIfRequiredIsReallyRequiredWhenNullused() {
+    fun testIfRequiredIsReallyRequiredWhenNullUsed() {
         val obj = jacksonObjectMapper().readValue<TestClass>("""{"foo":null,"baz":"whatever"}""")
         assertEquals("whatever", obj.baz)
     }
@@ -26,7 +26,7 @@ class TestGithub168 {
     }
 
     @Test
-    fun testIfRequiredIsReallyRequiredWhenVauePresent() {
+    fun testIfRequiredIsReallyRequiredWhenValuePresent() {
         val obj = jacksonObjectMapper().readValue<TestClass>("""{"foo":"yay!","baz":"whatever"}""")
         assertEquals("whatever", obj.baz)
     }

@@ -1,7 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
-import io.github.projectmapk.jackson.module.kogera.test.github.zPported.CloneableJavaObj
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

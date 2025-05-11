@@ -2,6 +2,7 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class TestGithub148 {
@@ -32,7 +33,8 @@ class TestGithub148 {
         val type: IncorrectType
     )
 
-    class DemoApplicationTests {
+    @Nested
+    inner class DemoApplicationTests {
         val objectMapper = jacksonObjectMapper()
 
         @Test

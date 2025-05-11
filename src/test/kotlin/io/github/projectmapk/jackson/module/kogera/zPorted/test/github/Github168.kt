@@ -2,7 +2,7 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.exc.InvalidNullException
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -14,20 +14,20 @@ class TestGithub168 {
 
     @Test
     fun testIfRequiredIsReallyRequiredWhenNullUsed() {
-        val obj = jacksonObjectMapper().readValue<TestClass>("""{"foo":null,"baz":"whatever"}""")
+        val obj = defaultMapper.readValue<TestClass>("""{"foo":null,"baz":"whatever"}""")
         assertEquals("whatever", obj.baz)
     }
 
     @Test
     fun testIfRequiredIsReallyRequiredWhenAbsent() {
         assertThrows<InvalidNullException> {
-            jacksonObjectMapper().readValue<TestClass>("""{"baz":"whatever"}""")
+            defaultMapper.readValue<TestClass>("""{"baz":"whatever"}""")
         }
     }
 
     @Test
     fun testIfRequiredIsReallyRequiredWhenValuePresent() {
-        val obj = jacksonObjectMapper().readValue<TestClass>("""{"foo":"yay!","baz":"whatever"}""")
+        val obj = defaultMapper.readValue<TestClass>("""{"foo":"yay!","baz":"whatever"}""")
         assertEquals("whatever", obj.baz)
     }
 }

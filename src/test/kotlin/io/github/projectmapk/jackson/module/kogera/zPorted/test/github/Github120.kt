@@ -2,7 +2,7 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -20,13 +20,12 @@ class TestGithub120 {
 
     @Test
     fun testNestedJsonValue() {
-        val om = jacksonObjectMapper()
         val foo = Foo(4711L)
         val bar = Bar(foo)
-        val asString = om.writeValueAsString(bar)
+        val asString = defaultMapper.writeValueAsString(bar)
         assertEquals("{\"foo\":4711}", asString)
 
-        val fromString = om.readValue(asString, Bar::class.java)
+        val fromString = defaultMapper.readValue(asString, Bar::class.java)
         assertEquals(bar, fromString)
     }
 }

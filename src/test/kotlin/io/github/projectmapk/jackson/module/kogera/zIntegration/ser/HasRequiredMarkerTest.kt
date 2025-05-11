@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.projectmapk.jackson.module.kogera.KotlinFeature
 import io.github.projectmapk.jackson.module.kogera.KotlinModule
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -17,8 +17,6 @@ class HasRequiredMarkerTest {
     private fun BeanDescription.isRequired(propertyName: String): Boolean = findProperties()
         .find { it.name == propertyName }
         ?.isRequired == true
-
-    val mapper = jacksonObjectMapper()
 
     class GetterTarget {
         val nullableProp: String? get() = null
@@ -34,7 +32,7 @@ class HasRequiredMarkerTest {
 
     @Test
     fun getterTest() {
-        val desc = mapper.introspectSer<GetterTarget>()
+        val desc = defaultMapper.introspectSer<GetterTarget>()
 
         assertFalse(desc.isRequired("nullableProp"))
         assertFalse(desc.isRequired("nullableField"))
@@ -53,7 +51,7 @@ class HasRequiredMarkerTest {
 
     @Test
     fun overrideByAnnotationTest() {
-        val desc = mapper.introspectSer<AnnotationTarget>()
+        val desc = defaultMapper.introspectSer<AnnotationTarget>()
 
         assertTrue(desc.isRequired("nullableProp"))
         assertTrue(desc.isRequired("nullableField"))

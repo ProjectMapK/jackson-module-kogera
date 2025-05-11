@@ -2,15 +2,14 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.NullNode
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
 class TestGithub490 {
-    val mapper = jacksonObjectMapper()
-    val value: DataClassWithAllNullableParams = mapper.readValue(
+    val value: DataClassWithAllNullableParams = defaultMapper.readValue(
         "{" +
             "\"jsonNodeValueWithNullAsDefaultProvidedNull\":null, " +
             "\"jsonNodeValueProvidedNull\":null}"

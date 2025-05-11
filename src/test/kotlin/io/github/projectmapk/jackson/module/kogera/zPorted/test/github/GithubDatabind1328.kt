@@ -3,7 +3,7 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -11,8 +11,7 @@ import org.junit.jupiter.api.Test
 class TestGithubDatabind1328 {
     @Test
     fun testPolymorphicWithEnum() {
-        val mapper = jacksonObjectMapper()
-        val invite = mapper.readValue<Invite>(
+        val invite = defaultMapper.readValue<Invite>(
             """|{
                    |  "kind": "CONTACT",
                    |  "to": {

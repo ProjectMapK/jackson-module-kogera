@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -15,16 +15,14 @@ class TestSequenceDeserializer {
     @Test
     fun deserializeSequence() {
         val list = listOf("Test", "Test1")
-        val objectMapper = jacksonObjectMapper()
-        val result = objectMapper.readValue<Data>("{\"value\":[\"Test\",\"Test1\"]}")
+        val result = defaultMapper.readValue<Data>("{\"value\":[\"Test\",\"Test1\"]}")
         assertEquals(list, result.value.toList())
     }
 
     @Test
     fun deserializeEmptySequence() {
         val list = listOf<String>()
-        val objectMapper = jacksonObjectMapper()
-        val result = objectMapper.readValue<Data>("{\"value\":[]}")
+        val result = defaultMapper.readValue<Data>("{\"value\":[]}")
         assertEquals(list, result.value.toList())
     }
 
@@ -32,8 +30,7 @@ class TestSequenceDeserializer {
     fun testSerializeSequence() {
         val sequence = listOf("item1", "item2").asSequence()
         val data = Data(sequence)
-        val objectMapper = jacksonObjectMapper()
-        val result = objectMapper.writeValueAsString(data)
+        val result = defaultMapper.writeValueAsString(data)
         assertEquals("{\"value\":[\"item1\",\"item2\"]}", result)
     }
 
@@ -41,8 +38,7 @@ class TestSequenceDeserializer {
     fun testSerializeEmptySequence() {
         val sequence = listOf<String>().asSequence()
         val data = Data(sequence)
-        val objectMapper = jacksonObjectMapper()
-        val result = objectMapper.writeValueAsString(data)
+        val result = defaultMapper.writeValueAsString(data)
         assertEquals("{\"value\":[]}", result)
     }
 
@@ -63,10 +59,8 @@ class TestSequenceDeserializer {
 
     @Test
     fun contentUsingTest() {
-        val mapper = jacksonObjectMapper()
-
-        val listResult = mapper.writeValueAsString(ListWrapper(listOf("foo")))
-        val sequenceResult = mapper.writeValueAsString(SequenceWrapper(sequenceOf("foo")))
+        val listResult = defaultMapper.writeValueAsString(ListWrapper(listOf("foo")))
+        val sequenceResult = defaultMapper.writeValueAsString(SequenceWrapper(sequenceOf("foo")))
 
         assertEquals("""{"value":["foo-ser"]}""", sequenceResult)
         assertEquals(listResult, sequenceResult)
@@ -75,8 +69,7 @@ class TestSequenceDeserializer {
     // @see #674
     @Test
     fun sequenceOfTest() {
-        val mapper = jacksonObjectMapper()
-        val result = mapper.writeValueAsString(sequenceOf("foo"))
+        val result = defaultMapper.writeValueAsString(sequenceOf("foo"))
 
         assertEquals("""["foo"]""", result)
     }

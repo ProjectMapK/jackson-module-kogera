@@ -1,7 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.deserializer.byAnnotation.specifiedForProperty
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.NonNullObject
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -9,10 +9,6 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class NonNullObjectTest {
-    companion object {
-        val mapper = jacksonObjectMapper()
-    }
-
     data class NonNull(
         @get:JsonDeserialize(using = NonNullObject.Deserializer::class)
         val getterAnn: NonNullObject,
@@ -22,7 +18,7 @@ class NonNullObjectTest {
 
     @Test
     fun nonNull() {
-        val result = mapper.readValue<NonNull>(
+        val result = defaultMapper.readValue<NonNull>(
             """
                 {
                   "getterAnn" : "foo",
@@ -44,7 +40,7 @@ class NonNullObjectTest {
     inner class NullableTest {
         @Test
         fun nonNullInput() {
-            val result = mapper.readValue<Nullable>(
+            val result = defaultMapper.readValue<Nullable>(
                 """
                 {
                   "getterAnn" : "foo",
@@ -57,7 +53,7 @@ class NonNullObjectTest {
 
         @Test
         fun nullInput() {
-            val result = mapper.readValue<Nullable>(
+            val result = defaultMapper.readValue<Nullable>(
                 """
                 {
                   "getterAnn" : null,

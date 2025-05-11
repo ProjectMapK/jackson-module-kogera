@@ -2,17 +2,16 @@ package io.github.projectmapk.jackson.module.kogera.zPorted
 
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.KotlinInstantiators
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.KotlinValueInstantiator
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class KotlinInstantiatorsTest {
-    private val mapper = jacksonObjectMapper()
-    private val deserConfig = mapper.deserializationConfig
+    private val deserConfig = defaultMapper.deserializationConfig
 
     private val kotlinInstantiators = KotlinInstantiators(
         ReflectionCache(10, 10),
@@ -23,7 +22,7 @@ class KotlinInstantiatorsTest {
 
     @Test
     fun `Provides default instantiator for Java class`() {
-        val javaType = mapper.constructType(String::class.java)
+        val javaType = defaultMapper.constructType(String::class.java)
         val defaultInstantiator = StdValueInstantiator(deserConfig, javaType)
         val instantiator = kotlinInstantiators.findValueInstantiator(
             deserConfig,
@@ -38,7 +37,7 @@ class KotlinInstantiatorsTest {
     fun `Provides KotlinValueInstantiator for Kotlin class`() {
         class TestClass
 
-        val javaType = mapper.constructType(TestClass::class.java)
+        val javaType = defaultMapper.constructType(TestClass::class.java)
         val instantiator = kotlinInstantiators.findValueInstantiator(
             deserConfig,
             deserConfig.introspect(javaType),
@@ -56,13 +55,13 @@ class KotlinInstantiatorsTest {
 
         val subClassInstantiator = object : StdValueInstantiator(
             deserConfig,
-            mapper.constructType(DefaultClass::class.java)
+            defaultMapper.constructType(DefaultClass::class.java)
         ) {}
 
         assertThrows<IllegalStateException> {
             kotlinInstantiators.findValueInstantiator(
                 deserConfig,
-                deserConfig.introspect(mapper.constructType(TestClass::class.java)),
+                deserConfig.introspect(defaultMapper.constructType(TestClass::class.java)),
                 subClassInstantiator
             )
         }

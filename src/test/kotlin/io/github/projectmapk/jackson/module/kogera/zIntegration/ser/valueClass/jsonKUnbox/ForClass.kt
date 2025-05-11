@@ -1,7 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.zIntegration.ser.valueClass.jsonKUnbox
 
 import io.github.projectmapk.jackson.module.kogera.annotation.JsonKUnbox
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -43,7 +43,7 @@ class ForClass {
         val expected = """
             {"p0":0,"p1":1,"p2":null,"nno0":"0","nno1":"1","nno2":null,"no0":"0","no1":null,"no2":"2","no3":null,"tup0":0,"tup1":1,"tup2":null}
         """.trimIndent()
-        val actual = jacksonObjectMapper().writeValueAsString(Dto())
+        val actual = defaultMapper.writeValueAsString(Dto())
 
         assertEquals(expected, actual)
     }

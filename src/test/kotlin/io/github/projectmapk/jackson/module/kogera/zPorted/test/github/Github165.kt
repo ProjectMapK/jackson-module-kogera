@@ -2,7 +2,7 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -33,7 +33,7 @@ class TestGithub165 {
 
     @Test
     fun testJsonSetterCalledKotlin() {
-        val obj = jacksonObjectMapper().readValue<Github165KotlinTest>("""{"name":"Fred","year":"1942"}""")
+        val obj = defaultMapper.readValue<Github165KotlinTest>("""{"name":"Fred","year":"1942"}""")
         assertEquals("1942", obj.showYear)
         assertEquals("Fred", obj.showName)
         assertTrue(obj.yearSetterCalled)
@@ -42,7 +42,7 @@ class TestGithub165 {
 
     @Test
     fun testJsonSetterCalledJava() {
-        val obj = jacksonObjectMapper()
+        val obj = defaultMapper
             .readValue<Github165JavaTest>("""{"name":"Fred","year":"1942"}""")
         assertEquals("1942", obj.showYear)
         assertEquals("Fred", obj.showName)

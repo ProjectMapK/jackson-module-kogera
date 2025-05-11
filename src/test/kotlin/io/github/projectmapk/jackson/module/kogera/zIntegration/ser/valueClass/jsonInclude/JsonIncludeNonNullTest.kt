@@ -1,7 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.zIntegration.ser.valueClass.jsonInclude
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
@@ -17,9 +17,8 @@ class JsonIncludeNonNullTest {
 
     @Test
     fun success() {
-        val mapper = jacksonObjectMapper()
         val dto = Dto()
-        assertEquals("{}", mapper.writeValueAsString(dto))
+        assertEquals("{}", defaultMapper.writeValueAsString(dto))
     }
 
     // It is under consideration whether it should be serialized because it is non-null in Kotlin,
@@ -33,9 +32,8 @@ class JsonIncludeNonNullTest {
 
     @Test
     fun fails() {
-        val mapper = jacksonObjectMapper()
         val dto = DtoFails()
-        val result = mapper.writeValueAsString(dto)
+        val result = defaultMapper.writeValueAsString(dto)
         assertNotEquals("""{"map":{}}""", result)
         assertEquals("""{"noNn":null,"noN2":null,"map":{"noNn":null}}""", result)
     }

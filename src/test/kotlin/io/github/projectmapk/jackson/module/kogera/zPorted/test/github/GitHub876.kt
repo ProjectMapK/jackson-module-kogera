@@ -3,6 +3,7 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 import com.fasterxml.jackson.annotation.JsonSetter
 import com.fasterxml.jackson.annotation.Nulls
 import io.github.projectmapk.jackson.module.kogera.configOverride
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -21,14 +22,12 @@ class GitHub876 {
 
     @Nested
     inner class WithAnnotationWithoutDefaultTest {
-        val mapper = jacksonObjectMapper()
-
         @Test
         fun nullInput() {
             val input = """{"list": null, "map": null, "string": null}"""
             val expected = WithAnnotationWithoutDefault(emptyList(), emptyMap(), "")
 
-            val actual = mapper.readValue<WithAnnotationWithoutDefault>(input)
+            val actual = defaultMapper.readValue<WithAnnotationWithoutDefault>(input)
 
             assertEquals(expected, actual)
         }
@@ -38,7 +37,7 @@ class GitHub876 {
             val input = """{}"""
             val expected = WithAnnotationWithoutDefault(emptyList(), emptyMap(), "")
 
-            val actual = mapper.readValue<WithAnnotationWithoutDefault>(input)
+            val actual = defaultMapper.readValue<WithAnnotationWithoutDefault>(input)
 
             assertEquals(expected, actual)
         }
@@ -55,15 +54,13 @@ class GitHub876 {
 
     @Nested
     inner class WithAnnotationWithDefaultTest {
-        val mapper = jacksonObjectMapper()
-
         @Test
         fun nullInput() {
             // If null is explicitly specified, the default value is not used
             val input = """{"list": null, "map": null, "string": null}"""
             val expected = WithAnnotationWithDefault(emptyList(), emptyMap(), "")
 
-            val actual = mapper.readValue<WithAnnotationWithDefault>(input)
+            val actual = defaultMapper.readValue<WithAnnotationWithDefault>(input)
 
             assertEquals(expected, actual)
         }
@@ -74,7 +71,7 @@ class GitHub876 {
             val input = """{}"""
             val expected = WithAnnotationWithDefault()
 
-            val actual = mapper.readValue<WithAnnotationWithDefault>(input)
+            val actual = defaultMapper.readValue<WithAnnotationWithDefault>(input)
 
             assertEquals(expected, actual)
         }

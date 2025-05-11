@@ -2,7 +2,7 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -31,7 +31,7 @@ class TestGithub25 {
 
     @Test
     fun testSerWithDelegates() {
-        val json = jacksonObjectMapper().writeValueAsString(
+        val json = defaultMapper.writeValueAsString(
             SomethingWithDelegates(linkedMapOf("otherData1" to "1", "otherData2" to "2", "otherData3" to "3"))
                 .withOtherData("exists")
         )
@@ -40,7 +40,7 @@ class TestGithub25 {
 
     @Test fun testDeserWithDelegates() {
         val json = """{"changeable":"new value","data":{"otherData1":"1","otherData2":"2","otherData3":"3"},"somethingNotNull":"exists"}"""
-        val obj: SomethingWithDelegates = jacksonObjectMapper()
+        val obj: SomethingWithDelegates = defaultMapper
             .readValue(json)
         assertEquals("fred", obj.name) // not set by the Json, isn't in the constructor and is read only delegate
         assertEquals("ignored", obj.ignoreMe)

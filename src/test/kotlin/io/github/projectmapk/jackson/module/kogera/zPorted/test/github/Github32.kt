@@ -2,7 +2,7 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.exc.InvalidNullException
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.assertThrows
 private class TestGithub32 {
     @Test
     fun `valid mandatory data class constructor param`() {
-        jacksonObjectMapper().readValue<Person>(
+        defaultMapper.readValue<Person>(
             """
         {
             "firstName": "James",
@@ -25,7 +25,7 @@ private class TestGithub32 {
         val thrown = assertThrows<InvalidNullException>(
             "MissingKotlinParameterException with missing `firstName` parameter"
         ) {
-            jacksonObjectMapper().readValue<Person>(
+            defaultMapper.readValue<Person>(
                 """
                 {
                     "lastName": "Bond"
@@ -41,7 +41,7 @@ private class TestGithub32 {
 
     @Test fun `null mandatory data class constructor param`() {
         val thrown = assertThrows<InvalidNullException> {
-            jacksonObjectMapper().readValue<Person>(
+            defaultMapper.readValue<Person>(
                 """
             {
                 "firstName": null,
@@ -58,7 +58,7 @@ private class TestGithub32 {
 
     @Test fun `missing mandatory constructor param - nested in class with default constructor`() {
         val thrown = assertThrows<InvalidNullException> {
-            jacksonObjectMapper().readValue<WrapperWithDefaultContructor>(
+            defaultMapper.readValue<WrapperWithDefaultContructor>(
                 """
             {
                 "person": {
@@ -76,7 +76,7 @@ private class TestGithub32 {
 
     @Test fun `missing mandatory constructor param - nested in class with single arg constructor`() {
         val thrown = assertThrows<InvalidNullException> {
-            jacksonObjectMapper().readValue<WrapperWithArgsContructor>(
+            defaultMapper.readValue<WrapperWithArgsContructor>(
                 """
                 {
                     "person": {
@@ -94,7 +94,7 @@ private class TestGithub32 {
 
     @Test fun `missing mandatory constructor param - nested in class with List arg constructor`() {
         val thrown = assertThrows<InvalidNullException> {
-            jacksonObjectMapper().readValue<Crowd>(
+            defaultMapper.readValue<Crowd>(
                 """
             {
                 "people": [

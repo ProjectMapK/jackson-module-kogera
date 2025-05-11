@@ -1,6 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -10,12 +10,12 @@ class TestGithub29 {
 
     @Test
     fun testDefaultValuesInDeser() {
-        val check1: Github29TestObj = jacksonObjectMapper()
+        val check1: Github29TestObj = defaultMapper
             .readValue("""{"name": "bla"}""")
         assertEquals("bla", check1.name)
         assertEquals("test", check1.other)
 
-        val check2: Github29TestObj = jacksonObjectMapper()
+        val check2: Github29TestObj = defaultMapper
             .readValue("""{"name": "bla", "other": "fish"}""")
         assertEquals("bla", check2.name)
         assertEquals("fish", check2.other)

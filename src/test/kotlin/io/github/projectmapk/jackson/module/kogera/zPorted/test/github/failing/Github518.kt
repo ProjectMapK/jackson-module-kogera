@@ -1,6 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github.failing
 
 import io.github.projectmapk.jackson.module.kogera.KotlinFeature.SingletonSupport
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.jsonMapper
 import io.github.projectmapk.jackson.module.kogera.kotlinModule
@@ -20,7 +21,7 @@ class TestGithub518 {
      */
     @Test
     fun deserializeEmptyObjectToSingletonUnit() {
-        assertSame(jacksonObjectMapper().readValue<Unit>("{}"), Unit)
+        assertSame(defaultMapper.readValue<Unit>("{}"), Unit)
     }
 
     /**

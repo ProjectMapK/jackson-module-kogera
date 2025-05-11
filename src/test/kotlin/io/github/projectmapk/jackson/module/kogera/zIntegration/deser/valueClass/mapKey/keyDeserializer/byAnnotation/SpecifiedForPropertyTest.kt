@@ -2,7 +2,7 @@ package io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClas
 
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -20,8 +20,7 @@ class SpecifiedForPropertyTest {
 
     @Test
     fun paramDeserTest() {
-        val mapper = jacksonObjectMapper()
-        val result = mapper.readValue<Wrapper>("""{"v":{"1":null}}""")
+        val result = defaultMapper.readValue<Wrapper>("""{"v":{"1":null}}""")
 
         assertEquals(Wrapper(mapOf(Value(101) to null)), result)
     }

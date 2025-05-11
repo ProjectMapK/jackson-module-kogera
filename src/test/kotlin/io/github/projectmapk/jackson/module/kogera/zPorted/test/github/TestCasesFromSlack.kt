@@ -3,7 +3,7 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Test
 
@@ -53,7 +53,7 @@ class TestCasesFromSlack1 {
         """
         )
 
-        jacksonObjectMapper().readValue<Event>(
+        defaultMapper.readValue<Event>(
             """
            {"host":{"id":"host123","name":"A Czar"},"activity":"Kotlin Programming","invited":[{"id":"Guest1","name":"Mr Kotlin","rsvp": "Going"}]}
         """
@@ -84,7 +84,7 @@ class TestCasesFromSlack2 {
     }
 
     @Test fun testCzarSpringThing2() {
-        jacksonObjectMapper().readValue<Event>(
+        defaultMapper.readValue<Event>(
             """
            {"host":{"id":"host123","name":"A Czar"},"activity":"Kotlin Programming","invited":[{"id":"Guest1","name":"Mr Kotlin","rsvp": "Going"}]}
         """

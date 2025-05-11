@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.exc.ValueInstantiationException
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.deser.WrapsNullableValueClassDeserializer
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -37,7 +37,7 @@ class NullableObjectEdgeCases {
 
     @Test
     fun nullValueIsUsedPreferentially() {
-        val result = jacksonObjectMapper().readValue<NullValue>("""{"nn":null,"n":null}""")
+        val result = defaultMapper.readValue<NullValue>("""{"nn":null,"n":null}""")
         assertEquals(NullValue(NullValueDeserializer.nv, NullValueDeserializer.nv), result)
     }
 
@@ -61,7 +61,7 @@ class NullableObjectEdgeCases {
     @Test
     fun `Nulls_SKIP works`() {
         assertThrows<ValueInstantiationException>("#51 fixed") {
-            val result = jacksonObjectMapper().readValue<NullsSkip>("""{"nn":null,"n":null}""")
+            val result = defaultMapper.readValue<NullsSkip>("""{"nn":null,"n":null}""")
             assertEquals(NullValue(VC("skip"), VC("skip")), result)
         }
     }

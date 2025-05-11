@@ -1,19 +1,17 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class TestGithub356 {
-    private val mapper = jacksonObjectMapper()
-
     @Test
     fun deserializeValueClass() {
         assertEquals(
             ClassWithValueMember(ValueClass("bar")),
-            mapper.readValue<ClassWithValueMember>("""{"valueClassProperty":"bar"}""")
+            defaultMapper.readValue<ClassWithValueMember>("""{"valueClassProperty":"bar"}""")
         )
     }
 
@@ -21,7 +19,7 @@ class TestGithub356 {
     fun serializeValueClass() {
         assertEquals(
             """{"valueClassProperty":"bar"}""",
-            mapper.writeValueAsString(ClassWithValueMember(ValueClass("bar")))
+            defaultMapper.writeValueAsString(ClassWithValueMember(ValueClass("bar")))
         )
     }
 }

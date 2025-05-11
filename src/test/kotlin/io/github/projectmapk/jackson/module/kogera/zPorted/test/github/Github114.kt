@@ -2,7 +2,7 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -23,20 +23,17 @@ class TestGithub114 {
 
     @Test
     fun testCompanionObjectCreatorWithDefaultParameters() {
-        val mapper = jacksonObjectMapper()
-
-        val foo = mapper.readValue<Foo>("""{"baz": "bazValue"}""")
+        val foo = defaultMapper.readValue<Foo>("""{"baz": "bazValue"}""")
         println(foo)
 
-        val fooWithStaticCreator = mapper.readValue<FooWithStaticCreator>("""{"baz": "bazValue"}""")
+        val fooWithStaticCreator = defaultMapper.readValue<FooWithStaticCreator>("""{"baz": "bazValue"}""")
         println(fooWithStaticCreator) // Expect FooWithStaticCreator(bar=default, baz=bazValue), result == InvalidNullException: Missing required creator property 'bar' (index 0)
         assertEquals(FooWithStaticCreator(FooWithStaticCreator.someValue, "bazValue"), fooWithStaticCreator)
     }
 
     @Test
     fun otherTestVariation() {
-        val mapper = jacksonObjectMapper()
-        val testObj = mapper.readValue<Obj>("""{"id":1}""")
+        val testObj = defaultMapper.readValue<Obj>("""{"id":1}""")
 
         assertEquals("yes", testObj.prop)
     }

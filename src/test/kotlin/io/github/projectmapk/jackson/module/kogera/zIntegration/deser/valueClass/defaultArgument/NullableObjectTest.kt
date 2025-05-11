@@ -2,7 +2,7 @@ package io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClas
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.exc.ValueInstantiationException
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.NullableObject
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -11,10 +11,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class NullableObjectTest {
-    companion object {
-        val mapper = jacksonObjectMapper()
-    }
-
     data class ByConstructor(
         val nnNn: NullableObject = NullableObject("foo"),
         val nnN: NullableObject = NullableObject(null),
@@ -25,7 +21,7 @@ class NullableObjectTest {
     @Test
     fun byConstructorTestFailing() {
         val ex = assertThrows<ValueInstantiationException>("Kogera #51 fixed") {
-            assertEquals(ByConstructor(), mapper.readValue<ByConstructor>("{}"))
+            assertEquals(ByConstructor(), defaultMapper.readValue<ByConstructor>("{}"))
         }
         assertTrue(ex.cause is NoSuchMethodException)
     }
@@ -51,7 +47,7 @@ class NullableObjectTest {
     @Test
     fun byFactoryTest() {
         val ex = assertThrows<ValueInstantiationException>("Kogera #51 fixed") {
-            assertEquals(ByFactory.creator(), mapper.readValue<ByFactory>("{}"))
+            assertEquals(ByFactory.creator(), defaultMapper.readValue<ByFactory>("{}"))
         }
         assertTrue(ex.cause is NoSuchMethodException)
     }

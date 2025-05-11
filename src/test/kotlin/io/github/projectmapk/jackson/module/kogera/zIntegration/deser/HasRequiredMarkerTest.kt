@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.projectmapk.jackson.module.kogera.KotlinFeature
 import io.github.projectmapk.jackson.module.kogera.KotlinModule
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Nested
@@ -20,7 +20,6 @@ class HasRequiredMarkerTest {
         .find { it.name == propertyName }
         ?.isRequired == true
 
-    val defaultMapper = jacksonObjectMapper()
     val nullToDefaultMapper = ObjectMapper().registerModule(
         KotlinModule.Builder()
             .enable(KotlinFeature.NullToEmptyCollection)

@@ -1,6 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.zIntegration.ser
 
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -21,7 +21,7 @@ class PropertySerializeTest {
     fun test() {
         assertEquals(
             """{"fooFoo":0,"isBar":true,"bar":"bar","baz-baz":"baz-baz","nQux":1}""",
-            jacksonObjectMapper()
+            defaultMapper
                 .writeValueAsString(Src(0, true, "bar", "baz-baz", 1))
         )
     }

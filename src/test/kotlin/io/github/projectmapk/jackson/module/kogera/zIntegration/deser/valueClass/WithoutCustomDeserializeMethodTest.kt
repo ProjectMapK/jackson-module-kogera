@@ -1,7 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass
 
 import io.github.projectmapk.jackson.module.kogera.defaultMapper
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -13,7 +12,6 @@ import java.lang.reflect.InvocationTargetException
 
 class WithoutCustomDeserializeMethodTest {
     companion object {
-        val mapper = jacksonObjectMapper()
         val throwable = IllegalArgumentException("test")
     }
 
@@ -78,8 +76,8 @@ class WithoutCustomDeserializeMethodTest {
             TwoUnitPrimitive(3),
             TwoUnitPrimitive(4)
         )
-        val src = mapper.writeValueAsString(expected)
-        val result = mapper.readValue<Dst>(src)
+        val src = defaultMapper.writeValueAsString(expected)
+        val result = defaultMapper.readValue<Dst>(src)
 
         assertEquals(expected, result)
     }
@@ -96,8 +94,8 @@ class WithoutCustomDeserializeMethodTest {
             TwoUnitPrimitive(3),
             null
         )
-        val src = mapper.writeValueAsString(expected)
-        val result = mapper.readValue<Dst>(src)
+        val src = defaultMapper.writeValueAsString(expected)
+        val result = defaultMapper.readValue<Dst>(src)
 
         assertEquals(expected, result)
     }

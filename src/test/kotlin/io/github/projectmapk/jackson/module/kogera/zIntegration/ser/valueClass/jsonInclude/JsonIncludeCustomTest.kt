@@ -1,7 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.zIntegration.ser.valueClass.jsonInclude
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -23,8 +23,7 @@ class JsonIncludeCustomTest {
 
     @Test
     fun nullFilterTest() {
-        val mapper = jacksonObjectMapper()
         val dto = NullFilterDto()
-        assertEquals("{}", mapper.writeValueAsString(dto))
+        assertEquals("{}", defaultMapper.writeValueAsString(dto))
     }
 }

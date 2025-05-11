@@ -1,7 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
@@ -29,9 +29,8 @@ class GitHub625 {
 
     @Test
     fun test() {
-        val mapper = jacksonObjectMapper()
         val dto = Dto()
-        assertEquals("{}", mapper.writeValueAsString(dto))
+        assertEquals("{}", defaultMapper.writeValueAsString(dto))
     }
 
     @JsonInclude(value = JsonInclude.Include.NON_EMPTY, content = JsonInclude.Include.NON_NULL)
@@ -47,8 +46,7 @@ class GitHub625 {
 
     @Test
     fun failing() {
-        val writer = jacksonObjectMapper()
-        val json = writer.writeValueAsString(FailingDto())
+        val json = defaultMapper.writeValueAsString(FailingDto())
 
         assertNotEquals("{}", json)
     }

@@ -3,7 +3,7 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -26,7 +26,7 @@ class TestGithub308 {
 
     @Test
     fun createTestDto() {
-        val dto: TestDto = jacksonObjectMapper().readValue("""{"id":12345}""")
+        val dto: TestDto = defaultMapper.readValue("""{"id":12345}""")
 
         assertNotNull(dto)
         assertNull(dto.id)

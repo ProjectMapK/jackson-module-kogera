@@ -1,6 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
@@ -11,6 +11,6 @@ import org.junit.jupiter.api.Test
 class TestGithub196 {
     @Test
     fun testUnitSingletonDeserialization() {
-        assertSame(jacksonObjectMapper().readValue<Unit>("{}"), Unit)
+        assertSame(defaultMapper.readValue<Unit>("{}"), Unit)
     }
 }

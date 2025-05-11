@@ -1,22 +1,18 @@
 package io.github.projectmapk.jackson.module.kogera.zIntegration
 
 import io.github.projectmapk.jackson.module.kogera.ClosedRangeResolver
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 
 class ClosedRangesTest {
-    companion object {
-        val mapper = jacksonObjectMapper()
-    }
-
     @Test
     fun intLikeRange() {
         val src = IntRange(0, 1)
-        val json = mapper.writeValueAsString(src)
-        val result = mapper.readValue<IntRange>(json)
+        val json = defaultMapper.writeValueAsString(src)
+        val result = defaultMapper.readValue<IntRange>(json)
 
         assertEquals(src, result)
     }
@@ -24,8 +20,8 @@ class ClosedRangesTest {
     @Test
     fun closedDoubleRange() {
         val src: ClosedFloatingPointRange<Double> = 0.0..1.0
-        val json = mapper.writeValueAsString(src)
-        val result = mapper.readValue<ClosedRange<Double>>(json)
+        val json = defaultMapper.writeValueAsString(src)
+        val result = defaultMapper.readValue<ClosedRange<Double>>(json)
 
         assertEquals(src, result)
     }
@@ -33,8 +29,8 @@ class ClosedRangesTest {
     @Test
     fun closedFloatRange() {
         val src: ClosedFloatingPointRange<Float> = 0.0f..1.0f
-        val json = mapper.writeValueAsString(src)
-        val result = mapper.readValue<ClosedFloatingPointRange<Float>>(json)
+        val json = defaultMapper.writeValueAsString(src)
+        val result = defaultMapper.readValue<ClosedFloatingPointRange<Float>>(json)
 
         assertEquals(src, result)
     }
@@ -46,8 +42,8 @@ class ClosedRangesTest {
     @Test
     fun comparableRange() {
         val src: ClosedRange<Wrapper> = Wrapper(0)..Wrapper(1)
-        val json = mapper.writeValueAsString(src)
-        val result = mapper.readValue<ClosedRange<Wrapper>>(json)
+        val json = defaultMapper.writeValueAsString(src)
+        val result = defaultMapper.readValue<ClosedRange<Wrapper>>(json)
 
         assertEquals(src, result)
     }

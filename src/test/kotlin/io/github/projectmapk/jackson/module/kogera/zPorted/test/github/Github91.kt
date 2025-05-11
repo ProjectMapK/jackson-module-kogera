@@ -2,7 +2,7 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -23,9 +23,8 @@ class TestGithub91 {
 
     @Test
     fun testJsonParsing() {
-        val mapper = jacksonObjectMapper()
-        val dataClass1 = mapper.readValue<DataClass1>(jsonData)
+        val dataClass1 = defaultMapper.readValue<DataClass1>(jsonData)
         assertEquals(DataClass1("my name", DataClass2("some value")), dataClass1)
-        assertEquals("{\"name\":\"my name\",\"content\":\"some value\"}", mapper.writeValueAsString(dataClass1))
+        assertEquals("{\"name\":\"my name\",\"content\":\"some value\"}", defaultMapper.writeValueAsString(dataClass1))
     }
 }

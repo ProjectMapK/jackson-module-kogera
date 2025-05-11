@@ -3,7 +3,7 @@ package io.github.projectmapk.jackson.module.kogera.zIntegration.deser
 import com.fasterxml.jackson.annotation.JsonSetter
 import com.fasterxml.jackson.annotation.Nulls
 import com.fasterxml.jackson.databind.exc.InvalidNullException
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -12,13 +12,11 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class JsonSetterTest {
-    val mapper = jacksonObjectMapper()
-
     data class NullsSkip(@JsonSetter(nulls = Nulls.SKIP) val v: Int = -1)
 
     @Test
     fun nullsSkip() {
-        val d = mapper.readValue<NullsSkip>("""{"v":null}""")
+        val d = defaultMapper.readValue<NullsSkip>("""{"v":null}""")
 
         assertEquals(-1, d.v)
     }
@@ -30,14 +28,14 @@ class JsonSetterTest {
         @Test
         fun onNull() {
             assertThrows<InvalidNullException> {
-                mapper.readValue<NullsFail>("""{"v":null}""")
+                defaultMapper.readValue<NullsFail>("""{"v":null}""")
             }
         }
 
         @Test
         fun onMissing() {
             assertThrows<InvalidNullException> {
-                mapper.readValue<NullsFail>("""{}""")
+                defaultMapper.readValue<NullsFail>("""{}""")
             }
         }
     }
@@ -48,13 +46,13 @@ class JsonSetterTest {
     inner class NullsAsEmptyTest {
         @Test
         fun onNull() {
-            val d = mapper.readValue<NullsAsEmpty>("""{"v":null}""")
+            val d = defaultMapper.readValue<NullsAsEmpty>("""{"v":null}""")
             assertTrue(d.v.isEmpty())
         }
 
         @Test
         fun onMissing() {
-            val d = mapper.readValue<NullsAsEmpty>("""{}""")
+            val d = defaultMapper.readValue<NullsAsEmpty>("""{}""")
             assertTrue(d.v.isEmpty())
         }
     }

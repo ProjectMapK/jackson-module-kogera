@@ -20,7 +20,7 @@ class MissingAbsentValueTest {
 
     data class D(
         @JsonDeserialize(using = Deser::class) val foo: Int,
-        @JsonDeserialize(using = Deser::class) val bar: Int?
+        @JsonDeserialize(using = Deser::class) val bar: Int?,
     )
 
     @Test

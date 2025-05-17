@@ -11,7 +11,7 @@ class NonNullObjectTest {
     data class ByConstructor(
         val nn: NonNullObject = NonNullObject("foo"),
         val nNn: NonNullObject? = NonNullObject("bar"),
-        val nN: NonNullObject? = null
+        val nN: NonNullObject? = null,
     )
 
     @Test
@@ -26,7 +26,7 @@ class NonNullObjectTest {
             fun creator(
                 nn: NonNullObject = NonNullObject("foo"),
                 nNn: NonNullObject? = NonNullObject("bar"),
-                nN: NonNullObject? = null
+                nN: NonNullObject? = null,
             ) = ByFactory(nn, nNn, nN)
         }
     }

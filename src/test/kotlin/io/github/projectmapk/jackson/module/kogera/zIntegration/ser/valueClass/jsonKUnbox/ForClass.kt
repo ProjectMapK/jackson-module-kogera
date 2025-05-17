@@ -43,7 +43,7 @@ class ForClass {
         val np3: NullablePrimitive? = null,
         val tup0: TwoUnitPrimitive = TwoUnitPrimitive(0),
         val tup1: TwoUnitPrimitive? = TwoUnitPrimitive(1),
-        val tup2: TwoUnitPrimitive? = null
+        val tup2: TwoUnitPrimitive? = null,
     )
 
     @Test

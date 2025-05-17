@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.util.StdConverter
  */
 internal class ValueClassBoxConverter<S : Any?, D : Any>(
     unboxedClass: Class<S>,
-    val boxedClass: Class<D>
+    val boxedClass: Class<D>,
 ) : StdConverter<S, D>() {
     private val boxMethod = boxedClass.getDeclaredMethod("box-impl", unboxedClass).apply {
         ClassUtil.checkAndFixAccess(this, false)
@@ -35,7 +35,7 @@ internal class ValueClassUnboxConverter<T : Any>(val valueClass: Class<T>) : Std
 
     override fun getInputType(typeFactory: TypeFactory): JavaType = typeFactory.constructType(valueClass)
     override fun getOutputType(
-        typeFactory: TypeFactory
+        typeFactory: TypeFactory,
     ): JavaType = typeFactory.constructType(unboxMethod.genericReturnType)
 
     val delegatingSerializer: StdDelegatingSerializer by lazy { StdDelegatingSerializer(this) }

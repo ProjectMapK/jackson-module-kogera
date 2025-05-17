@@ -18,7 +18,7 @@ class StrictNullChecksTest {
         .registerModule(
             KotlinModule.Builder()
                 .enable(KotlinFeature.StrictNullChecks)
-                .build()
+                .build(),
         )
 
     class ArrayWrapper(val value: Array<Int>)

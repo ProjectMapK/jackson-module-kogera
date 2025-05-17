@@ -37,7 +37,7 @@ class JsonKeyTest {
         val src = mapOf(
             JsonKeyGetter(0) to 0,
             JsonKeyGetterImplementation(1) to 1,
-            JsonKeyGetterImplementationDisabled(2) to 2
+            JsonKeyGetterImplementationDisabled(2) to 2,
         )
 
         assertEquals(
@@ -48,7 +48,7 @@ class JsonKeyTest {
                   "2" : 2
                 }
             """.trimIndent(),
-            writer.writeValueAsString(src)
+            writer.writeValueAsString(src),
         )
     }
 }

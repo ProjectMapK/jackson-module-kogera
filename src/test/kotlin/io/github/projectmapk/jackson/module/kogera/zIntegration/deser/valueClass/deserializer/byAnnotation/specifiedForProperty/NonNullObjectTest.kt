@@ -13,7 +13,7 @@ class NonNullObjectTest {
         @get:JsonDeserialize(using = NonNullObject.Deserializer::class)
         val getterAnn: NonNullObject,
         @field:JsonDeserialize(using = NonNullObject.Deserializer::class)
-        val fieldAnn: NonNullObject
+        val fieldAnn: NonNullObject,
     )
 
     @Test
@@ -24,7 +24,7 @@ class NonNullObjectTest {
                   "getterAnn" : "foo",
                   "fieldAnn" : "bar"
                 }
-            """.trimIndent()
+            """.trimIndent(),
         )
         assertEquals(NonNull(NonNullObject("foo-deser"), NonNullObject("bar-deser")), result)
     }
@@ -33,7 +33,7 @@ class NonNullObjectTest {
         @get:JsonDeserialize(using = NonNullObject.Deserializer::class)
         val getterAnn: NonNullObject?,
         @field:JsonDeserialize(using = NonNullObject.Deserializer::class)
-        val fieldAnn: NonNullObject?
+        val fieldAnn: NonNullObject?,
     )
 
     @Nested
@@ -46,7 +46,7 @@ class NonNullObjectTest {
                   "getterAnn" : "foo",
                   "fieldAnn" : "bar"
                 }
-                """.trimIndent()
+                """.trimIndent(),
             )
             assertEquals(Nullable(NonNullObject("foo-deser"), NonNullObject("bar-deser")), result)
         }
@@ -59,7 +59,7 @@ class NonNullObjectTest {
                   "getterAnn" : null,
                   "fieldAnn" : null
                 }
-                """.trimIndent()
+                """.trimIndent(),
             )
             assertEquals(Nullable(null, null), result)
         }

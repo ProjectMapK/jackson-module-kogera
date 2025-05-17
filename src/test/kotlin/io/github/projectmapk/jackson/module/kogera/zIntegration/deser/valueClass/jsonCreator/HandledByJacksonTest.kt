@@ -15,7 +15,7 @@ class HandledByJacksonTest {
             @JvmStatic
             @JsonCreator
             fun creator(first: Int, second: Int): PrimitiveMultiParamCreator? = PrimitiveMultiParamCreator(
-                first + second
+                first + second,
             )
         }
     }
@@ -33,7 +33,7 @@ class HandledByJacksonTest {
             @JvmStatic
             @JsonCreator
             fun creator(first: Int, second: Int): NullableObjectMultiParamCreator? = NullableObjectMultiParamCreator(
-                first + second
+                first + second,
             )
         }
     }

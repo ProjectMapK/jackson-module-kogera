@@ -9,7 +9,7 @@ class JvmFieldTest {
         @JvmField
         val `foo-foo`: String,
         @JvmField
-        val `-bar`: String
+        val `-bar`: String,
     )
 
     @Test

@@ -46,7 +46,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
         val p28: TwoUnitPrimitive = TwoUnitPrimitive(28),
         val p29: TwoUnitPrimitive = TwoUnitPrimitive(29),
         val p30: TwoUnitPrimitive = TwoUnitPrimitive(30),
-        val p31: TwoUnitPrimitive = TwoUnitPrimitive(31)
+        val p31: TwoUnitPrimitive = TwoUnitPrimitive(31),
     )
 
     @Test
@@ -87,7 +87,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
         val p29: TwoUnitPrimitive = TwoUnitPrimitive(29),
         val p30: TwoUnitPrimitive = TwoUnitPrimitive(30),
         val p31: TwoUnitPrimitive = TwoUnitPrimitive(31),
-        val p32: TwoUnitPrimitive = TwoUnitPrimitive(32)
+        val p32: TwoUnitPrimitive = TwoUnitPrimitive(32),
     )
 
     @Test
@@ -159,7 +159,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
         val p60: TwoUnitPrimitive = TwoUnitPrimitive(60),
         val p61: TwoUnitPrimitive = TwoUnitPrimitive(61),
         val p62: TwoUnitPrimitive = TwoUnitPrimitive(62),
-        val p63: TwoUnitPrimitive = TwoUnitPrimitive(63)
+        val p63: TwoUnitPrimitive = TwoUnitPrimitive(63),
     )
 
     @Test
@@ -232,7 +232,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
         val p61: TwoUnitPrimitive = TwoUnitPrimitive(61),
         val p62: TwoUnitPrimitive = TwoUnitPrimitive(62),
         val p63: TwoUnitPrimitive = TwoUnitPrimitive(63),
-        val p64: TwoUnitPrimitive = TwoUnitPrimitive(64)
+        val p64: TwoUnitPrimitive = TwoUnitPrimitive(64),
     )
 
     @Test
@@ -365,7 +365,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
         val p120: TwoUnitPrimitive = TwoUnitPrimitive(120),
         val p121: TwoUnitPrimitive = TwoUnitPrimitive(121),
         val p122: TwoUnitPrimitive = TwoUnitPrimitive(122),
-        val p123: TwoUnitPrimitive = TwoUnitPrimitive(123)
+        val p123: TwoUnitPrimitive = TwoUnitPrimitive(123),
     )
 
     @Test

@@ -51,7 +51,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
         val p28: NullableObject,
         val p29: NullableObject,
         val p30: NullableObject,
-        val p31: NullableObject
+        val p31: NullableObject,
     ) {
         companion object {
             @JvmStatic
@@ -88,7 +88,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q28: NullableObject,
                 q29: NullableObject,
                 q30: NullableObject,
-                q31: NullableObject
+                q31: NullableObject,
             ) = Dst32(
                 q00,
                 q01,
@@ -121,7 +121,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q28,
                 q29,
                 q30,
-                q31
+                q31,
             )
         }
     }
@@ -166,7 +166,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
         val p29: NullableObject,
         val p30: NullableObject,
         val p31: NullableObject,
-        val p32: NullableObject
+        val p32: NullableObject,
     ) {
         companion object {
             @JvmStatic
@@ -204,7 +204,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q29: NullableObject,
                 q30: NullableObject,
                 q31: NullableObject,
-                q32: NullableObject
+                q32: NullableObject,
             ) = Dst33(
                 q00,
                 q01,
@@ -238,7 +238,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q29,
                 q30,
                 q31,
-                q32
+                q32,
             )
         }
     }
@@ -314,7 +314,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
         val p60: NullableObject,
         val p61: NullableObject,
         val p62: NullableObject,
-        val p63: NullableObject
+        val p63: NullableObject,
     ) {
         companion object {
             @JvmStatic
@@ -383,7 +383,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q60: NullableObject,
                 q61: NullableObject,
                 q62: NullableObject,
-                q63: NullableObject
+                q63: NullableObject,
             ) = Dst64(
                 q00,
                 q01,
@@ -448,7 +448,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q60,
                 q61,
                 q62,
-                q63
+                q63,
             )
         }
     }
@@ -525,7 +525,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
         val p61: NullableObject,
         val p62: NullableObject,
         val p63: NullableObject,
-        val p64: NullableObject
+        val p64: NullableObject,
     ) {
         companion object {
             @JvmStatic
@@ -595,7 +595,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q61: NullableObject,
                 q62: NullableObject,
                 q63: NullableObject,
-                q64: NullableObject
+                q64: NullableObject,
             ) = Dst65(
                 q00,
                 q01,
@@ -661,7 +661,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q61,
                 q62,
                 q63,
-                q64
+                q64,
             )
         }
     }
@@ -927,7 +927,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
         val p249: NullableObject,
         val p250: NullableObject,
         val p251: NullableObject,
-        val p252: NullableObject
+        val p252: NullableObject,
     ) {
         companion object {
             @JvmStatic
@@ -1185,7 +1185,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q249: NullableObject,
                 q250: NullableObject,
                 q251: NullableObject,
-                q252: NullableObject
+                q252: NullableObject,
             ) = DstMax(
                 q000,
                 q001,
@@ -1439,7 +1439,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q249,
                 q250,
                 q251,
-                q252
+                q252,
             )
         }
     }

@@ -46,7 +46,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
         val p28: NonNullObject = NonNullObject("28"),
         val p29: NonNullObject = NonNullObject("29"),
         val p30: NonNullObject = NonNullObject("30"),
-        val p31: NonNullObject = NonNullObject("31")
+        val p31: NonNullObject = NonNullObject("31"),
     )
 
     @Test
@@ -87,7 +87,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
         val p29: NonNullObject = NonNullObject("29"),
         val p30: NonNullObject = NonNullObject("30"),
         val p31: NonNullObject = NonNullObject("31"),
-        val p32: NonNullObject = NonNullObject("32")
+        val p32: NonNullObject = NonNullObject("32"),
     )
 
     @Test
@@ -159,7 +159,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
         val p60: NonNullObject = NonNullObject("60"),
         val p61: NonNullObject = NonNullObject("61"),
         val p62: NonNullObject = NonNullObject("62"),
-        val p63: NonNullObject = NonNullObject("63")
+        val p63: NonNullObject = NonNullObject("63"),
     )
 
     @Test
@@ -232,7 +232,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
         val p61: NonNullObject = NonNullObject("61"),
         val p62: NonNullObject = NonNullObject("62"),
         val p63: NonNullObject = NonNullObject("63"),
-        val p64: NonNullObject = NonNullObject("64")
+        val p64: NonNullObject = NonNullObject("64"),
     )
 
     @Test
@@ -486,7 +486,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
         val p241: NonNullObject = NonNullObject("241"),
         val p242: NonNullObject = NonNullObject("242"),
         val p243: NonNullObject = NonNullObject("243"),
-        val p244: NonNullObject = NonNullObject("244")
+        val p244: NonNullObject = NonNullObject("244"),
     )
 
     @Test

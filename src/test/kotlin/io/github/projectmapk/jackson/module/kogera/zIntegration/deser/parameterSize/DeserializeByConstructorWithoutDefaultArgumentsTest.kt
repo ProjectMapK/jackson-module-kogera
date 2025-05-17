@@ -45,7 +45,7 @@ class DeserializeByConstructorWithoutDefaultArgumentsTest {
         val p28: String,
         val p29: String,
         val p30: String,
-        val p31: String
+        val p31: String,
     )
 
     @Test
@@ -88,7 +88,7 @@ class DeserializeByConstructorWithoutDefaultArgumentsTest {
         val p29: String,
         val p30: String,
         val p31: String,
-        val p32: String
+        val p32: String,
     )
 
     @Test
@@ -162,7 +162,7 @@ class DeserializeByConstructorWithoutDefaultArgumentsTest {
         val p60: String,
         val p61: String,
         val p62: String,
-        val p63: String
+        val p63: String,
     )
 
     @Test
@@ -237,7 +237,7 @@ class DeserializeByConstructorWithoutDefaultArgumentsTest {
         val p61: String,
         val p62: String,
         val p63: String,
-        val p64: String
+        val p64: String,
     )
 
     @Test
@@ -502,7 +502,7 @@ class DeserializeByConstructorWithoutDefaultArgumentsTest {
         val p250: String,
         val p251: String,
         val p252: String,
-        val p253: String
+        val p253: String,
     )
 
     @Test

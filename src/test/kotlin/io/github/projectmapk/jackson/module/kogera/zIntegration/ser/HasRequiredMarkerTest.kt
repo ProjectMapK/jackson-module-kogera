@@ -71,7 +71,7 @@ class HasRequiredMarkerTest {
             KotlinModule.Builder()
                 .enable(KotlinFeature.NullToEmptyCollection)
                 .enable(KotlinFeature.NullToEmptyMap)
-                .build()
+                .build(),
         )
         val desc = nullToDefaultMapper.introspectSer<NullToDefaultTarget>()
 

@@ -13,7 +13,7 @@ class NullablePrimitiveTest {
         @get:JsonDeserialize(using = NullablePrimitive.DeserializerWrapsNullable::class)
         val getterAnn: NullablePrimitive,
         @field:JsonDeserialize(using = NullablePrimitive.DeserializerWrapsNullable::class)
-        val fieldAnn: NullablePrimitive
+        val fieldAnn: NullablePrimitive,
     )
 
     @Test
@@ -24,7 +24,7 @@ class NullablePrimitiveTest {
                   "getterAnn" : 1,
                   "fieldAnn" : 2
                 }
-            """.trimIndent()
+            """.trimIndent(),
         )
         assertEquals(NonNull(NullablePrimitive(101), NullablePrimitive(102)), result)
     }
@@ -33,7 +33,7 @@ class NullablePrimitiveTest {
         @get:JsonDeserialize(using = NullablePrimitive.DeserializerWrapsNullable::class)
         val getterAnn: NullablePrimitive?,
         @field:JsonDeserialize(using = NullablePrimitive.DeserializerWrapsNullable::class)
-        val fieldAnn: NullablePrimitive?
+        val fieldAnn: NullablePrimitive?,
     )
 
     @Nested
@@ -46,7 +46,7 @@ class NullablePrimitiveTest {
                   "getterAnn" : 1,
                   "fieldAnn" : 2
                 }
-                """.trimIndent()
+                """.trimIndent(),
             )
             assertEquals(Nullable(NullablePrimitive(101), NullablePrimitive(102)), result)
         }
@@ -59,7 +59,7 @@ class NullablePrimitiveTest {
                   "getterAnn" : null,
                   "fieldAnn" : null
                 }
-                """.trimIndent()
+                """.trimIndent(),
             )
             assertEquals(Nullable(null, null), result)
         }

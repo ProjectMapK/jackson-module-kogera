@@ -28,7 +28,7 @@ class InCreatorArgumentTest {
         val npNn: NullablePrimitive,
         val npN: NullablePrimitive?,
         val tupNn: TwoUnitPrimitive,
-        val tupN: TwoUnitPrimitive?
+        val tupN: TwoUnitPrimitive?,
     ) {
         companion object {
             @JvmStatic
@@ -43,7 +43,7 @@ class InCreatorArgumentTest {
                 npNn: NullablePrimitive,
                 npN: NullablePrimitive?,
                 tupNn: TwoUnitPrimitive,
-                tupN: TwoUnitPrimitive?
+                tupN: TwoUnitPrimitive?,
             ) = Dst(
                 pNn.modify(),
                 pN?.modify(),
@@ -54,7 +54,7 @@ class InCreatorArgumentTest {
                 npNn.modify(),
                 npN?.modify(),
                 tupNn.modify(),
-                tupN?.modify()
+                tupN?.modify(),
             )
         }
     }
@@ -71,7 +71,7 @@ class InCreatorArgumentTest {
             NullablePrimitive(3),
             NullablePrimitive(4),
             TwoUnitPrimitive(5),
-            TwoUnitPrimitive(6)
+            TwoUnitPrimitive(6),
         )
         val result = defaultMapper.readValue<Dst>(defaultMapper.writeValueAsString(base))
 
@@ -86,9 +86,9 @@ class InCreatorArgumentTest {
                 npNn = base.npNn.modify(),
                 npN = base.npN?.modify(),
                 tupNn = base.tupNn.modify(),
-                tupN = base.tupN?.modify()
+                tupN = base.tupN?.modify(),
             ),
-            result
+            result,
         )
     }
 }

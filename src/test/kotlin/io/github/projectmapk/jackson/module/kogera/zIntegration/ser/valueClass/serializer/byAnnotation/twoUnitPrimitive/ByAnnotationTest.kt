@@ -24,7 +24,7 @@ class ByAnnotationTest {
         @get:JsonSerialize(using = TwoUnitPrimitive.Serializer::class)
         val getterAnn: TwoUnitPrimitive,
         @field:JsonSerialize(using = TwoUnitPrimitive.Serializer::class)
-        val fieldAnn: TwoUnitPrimitive
+        val fieldAnn: TwoUnitPrimitive,
     )
 
     @Test
@@ -39,7 +39,7 @@ class ByAnnotationTest {
                   "fieldAnn" : 102
                 }
             """.trimIndent(),
-            writer.writeValueAsString(src)
+            writer.writeValueAsString(src),
         )
     }
 
@@ -49,7 +49,7 @@ class ByAnnotationTest {
         @get:JsonSerialize(using = TwoUnitPrimitive.Serializer::class)
         val getterAnn: TwoUnitPrimitive?,
         @field:JsonSerialize(using = TwoUnitPrimitive.Serializer::class)
-        val fieldAnn: TwoUnitPrimitive?
+        val fieldAnn: TwoUnitPrimitive?,
     )
 
     @Test
@@ -64,7 +64,7 @@ class ByAnnotationTest {
                   "fieldAnn" : 102
                 }
             """.trimIndent(),
-            writer.writeValueAsString(src)
+            writer.writeValueAsString(src),
         )
     }
 
@@ -80,7 +80,7 @@ class ByAnnotationTest {
                   "fieldAnn" : null
                 }
             """.trimIndent(),
-            writer.writeValueAsString(src)
+            writer.writeValueAsString(src),
         )
     }
 }

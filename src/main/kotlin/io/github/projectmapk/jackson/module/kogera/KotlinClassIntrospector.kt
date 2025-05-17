@@ -40,7 +40,7 @@ internal object KotlinClassIntrospector : BasicClassIntrospector() {
     override fun forSerialization(
         config: SerializationConfig,
         type: JavaType,
-        r: MixInResolver
+        r: MixInResolver,
     ): BasicBeanDescription {
         // minor optimization: for some JDK types do minimal introspection
         return _findStdTypeDesc(config, type)
@@ -61,7 +61,7 @@ internal object KotlinClassIntrospector : BasicClassIntrospector() {
     override fun forDeserialization(
         config: DeserializationConfig,
         type: JavaType,
-        r: MixInResolver
+        r: MixInResolver,
     ): BasicBeanDescription {
         // minor optimization: for some JDK types do minimal introspection
         return _findStdTypeDesc(config, type)

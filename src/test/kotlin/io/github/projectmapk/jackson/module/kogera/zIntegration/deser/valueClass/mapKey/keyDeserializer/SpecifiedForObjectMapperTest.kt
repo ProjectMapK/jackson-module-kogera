@@ -64,7 +64,7 @@ class SpecifiedForObjectMapperTest {
         val nn: Map<NonNullObject, String?>,
         val n: Map<NullableObject, String?>,
         val np: Map<NullablePrimitive, String?>,
-        val tup: Map<TwoUnitPrimitive, String?>
+        val tup: Map<TwoUnitPrimitive, String?>,
     )
 
     @Test
@@ -84,7 +84,7 @@ class SpecifiedForObjectMapperTest {
             mapOf(NonNullObject("foo-deser") to null),
             mapOf(NullableObject("bar-deser") to null),
             mapOf(NullablePrimitive(102) to null),
-            mapOf(TwoUnitPrimitive(101) to null)
+            mapOf(TwoUnitPrimitive(101) to null),
         )
 
         assertEquals(expected, result)

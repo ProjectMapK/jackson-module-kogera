@@ -46,7 +46,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
         val p28: NullablePrimitive? = NullablePrimitive(28),
         val p29: NullablePrimitive? = NullablePrimitive(29),
         val p30: NullablePrimitive? = NullablePrimitive(30),
-        val p31: NullablePrimitive? = NullablePrimitive(31)
+        val p31: NullablePrimitive? = NullablePrimitive(31),
     )
 
     @Test
@@ -87,7 +87,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
         val p29: NullablePrimitive? = NullablePrimitive(29),
         val p30: NullablePrimitive? = NullablePrimitive(30),
         val p31: NullablePrimitive? = NullablePrimitive(31),
-        val p32: NullablePrimitive? = NullablePrimitive(32)
+        val p32: NullablePrimitive? = NullablePrimitive(32),
     )
 
     @Test
@@ -159,7 +159,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
         val p60: NullablePrimitive? = NullablePrimitive(60),
         val p61: NullablePrimitive? = NullablePrimitive(61),
         val p62: NullablePrimitive? = NullablePrimitive(62),
-        val p63: NullablePrimitive? = NullablePrimitive(63)
+        val p63: NullablePrimitive? = NullablePrimitive(63),
     )
 
     @Test
@@ -232,7 +232,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
         val p61: NullablePrimitive? = NullablePrimitive(61),
         val p62: NullablePrimitive? = NullablePrimitive(62),
         val p63: NullablePrimitive? = NullablePrimitive(63),
-        val p64: NullablePrimitive? = NullablePrimitive(64)
+        val p64: NullablePrimitive? = NullablePrimitive(64),
     )
 
     @Test
@@ -486,7 +486,7 @@ class DeserializeByConstructorWithDefaultArgumentsTest {
         val p241: NullablePrimitive? = NullablePrimitive(241),
         val p242: NullablePrimitive? = NullablePrimitive(242),
         val p243: NullablePrimitive? = NullablePrimitive(243),
-        val p244: NullablePrimitive? = NullablePrimitive(244)
+        val p244: NullablePrimitive? = NullablePrimitive(244),
     )
 
     @Test

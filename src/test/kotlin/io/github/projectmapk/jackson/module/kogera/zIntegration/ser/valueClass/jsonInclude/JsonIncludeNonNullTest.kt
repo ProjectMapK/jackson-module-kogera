@@ -13,7 +13,7 @@ class JsonIncludeNonNullTest {
         val nnoN: NonNullObject? = null,
         val noN1: NullableObject? = null,
         val npN: NullablePrimitive? = null,
-        val tupN: TwoUnitPrimitive? = null
+        val tupN: TwoUnitPrimitive? = null,
     )
 
     @Test
@@ -32,8 +32,8 @@ class JsonIncludeNonNullTest {
         val npN2: NullablePrimitive? = NullablePrimitive(null),
         val map: Map<Any, Any?> = mapOf(
             "noNn" to NullableObject(null),
-            "npNn" to NullablePrimitive(null)
-        )
+            "npNn" to NullablePrimitive(null),
+        ),
     )
 
     @Test

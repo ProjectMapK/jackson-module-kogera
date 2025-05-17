@@ -37,7 +37,7 @@ class HandledByKogeraTest {
     data class Dst(
         val bar: SpecifiedPrimary,
         val baz: Secondary,
-        val qux: Factory
+        val qux: Factory,
     )
 
     @Test
@@ -49,16 +49,16 @@ class HandledByKogeraTest {
               "baz":1,
               "qux":1
             }
-            """.trimIndent()
+            """.trimIndent(),
         )
 
         assertEquals(
             Dst(
                 SpecifiedPrimary("b"),
                 Secondary("1-creator"),
-                Factory(101)
+                Factory(101),
             ),
-            r
+            r,
         )
     }
 

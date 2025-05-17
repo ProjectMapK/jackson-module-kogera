@@ -30,10 +30,10 @@ internal class ReflectionCache(initialCacheSize: Int, maxCacheSize: Int) : Seria
         final override fun toString(): String = key.toString()
 
         class ValueClassBoxConverter(
-            override val key: Class<*>
+            override val key: Class<*>,
         ) : OtherCacheKey<Class<*>, io.github.projectmapk.jackson.module.kogera.ValueClassBoxConverter<*, *>>()
         class ValueClassUnboxConverter(
-            override val key: Class<*>
+            override val key: Class<*>,
         ) : OtherCacheKey<Class<*>, io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter<*>>()
     }
 

@@ -38,7 +38,7 @@ class JacksonInjectTest {
         @get:JacksonInject("tupNn")
         val tupNn: TwoUnitPrimitive,
         @get:JacksonInject("tupN")
-        val tupN: TwoUnitPrimitive?
+        val tupN: TwoUnitPrimitive?,
     )
 
     @Test
@@ -57,7 +57,7 @@ class JacksonInjectTest {
             "npNNn" to NullablePrimitive(1),
             "npNN" to NullablePrimitive(null),
             "tupNn" to TwoUnitPrimitive(3),
-            "tupN" to TwoUnitPrimitive(4)
+            "tupN" to TwoUnitPrimitive(4),
         )
 
         val reader = jacksonObjectMapper()
@@ -77,7 +77,7 @@ class JacksonInjectTest {
         @field:JacksonInject("pNn")
         val pNn: Primitive,
         @field:JacksonInject("pN")
-        val pN: Primitive?
+        val pN: Primitive?,
     )
 
     // remove if fixed
@@ -92,7 +92,7 @@ class JacksonInjectTest {
         val ex = assertThrows<IllegalArgumentException> { reader.readValue<DataBind4218FailingDto>("{}") }
         assertEquals(
             "Can not set final int field io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.JacksonInjectTest\$DataBind4218FailingDto.pNn to io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.Primitive",
-            ex.message
+            ex.message,
         )
     }
 }

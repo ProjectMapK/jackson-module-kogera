@@ -10,7 +10,7 @@ import kotlin.metadata.ClassKind
 
 // [module-kotlin#225]: keep Kotlin singletons as singletons
 internal class KotlinBeanDeserializerModifier(
-    private val cache: ReflectionCache
+    private val cache: ReflectionCache,
 ) : BeanDeserializerModifier(),
     Serializable {
     companion object {
@@ -30,7 +30,7 @@ internal class KotlinBeanDeserializerModifier(
     override fun modifyDeserializer(
         config: DeserializationConfig,
         beanDesc: BeanDescription,
-        deserializer: JsonDeserializer<*>
+        deserializer: JsonDeserializer<*>,
     ): JsonDeserializer<out Any> {
         val modifiedFromParent = super.modifyDeserializer(config, beanDesc, deserializer)
 

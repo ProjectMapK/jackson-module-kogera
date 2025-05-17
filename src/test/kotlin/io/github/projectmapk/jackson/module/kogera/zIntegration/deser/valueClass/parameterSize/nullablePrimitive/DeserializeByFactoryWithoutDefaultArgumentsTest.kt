@@ -51,7 +51,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
         val p28: NullablePrimitive,
         val p29: NullablePrimitive,
         val p30: NullablePrimitive,
-        val p31: NullablePrimitive
+        val p31: NullablePrimitive,
     ) {
         companion object {
             @JvmStatic
@@ -88,7 +88,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q28: NullablePrimitive,
                 q29: NullablePrimitive,
                 q30: NullablePrimitive,
-                q31: NullablePrimitive
+                q31: NullablePrimitive,
             ) = Dst32(
                 q00,
                 q01,
@@ -121,7 +121,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q28,
                 q29,
                 q30,
-                q31
+                q31,
             )
         }
     }
@@ -166,7 +166,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
         val p29: NullablePrimitive,
         val p30: NullablePrimitive,
         val p31: NullablePrimitive,
-        val p32: NullablePrimitive
+        val p32: NullablePrimitive,
     ) {
         companion object {
             @JvmStatic
@@ -204,7 +204,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q29: NullablePrimitive,
                 q30: NullablePrimitive,
                 q31: NullablePrimitive,
-                q32: NullablePrimitive
+                q32: NullablePrimitive,
             ) = Dst33(
                 q00,
                 q01,
@@ -238,7 +238,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q29,
                 q30,
                 q31,
-                q32
+                q32,
             )
         }
     }
@@ -314,7 +314,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
         val p60: NullablePrimitive,
         val p61: NullablePrimitive,
         val p62: NullablePrimitive,
-        val p63: NullablePrimitive
+        val p63: NullablePrimitive,
     ) {
         companion object {
             @JvmStatic
@@ -383,7 +383,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q60: NullablePrimitive,
                 q61: NullablePrimitive,
                 q62: NullablePrimitive,
-                q63: NullablePrimitive
+                q63: NullablePrimitive,
             ) = Dst64(
                 q00,
                 q01,
@@ -448,7 +448,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q60,
                 q61,
                 q62,
-                q63
+                q63,
             )
         }
     }
@@ -525,7 +525,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
         val p61: NullablePrimitive,
         val p62: NullablePrimitive,
         val p63: NullablePrimitive,
-        val p64: NullablePrimitive
+        val p64: NullablePrimitive,
     ) {
         companion object {
             @JvmStatic
@@ -595,7 +595,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q61: NullablePrimitive,
                 q62: NullablePrimitive,
                 q63: NullablePrimitive,
-                q64: NullablePrimitive
+                q64: NullablePrimitive,
             ) = Dst65(
                 q00,
                 q01,
@@ -661,7 +661,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q61,
                 q62,
                 q63,
-                q64
+                q64,
             )
         }
     }
@@ -927,7 +927,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
         val p249: NullablePrimitive,
         val p250: NullablePrimitive,
         val p251: NullablePrimitive,
-        val p252: NullablePrimitive
+        val p252: NullablePrimitive,
     ) {
         companion object {
             @JvmStatic
@@ -1185,7 +1185,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q249: NullablePrimitive,
                 q250: NullablePrimitive,
                 q251: NullablePrimitive,
-                q252: NullablePrimitive
+                q252: NullablePrimitive,
             ) = DstMax(
                 q000,
                 q001,
@@ -1439,7 +1439,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q249,
                 q250,
                 q251,
-                q252
+                q252,
             )
         }
     }

@@ -8,13 +8,13 @@ import com.fasterxml.jackson.databind.deser.ContextualDeserializer
 import com.fasterxml.jackson.databind.deser.ResolvableDeserializer
 
 internal fun JsonDeserializer<*>.asSingletonDeserializer(
-    singleton: Any
+    singleton: Any,
 ) = KotlinObjectSingletonDeserializer(singleton, this)
 
 /** deserialize as normal, but return the canonical singleton instance. */
 internal class KotlinObjectSingletonDeserializer(
     private val singletonInstance: Any,
-    private val defaultDeserializer: JsonDeserializer<*>
+    private val defaultDeserializer: JsonDeserializer<*>,
 ) : JsonDeserializer<Any>(),
     // Additional interfaces of a specific 'JsonDeserializer' must be supported
     // Kotlin objectInstances are currently handled by a BeanSerializer which
@@ -28,7 +28,7 @@ internal class KotlinObjectSingletonDeserializer(
 
     override fun createContextual(
         ctxt: DeserializationContext?,
-        property: BeanProperty?
+        property: BeanProperty?,
     ): JsonDeserializer<*> = (defaultDeserializer as? ContextualDeserializer)
         ?.let { it.createContextual(ctxt, property).asSingletonDeserializer(singletonInstance) }
         ?: this

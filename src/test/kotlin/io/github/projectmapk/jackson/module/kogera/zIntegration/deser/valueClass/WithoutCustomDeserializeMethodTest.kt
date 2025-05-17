@@ -46,6 +46,23 @@ class WithoutCustomDeserializeMethodTest {
             }
         }
 
+        @Suppress("ClassName")
+        @Nested
+        inner class NullablePrimitive_ {
+            @Test
+            fun value() {
+                val result = defaultMapper.readValue<NullablePrimitive>("1")
+                assertEquals(NullablePrimitive(1), result)
+            }
+
+            // failing
+            @Test
+            fun nullString() {
+                val result = defaultMapper.readValue<NullablePrimitive?>("null")
+                assertNotEquals(NullablePrimitive(null), result, "#209 has been fixed.")
+            }
+        }
+
         @Test
         fun twoUnitPrimitive() {
             val result = defaultMapper.readValue<TwoUnitPrimitive>("1")
@@ -60,6 +77,8 @@ class WithoutCustomDeserializeMethodTest {
         val nnoN: NonNullObject?,
         val noNn: NullableObject,
         val noN: NullableObject?,
+        val npNn: NullablePrimitive,
+        val npN: NullablePrimitive?,
         val tupNn: TwoUnitPrimitive,
         val tupN: TwoUnitPrimitive?
     )
@@ -73,6 +92,8 @@ class WithoutCustomDeserializeMethodTest {
             NonNullObject("bar"),
             NullableObject("baz"),
             NullableObject("qux"),
+            NullablePrimitive(1),
+            NullablePrimitive(2),
             TwoUnitPrimitive(3),
             TwoUnitPrimitive(4)
         )
@@ -90,6 +111,8 @@ class WithoutCustomDeserializeMethodTest {
             NonNullObject("foo"),
             null,
             NullableObject(null),
+            null,
+            NullablePrimitive(null),
             null,
             TwoUnitPrimitive(3),
             null

@@ -9,6 +9,7 @@ import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.NonNullObject
 import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.NullableObject
+import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.NullablePrimitive
 import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.Primitive
 import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.TwoUnitPrimitive
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -45,6 +46,12 @@ class WithoutCustomDeserializeMethodTest {
         }
 
         @Test
+        fun nullablePrimitive() {
+            val result = defaultMapper.readValue<Map<NullablePrimitive, String?>>("""{"2":null}""")
+            assertEquals(mapOf(NullablePrimitive(2) to null), result)
+        }
+
+        @Test
         fun twoUnitPrimitive() {
             val result = defaultMapper.readValue<Map<TwoUnitPrimitive, String?>>("""{"1":null}""")
             assertEquals(mapOf(TwoUnitPrimitive(1) to null), result)
@@ -55,6 +62,7 @@ class WithoutCustomDeserializeMethodTest {
         val p: Map<Primitive, String?>,
         val nn: Map<NonNullObject, String?>,
         val n: Map<NullableObject, String?>,
+        val np: Map<NullablePrimitive, String?>,
         val tup: Map<TwoUnitPrimitive, String?>
     )
 
@@ -65,6 +73,7 @@ class WithoutCustomDeserializeMethodTest {
               "p":{"1":null},
               "nn":{"foo":null},
               "n":{"bar":null},
+              "np":{"2":null},
               "tup":{"2":null}
             }
         """.trimIndent()
@@ -73,6 +82,7 @@ class WithoutCustomDeserializeMethodTest {
             mapOf(Primitive(1) to null),
             mapOf(NonNullObject("foo") to null),
             mapOf(NullableObject("bar") to null),
+            mapOf(NullablePrimitive(2) to null),
             mapOf(TwoUnitPrimitive(2) to null)
         )
 

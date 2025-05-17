@@ -63,7 +63,7 @@ class WithoutCustomDeserializeMethodTest {
         val nn: Map<NonNullObject, String?>,
         val n: Map<NullableObject, String?>,
         val np: Map<NullablePrimitive, String?>,
-        val tup: Map<TwoUnitPrimitive, String?>
+        val tup: Map<TwoUnitPrimitive, String?>,
     )
 
     @Test
@@ -83,7 +83,7 @@ class WithoutCustomDeserializeMethodTest {
             mapOf(NonNullObject("foo") to null),
             mapOf(NullableObject("bar") to null),
             mapOf(NullablePrimitive(2) to null),
-            mapOf(TwoUnitPrimitive(2) to null)
+            mapOf(TwoUnitPrimitive(2) to null),
         )
 
         assertEquals(expected, result)
@@ -129,7 +129,7 @@ class WithoutCustomDeserializeMethodTest {
                     init {
                         addKeyDeserializer(Wrapped::class.java, Wrapped.KeyDeserializer())
                     }
-                }
+                },
             )
 
         val result = mapper.readValue<Map<Wrapper, String?>>("""{"foo-bar":null}""")

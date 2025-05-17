@@ -32,7 +32,7 @@ class NullableObjectEdgeCases {
         @field:JsonDeserialize(using = NullValueDeserializer::class)
         val nn: VC,
         @field:JsonDeserialize(using = NullValueDeserializer::class)
-        val n: VC?
+        val n: VC?,
     )
 
     @Test
@@ -54,7 +54,7 @@ class NullableObjectEdgeCases {
         @field:JsonDeserialize(using = NullsSkipDeserializerWrapsNullable::class)
         val nn: VC = VC("skip"),
         @field:JsonSetter(nulls = Nulls.SKIP)
-        val n: VC? = VC("skip")
+        val n: VC? = VC("skip"),
     )
 
     // There is a problem with #51, so it is a failing test.

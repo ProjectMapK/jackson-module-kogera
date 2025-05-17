@@ -80,7 +80,7 @@ class WithoutCustomDeserializeMethodTest {
         val npNn: NullablePrimitive,
         val npN: NullablePrimitive?,
         val tupNn: TwoUnitPrimitive,
-        val tupN: TwoUnitPrimitive?
+        val tupN: TwoUnitPrimitive?,
     )
 
     @Test
@@ -95,7 +95,7 @@ class WithoutCustomDeserializeMethodTest {
             NullablePrimitive(1),
             NullablePrimitive(2),
             TwoUnitPrimitive(3),
-            TwoUnitPrimitive(4)
+            TwoUnitPrimitive(4),
         )
         val src = defaultMapper.writeValueAsString(expected)
         val result = defaultMapper.readValue<Dst>(src)
@@ -115,7 +115,7 @@ class WithoutCustomDeserializeMethodTest {
             NullablePrimitive(null),
             null,
             TwoUnitPrimitive(3),
-            null
+            null,
         )
         val src = defaultMapper.writeValueAsString(expected)
         val result = defaultMapper.readValue<Dst>(src)

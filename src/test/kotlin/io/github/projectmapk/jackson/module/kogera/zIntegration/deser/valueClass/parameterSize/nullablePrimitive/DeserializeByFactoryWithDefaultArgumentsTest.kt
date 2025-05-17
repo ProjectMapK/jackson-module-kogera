@@ -46,7 +46,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p28: NullablePrimitive?,
         val p29: NullablePrimitive?,
         val p30: NullablePrimitive?,
-        val p31: NullablePrimitive?
+        val p31: NullablePrimitive?,
     ) {
         companion object {
             @JvmStatic
@@ -83,7 +83,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q28: NullablePrimitive? = NullablePrimitive(28),
                 q29: NullablePrimitive? = NullablePrimitive(29),
                 q30: NullablePrimitive? = NullablePrimitive(30),
-                q31: NullablePrimitive? = NullablePrimitive(31)
+                q31: NullablePrimitive? = NullablePrimitive(31),
             ) = Dst32(
                 q00,
                 q01,
@@ -116,7 +116,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q28,
                 q29,
                 q30,
-                q31
+                q31,
             )
         }
     }
@@ -159,7 +159,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p29: NullablePrimitive?,
         val p30: NullablePrimitive?,
         val p31: NullablePrimitive?,
-        val p32: NullablePrimitive?
+        val p32: NullablePrimitive?,
     ) {
         companion object {
             @JvmStatic
@@ -197,7 +197,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q29: NullablePrimitive? = NullablePrimitive(29),
                 q30: NullablePrimitive? = NullablePrimitive(30),
                 q31: NullablePrimitive? = NullablePrimitive(31),
-                q32: NullablePrimitive? = NullablePrimitive(32)
+                q32: NullablePrimitive? = NullablePrimitive(32),
             ) = Dst33(
                 q00,
                 q01,
@@ -231,7 +231,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q29,
                 q30,
                 q31,
-                q32
+                q32,
             )
         }
     }
@@ -305,7 +305,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p60: NullablePrimitive?,
         val p61: NullablePrimitive?,
         val p62: NullablePrimitive?,
-        val p63: NullablePrimitive?
+        val p63: NullablePrimitive?,
     ) {
         companion object {
             @JvmStatic
@@ -374,7 +374,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q60: NullablePrimitive? = NullablePrimitive(60),
                 q61: NullablePrimitive? = NullablePrimitive(61),
                 q62: NullablePrimitive? = NullablePrimitive(62),
-                q63: NullablePrimitive? = NullablePrimitive(63)
+                q63: NullablePrimitive? = NullablePrimitive(63),
             ) = Dst64(
                 q00,
                 q01,
@@ -439,7 +439,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q60,
                 q61,
                 q62,
-                q63
+                q63,
             )
         }
     }
@@ -514,7 +514,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p61: NullablePrimitive?,
         val p62: NullablePrimitive?,
         val p63: NullablePrimitive?,
-        val p64: NullablePrimitive?
+        val p64: NullablePrimitive?,
     ) {
         companion object {
             @JvmStatic
@@ -584,7 +584,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q61: NullablePrimitive? = NullablePrimitive(61),
                 q62: NullablePrimitive? = NullablePrimitive(62),
                 q63: NullablePrimitive? = NullablePrimitive(63),
-                q64: NullablePrimitive? = NullablePrimitive(64)
+                q64: NullablePrimitive? = NullablePrimitive(64),
             ) = Dst65(
                 q00,
                 q01,
@@ -650,7 +650,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q61,
                 q62,
                 q63,
-                q64
+                q64,
             )
         }
     }
@@ -905,7 +905,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p240: NullablePrimitive?,
         val p241: NullablePrimitive?,
         val p242: NullablePrimitive?,
-        val p243: NullablePrimitive?
+        val p243: NullablePrimitive?,
     ) {
         companion object {
             @JvmStatic
@@ -1154,7 +1154,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q240: NullablePrimitive? = NullablePrimitive(240),
                 q241: NullablePrimitive? = NullablePrimitive(241),
                 q242: NullablePrimitive? = NullablePrimitive(242),
-                q243: NullablePrimitive? = NullablePrimitive(243)
+                q243: NullablePrimitive? = NullablePrimitive(243),
             ) = DstMax(
                 q000,
                 q001,
@@ -1399,7 +1399,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q240,
                 q241,
                 q242,
-                q243
+                q243,
             )
         }
     }

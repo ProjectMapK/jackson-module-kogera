@@ -12,14 +12,14 @@ class JsonIncludeCustomTest {
 
     @JsonInclude(
         value = JsonInclude.Include.CUSTOM,
-        valueFilter = NullFilter::class
+        valueFilter = NullFilter::class,
     )
     data class NullFilterDto(
         val pN: Primitive? = null,
         val nnoN: NonNullObject? = null,
         val noN1: NullableObject? = null,
         val npN: NullablePrimitive? = null,
-        val tupN: TwoUnitPrimitive? = null
+        val tupN: TwoUnitPrimitive? = null,
     )
 
     @Test

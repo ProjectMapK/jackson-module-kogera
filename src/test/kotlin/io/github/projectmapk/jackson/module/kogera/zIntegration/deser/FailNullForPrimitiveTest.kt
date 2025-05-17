@@ -14,7 +14,7 @@ private class FailNullForPrimitiveTest {
 
     data class NoDefaultValue(
         val foo: Int,
-        val bar: Int?
+        val bar: Int?,
     )
 
     @Test
@@ -33,7 +33,7 @@ private class FailNullForPrimitiveTest {
 
     data class HasDefaultValue(
         val foo: Int = -1,
-        val bar: Int? = -1
+        val bar: Int? = -1,
     )
 
     @Test

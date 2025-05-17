@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver
 
 internal abstract class ClosedRangeMixin<T> @JsonCreator constructor(
     public val start: T,
-    @get:JsonProperty("end") public val endInclusive: T
+    @get:JsonProperty("end") public val endInclusive: T,
 ) {
     @JsonIgnore
     public abstract fun getEnd(): T

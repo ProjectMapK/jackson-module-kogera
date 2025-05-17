@@ -55,7 +55,7 @@ class ForProperty {
         @get:JsonKUnbox
         val tup1: TwoUnitPrimitive? = TwoUnitPrimitive(1),
         @get:JsonKUnbox
-        val tup2: TwoUnitPrimitive? = null
+        val tup2: TwoUnitPrimitive? = null,
     )
 
     @Test

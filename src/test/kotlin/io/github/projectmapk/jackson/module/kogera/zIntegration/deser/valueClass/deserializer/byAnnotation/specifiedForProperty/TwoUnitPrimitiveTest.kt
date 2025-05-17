@@ -13,7 +13,7 @@ class TwoUnitPrimitiveTest {
         @get:JsonDeserialize(using = TwoUnitPrimitive.Deserializer::class)
         val getterAnn: TwoUnitPrimitive,
         @field:JsonDeserialize(using = TwoUnitPrimitive.Deserializer::class)
-        val fieldAnn: TwoUnitPrimitive
+        val fieldAnn: TwoUnitPrimitive,
     )
 
     @Test
@@ -24,7 +24,7 @@ class TwoUnitPrimitiveTest {
                   "getterAnn" : 1,
                   "fieldAnn" : 2
                 }
-            """.trimIndent()
+            """.trimIndent(),
         )
         assertEquals(NonNull(TwoUnitPrimitive(101), TwoUnitPrimitive(102)), result)
     }
@@ -33,7 +33,7 @@ class TwoUnitPrimitiveTest {
         @get:JsonDeserialize(using = TwoUnitPrimitive.Deserializer::class)
         val getterAnn: TwoUnitPrimitive?,
         @field:JsonDeserialize(using = TwoUnitPrimitive.Deserializer::class)
-        val fieldAnn: TwoUnitPrimitive?
+        val fieldAnn: TwoUnitPrimitive?,
     )
 
     @Nested
@@ -46,7 +46,7 @@ class TwoUnitPrimitiveTest {
                   "getterAnn" : 1,
                   "fieldAnn" : 2
                 }
-                """.trimIndent()
+                """.trimIndent(),
             )
             assertEquals(Nullable(TwoUnitPrimitive(101), TwoUnitPrimitive(102)), result)
         }
@@ -59,7 +59,7 @@ class TwoUnitPrimitiveTest {
                   "getterAnn" : null,
                   "fieldAnn" : null
                 }
-                """.trimIndent()
+                """.trimIndent(),
             )
             assertEquals(Nullable(null, null), result)
         }

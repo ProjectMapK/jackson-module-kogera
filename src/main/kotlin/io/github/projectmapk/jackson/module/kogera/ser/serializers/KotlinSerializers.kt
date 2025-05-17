@@ -56,7 +56,7 @@ private fun Class<*>.getStaticJsonValueGetter(): Method? = this.declaredMethods.
 
 internal class ValueClassStaticJsonValueSerializer<T : Any>(
     private val converter: ValueClassUnboxConverter<T>,
-    private val staticJsonValueGetter: Method
+    private val staticJsonValueGetter: Method,
 ) : StdSerializer<T>(converter.valueClass) {
     override fun serialize(value: T, gen: JsonGenerator, provider: SerializerProvider) {
         val unboxed = converter.convert(value)
@@ -81,7 +81,7 @@ internal class KotlinSerializers(private val cache: ReflectionCache) : SimpleSer
     override fun findSerializer(
         config: SerializationConfig?,
         type: JavaType,
-        beanDesc: BeanDescription?
+        beanDesc: BeanDescription?,
     ): JsonSerializer<*>? {
         val rawClass = type.rawClass
 

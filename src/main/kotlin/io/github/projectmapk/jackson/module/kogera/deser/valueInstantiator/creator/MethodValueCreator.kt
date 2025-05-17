@@ -15,7 +15,7 @@ import java.lang.reflect.Method
 internal class MethodValueCreator<T>(
     private val method: Method,
     declaringJmClass: JmClass,
-    cache: ReflectionCache
+    cache: ReflectionCache,
 ) : ValueCreator<T>() {
     private val companion: JmClass.CompanionObject = declaringJmClass.companion!!
     override val isAccessible: Boolean = method.isAccessible && companion.isAccessible
@@ -34,7 +34,7 @@ internal class MethodValueCreator<T>(
         bucketGenerator = BucketGenerator(
             rawTypes,
             valueParameters,
-            valueParameters.mapToConverters(rawTypes, cache)
+            valueParameters.mapToConverters(rawTypes, cache),
         )
     }
 

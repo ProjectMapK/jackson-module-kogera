@@ -92,7 +92,7 @@ class SpecifiedForObjectMapperTest {
         val npNn: NullablePrimitive,
         val npN: NullablePrimitive?,
         val tupNn: TwoUnitPrimitive,
-        val tupN: TwoUnitPrimitive?
+        val tupN: TwoUnitPrimitive?,
     )
 
     @Test
@@ -107,7 +107,7 @@ class SpecifiedForObjectMapperTest {
             NullablePrimitive(3),
             NullablePrimitive(4),
             TwoUnitPrimitive(5),
-            TwoUnitPrimitive(6)
+            TwoUnitPrimitive(6),
         )
         val src = mapper.writeValueAsString(base)
         val result = mapper.readValue<Dst>(src)
@@ -122,7 +122,7 @@ class SpecifiedForObjectMapperTest {
             NullablePrimitive(103),
             NullablePrimitive(104),
             TwoUnitPrimitive(105),
-            TwoUnitPrimitive(106)
+            TwoUnitPrimitive(106),
         )
         assertEquals(expected, result)
     }
@@ -139,7 +139,7 @@ class SpecifiedForObjectMapperTest {
             NullablePrimitive(3),
             null,
             TwoUnitPrimitive(5),
-            null
+            null,
         )
         val src = mapper.writeValueAsString(base)
         val result = mapper.readValue<Dst>(src)
@@ -154,7 +154,7 @@ class SpecifiedForObjectMapperTest {
             NullablePrimitive(103),
             null,
             TwoUnitPrimitive(105),
-            null
+            null,
         )
         assertEquals(expected, result)
     }

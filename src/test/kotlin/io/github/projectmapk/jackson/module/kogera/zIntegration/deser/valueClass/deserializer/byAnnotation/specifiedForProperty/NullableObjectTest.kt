@@ -13,7 +13,7 @@ class NullableObjectTest {
         @get:JsonDeserialize(using = NullableObject.DeserializerWrapsNullable::class)
         val getterAnn: NullableObject,
         @field:JsonDeserialize(using = NullableObject.DeserializerWrapsNullable::class)
-        val fieldAnn: NullableObject
+        val fieldAnn: NullableObject,
     )
 
     @Test
@@ -24,7 +24,7 @@ class NullableObjectTest {
                   "getterAnn" : "foo",
                   "fieldAnn" : "bar"
                 }
-            """.trimIndent()
+            """.trimIndent(),
         )
         assertEquals(NonNull(NullableObject("foo-deser"), NullableObject("bar-deser")), result)
     }
@@ -33,7 +33,7 @@ class NullableObjectTest {
         @get:JsonDeserialize(using = NullableObject.DeserializerWrapsNullable::class)
         val getterAnn: NullableObject?,
         @field:JsonDeserialize(using = NullableObject.DeserializerWrapsNullable::class)
-        val fieldAnn: NullableObject?
+        val fieldAnn: NullableObject?,
     )
 
     @Nested
@@ -46,7 +46,7 @@ class NullableObjectTest {
                   "getterAnn" : "foo",
                   "fieldAnn" : "bar"
                 }
-                """.trimIndent()
+                """.trimIndent(),
             )
             assertEquals(Nullable(NullableObject("foo-deser"), NullableObject("bar-deser")), result)
         }
@@ -59,7 +59,7 @@ class NullableObjectTest {
                   "getterAnn" : null,
                   "fieldAnn" : null
                 }
-                """.trimIndent()
+                """.trimIndent(),
             )
             assertEquals(Nullable(null, null), result)
         }

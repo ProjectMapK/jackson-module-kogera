@@ -53,7 +53,7 @@ internal object ULongKeyDeserializer : StdKeyDeserializer(-1, ULong::class.java)
 // The implementation is designed to be compatible with various creators, just in case.
 internal class ValueClassKeyDeserializer<S, D : Any>(
     private val creator: Method,
-    private val converter: ValueClassBoxConverter<S, D>
+    private val converter: ValueClassBoxConverter<S, D>,
 ) : KeyDeserializer() {
     private val unboxedClass: Class<*> = creator.parameterTypes[0]
 
@@ -82,7 +82,7 @@ internal class ValueClassKeyDeserializer<S, D : Any>(
     companion object {
         fun createOrNull(
             valueClass: Class<*>,
-            cache: ReflectionCache
+            cache: ReflectionCache,
         ): ValueClassKeyDeserializer<*, *>? {
             val jmClass = cache.getJmClass(valueClass) ?: return null
             val primaryKmConstructorSignature =
@@ -107,7 +107,7 @@ internal class KotlinKeyDeserializers(private val cache: ReflectionCache) : Simp
     override fun findKeyDeserializer(
         type: JavaType,
         config: DeserializationConfig?,
-        beanDesc: BeanDescription?
+        beanDesc: BeanDescription?,
     ): KeyDeserializer? {
         val rawClass = type.rawClass
 

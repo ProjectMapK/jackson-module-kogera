@@ -13,7 +13,7 @@ class PrimitiveTest {
         @get:JsonDeserialize(using = Primitive.Deserializer::class)
         val getterAnn: Primitive,
         @field:JsonDeserialize(using = Primitive.Deserializer::class)
-        val fieldAnn: Primitive
+        val fieldAnn: Primitive,
     )
 
     @Test
@@ -24,7 +24,7 @@ class PrimitiveTest {
                   "getterAnn" : 1,
                   "fieldAnn" : 2
                 }
-            """.trimIndent()
+            """.trimIndent(),
         )
         assertEquals(NonNull(Primitive(101), Primitive(102)), result)
     }
@@ -33,7 +33,7 @@ class PrimitiveTest {
         @get:JsonDeserialize(using = Primitive.Deserializer::class)
         val getterAnn: Primitive?,
         @field:JsonDeserialize(using = Primitive.Deserializer::class)
-        val fieldAnn: Primitive?
+        val fieldAnn: Primitive?,
     )
 
     @Nested
@@ -46,7 +46,7 @@ class PrimitiveTest {
                   "getterAnn" : 1,
                   "fieldAnn" : 2
                 }
-                """.trimIndent()
+                """.trimIndent(),
             )
             assertEquals(Nullable(Primitive(101), Primitive(102)), result)
         }
@@ -59,7 +59,7 @@ class PrimitiveTest {
                   "getterAnn" : null,
                   "fieldAnn" : null
                 }
-                """.trimIndent()
+                """.trimIndent(),
             )
             assertEquals(Nullable(null, null), result)
         }

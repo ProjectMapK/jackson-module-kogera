@@ -16,7 +16,7 @@ class NullValueTest {
         @get:JsonSerialize(using = NullablePrimitive.Serializer::class)
         val getterAnn: NullablePrimitive,
         @field:JsonSerialize(using = NullablePrimitive.Serializer::class)
-        val fieldAnn: NullablePrimitive
+        val fieldAnn: NullablePrimitive,
     )
 
     @Test
@@ -30,7 +30,7 @@ class NullValueTest {
                   "fieldAnn" : "NULL"
                 }
             """.trimIndent(),
-            writer.writeValueAsString(src)
+            writer.writeValueAsString(src),
         )
     }
 
@@ -38,7 +38,7 @@ class NullValueTest {
         @get:JsonSerialize(using = NullablePrimitive.Serializer::class)
         val getterAnn: NullablePrimitive?,
         @field:JsonSerialize(using = NullablePrimitive.Serializer::class)
-        val fieldAnn: NullablePrimitive?
+        val fieldAnn: NullablePrimitive?,
     )
 
     @Test
@@ -52,7 +52,7 @@ class NullValueTest {
                   "fieldAnn" : "NULL"
                 }
             """.trimIndent(),
-            writer.writeValueAsString(src)
+            writer.writeValueAsString(src),
         )
     }
 
@@ -67,7 +67,7 @@ class NullValueTest {
                   "fieldAnn" : null
                 }
             """.trimIndent(),
-            writer.writeValueAsString(src)
+            writer.writeValueAsString(src),
         )
     }
 }

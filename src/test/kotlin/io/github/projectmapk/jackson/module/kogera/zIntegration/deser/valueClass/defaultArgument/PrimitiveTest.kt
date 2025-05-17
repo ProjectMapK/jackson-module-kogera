@@ -11,7 +11,7 @@ class PrimitiveTest {
     data class ByConstructor(
         val nn: Primitive = Primitive(1),
         val nNn: Primitive? = Primitive(2),
-        val nN: Primitive? = null
+        val nN: Primitive? = null,
     )
 
     @Test
@@ -26,7 +26,7 @@ class PrimitiveTest {
             fun creator(
                 nn: Primitive = Primitive(1),
                 nNn: Primitive? = Primitive(2),
-                nN: Primitive? = null
+                nN: Primitive? = null,
             ) = ByFactory(nn, nNn, nN)
         }
     }

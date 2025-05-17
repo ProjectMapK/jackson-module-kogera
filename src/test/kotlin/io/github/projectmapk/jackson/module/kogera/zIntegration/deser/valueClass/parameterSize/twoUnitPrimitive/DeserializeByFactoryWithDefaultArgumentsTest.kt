@@ -46,7 +46,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p28: TwoUnitPrimitive,
         val p29: TwoUnitPrimitive,
         val p30: TwoUnitPrimitive,
-        val p31: TwoUnitPrimitive
+        val p31: TwoUnitPrimitive,
     ) {
         companion object {
             @JvmStatic
@@ -83,7 +83,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q28: TwoUnitPrimitive = TwoUnitPrimitive(28),
                 q29: TwoUnitPrimitive = TwoUnitPrimitive(29),
                 q30: TwoUnitPrimitive = TwoUnitPrimitive(30),
-                q31: TwoUnitPrimitive = TwoUnitPrimitive(31)
+                q31: TwoUnitPrimitive = TwoUnitPrimitive(31),
             ) = Dst32(
                 q00,
                 q01,
@@ -116,7 +116,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q28,
                 q29,
                 q30,
-                q31
+                q31,
             )
         }
     }
@@ -159,7 +159,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p29: TwoUnitPrimitive,
         val p30: TwoUnitPrimitive,
         val p31: TwoUnitPrimitive,
-        val p32: TwoUnitPrimitive
+        val p32: TwoUnitPrimitive,
     ) {
         companion object {
             @JvmStatic
@@ -197,7 +197,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q29: TwoUnitPrimitive = TwoUnitPrimitive(29),
                 q30: TwoUnitPrimitive = TwoUnitPrimitive(30),
                 q31: TwoUnitPrimitive = TwoUnitPrimitive(31),
-                q32: TwoUnitPrimitive = TwoUnitPrimitive(32)
+                q32: TwoUnitPrimitive = TwoUnitPrimitive(32),
             ) = Dst33(
                 q00,
                 q01,
@@ -231,7 +231,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q29,
                 q30,
                 q31,
-                q32
+                q32,
             )
         }
     }
@@ -305,7 +305,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p60: TwoUnitPrimitive,
         val p61: TwoUnitPrimitive,
         val p62: TwoUnitPrimitive,
-        val p63: TwoUnitPrimitive
+        val p63: TwoUnitPrimitive,
     ) {
         companion object {
             @JvmStatic
@@ -374,7 +374,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q60: TwoUnitPrimitive = TwoUnitPrimitive(60),
                 q61: TwoUnitPrimitive = TwoUnitPrimitive(61),
                 q62: TwoUnitPrimitive = TwoUnitPrimitive(62),
-                q63: TwoUnitPrimitive = TwoUnitPrimitive(63)
+                q63: TwoUnitPrimitive = TwoUnitPrimitive(63),
             ) = Dst64(
                 q00,
                 q01,
@@ -439,7 +439,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q60,
                 q61,
                 q62,
-                q63
+                q63,
             )
         }
     }
@@ -514,7 +514,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p61: TwoUnitPrimitive,
         val p62: TwoUnitPrimitive,
         val p63: TwoUnitPrimitive,
-        val p64: TwoUnitPrimitive
+        val p64: TwoUnitPrimitive,
     ) {
         companion object {
             @JvmStatic
@@ -584,7 +584,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q61: TwoUnitPrimitive = TwoUnitPrimitive(61),
                 q62: TwoUnitPrimitive = TwoUnitPrimitive(62),
                 q63: TwoUnitPrimitive = TwoUnitPrimitive(63),
-                q64: TwoUnitPrimitive = TwoUnitPrimitive(64)
+                q64: TwoUnitPrimitive = TwoUnitPrimitive(64),
             ) = Dst65(
                 q00,
                 q01,
@@ -650,7 +650,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q61,
                 q62,
                 q63,
-                q64
+                q64,
             )
         }
     }
@@ -785,7 +785,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p120: TwoUnitPrimitive,
         val p121: TwoUnitPrimitive,
         val p122: TwoUnitPrimitive,
-        val p123: TwoUnitPrimitive
+        val p123: TwoUnitPrimitive,
     ) {
         companion object {
             @JvmStatic
@@ -914,7 +914,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q120: TwoUnitPrimitive = TwoUnitPrimitive(120),
                 q121: TwoUnitPrimitive = TwoUnitPrimitive(121),
                 q122: TwoUnitPrimitive = TwoUnitPrimitive(122),
-                q123: TwoUnitPrimitive = TwoUnitPrimitive(123)
+                q123: TwoUnitPrimitive = TwoUnitPrimitive(123),
             ) = DstMax(
                 q000,
                 q001,
@@ -1039,7 +1039,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q120,
                 q121,
                 q122,
-                q123
+                q123,
             )
         }
     }

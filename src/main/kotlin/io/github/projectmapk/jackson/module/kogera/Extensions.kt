@@ -49,7 +49,7 @@ public fun jacksonMapperBuilder(initializer: KotlinModule.Builder.() -> Unit = {
 
 @JvmOverloads
 public fun ObjectMapper.registerKotlinModule(
-    initializer: KotlinModule.Builder.() -> Unit = {}
+    initializer: KotlinModule.Builder.() -> Unit = {},
 ): ObjectMapper = this.registerModule(kotlinModule(initializer))
 // endregion
 
@@ -67,7 +67,7 @@ internal inline fun <reified T> Any?.checkTypeMismatch(): T {
         // JsonMappingException was not used to unify the behavior.
         throw RuntimeJsonMappingException(
             "Deserialized value did not match the specified type; " +
-                "specified ${T::class.qualifiedName}$nullability but was ${this?.let { it::class.qualifiedName }}"
+                "specified ${T::class.qualifiedName}$nullability but was ${this?.let { it::class.qualifiedName }}",
         )
     }
     return this
@@ -157,7 +157,7 @@ public inline fun <reified T> ObjectMapper.readValue(src: ByteArray): T = readVa
  *   due to an incorrect customization to [ObjectMapper].
  */
 public inline fun <reified T> ObjectMapper.treeToValue(
-    n: TreeNode
+    n: TreeNode,
 ): T = readValue(this.treeAsTokens(n), jacksonTypeRef<T>()).checkTypeMismatch()
 
 /**
@@ -192,13 +192,13 @@ public inline fun <reified T> ObjectReader.readValuesTyped(jp: JsonParser): Iter
     }
 }
 public inline fun <reified T> ObjectReader.treeToValue(
-    n: TreeNode
+    n: TreeNode,
 ): T? = readValue(this.treeAsTokens(n), jacksonTypeRef<T>())
 
 public inline fun <reified T, reified U> ObjectMapper.addMixIn(): ObjectMapper = addMixIn(T::class.java, U::class.java)
 public inline fun <reified T, reified U> JsonMapper.Builder.addMixIn(): JsonMapper.Builder = addMixIn(
     T::class.java,
-    U::class.java
+    U::class.java,
 )
 
 public operator fun ArrayNode.plus(element: Boolean) {
@@ -298,7 +298,7 @@ public operator fun JsonNode.contains(index: Int): Boolean = has(index)
 
 public fun <T : Any> SimpleModule.addSerializer(
     kClass: KClass<T>,
-    serializer: JsonSerializer<T>
+    serializer: JsonSerializer<T>,
 ): SimpleModule = this.apply {
     kClass.javaPrimitiveType?.let { addSerializer(it, serializer) }
     addSerializer(kClass.javaObjectType, serializer)
@@ -306,7 +306,7 @@ public fun <T : Any> SimpleModule.addSerializer(
 
 public fun <T : Any> SimpleModule.addDeserializer(
     kClass: KClass<T>,
-    deserializer: JsonDeserializer<T>
+    deserializer: JsonDeserializer<T>,
 ): SimpleModule = this.apply {
     kClass.javaPrimitiveType?.let { addDeserializer(it, deserializer) }
     addDeserializer(kClass.javaObjectType, deserializer)

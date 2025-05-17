@@ -15,7 +15,7 @@ class NullableObjectTest {
         val nnNn: NullableObject = NullableObject("foo"),
         val nnN: NullableObject = NullableObject(null),
         val nNn: NullableObject? = NullableObject("bar"),
-        val nN: NullableObject? = null
+        val nN: NullableObject? = null,
     )
 
     @Test
@@ -30,7 +30,7 @@ class NullableObjectTest {
         val nnNn: NullableObject = NullableObject("foo"),
         val nnN: NullableObject = NullableObject(null),
         val nNn: NullableObject? = NullableObject("bar"),
-        val nN: NullableObject? = null
+        val nN: NullableObject? = null,
     ) {
         companion object {
             @JvmStatic
@@ -39,7 +39,7 @@ class NullableObjectTest {
                 nn: NullableObject = NullableObject("foo"),
                 nnN: NullableObject = NullableObject(null),
                 nNn: NullableObject? = NullableObject("bar"),
-                nN: NullableObject? = null
+                nN: NullableObject? = null,
             ) = ByFactory(nn, nnN, nNn, nN)
         }
     }

@@ -15,7 +15,7 @@ import java.lang.reflect.Constructor
 internal class ConstructorValueCreator<T : Any>(
     private val constructor: Constructor<T>,
     declaringJmClass: JmClass,
-    cache: ReflectionCache
+    cache: ReflectionCache,
 ) : ValueCreator<T>() {
     private val declaringClass: Class<T> = constructor.declaringClass
 
@@ -33,7 +33,7 @@ internal class ConstructorValueCreator<T : Any>(
         bucketGenerator = BucketGenerator(
             rawTypes,
             valueParameters,
-            valueParameters.mapToConverters(rawTypes, cache)
+            valueParameters.mapToConverters(rawTypes, cache),
         )
     }
 

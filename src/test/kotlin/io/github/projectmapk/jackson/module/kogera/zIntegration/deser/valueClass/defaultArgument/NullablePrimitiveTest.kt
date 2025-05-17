@@ -15,7 +15,7 @@ class NullablePrimitiveTest {
         val nnNn: NullablePrimitive = NullablePrimitive(1),
         val nnN: NullablePrimitive = NullablePrimitive(null),
         val nNn: NullablePrimitive? = NullablePrimitive(2),
-        val nN: NullablePrimitive? = null
+        val nN: NullablePrimitive? = null,
     )
 
     @Test
@@ -30,7 +30,7 @@ class NullablePrimitiveTest {
         val nnNn: NullablePrimitive = NullablePrimitive(1),
         val nnN: NullablePrimitive = NullablePrimitive(null),
         val nNn: NullablePrimitive? = NullablePrimitive(2),
-        val nN: NullablePrimitive? = null
+        val nN: NullablePrimitive? = null,
     ) {
         companion object {
             @JvmStatic
@@ -39,7 +39,7 @@ class NullablePrimitiveTest {
                 nnNn: NullablePrimitive = NullablePrimitive(1),
                 nnN: NullablePrimitive = NullablePrimitive(null),
                 nNn: NullablePrimitive? = NullablePrimitive(2),
-                nN: NullablePrimitive? = null
+                nN: NullablePrimitive? = null,
             ) = ByFactory(nnNn, nnN, nNn, nN)
         }
     }

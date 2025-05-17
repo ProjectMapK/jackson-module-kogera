@@ -59,20 +59,20 @@ class ClosedRangesTest {
     fun findClosedFloatingPointRangeRefTest() {
         assertEquals(
             ClosedRangeResolver.closedDoubleRangeRef,
-            ClosedRangeResolver.findClosedFloatingPointRangeRef(Double::class.javaPrimitiveType!!)
+            ClosedRangeResolver.findClosedFloatingPointRangeRef(Double::class.javaPrimitiveType!!),
         )
         assertEquals(
             ClosedRangeResolver.closedDoubleRangeRef,
-            ClosedRangeResolver.findClosedFloatingPointRangeRef(Double::class.javaObjectType)
+            ClosedRangeResolver.findClosedFloatingPointRangeRef(Double::class.javaObjectType),
         )
 
         assertEquals(
             ClosedRangeResolver.closedFloatRangeRef,
-            ClosedRangeResolver.findClosedFloatingPointRangeRef(Float::class.javaPrimitiveType!!)
+            ClosedRangeResolver.findClosedFloatingPointRangeRef(Float::class.javaPrimitiveType!!),
         )
         assertEquals(
             ClosedRangeResolver.closedFloatRangeRef,
-            ClosedRangeResolver.findClosedFloatingPointRangeRef(Float::class.javaObjectType)
+            ClosedRangeResolver.findClosedFloatingPointRangeRef(Float::class.javaObjectType),
         )
     }
 }

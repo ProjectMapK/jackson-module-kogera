@@ -64,7 +64,7 @@ private class JmClassImpl(
     clazz: Class<*>,
     kmClass: KmClass,
     superJmClass: JmClass?,
-    interfaceJmClasses: List<JmClass>
+    interfaceJmClasses: List<JmClass>,
 ) : JmClass {
     private val allPropsMap: Map<String, JmProperty>
 
@@ -122,5 +122,5 @@ internal fun JmClass(
     clazz: Class<*>,
     kmClass: KmClass,
     superJmClass: JmClass?,
-    interfaceJmClasses: List<JmClass>
+    interfaceJmClasses: List<JmClass>,
 ): JmClass = JmClassImpl(clazz, kmClass, superJmClass, interfaceJmClasses)

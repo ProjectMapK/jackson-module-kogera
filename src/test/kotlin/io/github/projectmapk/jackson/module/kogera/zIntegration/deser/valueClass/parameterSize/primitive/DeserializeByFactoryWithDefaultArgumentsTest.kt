@@ -46,7 +46,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p28: Primitive,
         val p29: Primitive,
         val p30: Primitive,
-        val p31: Primitive
+        val p31: Primitive,
     ) {
         companion object {
             @JvmStatic
@@ -83,7 +83,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q28: Primitive = Primitive(28),
                 q29: Primitive = Primitive(29),
                 q30: Primitive = Primitive(30),
-                q31: Primitive = Primitive(31)
+                q31: Primitive = Primitive(31),
             ) = Dst32(
                 q00,
                 q01,
@@ -116,7 +116,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q28,
                 q29,
                 q30,
-                q31
+                q31,
             )
         }
     }
@@ -159,7 +159,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p29: Primitive,
         val p30: Primitive,
         val p31: Primitive,
-        val p32: Primitive
+        val p32: Primitive,
     ) {
         companion object {
             @JvmStatic
@@ -197,7 +197,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q29: Primitive = Primitive(29),
                 q30: Primitive = Primitive(30),
                 q31: Primitive = Primitive(31),
-                q32: Primitive = Primitive(32)
+                q32: Primitive = Primitive(32),
             ) = Dst33(
                 q00,
                 q01,
@@ -231,7 +231,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q29,
                 q30,
                 q31,
-                q32
+                q32,
             )
         }
     }
@@ -305,7 +305,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p60: Primitive,
         val p61: Primitive,
         val p62: Primitive,
-        val p63: Primitive
+        val p63: Primitive,
     ) {
         companion object {
             @JvmStatic
@@ -374,7 +374,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q60: Primitive = Primitive(60),
                 q61: Primitive = Primitive(61),
                 q62: Primitive = Primitive(62),
-                q63: Primitive = Primitive(63)
+                q63: Primitive = Primitive(63),
             ) = Dst64(
                 q00,
                 q01,
@@ -439,7 +439,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q60,
                 q61,
                 q62,
-                q63
+                q63,
             )
         }
     }
@@ -514,7 +514,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p61: Primitive,
         val p62: Primitive,
         val p63: Primitive,
-        val p64: Primitive
+        val p64: Primitive,
     ) {
         companion object {
             @JvmStatic
@@ -584,7 +584,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q61: Primitive = Primitive(61),
                 q62: Primitive = Primitive(62),
                 q63: Primitive = Primitive(63),
-                q64: Primitive = Primitive(64)
+                q64: Primitive = Primitive(64),
             ) = Dst65(
                 q00,
                 q01,
@@ -650,7 +650,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q61,
                 q62,
                 q63,
-                q64
+                q64,
             )
         }
     }
@@ -905,7 +905,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p240: Primitive,
         val p241: Primitive,
         val p242: Primitive,
-        val p243: Primitive
+        val p243: Primitive,
     ) {
         companion object {
             @JvmStatic
@@ -1154,7 +1154,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q240: Primitive = Primitive(240),
                 q241: Primitive = Primitive(241),
                 q242: Primitive = Primitive(242),
-                q243: Primitive = Primitive(243)
+                q243: Primitive = Primitive(243),
             ) = DstMax(
                 q000,
                 q001,
@@ -1399,7 +1399,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q240,
                 q241,
                 q242,
-                q243
+                q243,
             )
         }
     }

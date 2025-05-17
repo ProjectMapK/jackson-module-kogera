@@ -16,7 +16,7 @@ class ByAnnotationTest {
         @get:JsonSerialize(using = NonNullObject.Serializer::class)
         val getterAnn: NonNullObject,
         @field:JsonSerialize(using = NonNullObject.Serializer::class)
-        val fieldAnn: NonNullObject
+        val fieldAnn: NonNullObject,
     )
 
     @Test
@@ -30,7 +30,7 @@ class ByAnnotationTest {
                   "fieldAnn" : "bar-ser"
                 }
             """.trimIndent(),
-            writer.writeValueAsString(src)
+            writer.writeValueAsString(src),
         )
     }
 
@@ -38,7 +38,7 @@ class ByAnnotationTest {
         @get:JsonSerialize(using = NonNullObject.Serializer::class)
         val getterAnn: NonNullObject?,
         @field:JsonSerialize(using = NonNullObject.Serializer::class)
-        val fieldAnn: NonNullObject?
+        val fieldAnn: NonNullObject?,
     )
 
     @Test
@@ -52,7 +52,7 @@ class ByAnnotationTest {
                   "fieldAnn" : "bar-ser"
                 }
             """.trimIndent(),
-            writer.writeValueAsString(src)
+            writer.writeValueAsString(src),
         )
     }
 
@@ -67,7 +67,7 @@ class ByAnnotationTest {
                   "fieldAnn" : null
                 }
             """.trimIndent(),
-            writer.writeValueAsString(src)
+            writer.writeValueAsString(src),
         )
     }
 }

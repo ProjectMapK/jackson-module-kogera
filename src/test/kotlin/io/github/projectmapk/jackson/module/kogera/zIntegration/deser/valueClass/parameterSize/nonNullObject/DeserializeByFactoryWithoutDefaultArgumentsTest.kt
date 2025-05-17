@@ -51,7 +51,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
         val p28: NonNullObject,
         val p29: NonNullObject,
         val p30: NonNullObject,
-        val p31: NonNullObject
+        val p31: NonNullObject,
     ) {
         companion object {
             @JvmStatic
@@ -88,7 +88,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q28: NonNullObject,
                 q29: NonNullObject,
                 q30: NonNullObject,
-                q31: NonNullObject
+                q31: NonNullObject,
             ) = Dst32(
                 q00,
                 q01,
@@ -121,7 +121,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q28,
                 q29,
                 q30,
-                q31
+                q31,
             )
         }
     }
@@ -166,7 +166,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
         val p29: NonNullObject,
         val p30: NonNullObject,
         val p31: NonNullObject,
-        val p32: NonNullObject
+        val p32: NonNullObject,
     ) {
         companion object {
             @JvmStatic
@@ -204,7 +204,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q29: NonNullObject,
                 q30: NonNullObject,
                 q31: NonNullObject,
-                q32: NonNullObject
+                q32: NonNullObject,
             ) = Dst33(
                 q00,
                 q01,
@@ -238,7 +238,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q29,
                 q30,
                 q31,
-                q32
+                q32,
             )
         }
     }
@@ -314,7 +314,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
         val p60: NonNullObject,
         val p61: NonNullObject,
         val p62: NonNullObject,
-        val p63: NonNullObject
+        val p63: NonNullObject,
     ) {
         companion object {
             @JvmStatic
@@ -383,7 +383,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q60: NonNullObject,
                 q61: NonNullObject,
                 q62: NonNullObject,
-                q63: NonNullObject
+                q63: NonNullObject,
             ) = Dst64(
                 q00,
                 q01,
@@ -448,7 +448,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q60,
                 q61,
                 q62,
-                q63
+                q63,
             )
         }
     }
@@ -525,7 +525,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
         val p61: NonNullObject,
         val p62: NonNullObject,
         val p63: NonNullObject,
-        val p64: NonNullObject
+        val p64: NonNullObject,
     ) {
         companion object {
             @JvmStatic
@@ -595,7 +595,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q61: NonNullObject,
                 q62: NonNullObject,
                 q63: NonNullObject,
-                q64: NonNullObject
+                q64: NonNullObject,
             ) = Dst65(
                 q00,
                 q01,
@@ -661,7 +661,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q61,
                 q62,
                 q63,
-                q64
+                q64,
             )
         }
     }
@@ -927,7 +927,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
         val p249: NonNullObject,
         val p250: NonNullObject,
         val p251: NonNullObject,
-        val p252: NonNullObject
+        val p252: NonNullObject,
     ) {
         companion object {
             @JvmStatic
@@ -1185,7 +1185,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q249: NonNullObject,
                 q250: NonNullObject,
                 q251: NonNullObject,
-                q252: NonNullObject
+                q252: NonNullObject,
             ) = DstMax(
                 q000,
                 q001,
@@ -1439,7 +1439,7 @@ class DeserializeByFactoryWithoutDefaultArgumentsTest {
                 q249,
                 q250,
                 q251,
-                q252
+                q252,
             )
         }
     }

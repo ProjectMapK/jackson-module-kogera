@@ -13,14 +13,14 @@ internal class JmValueParameter(
     val isOptional: Boolean,
     val isVararg: Boolean,
     type: KmType,
-    classifier: KmClassifier.Class?
+    classifier: KmClassifier.Class?,
 ) {
     constructor(valueParameter: KmValueParameter) : this(
         valueParameter.name,
         isOptional = valueParameter.declaresDefaultValue,
         isVararg = valueParameter.varargElementType != null,
         valueParameter.type,
-        valueParameter.type.classifier as? KmClassifier.Class
+        valueParameter.type.classifier as? KmClassifier.Class,
     )
 
     val isNullable: Boolean = type.isNullable

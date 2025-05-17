@@ -16,6 +16,9 @@ class ForProperty {
     value class NullableObject(val v: String?)
 
     @JvmInline
+    value class NullablePrimitive(val v: Int?)
+
+    @JvmInline
     value class TwoUnitPrimitive(val v: Long)
 
     data class Dto(
@@ -40,6 +43,14 @@ class ForProperty {
         @get:JsonKUnbox
         val no3: NullableObject? = null,
         @get:JsonKUnbox
+        val np0: NullablePrimitive = NullablePrimitive(0),
+        @get:JsonKUnbox
+        val np1: NullablePrimitive = NullablePrimitive(null),
+        @get:JsonKUnbox
+        val np2: NullablePrimitive? = NullablePrimitive(2),
+        @get:JsonKUnbox
+        val np3: NullablePrimitive? = null,
+        @get:JsonKUnbox
         val tup0: TwoUnitPrimitive = TwoUnitPrimitive(0),
         @get:JsonKUnbox
         val tup1: TwoUnitPrimitive? = TwoUnitPrimitive(1),
@@ -50,7 +61,7 @@ class ForProperty {
     @Test
     fun test() {
         val expected = """
-            {"p0":0,"p1":1,"p2":null,"nno0":"0","nno1":"1","nno2":null,"no0":"0","no1":null,"no2":"2","no3":null,"tup0":0,"tup1":1,"tup2":null}
+            {"p0":0,"p1":1,"p2":null,"nno0":"0","nno1":"1","nno2":null,"no0":"0","no1":null,"no2":"2","no3":null,"np0":0,"np1":null,"np2":2,"np3":null,"tup0":0,"tup1":1,"tup2":null}
         """.trimIndent()
         val actual = defaultMapper.writeValueAsString(Dto())
 

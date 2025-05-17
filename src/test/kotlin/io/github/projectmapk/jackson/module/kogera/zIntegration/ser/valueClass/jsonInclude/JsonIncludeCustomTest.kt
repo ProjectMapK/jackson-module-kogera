@@ -18,6 +18,7 @@ class JsonIncludeCustomTest {
         val pN: Primitive? = null,
         val nnoN: NonNullObject? = null,
         val noN1: NullableObject? = null,
+        val npN: NullablePrimitive? = null,
         val tupN: TwoUnitPrimitive? = null
     )
 

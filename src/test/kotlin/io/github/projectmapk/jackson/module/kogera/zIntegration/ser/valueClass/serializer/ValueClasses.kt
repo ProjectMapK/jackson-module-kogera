@@ -32,6 +32,15 @@ value class NullableObject(val v: String?) {
 }
 
 @JvmInline
+value class NullablePrimitive(val v: Int?) {
+    class Serializer : StdSerializer<NullablePrimitive>(NullablePrimitive::class.java) {
+        override fun serialize(value: NullablePrimitive, gen: JsonGenerator, provider: SerializerProvider) {
+            value.v?.let { gen.writeNumber(it + 100) } ?: gen.writeString("NULL")
+        }
+    }
+}
+
+@JvmInline
 value class TwoUnitPrimitive(val v: Long) {
     class Serializer : StdSerializer<TwoUnitPrimitive>(TwoUnitPrimitive::class.java) {
         override fun serialize(value: TwoUnitPrimitive, gen: JsonGenerator, provider: SerializerProvider) {

@@ -18,6 +18,10 @@ class ForClass {
     @JsonKUnbox
     value class NullableObject(val v: String?)
 
+    @JvmInline
+    @JsonKUnbox
+    value class NullablePrimitive(val v: Int?)
+
     @JsonKUnbox
     @JvmInline
     value class TwoUnitPrimitive(val v: Long)
@@ -33,6 +37,10 @@ class ForClass {
         val no1: NullableObject = NullableObject(null),
         val no2: NullableObject? = NullableObject("2"),
         val no3: NullableObject? = null,
+        val np0: NullablePrimitive = NullablePrimitive(0),
+        val np1: NullablePrimitive = NullablePrimitive(null),
+        val np2: NullablePrimitive? = NullablePrimitive(2),
+        val np3: NullablePrimitive? = null,
         val tup0: TwoUnitPrimitive = TwoUnitPrimitive(0),
         val tup1: TwoUnitPrimitive? = TwoUnitPrimitive(1),
         val tup2: TwoUnitPrimitive? = null
@@ -41,7 +49,7 @@ class ForClass {
     @Test
     fun test() {
         val expected = """
-            {"p0":0,"p1":1,"p2":null,"nno0":"0","nno1":"1","nno2":null,"no0":"0","no1":null,"no2":"2","no3":null,"tup0":0,"tup1":1,"tup2":null}
+            {"p0":0,"p1":1,"p2":null,"nno0":"0","nno1":"1","nno2":null,"no0":"0","no1":null,"no2":"2","no3":null,"np0":0,"np1":null,"np2":2,"np3":null,"tup0":0,"tup1":1,"tup2":null}
         """.trimIndent()
         val actual = defaultMapper.writeValueAsString(Dto())
 

@@ -10,4 +10,7 @@ value class NonNullObject(val v: String)
 value class NullableObject(val v: String?)
 
 @JvmInline
+value class NullablePrimitive(val v: Int?)
+
+@JvmInline
 value class TwoUnitPrimitive(val v: Long)

@@ -12,6 +12,7 @@ class JsonIncludeNonNullTest {
         val pN: Primitive? = null,
         val nnoN: NonNullObject? = null,
         val noN1: NullableObject? = null,
+        val npN: NullablePrimitive? = null,
         val tupN: TwoUnitPrimitive? = null
     )
 
@@ -27,7 +28,12 @@ class JsonIncludeNonNullTest {
     data class DtoFails(
         val noNn: NullableObject = NullableObject(null),
         val noN2: NullableObject? = NullableObject(null),
-        val map: Map<Any, Any?> = mapOf("noNn" to NullableObject(null))
+        val npNn: NullablePrimitive = NullablePrimitive(null),
+        val npN2: NullablePrimitive? = NullablePrimitive(null),
+        val map: Map<Any, Any?> = mapOf(
+            "noNn" to NullableObject(null),
+            "npNn" to NullablePrimitive(null)
+        )
     )
 
     @Test
@@ -35,6 +41,6 @@ class JsonIncludeNonNullTest {
         val dto = DtoFails()
         val result = defaultMapper.writeValueAsString(dto)
         assertNotEquals("""{"map":{}}""", result)
-        assertEquals("""{"noNn":null,"noN2":null,"map":{"noNn":null}}""", result)
+        assertEquals("""{"noNn":null,"noN2":null,"npNn":null,"npN2":null,"map":{"noNn":null,"npNn":null}}""", result)
     }
 }

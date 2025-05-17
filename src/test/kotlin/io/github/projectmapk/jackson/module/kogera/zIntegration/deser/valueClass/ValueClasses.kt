@@ -46,6 +46,21 @@ value class NullableObject(val v: String?) {
 }
 
 @JvmInline
+value class NullablePrimitive(val v: Int?) {
+    class DeserializerWrapsNullable : WrapsNullableValueClassDeserializer<NullablePrimitive>(NullablePrimitive::class) {
+        override fun deserialize(p: JsonParser, ctxt: DeserializationContext) = NullablePrimitive(
+            p.intValue + 100
+        )
+
+        override fun getBoxedNullValue(): NullablePrimitive = NullablePrimitive(null)
+    }
+
+    class KeyDeserializer : JacksonKeyDeserializer() {
+        override fun deserializeKey(key: String, ctxt: DeserializationContext) = NullablePrimitive(key.toInt() + 100)
+    }
+}
+
+@JvmInline
 value class TwoUnitPrimitive(val v: Long) {
     class Deserializer : StdDeserializer<TwoUnitPrimitive>(TwoUnitPrimitive::class.java) {
         override fun deserialize(p: JsonParser, ctxt: DeserializationContext): TwoUnitPrimitive = TwoUnitPrimitive(p.longValue + 100)

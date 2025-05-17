@@ -27,6 +27,14 @@ class JacksonInjectTest {
         val noNNn: NullableObject?,
         @get:JacksonInject("noNN")
         val noNN: NullableObject?,
+        @get:JacksonInject("npNnNn")
+        val npNnNn: NullablePrimitive,
+        @get:JacksonInject("npNnN")
+        val npNnN: NullablePrimitive,
+        @get:JacksonInject("npNNn")
+        val npNNn: NullablePrimitive?,
+        @get:JacksonInject("npNN")
+        val npNN: NullablePrimitive?,
         @get:JacksonInject("tupNn")
         val tupNn: TwoUnitPrimitive,
         @get:JacksonInject("tupN")
@@ -44,6 +52,10 @@ class JacksonInjectTest {
             "noNnN" to NullableObject(null),
             "noNNn" to NullableObject("noNNn"),
             "noNN" to NullableObject(null),
+            "npNnNn" to NullablePrimitive(0),
+            "npNnN" to NullablePrimitive(null),
+            "npNNn" to NullablePrimitive(1),
+            "npNN" to NullablePrimitive(null),
             "tupNn" to TwoUnitPrimitive(3),
             "tupN" to TwoUnitPrimitive(4)
         )

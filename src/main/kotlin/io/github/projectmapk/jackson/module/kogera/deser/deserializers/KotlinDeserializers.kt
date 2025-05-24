@@ -9,8 +9,11 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
 import com.fasterxml.jackson.databind.module.SimpleDeserializers
-import io.github.projectmapk.jackson.module.kogera.ANY_CLASS
 import io.github.projectmapk.jackson.module.kogera.ANY_TO_ANY_METHOD_TYPE
+import io.github.projectmapk.jackson.module.kogera.ANY_TO_INT_METHOD_TYPE
+import io.github.projectmapk.jackson.module.kogera.ANY_TO_JAVA_UUID_METHOD_TYPE
+import io.github.projectmapk.jackson.module.kogera.ANY_TO_LONG_METHOD_TYPE
+import io.github.projectmapk.jackson.module.kogera.ANY_TO_STRING_METHOD_TYPE
 import io.github.projectmapk.jackson.module.kogera.GenericValueClassBoxConverter
 import io.github.projectmapk.jackson.module.kogera.IntValueClassBoxConverter
 import io.github.projectmapk.jackson.module.kogera.JavaUuidValueClassBoxConverter
@@ -26,10 +29,8 @@ import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
-import java.util.UUID
 
 internal object SequenceDeserializer : StdDeserializer<Sequence<*>>(Sequence::class.java) {
     private fun readResolve(): Any = SequenceDeserializer
@@ -105,8 +106,7 @@ internal class WrapsIntValueClassBoxDeserializer<D : Any>(
     private val handle: MethodHandle
 
     init {
-        val unreflect = MethodHandles.lookup().unreflect(creator)
-            .asType(MethodType.methodType(Int::class.java, ANY_CLASS))
+        val unreflect = MethodHandles.lookup().unreflect(creator).asType(ANY_TO_INT_METHOD_TYPE)
         handle = MethodHandles.filterReturnValue(unreflect, converter.boxHandle)
     }
 
@@ -125,8 +125,7 @@ internal class WrapsLongValueClassBoxDeserializer<D : Any>(
     private val handle: MethodHandle
 
     init {
-        val unreflect = MethodHandles.lookup().unreflect(creator)
-            .asType(MethodType.methodType(Long::class.java, ANY_CLASS))
+        val unreflect = MethodHandles.lookup().unreflect(creator).asType(ANY_TO_LONG_METHOD_TYPE)
         handle = MethodHandles.filterReturnValue(unreflect, converter.boxHandle)
     }
 
@@ -145,8 +144,7 @@ internal class WrapsStringValueClassBoxDeserializer<D : Any>(
     private val handle: MethodHandle
 
     init {
-        val unreflect = MethodHandles.lookup().unreflect(creator)
-            .asType(MethodType.methodType(String::class.java, ANY_CLASS))
+        val unreflect = MethodHandles.lookup().unreflect(creator).asType(ANY_TO_STRING_METHOD_TYPE)
         handle = MethodHandles.filterReturnValue(unreflect, converter.boxHandle)
     }
 
@@ -176,8 +174,7 @@ internal class WrapsJavaUuidValueClassBoxDeserializer<D : Any>(
     private val handle: MethodHandle
 
     init {
-        val unreflect = MethodHandles.lookup().unreflect(creator)
-            .asType(MethodType.methodType(UUID::class.java, ANY_CLASS))
+        val unreflect = MethodHandles.lookup().unreflect(creator).asType(ANY_TO_JAVA_UUID_METHOD_TYPE)
         handle = MethodHandles.filterReturnValue(unreflect, converter.boxHandle)
     }
 

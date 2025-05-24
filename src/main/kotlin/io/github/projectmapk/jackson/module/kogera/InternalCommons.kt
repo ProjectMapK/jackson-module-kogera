@@ -22,49 +22,6 @@ internal fun Class<*>.toKmClass(): KmClass? = getAnnotation(METADATA_CLASS)?.let
 
 internal fun Class<*>.isUnboxableValueClass() = this.isAnnotationPresent(JVM_INLINE_CLASS)
 
-private val primitiveClassToDesc = mapOf(
-    Byte::class.java to 'B',
-    Char::class.java to 'C',
-    Double::class.java to 'D',
-    Float::class.java to 'F',
-    Int::class.java to 'I',
-    Long::class.java to 'J',
-    Short::class.java to 'S',
-    Boolean::class.java to 'Z',
-    Void.TYPE to 'V',
-)
-
-// -> this.name.replace(".", "/")
-private fun Class<*>.descName(): String {
-    val replaced = name.toCharArray().apply {
-        for (i in indices) {
-            if (this[i] == '.') this[i] = '/'
-        }
-    }
-    return String(replaced)
-}
-
-private fun StringBuilder.appendDescriptor(clazz: Class<*>): StringBuilder = when {
-    clazz.isPrimitive -> append(primitiveClassToDesc.getValue(clazz))
-    clazz.isArray -> append('[').appendDescriptor(clazz.componentType)
-    else -> append("L${clazz.descName()};")
-}
-
-// -> this.joinToString(separator = "", prefix = "(", postfix = ")") { it.descriptor }
-internal fun Array<Class<*>>.toDescBuilder(): StringBuilder = this
-    .fold(StringBuilder("(")) { acc, cur -> acc.appendDescriptor(cur) }
-    .append(')')
-
-internal fun Constructor<*>.toSignature(): JvmMethodSignature = JvmMethodSignature(
-    "<init>",
-    parameterTypes.toDescBuilder().append('V').toString(),
-)
-
-internal fun Method.toSignature(): JvmMethodSignature = JvmMethodSignature(
-    this.name,
-    parameterTypes.toDescBuilder().appendDescriptor(this.returnType).toString(),
-)
-
 internal val defaultConstructorMarker: Class<*> by lazy {
     Class.forName("kotlin.jvm.internal.DefaultConstructorMarker")
 }
@@ -106,6 +63,61 @@ internal val JSON_PROPERTY_CLASS = JsonProperty::class.java
 internal val JSON_K_UNBOX_CLASS = JsonKUnbox::class.java
 internal val KOTLIN_DURATION_CLASS = KotlinDuration::class.java
 internal val CLOSED_FLOATING_POINT_RANGE_CLASS = ClosedFloatingPointRange::class.java
+internal val INT_CLASS = Int::class.java
+internal val LONG_CLASS = Long::class.java
+internal val STRING_CLASS = String::class.java
+internal val JAVA_UUID_CLASS = java.util.UUID::class.java
 internal val ANY_CLASS = Any::class.java
 
 internal val ANY_TO_ANY_METHOD_TYPE = MethodType.methodType(ANY_CLASS, ANY_CLASS)
+internal val ANY_TO_INT_METHOD_TYPE = MethodType.methodType(INT_CLASS, ANY_CLASS)
+internal val ANY_TO_LONG_METHOD_TYPE = MethodType.methodType(LONG_CLASS, ANY_CLASS)
+internal val ANY_TO_STRING_METHOD_TYPE = MethodType.methodType(STRING_CLASS, ANY_CLASS)
+internal val ANY_TO_JAVA_UUID_METHOD_TYPE = MethodType.methodType(JAVA_UUID_CLASS, ANY_CLASS)
+internal val INT_TO_ANY_METHOD_TYPE = MethodType.methodType(ANY_CLASS, INT_CLASS)
+internal val LONG_TO_ANY_METHOD_TYPE = MethodType.methodType(ANY_CLASS, LONG_CLASS)
+internal val STRING_TO_ANY_METHOD_TYPE = MethodType.methodType(ANY_CLASS, STRING_CLASS)
+internal val JAVA_UUID_TO_ANY_METHOD_TYPE = MethodType.methodType(ANY_CLASS, JAVA_UUID_CLASS)
+
+private val primitiveClassToDesc = mapOf(
+    Byte::class.java to 'B',
+    Char::class.java to 'C',
+    Double::class.java to 'D',
+    Float::class.java to 'F',
+    INT_CLASS to 'I',
+    LONG_CLASS to 'J',
+    Short::class.java to 'S',
+    Boolean::class.java to 'Z',
+    Void.TYPE to 'V',
+)
+
+// -> this.name.replace(".", "/")
+private fun Class<*>.descName(): String {
+    val replaced = name.toCharArray().apply {
+        for (i in indices) {
+            if (this[i] == '.') this[i] = '/'
+        }
+    }
+    return String(replaced)
+}
+
+private fun StringBuilder.appendDescriptor(clazz: Class<*>): StringBuilder = when {
+    clazz.isPrimitive -> append(primitiveClassToDesc.getValue(clazz))
+    clazz.isArray -> append('[').appendDescriptor(clazz.componentType)
+    else -> append("L${clazz.descName()};")
+}
+
+// -> this.joinToString(separator = "", prefix = "(", postfix = ")") { it.descriptor }
+internal fun Array<Class<*>>.toDescBuilder(): StringBuilder = this
+    .fold(StringBuilder("(")) { acc, cur -> acc.appendDescriptor(cur) }
+    .append(')')
+
+internal fun Constructor<*>.toSignature(): JvmMethodSignature = JvmMethodSignature(
+    "<init>",
+    parameterTypes.toDescBuilder().append('V').toString(),
+)
+
+internal fun Method.toSignature(): JvmMethodSignature = JvmMethodSignature(
+    this.name,
+    parameterTypes.toDescBuilder().appendDescriptor(this.returnType).toString(),
+)

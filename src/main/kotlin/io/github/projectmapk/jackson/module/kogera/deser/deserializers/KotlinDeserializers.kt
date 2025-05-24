@@ -13,8 +13,11 @@ import io.github.projectmapk.jackson.module.kogera.ANY_CLASS
 import io.github.projectmapk.jackson.module.kogera.ANY_TO_ANY_METHOD_TYPE
 import io.github.projectmapk.jackson.module.kogera.GenericValueClassBoxConverter
 import io.github.projectmapk.jackson.module.kogera.IntValueClassBoxConverter
+import io.github.projectmapk.jackson.module.kogera.JavaUuidValueClassBoxConverter
 import io.github.projectmapk.jackson.module.kogera.KotlinDuration
+import io.github.projectmapk.jackson.module.kogera.LongValueClassBoxConverter
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
+import io.github.projectmapk.jackson.module.kogera.StringValueClassBoxConverter
 import io.github.projectmapk.jackson.module.kogera.deser.JavaToKotlinDurationConverter
 import io.github.projectmapk.jackson.module.kogera.deser.WrapsNullableValueClassDeserializer
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
@@ -26,6 +29,7 @@ import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import java.util.UUID
 
 internal object SequenceDeserializer : StdDeserializer<Sequence<*>>(Sequence::class.java) {
     private fun readResolve(): Any = SequenceDeserializer
@@ -110,6 +114,88 @@ internal class WrapsIntValueClassBoxDeserializer<D : Any>(
         val input = p.readValueAs(inputType)
         @Suppress("UNCHECKED_CAST")
         return handle.invokeExact(input) as D
+    }
+}
+
+internal class WrapsLongValueClassBoxDeserializer<D : Any>(
+    creator: Method,
+    converter: LongValueClassBoxConverter<D>,
+) : StdDeserializer<D>(converter.boxedClass) {
+    private val inputType: Class<*> = creator.parameterTypes[0]
+    private val handle: MethodHandle
+
+    init {
+        val unreflect = MethodHandles.lookup().unreflect(creator)
+            .asType(MethodType.methodType(Long::class.java, ANY_CLASS))
+        handle = MethodHandles.filterReturnValue(unreflect, converter.boxHandle)
+    }
+
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): D {
+        val input = p.readValueAs(inputType)
+        @Suppress("UNCHECKED_CAST")
+        return handle.invokeExact(input) as D
+    }
+}
+
+internal class WrapsStringValueClassBoxDeserializer<D : Any>(
+    creator: Method,
+    converter: StringValueClassBoxConverter<D>,
+) : WrapsNullableValueClassDeserializer<D>(converter.boxedClass) {
+    private val inputType: Class<*> = creator.parameterTypes[0]
+    private val handle: MethodHandle
+
+    init {
+        val unreflect = MethodHandles.lookup().unreflect(creator)
+            .asType(MethodType.methodType(String::class.java, ANY_CLASS))
+        handle = MethodHandles.filterReturnValue(unreflect, converter.boxHandle)
+    }
+
+    // Cache the result of wrapping null, since the result is always expected to be the same.
+    @get:JvmName("boxedNullValue")
+    private val boxedNullValue: D by lazy { instantiate(null) }
+
+    override fun getBoxedNullValue(): D = boxedNullValue
+
+    // To instantiate the value class in the same way as other classes,
+    // it is necessary to call creator(e.g. constructor-impl) -> box-impl in that order.
+    // Input is null only when called from KotlinValueInstantiator.
+    @Suppress("UNCHECKED_CAST")
+    private fun instantiate(input: Any?): D = handle.invokeExact(input) as D
+
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): D {
+        val input = p.readValueAs(inputType)
+        return instantiate(input)
+    }
+}
+
+internal class WrapsJavaUuidValueClassBoxDeserializer<D : Any>(
+    creator: Method,
+    converter: JavaUuidValueClassBoxConverter<D>,
+) : WrapsNullableValueClassDeserializer<D>(converter.boxedClass) {
+    private val inputType: Class<*> = creator.parameterTypes[0]
+    private val handle: MethodHandle
+
+    init {
+        val unreflect = MethodHandles.lookup().unreflect(creator)
+            .asType(MethodType.methodType(UUID::class.java, ANY_CLASS))
+        handle = MethodHandles.filterReturnValue(unreflect, converter.boxHandle)
+    }
+
+    // Cache the result of wrapping null, since the result is always expected to be the same.
+    @get:JvmName("boxedNullValue")
+    private val boxedNullValue: D by lazy { instantiate(null) }
+
+    override fun getBoxedNullValue(): D = boxedNullValue
+
+    // To instantiate the value class in the same way as other classes,
+    // it is necessary to call creator(e.g. constructor-impl) -> box-impl in that order.
+    // Input is null only when called from KotlinValueInstantiator.
+    @Suppress("UNCHECKED_CAST")
+    private fun instantiate(input: Any?): D = handle.invokeExact(input) as D
+
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): D {
+        val input = p.readValueAs(inputType)
+        return instantiate(input)
     }
 }
 
@@ -199,6 +285,9 @@ internal class KotlinDeserializers(
 
                 when (converter) {
                     is IntValueClassBoxConverter -> WrapsIntValueClassBoxDeserializer(it, converter)
+                    is LongValueClassBoxConverter -> WrapsLongValueClassBoxDeserializer(it, converter)
+                    is StringValueClassBoxConverter -> WrapsStringValueClassBoxDeserializer(it, converter)
+                    is JavaUuidValueClassBoxConverter -> WrapsJavaUuidValueClassBoxDeserializer(it, converter)
                     is GenericValueClassBoxConverter -> WrapsNullableValueClassBoxDeserializer(it, converter)
                 }
             }

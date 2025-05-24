@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.util.StdConverter
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
+import java.util.UUID
 
 internal sealed class ValueClassBoxConverter<S : Any?, D : Any> : StdConverter<S, D>() {
     abstract val boxedClass: Class<D>
@@ -24,6 +25,7 @@ internal sealed class ValueClassBoxConverter<S : Any?, D : Any> : StdConverter<S
     val delegatingSerializer: StdDelegatingSerializer by lazy { StdDelegatingSerializer(this) }
 }
 
+// region: Converters for common classes as wrapped values, add as needed.
 internal class IntValueClassBoxConverter<D : Any>(
     override val boxedClass: Class<D>,
 ) : ValueClassBoxConverter<Int, D>() {
@@ -32,6 +34,34 @@ internal class IntValueClassBoxConverter<D : Any>(
     @Suppress("UNCHECKED_CAST")
     override fun convert(value: Int): D = boxHandle.invokeExact(value) as D
 }
+
+internal class LongValueClassBoxConverter<D : Any>(
+    override val boxedClass: Class<D>,
+) : ValueClassBoxConverter<Long, D>() {
+    override val boxHandle: MethodHandle = rawBoxHandle(Long::class.java).asType(MethodType.methodType(ANY_CLASS, Long::class.java))
+
+    @Suppress("UNCHECKED_CAST")
+    override fun convert(value: Long): D = boxHandle.invokeExact(value) as D
+}
+
+internal class StringValueClassBoxConverter<D : Any>(
+    override val boxedClass: Class<D>,
+) : ValueClassBoxConverter<String?, D>() {
+    override val boxHandle: MethodHandle = rawBoxHandle(String::class.java).asType(MethodType.methodType(ANY_CLASS, String::class.java))
+
+    @Suppress("UNCHECKED_CAST")
+    override fun convert(value: String?): D = boxHandle.invokeExact(value) as D
+}
+
+internal class JavaUuidValueClassBoxConverter<D : Any>(
+    override val boxedClass: Class<D>,
+) : ValueClassBoxConverter<UUID?, D>() {
+    override val boxHandle: MethodHandle = rawBoxHandle(UUID::class.java).asType(MethodType.methodType(ANY_CLASS, UUID::class.java))
+
+    @Suppress("UNCHECKED_CAST")
+    override fun convert(value: UUID?): D = boxHandle.invokeExact(value) as D
+}
+// endregion
 
 /**
  * A converter that only performs box processing for the value class.

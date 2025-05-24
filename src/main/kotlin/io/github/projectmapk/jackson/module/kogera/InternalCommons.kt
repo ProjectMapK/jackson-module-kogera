@@ -3,6 +3,8 @@ package io.github.projectmapk.jackson.module.kogera
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.projectmapk.jackson.module.kogera.annotation.JsonKUnbox
+import java.lang.invoke.MethodHandle
+import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
@@ -78,6 +80,9 @@ internal val INT_TO_ANY_METHOD_TYPE = MethodType.methodType(ANY_CLASS, INT_CLASS
 internal val LONG_TO_ANY_METHOD_TYPE = MethodType.methodType(ANY_CLASS, LONG_CLASS)
 internal val STRING_TO_ANY_METHOD_TYPE = MethodType.methodType(ANY_CLASS, STRING_CLASS)
 internal val JAVA_UUID_TO_ANY_METHOD_TYPE = MethodType.methodType(ANY_CLASS, JAVA_UUID_CLASS)
+
+internal fun unreflect(method: Method): MethodHandle = MethodHandles.lookup().unreflect(method)
+internal fun unreflectAsType(method: Method, type: MethodType): MethodHandle = unreflect(method).asType(type)
 
 private val primitiveClassToDesc = mapOf(
     Byte::class.java to 'B',

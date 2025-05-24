@@ -23,6 +23,8 @@ import io.github.projectmapk.jackson.module.kogera.StringValueClassBoxConverter
 import io.github.projectmapk.jackson.module.kogera.ValueClassBoxConverter
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
+import io.github.projectmapk.jackson.module.kogera.unreflect
+import io.github.projectmapk.jackson.module.kogera.unreflectAsType
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.reflect.Method
@@ -99,7 +101,7 @@ internal sealed class ValueClassKeyDeserializer<S, D : Any>(
         // Currently, only the primary constructor can be the creator of a key, so for specified types,
         // the return type of the primary constructor and the input type of the box function are exactly the same.
         // Therefore, performance is improved by omitting the asType call.
-        MethodHandles.lookup().unreflect(creator),
+        unreflect(creator),
     )
 
     internal class WrapsInt<D : Any>(
@@ -147,7 +149,7 @@ internal sealed class ValueClassKeyDeserializer<S, D : Any>(
         creator: Method,
     ) : ValueClassKeyDeserializer<S, D>(
         converter,
-        MethodHandles.lookup().unreflect(creator).asType(ANY_TO_ANY_METHOD_TYPE),
+        unreflectAsType(creator, ANY_TO_ANY_METHOD_TYPE),
     ) {
         override val unboxedClass: Class<*> = creator.returnType
 

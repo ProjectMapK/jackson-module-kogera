@@ -29,6 +29,8 @@ import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
+import io.github.projectmapk.jackson.module.kogera.unreflect
+import io.github.projectmapk.jackson.module.kogera.unreflectAsType
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.reflect.Method
@@ -107,12 +109,8 @@ internal sealed class NoConversionCreatorBoxDeserializer<S, D : Any>(
     converter: ValueClassBoxConverter<S, D>,
 ) : WrapsNullableValueClassDeserializer<D>(converter.boxedClass) {
     protected abstract val inputType: Class<*>
-    protected val handle: MethodHandle
-
-    init {
-        val unreflect = MethodHandles.lookup().unreflect(creator)
-        handle = MethodHandles.filterReturnValue(unreflect, converter.boxHandle)
-    }
+    protected val handle: MethodHandle = MethodHandles
+        .filterReturnValue(unreflect(creator), converter.boxHandle)
 
     // Since the input to handle must be strict, invoke should be implemented in each class
     protected abstract fun invokeExact(value: S): D
@@ -193,7 +191,7 @@ internal class HasConversionCreatorWrapsSpecifiedBoxDeserializer<S, D : Any>(
     private val handle: MethodHandle
 
     init {
-        val unreflect = MethodHandles.lookup().unreflect(creator).run {
+        val unreflect = unreflect(creator).run {
             asType(type().changeParameterType(0, ANY_CLASS))
         }
         handle = MethodHandles.filterReturnValue(unreflect, converter.boxHandle)
@@ -225,7 +223,7 @@ internal class WrapsAnyValueClassBoxDeserializer<S, D : Any>(
     private val handle: MethodHandle
 
     init {
-        val unreflect = MethodHandles.lookup().unreflect(creator).asType(ANY_TO_ANY_METHOD_TYPE)
+        val unreflect = unreflectAsType(creator, ANY_TO_ANY_METHOD_TYPE)
         handle = MethodHandles.filterReturnValue(unreflect, converter.boxHandle)
     }
 

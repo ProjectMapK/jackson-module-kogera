@@ -9,10 +9,12 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
 import com.fasterxml.jackson.databind.module.SimpleDeserializers
+import io.github.projectmapk.jackson.module.kogera.ANY_CLASS
 import io.github.projectmapk.jackson.module.kogera.ANY_TO_ANY_METHOD_TYPE
+import io.github.projectmapk.jackson.module.kogera.GenericValueClassBoxConverter
+import io.github.projectmapk.jackson.module.kogera.IntValueClassBoxConverter
 import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
-import io.github.projectmapk.jackson.module.kogera.ValueClassBoxConverter
 import io.github.projectmapk.jackson.module.kogera.deser.JavaToKotlinDurationConverter
 import io.github.projectmapk.jackson.module.kogera.deser.WrapsNullableValueClassDeserializer
 import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
@@ -21,6 +23,7 @@ import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
+import java.lang.invoke.MethodType
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
@@ -90,16 +93,36 @@ internal object ULongDeserializer : StdDeserializer<ULong>(ULong::class.java) {
         .readWithRangeCheck(p, p.bigIntegerValue)
 }
 
+internal class WrapsIntValueClassBoxDeserializer<D : Any>(
+    creator: Method,
+    converter: IntValueClassBoxConverter<D>,
+) : StdDeserializer<D>(converter.boxedClass) {
+    private val inputType: Class<*> = creator.parameterTypes[0]
+    private val handle: MethodHandle
+
+    init {
+        val unreflect = MethodHandles.lookup().unreflect(creator)
+            .asType(MethodType.methodType(Int::class.java, ANY_CLASS))
+        handle = MethodHandles.filterReturnValue(unreflect, converter.boxHandle)
+    }
+
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): D {
+        val input = p.readValueAs(inputType)
+        @Suppress("UNCHECKED_CAST")
+        return handle.invokeExact(input) as D
+    }
+}
+
 internal class WrapsNullableValueClassBoxDeserializer<S, D : Any>(
     creator: Method,
-    converter: ValueClassBoxConverter<S, D>,
+    converter: GenericValueClassBoxConverter<S, D>,
 ) : WrapsNullableValueClassDeserializer<D>(converter.boxedClass) {
     private val inputType: Class<*> = creator.parameterTypes[0]
     private val handle: MethodHandle
 
     init {
         val unreflect = MethodHandles.lookup().unreflect(creator).asType(ANY_TO_ANY_METHOD_TYPE)
-        handle = MethodHandles.filterReturnValue(unreflect, converter.boxHandle.asType(ANY_TO_ANY_METHOD_TYPE))
+        handle = MethodHandles.filterReturnValue(unreflect, converter.boxHandle)
     }
 
     // Cache the result of wrapping null, since the result is always expected to be the same.
@@ -173,7 +196,11 @@ internal class KotlinDeserializers(
             rawClass.isUnboxableValueClass() -> findValueCreator(type, rawClass, cache.getJmClass(rawClass)!!)?.let {
                 val unboxedClass = it.returnType
                 val converter = cache.getValueClassBoxConverter(unboxedClass, rawClass)
-                WrapsNullableValueClassBoxDeserializer(it, converter)
+
+                when (converter) {
+                    is IntValueClassBoxConverter -> WrapsIntValueClassBoxDeserializer(it, converter)
+                    is GenericValueClassBoxConverter -> WrapsNullableValueClassBoxDeserializer(it, converter)
+                }
             }
             else -> null
         }

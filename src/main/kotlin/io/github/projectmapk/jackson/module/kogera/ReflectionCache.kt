@@ -5,7 +5,6 @@ import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
 import java.io.Serializable
 import java.lang.reflect.Method
 import java.util.Optional
-import java.util.UUID
 
 // For ease of testing, maxCacheSize is limited only in KotlinModule.
 internal class ReflectionCache(initialCacheSize: Int, maxCacheSize: Int) : Serializable {
@@ -94,16 +93,7 @@ internal class ReflectionCache(initialCacheSize: Int, maxCacheSize: Int) : Seria
 
     fun getValueClassBoxConverter(unboxedClass: Class<*>, valueClass: Class<*>): ValueClassBoxConverter<*, *> {
         val key = OtherCacheKey.ValueClassBoxConverter(valueClass)
-        return find(key) ?: putIfAbsent(
-            key,
-            when (unboxedClass) {
-                Int::class.java -> IntValueClassBoxConverter(valueClass)
-                Long::class.java -> LongValueClassBoxConverter(valueClass)
-                String::class.java -> StringValueClassBoxConverter(valueClass)
-                UUID::class.java -> JavaUuidValueClassBoxConverter(valueClass)
-                else -> GenericValueClassBoxConverter(unboxedClass, valueClass)
-            },
-        )
+        return find(key) ?: putIfAbsent(key, ValueClassBoxConverter.create(unboxedClass, valueClass))
     }
 
     fun getValueClassUnboxConverter(valueClass: Class<*>): ValueClassUnboxConverter<*> {

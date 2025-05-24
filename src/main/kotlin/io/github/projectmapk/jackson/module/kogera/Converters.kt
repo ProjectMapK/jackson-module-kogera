@@ -23,6 +23,19 @@ internal sealed class ValueClassBoxConverter<S : Any?, D : Any> : StdConverter<S
     )
 
     val delegatingSerializer: StdDelegatingSerializer by lazy { StdDelegatingSerializer(this) }
+
+    companion object {
+        fun create(
+            unboxedClass: Class<*>,
+            valueClass: Class<*>,
+        ): ValueClassBoxConverter<*, *> = when (unboxedClass) {
+            Int::class.java -> IntValueClassBoxConverter(valueClass)
+            Long::class.java -> LongValueClassBoxConverter(valueClass)
+            String::class.java -> StringValueClassBoxConverter(valueClass)
+            UUID::class.java -> JavaUuidValueClassBoxConverter(valueClass)
+            else -> GenericValueClassBoxConverter(unboxedClass, valueClass)
+        }
+    }
 }
 
 // region: Converters for common classes as wrapped values, add as needed.

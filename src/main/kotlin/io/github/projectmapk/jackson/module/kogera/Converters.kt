@@ -37,12 +37,15 @@ internal sealed class ValueClassBoxConverter<S : Any?, D : Any> : StdConverter<S
             else -> GenericValueClassBoxConverter(unboxedClass, valueClass)
         }
     }
+
+    // If the wrapped type is explicitly specified, it is inherited for the sake of distinction
+    internal sealed class Specified<S : Any?, D : Any> : ValueClassBoxConverter<S, D>()
 }
 
 // region: Converters for common classes as wrapped values, add as needed.
 internal class IntValueClassBoxConverter<D : Any>(
     override val boxedClass: Class<D>,
-) : ValueClassBoxConverter<Int, D>() {
+) : ValueClassBoxConverter.Specified<Int, D>() {
     override val boxHandle: MethodHandle = rawBoxHandle(INT_CLASS).asType(INT_TO_ANY_METHOD_TYPE)
 
     @Suppress("UNCHECKED_CAST")
@@ -51,7 +54,7 @@ internal class IntValueClassBoxConverter<D : Any>(
 
 internal class LongValueClassBoxConverter<D : Any>(
     override val boxedClass: Class<D>,
-) : ValueClassBoxConverter<Long, D>() {
+) : ValueClassBoxConverter.Specified<Long, D>() {
     override val boxHandle: MethodHandle = rawBoxHandle(LONG_CLASS).asType(LONG_TO_ANY_METHOD_TYPE)
 
     @Suppress("UNCHECKED_CAST")
@@ -60,7 +63,7 @@ internal class LongValueClassBoxConverter<D : Any>(
 
 internal class StringValueClassBoxConverter<D : Any>(
     override val boxedClass: Class<D>,
-) : ValueClassBoxConverter<String?, D>() {
+) : ValueClassBoxConverter.Specified<String?, D>() {
     override val boxHandle: MethodHandle = rawBoxHandle(STRING_CLASS).asType(STRING_TO_ANY_METHOD_TYPE)
 
     @Suppress("UNCHECKED_CAST")
@@ -69,7 +72,7 @@ internal class StringValueClassBoxConverter<D : Any>(
 
 internal class JavaUuidValueClassBoxConverter<D : Any>(
     override val boxedClass: Class<D>,
-) : ValueClassBoxConverter<UUID?, D>() {
+) : ValueClassBoxConverter.Specified<UUID?, D>() {
     override val boxHandle: MethodHandle = rawBoxHandle(JAVA_UUID_CLASS).asType(JAVA_UUID_TO_ANY_METHOD_TYPE)
 
     @Suppress("UNCHECKED_CAST")

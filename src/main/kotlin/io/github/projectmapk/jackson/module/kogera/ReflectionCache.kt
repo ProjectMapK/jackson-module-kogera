@@ -93,7 +93,13 @@ internal class ReflectionCache(initialCacheSize: Int, maxCacheSize: Int) : Seria
 
     fun getValueClassBoxConverter(unboxedClass: Class<*>, valueClass: Class<*>): ValueClassBoxConverter<*, *> {
         val key = OtherCacheKey.ValueClassBoxConverter(valueClass)
-        return find(key) ?: putIfAbsent(key, ValueClassBoxConverter(unboxedClass, valueClass))
+        return find(key) ?: putIfAbsent(
+            key,
+            when (unboxedClass) {
+                Int::class.java -> IntValueClassBoxConverter(valueClass)
+                else -> GenericValueClassBoxConverter(unboxedClass, valueClass)
+            },
+        )
     }
 
     fun getValueClassUnboxConverter(valueClass: Class<*>): ValueClassUnboxConverter<*> {

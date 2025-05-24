@@ -99,7 +99,7 @@ internal class WrapsNullableValueClassBoxDeserializer<S, D : Any>(
 
     init {
         val unreflect = MethodHandles.lookup().unreflect(creator).asType(ANY_TO_ANY_METHOD_TYPE)
-        handle = MethodHandles.filterReturnValue(unreflect, converter.boxHandle)
+        handle = MethodHandles.filterReturnValue(unreflect, converter.boxHandle.asType(ANY_TO_ANY_METHOD_TYPE))
     }
 
     // Cache the result of wrapping null, since the result is always expected to be the same.

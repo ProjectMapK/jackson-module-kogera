@@ -55,7 +55,7 @@ private fun Class<*>.getStaticJsonValueGetter(): Method? = this.declaredMethods.
 }
 
 internal class ValueClassStaticJsonValueSerializer<T : Any>(
-    private val converter: ValueClassUnboxConverter<T>,
+    private val converter: ValueClassUnboxConverter<T, *>,
     private val staticJsonValueGetter: Method,
 ) : StdSerializer<T>(converter.valueClass) {
     override fun serialize(value: T, gen: JsonGenerator, provider: SerializerProvider) {
@@ -70,7 +70,7 @@ internal class ValueClassStaticJsonValueSerializer<T : Any>(
         // If create a function with a JsonValue in the value class,
         // it will be compiled as a static method (= cannot be processed properly by Jackson),
         // so use a ValueClassSerializer.StaticJsonValue to handle this.
-        fun <T : Any> createOrNull(converter: ValueClassUnboxConverter<T>): StdSerializer<T>? = converter
+        fun <T : Any> createOrNull(converter: ValueClassUnboxConverter<T, *>): StdSerializer<T>? = converter
             .valueClass
             .getStaticJsonValueGetter()
             ?.let { ValueClassStaticJsonValueSerializer(converter, it) }

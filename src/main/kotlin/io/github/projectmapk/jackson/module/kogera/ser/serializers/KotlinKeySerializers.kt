@@ -16,7 +16,7 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 internal class ValueClassUnboxKeySerializer<T : Any>(
-    private val converter: ValueClassUnboxConverter<T>,
+    private val converter: ValueClassUnboxConverter<T, *>,
 ) : StdSerializer<T>(converter.valueClass) {
     override fun serialize(value: T, gen: JsonGenerator, provider: SerializerProvider) {
         val unboxed = converter.convert(value)
@@ -37,7 +37,7 @@ private fun Class<*>.getStaticJsonKeyGetter(): Method? = this.declaredMethods.fi
 }
 
 internal class ValueClassStaticJsonKeySerializer<T : Any>(
-    private val converter: ValueClassUnboxConverter<T>,
+    private val converter: ValueClassUnboxConverter<T, *>,
     private val staticJsonKeyGetter: Method,
 ) : StdSerializer<T>(converter.valueClass) {
     private val keyType: Class<*> = staticJsonKeyGetter.returnType
@@ -59,7 +59,7 @@ internal class ValueClassStaticJsonKeySerializer<T : Any>(
         // If create a function with a JsonValue in the value class,
         // it will be compiled as a static method (= cannot be processed properly by Jackson),
         // so use a ValueClassSerializer.StaticJsonValue to handle this.
-        fun <T : Any> createOrNull(converter: ValueClassUnboxConverter<T>): StdSerializer<T>? = converter.valueClass
+        fun <T : Any> createOrNull(converter: ValueClassUnboxConverter<T, *>): StdSerializer<T>? = converter.valueClass
             .getStaticJsonKeyGetter()
             ?.let { ValueClassStaticJsonKeySerializer(converter, it) }
     }

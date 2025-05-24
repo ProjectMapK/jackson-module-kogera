@@ -3,11 +3,12 @@ package io.github.projectmapk.jackson.module.kogera
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer
 import com.fasterxml.jackson.databind.type.TypeFactory
-import com.fasterxml.jackson.databind.util.ClassUtil
 import com.fasterxml.jackson.databind.util.StdConverter
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
+import java.lang.reflect.Method
+import java.lang.reflect.Type
 import java.util.UUID
 
 internal sealed class ValueClassBoxConverter<S : Any?, D : Any> : StdConverter<S, D>() {
@@ -92,17 +93,35 @@ internal class GenericValueClassBoxConverter<S : Any?, D : Any>(
     override fun convert(value: S): D = boxHandle.invokeExact(value) as D
 }
 
-internal class ValueClassUnboxConverter<T : Any>(val valueClass: Class<T>) : StdConverter<T, Any?>() {
-    private val unboxMethod = valueClass.getDeclaredMethod("unbox-impl").apply {
-        ClassUtil.checkAndFixAccess(this, false)
-    }
+internal sealed class ValueClassUnboxConverter<S : Any, D : Any?> : StdConverter<S, D>() {
+    abstract val valueClass: Class<S>
+    abstract val unboxedType: Type
+    abstract val unboxHandle: MethodHandle
 
-    override fun convert(value: T): Any? = unboxMethod.invoke(value)
-
-    override fun getInputType(typeFactory: TypeFactory): JavaType = typeFactory.constructType(valueClass)
-    override fun getOutputType(
-        typeFactory: TypeFactory,
-    ): JavaType = typeFactory.constructType(unboxMethod.genericReturnType)
+    final override fun getInputType(typeFactory: TypeFactory): JavaType = typeFactory.constructType(valueClass)
+    final override fun getOutputType(typeFactory: TypeFactory): JavaType = typeFactory.constructType(unboxedType)
 
     val delegatingSerializer: StdDelegatingSerializer by lazy { StdDelegatingSerializer(this) }
+
+    companion object {
+        fun create(valueClass: Class<*>): ValueClassUnboxConverter<*, *> {
+            val unboxMethod = valueClass.getDeclaredMethod("unbox-impl")
+            val unboxedType = unboxMethod.genericReturnType
+
+            return when (unboxedType) {
+                else -> GenericValueClassUnboxConverter(valueClass, unboxedType, unboxMethod)
+            }
+        }
+    }
+}
+
+internal class GenericValueClassUnboxConverter<T : Any>(
+    override val valueClass: Class<T>,
+    override val unboxedType: Type,
+    unboxMethod: Method,
+) : ValueClassUnboxConverter<T, Any?>() {
+    override val unboxHandle: MethodHandle =
+        MethodHandles.lookup().unreflect(unboxMethod).asType(MethodType.methodType(ANY_CLASS, ANY_CLASS))
+
+    override fun convert(value: T): Any? = unboxHandle.invokeExact(value)
 }

@@ -48,7 +48,7 @@ private fun IntArray.update(index: Int, operation: MaskOperation) {
 internal class BucketGenerator(
     parameterTypes: List<Class<*>>,
     valueParameters: List<JmValueParameter>,
-    private val converters: List<ValueClassUnboxConverter<Any>?>,
+    private val converters: List<ValueClassUnboxConverter<Any, *>?>,
 ) {
     private val valueParameterSize: Int = parameterTypes.size
     private val originalAbsentArgs: Array<Any?>
@@ -99,7 +99,7 @@ internal class ArgumentBucket(
     val valueParameterSize: Int,
     val arguments: Array<Any?>,
     val masks: IntArray,
-    private val converters: List<ValueClassUnboxConverter<Any>?>,
+    private val converters: List<ValueClassUnboxConverter<Any, *>?>,
 ) {
     /**
      * Sets the argument corresponding to index.

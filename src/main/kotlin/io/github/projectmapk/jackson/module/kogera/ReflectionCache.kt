@@ -34,7 +34,7 @@ internal class ReflectionCache(initialCacheSize: Int, maxCacheSize: Int) : Seria
         ) : OtherCacheKey<Class<*>, io.github.projectmapk.jackson.module.kogera.ValueClassBoxConverter<*, *>>()
         class ValueClassUnboxConverter(
             override val key: Class<*>,
-        ) : OtherCacheKey<Class<*>, io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter<*>>()
+        ) : OtherCacheKey<Class<*>, io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter<*, *>>()
     }
 
     private val cache = LRUMap<Any, Any>(initialCacheSize, maxCacheSize)
@@ -96,8 +96,8 @@ internal class ReflectionCache(initialCacheSize: Int, maxCacheSize: Int) : Seria
         return find(key) ?: putIfAbsent(key, ValueClassBoxConverter.create(unboxedClass, valueClass))
     }
 
-    fun getValueClassUnboxConverter(valueClass: Class<*>): ValueClassUnboxConverter<*> {
+    fun getValueClassUnboxConverter(valueClass: Class<*>): ValueClassUnboxConverter<*, *> {
         val key = OtherCacheKey.ValueClassUnboxConverter(valueClass)
-        return find(key) ?: putIfAbsent(key, ValueClassUnboxConverter(valueClass))
+        return find(key) ?: putIfAbsent(key, ValueClassUnboxConverter.create(valueClass))
     }
 }

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
 import com.fasterxml.jackson.databind.module.SimpleDeserializers
-import com.fasterxml.jackson.databind.util.ClassUtil
+import io.github.projectmapk.jackson.module.kogera.ANY_TO_ANY_METHOD_TYPE
 import io.github.projectmapk.jackson.module.kogera.KotlinDuration
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.ValueClassBoxConverter
@@ -19,6 +19,8 @@ import io.github.projectmapk.jackson.module.kogera.hasCreatorAnnotation
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
 import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
+import java.lang.invoke.MethodHandle
+import java.lang.invoke.MethodHandles
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
@@ -89,13 +91,15 @@ internal object ULongDeserializer : StdDeserializer<ULong>(ULong::class.java) {
 }
 
 internal class WrapsNullableValueClassBoxDeserializer<S, D : Any>(
-    private val creator: Method,
-    private val converter: ValueClassBoxConverter<S, D>,
+    creator: Method,
+    converter: ValueClassBoxConverter<S, D>,
 ) : WrapsNullableValueClassDeserializer<D>(converter.boxedClass) {
     private val inputType: Class<*> = creator.parameterTypes[0]
+    private val handle: MethodHandle
 
     init {
-        ClassUtil.checkAndFixAccess(creator, false)
+        val unreflect = MethodHandles.lookup().unreflect(creator).asType(ANY_TO_ANY_METHOD_TYPE)
+        handle = MethodHandles.filterReturnValue(unreflect, converter.boxHandle)
     }
 
     // Cache the result of wrapping null, since the result is always expected to be the same.
@@ -108,7 +112,7 @@ internal class WrapsNullableValueClassBoxDeserializer<S, D : Any>(
     // it is necessary to call creator(e.g. constructor-impl) -> box-impl in that order.
     // Input is null only when called from KotlinValueInstantiator.
     @Suppress("UNCHECKED_CAST")
-    private fun instantiate(input: Any?): D = converter.convert(creator.invoke(null, input) as S)
+    private fun instantiate(input: Any?): D = handle.invokeExact(input) as D
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): D {
         val input = p.readValueAs(inputType)

@@ -3,6 +3,7 @@ package io.github.projectmapk.jackson.module.kogera
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.projectmapk.jackson.module.kogera.annotation.JsonKUnbox
+import java.lang.invoke.MethodType
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
@@ -106,3 +107,5 @@ internal val JSON_K_UNBOX_CLASS = JsonKUnbox::class.java
 internal val KOTLIN_DURATION_CLASS = KotlinDuration::class.java
 internal val CLOSED_FLOATING_POINT_RANGE_CLASS = ClosedFloatingPointRange::class.java
 internal val ANY_CLASS = Any::class.java
+
+internal val ANY_TO_ANY_METHOD_TYPE = MethodType.methodType(ANY_CLASS, ANY_CLASS)

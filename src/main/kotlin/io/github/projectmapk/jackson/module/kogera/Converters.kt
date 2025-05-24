@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer
 import com.fasterxml.jackson.databind.type.TypeFactory
 import com.fasterxml.jackson.databind.util.ClassUtil
 import com.fasterxml.jackson.databind.util.StdConverter
+import java.lang.invoke.MethodHandle
+import java.lang.invoke.MethodHandles
+import java.lang.invoke.MethodType
 
 /**
  * A converter that only performs box processing for the value class.
@@ -16,12 +19,14 @@ internal class ValueClassBoxConverter<S : Any?, D : Any>(
     unboxedClass: Class<S>,
     val boxedClass: Class<D>,
 ) : StdConverter<S, D>() {
-    private val boxMethod = boxedClass.getDeclaredMethod("box-impl", unboxedClass).apply {
-        ClassUtil.checkAndFixAccess(this, false)
-    }
+    val boxHandle: MethodHandle = MethodHandles.lookup().findStatic(
+        boxedClass,
+        "box-impl",
+        MethodType.methodType(boxedClass, unboxedClass),
+    ).asType(ANY_TO_ANY_METHOD_TYPE)
 
     @Suppress("UNCHECKED_CAST")
-    override fun convert(value: S): D = boxMethod.invoke(null, value) as D
+    override fun convert(value: S): D = boxHandle.invokeExact(value) as D
 
     val delegatingSerializer: StdDelegatingSerializer by lazy { StdDelegatingSerializer(this) }
 }

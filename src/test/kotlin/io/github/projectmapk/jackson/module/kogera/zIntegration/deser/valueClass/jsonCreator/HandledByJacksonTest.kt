@@ -1,7 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.jsonCreator
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -15,15 +15,14 @@ class HandledByJacksonTest {
             @JvmStatic
             @JsonCreator
             fun creator(first: Int, second: Int): PrimitiveMultiParamCreator? = PrimitiveMultiParamCreator(
-                first + second
+                first + second,
             )
         }
     }
 
     @Test
     fun primitiveNullableCreatorTest() {
-        val mapper = jacksonObjectMapper()
-        val r: PrimitiveMultiParamCreator = mapper.readValue("""{"first":1,"second":2}""")
+        val r: PrimitiveMultiParamCreator = defaultMapper.readValue("""{"first":1,"second":2}""")
         assertEquals(PrimitiveMultiParamCreator(3), r)
     }
 
@@ -34,15 +33,14 @@ class HandledByJacksonTest {
             @JvmStatic
             @JsonCreator
             fun creator(first: Int, second: Int): NullableObjectMultiParamCreator? = NullableObjectMultiParamCreator(
-                first + second
+                first + second,
             )
         }
     }
 
     @Test
     fun nullableObjectNullableCreatorTest() {
-        val mapper = jacksonObjectMapper()
-        val r: NullableObjectMultiParamCreator = mapper.readValue("""{"first":1,"second":2}""")
+        val r: NullableObjectMultiParamCreator = defaultMapper.readValue("""{"first":1,"second":2}""")
         assertEquals(NullableObjectMultiParamCreator(3), r)
     }
 }

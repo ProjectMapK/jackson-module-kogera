@@ -1,9 +1,8 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.databind.ObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
-import io.github.projectmapk.jackson.module.kogera.registerKotlinModule
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -22,8 +21,7 @@ class GitHub844 {
         }
         """
 
-        val jacksonObjectMapper = ObjectMapper().registerKotlinModule()
-        val message = jacksonObjectMapper.readValue<BaseClass>(json)
+        val message = defaultMapper.readValue<BaseClass>(json)
 
         assertEquals(ChildClass("Test"), message)
     }

@@ -2,7 +2,7 @@ package io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClas
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -29,40 +29,36 @@ class HandledByKogeraTest {
 
     @Test
     fun directDeserTest() {
-        val mapper = jacksonObjectMapper()
-
-        assertEquals(SpecifiedPrimary("b"), mapper.readValue<SpecifiedPrimary>("\"b\""))
-        assertEquals(Secondary("1-creator"), mapper.readValue<Secondary>("1"))
-        assertEquals(Factory(101), mapper.readValue<Factory>("1"))
+        assertEquals(SpecifiedPrimary("b"), defaultMapper.readValue<SpecifiedPrimary>("\"b\""))
+        assertEquals(Secondary("1-creator"), defaultMapper.readValue<Secondary>("1"))
+        assertEquals(Factory(101), defaultMapper.readValue<Factory>("1"))
     }
 
     data class Dst(
         val bar: SpecifiedPrimary,
         val baz: Secondary,
-        val qux: Factory
+        val qux: Factory,
     )
 
     @Test
     fun parameterTest() {
-        val mapper = jacksonObjectMapper()
-
-        val r = mapper.readValue<Dst>(
+        val r = defaultMapper.readValue<Dst>(
             """
             {
               "bar":"b",
               "baz":1,
               "qux":1
             }
-            """.trimIndent()
+            """.trimIndent(),
         )
 
         assertEquals(
             Dst(
                 SpecifiedPrimary("b"),
                 Secondary("1-creator"),
-                Factory(101)
+                Factory(101),
             ),
-            r
+            r,
         )
     }
 
@@ -83,13 +79,11 @@ class HandledByKogeraTest {
     // A Creator that requires multiple arguments is basically an error.
     @Test
     fun handleErrorTest() {
-        val mapper = jacksonObjectMapper()
-
         assertThrows<InvalidDefinitionException> {
-            mapper.readValue<MultipleValueConstructor>("""{"v1":"1","v2":"2"}""")
+            defaultMapper.readValue<MultipleValueConstructor>("""{"v1":"1","v2":"2"}""")
         }
         assertThrows<InvalidDefinitionException> {
-            mapper.readValue<MultipleValueFactory>("""{"v1":1,"v2":2}""")
+            defaultMapper.readValue<MultipleValueFactory>("""{"v1":1,"v2":2}""")
         }
     }
 }

@@ -1,7 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -20,13 +20,11 @@ class TestGithub158 {
 
     @Test
     fun testEnumSerDeser() {
-        val mapper = jacksonObjectMapper()
-
         val original = SampleContainer(SampleImpl.One)
 
-        val json = mapper.writeValueAsString(original)
+        val json = defaultMapper.writeValueAsString(original)
 //        println(json)
-        val obj = mapper.readValue<SampleContainer>(json)
+        val obj = defaultMapper.readValue<SampleContainer>(json)
         assertEquals(original, obj)
     }
 }

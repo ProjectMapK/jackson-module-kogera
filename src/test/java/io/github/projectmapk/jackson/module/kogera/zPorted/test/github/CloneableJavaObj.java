@@ -1,4 +1,4 @@
-package io.github.projectmapk.jackson.module.kogera.test.github.zPported;
+package io.github.projectmapk.jackson.module.kogera.zPorted.test.github;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 

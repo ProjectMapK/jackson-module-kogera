@@ -16,7 +16,7 @@ class NonNullValueTest {
         @get:JsonSerialize(using = NullableObject.Serializer::class)
         val getterAnn: NullableObject,
         @field:JsonSerialize(using = NullableObject.Serializer::class)
-        val fieldAnn: NullableObject
+        val fieldAnn: NullableObject,
     )
 
     @Test
@@ -30,7 +30,7 @@ class NonNullValueTest {
                   "fieldAnn" : "bar-ser"
                 }
             """.trimIndent(),
-            writer.writeValueAsString(src)
+            writer.writeValueAsString(src),
         )
     }
 
@@ -38,7 +38,7 @@ class NonNullValueTest {
         @get:JsonSerialize(using = NullableObject.Serializer::class)
         val getterAnn: NullableObject?,
         @field:JsonSerialize(using = NullableObject.Serializer::class)
-        val fieldAnn: NullableObject?
+        val fieldAnn: NullableObject?,
     )
 
     @Test
@@ -52,7 +52,7 @@ class NonNullValueTest {
                   "fieldAnn" : "bar-ser"
                 }
             """.trimIndent(),
-            writer.writeValueAsString(src)
+            writer.writeValueAsString(src),
         )
     }
 
@@ -67,7 +67,7 @@ class NonNullValueTest {
                   "fieldAnn" : null
                 }
             """.trimIndent(),
-            writer.writeValueAsString(src)
+            writer.writeValueAsString(src),
         )
     }
 }

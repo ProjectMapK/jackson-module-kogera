@@ -1,7 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass
 
 import io.github.projectmapk.jackson.module.kogera.defaultMapper
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -13,7 +12,6 @@ import java.lang.reflect.InvocationTargetException
 
 class WithoutCustomDeserializeMethodTest {
     companion object {
-        val mapper = jacksonObjectMapper()
         val throwable = IllegalArgumentException("test")
     }
 
@@ -47,6 +45,29 @@ class WithoutCustomDeserializeMethodTest {
                 assertNotEquals(NullableObject(null), result, "#209 has been fixed.")
             }
         }
+
+        @Suppress("ClassName")
+        @Nested
+        inner class NullablePrimitive_ {
+            @Test
+            fun value() {
+                val result = defaultMapper.readValue<NullablePrimitive>("1")
+                assertEquals(NullablePrimitive(1), result)
+            }
+
+            // failing
+            @Test
+            fun nullString() {
+                val result = defaultMapper.readValue<NullablePrimitive?>("null")
+                assertNotEquals(NullablePrimitive(null), result, "#209 has been fixed.")
+            }
+        }
+
+        @Test
+        fun twoUnitPrimitive() {
+            val result = defaultMapper.readValue<TwoUnitPrimitive>("1")
+            assertEquals(TwoUnitPrimitive(1), result)
+        }
     }
 
     data class Dst(
@@ -55,7 +76,11 @@ class WithoutCustomDeserializeMethodTest {
         val nnoNn: NonNullObject,
         val nnoN: NonNullObject?,
         val noNn: NullableObject,
-        val noN: NullableObject?
+        val noN: NullableObject?,
+        val npNn: NullablePrimitive,
+        val npN: NullablePrimitive?,
+        val tupNn: TwoUnitPrimitive,
+        val tupN: TwoUnitPrimitive?,
     )
 
     @Test
@@ -66,10 +91,14 @@ class WithoutCustomDeserializeMethodTest {
             NonNullObject("foo"),
             NonNullObject("bar"),
             NullableObject("baz"),
-            NullableObject("qux")
+            NullableObject("qux"),
+            NullablePrimitive(1),
+            NullablePrimitive(2),
+            TwoUnitPrimitive(3),
+            TwoUnitPrimitive(4),
         )
-        val src = mapper.writeValueAsString(expected)
-        val result = mapper.readValue<Dst>(src)
+        val src = defaultMapper.writeValueAsString(expected)
+        val result = defaultMapper.readValue<Dst>(src)
 
         assertEquals(expected, result)
     }
@@ -82,10 +111,14 @@ class WithoutCustomDeserializeMethodTest {
             NonNullObject("foo"),
             null,
             NullableObject(null),
-            null
+            null,
+            NullablePrimitive(null),
+            null,
+            TwoUnitPrimitive(3),
+            null,
         )
-        val src = mapper.writeValueAsString(expected)
-        val result = mapper.readValue<Dst>(src)
+        val src = defaultMapper.writeValueAsString(expected)
+        val result = defaultMapper.readValue<Dst>(src)
 
         assertEquals(expected, result)
     }

@@ -26,7 +26,7 @@ import kotlin.metadata.isNullable
 internal class KotlinPrimaryAnnotationIntrospector(
     private val nullToEmptyCollection: Boolean,
     private val nullToEmptyMap: Boolean,
-    private val cache: ReflectionCache
+    private val cache: ReflectionCache,
 ) : NopAnnotationIntrospector() {
     // If a new isRequired is explicitly specified or the old required is true, those values take precedence.
     // In other cases, override is done by KotlinModule.
@@ -74,7 +74,7 @@ internal class KotlinPrimaryAnnotationIntrospector(
     private fun JmProperty.isRequiredByNullability(): Boolean = !this.returnType.isNullable
 
     private fun AnnotatedMethod.getRequiredMarkerFromCorrespondingAccessor(
-        jmClass: JmClass
+        jmClass: JmClass,
     ): Boolean? = when (parameterCount) {
         0 -> jmClass.findPropertyByGetter(member)?.isRequiredByNullability()
         1 -> {

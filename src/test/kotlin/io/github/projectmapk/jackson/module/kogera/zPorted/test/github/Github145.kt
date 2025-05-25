@@ -3,14 +3,12 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Test
 
 @Suppress("UNUSED_VARIABLE")
 class TestGithub145 {
-    private val objectMapper = jacksonObjectMapper()
-
     @Test
     fun workingTestWithoutKotlinModule() {
         class Person1(
@@ -42,8 +40,8 @@ class TestGithub145 {
             )
         }
 
-        val person1String = objectMapper.readValue<Person2>(""""TestPreName,TestLastname"""")
-        val person1Json = objectMapper.readValue<Person2>("""{"preName":"TestPreName","lastName":"TestLastname"}""")
+        val person1String = defaultMapper.readValue<Person2>(""""TestPreName,TestLastname"""")
+        val person1Json = defaultMapper.readValue<Person2>("""{"preName":"TestPreName","lastName":"TestLastname"}""")
     }
 
     @Test
@@ -56,8 +54,8 @@ class TestGithub145 {
             )
         }
 
-        val person2String = objectMapper.readValue<Person3>(""""TestPreName,TestLastname"""")
-        val person2Json = objectMapper.readValue<Person3>("""{"preName":"TestPreName","lastName":"TestLastname"}""")
+        val person2String = defaultMapper.readValue<Person3>(""""TestPreName,TestLastname"""")
+        val person2Json = defaultMapper.readValue<Person3>("""{"preName":"TestPreName","lastName":"TestLastname"}""")
     }
 
     @Test
@@ -72,7 +70,7 @@ class TestGithub145 {
             }
         }
 
-        val person4String = objectMapper.readValue<Person4>(""""TestPreName,TestLastname"""")
+        val person4String = defaultMapper.readValue<Person4>(""""TestPreName,TestLastname"""")
         // person4 does not have parameter bound constructor, only string
     }
 
@@ -87,8 +85,8 @@ class TestGithub145 {
                 this(preNameAndLastName.substringBefore(","), preNameAndLastName.substringAfter(","))
         }
 
-        val person5String = objectMapper.readValue<Person5>(""""TestPreName,TestLastname"""")
-        val person5Json = objectMapper.readValue<Person5>("""{"preName":"TestPreName","lastName":"TestLastname"}""")
+        val person5String = defaultMapper.readValue<Person5>(""""TestPreName,TestLastname"""")
+        val person5Json = defaultMapper.readValue<Person5>("""{"preName":"TestPreName","lastName":"TestLastname"}""")
     }
 
     // Cannot have companion object in class declared within function
@@ -115,8 +113,8 @@ class TestGithub145 {
 
     @Test
     fun testPerson6() {
-        val person6String = objectMapper.readValue<Person6>(""""TestPreName,TestLastname"""")
-        val person6Json = objectMapper.readValue<Person6>("""{"preName":"TestPreName","lastName":"TestLastname"}""")
+        val person6String = defaultMapper.readValue<Person6>(""""TestPreName,TestLastname"""")
+        val person6Json = defaultMapper.readValue<Person6>("""{"preName":"TestPreName","lastName":"TestLastname"}""")
     }
 
     // Cannot have companion object in class declared within function
@@ -137,7 +135,7 @@ class TestGithub145 {
 
     @Test
     fun testPerson7() {
-        val person7String = objectMapper.readValue<Person7>(""""TestPreName,TestLastname"""")
-        val person7Json = objectMapper.readValue<Person7>("""{"preName":"TestPreName","lastName":"TestLastname"}""")
+        val person7String = defaultMapper.readValue<Person7>(""""TestPreName,TestLastname"""")
+        val person7Json = defaultMapper.readValue<Person7>("""{"preName":"TestPreName","lastName":"TestLastname"}""")
     }
 }

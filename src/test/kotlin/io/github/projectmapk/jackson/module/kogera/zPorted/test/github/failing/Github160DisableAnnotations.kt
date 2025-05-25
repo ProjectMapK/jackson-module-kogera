@@ -1,7 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github.failing
 
 import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.exc.InvalidNullException
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import io.github.projectmapk.jackson.module.kogera.jacksonMapperBuilder
 import io.github.projectmapk.jackson.module.kogera.readValue

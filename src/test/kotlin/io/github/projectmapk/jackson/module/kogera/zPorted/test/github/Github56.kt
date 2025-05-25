@@ -2,13 +2,10 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonUnwrapped
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 private class TestGithub56 {
 
@@ -39,8 +36,6 @@ private class TestGithub56 {
         val crops: Map<String, String>? = null
     )
 
-    val mapper: ObjectMapper = jacksonObjectMapper()
-
     private val gallery = TestGallery(
         id = "id",
         headline = "headline",
@@ -57,19 +52,19 @@ private class TestGithub56 {
 
     @Test
     fun serializes() {
-        val result = mapper.writeValueAsString(TestGalleryWidget_BAD("widgetReferenceId", gallery))
+        val result = defaultMapper.writeValueAsString(TestGalleryWidget_BAD("widgetReferenceId", gallery))
         assertEquals(validJson, result)
     }
 
     @Test
     fun deserializesSuccessful() {
-        val obj = mapper.readValue<TestGalleryWidget_BAD>(validJson)
+        val obj = defaultMapper.readValue<TestGalleryWidget_BAD>(validJson)
         assertEquals("widgetReferenceId", obj.widgetReferenceId)
         assertEquals(gallery, obj.gallery)
     }
 
     @Test
     fun deserializesCorrectly() {
-        mapper.readValue<TestGalleryWidget_GOOD>(validJson)
+        defaultMapper.readValue<TestGalleryWidget_GOOD>(validJson)
     }
 }

@@ -33,7 +33,8 @@ private enum class MaskOperation {
     // A vararg argument that has no default value need not be given and is therefore marked as initialized.
     INIT {
         override fun invoke(i: Int, j: Int): Int = i or j.inv()
-    };
+    },
+    ;
 
     abstract operator fun invoke(i: Int, j: Int): Int
 }
@@ -47,7 +48,7 @@ private fun IntArray.update(index: Int, operation: MaskOperation) {
 internal class BucketGenerator(
     parameterTypes: List<Class<*>>,
     valueParameters: List<JmValueParameter>,
-    private val converters: List<ValueClassUnboxConverter<Any>?>
+    private val converters: List<ValueClassUnboxConverter<Any>?>,
 ) {
     private val valueParameterSize: Int = parameterTypes.size
     private val originalAbsentArgs: Array<Any?>
@@ -90,7 +91,7 @@ internal class BucketGenerator(
         valueParameterSize,
         originalAbsentArgs.clone(),
         originalMasks.clone(),
-        converters
+        converters,
     )
 }
 
@@ -98,7 +99,7 @@ internal class ArgumentBucket(
     val valueParameterSize: Int,
     val arguments: Array<Any?>,
     val masks: IntArray,
-    private val converters: List<ValueClassUnboxConverter<Any>?>
+    private val converters: List<ValueClassUnboxConverter<Any>?>,
 ) {
     /**
      * Sets the argument corresponding to index.

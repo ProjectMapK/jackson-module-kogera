@@ -10,17 +10,17 @@ import kotlin.metadata.jvm.signature
 internal data class JmConstructor(
     val isSecondary: Boolean,
     val signature: JvmMethodSignature?,
-    val valueParameters: List<JmValueParameter>
+    val valueParameters: List<JmValueParameter>,
 ) {
     constructor(constructor: KmConstructor) : this(
         isSecondary = constructor.isSecondary,
         signature = constructor.signature,
-        valueParameters = constructor.valueParameters.map { JmValueParameter(it) }
+        valueParameters = constructor.valueParameters.map { JmValueParameter(it) },
     )
 
     // Only constructors that take a value class as an argument have a DefaultConstructorMarker on the Signature.
     private fun StringBuilder.valueDesc(
-        len: Int
+        len: Int,
     ) = replace(len - 1, len, "Lkotlin/jvm/internal/DefaultConstructorMarker;)V").toString()
 
     fun isMetadataFor(constructor: Constructor<*>): Boolean {

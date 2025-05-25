@@ -11,7 +11,6 @@ import kotlin.metadata.ClassKind
 import kotlin.metadata.ClassName
 import kotlin.metadata.KmClass
 import kotlin.metadata.isNullable
-import kotlin.metadata.jvm.signature
 import kotlin.metadata.kind
 
 // Jackson Metadata Class
@@ -65,7 +64,7 @@ private class JmClassImpl(
     clazz: Class<*>,
     kmClass: KmClass,
     superJmClass: JmClass?,
-    interfaceJmClasses: List<JmClass>
+    interfaceJmClasses: List<JmClass>,
 ) : JmClass {
     private val allPropsMap: Map<String, JmProperty>
 
@@ -123,5 +122,5 @@ internal fun JmClass(
     clazz: Class<*>,
     kmClass: KmClass,
     superJmClass: JmClass?,
-    interfaceJmClasses: List<JmClass>
+    interfaceJmClasses: List<JmClass>,
 ): JmClass = JmClassImpl(clazz, kmClass, superJmClass, interfaceJmClasses)

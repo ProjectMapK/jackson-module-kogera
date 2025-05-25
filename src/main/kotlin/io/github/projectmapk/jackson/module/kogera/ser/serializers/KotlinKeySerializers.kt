@@ -16,7 +16,7 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 internal class ValueClassUnboxKeySerializer<T : Any>(
-    private val converter: ValueClassUnboxConverter<T>
+    private val converter: ValueClassUnboxConverter<T>,
 ) : StdSerializer<T>(converter.valueClass) {
     override fun serialize(value: T, gen: JsonGenerator, provider: SerializerProvider) {
         val unboxed = converter.convert(value)
@@ -38,7 +38,7 @@ private fun Class<*>.getStaticJsonKeyGetter(): Method? = this.declaredMethods.fi
 
 internal class ValueClassStaticJsonKeySerializer<T : Any>(
     private val converter: ValueClassUnboxConverter<T>,
-    private val staticJsonKeyGetter: Method
+    private val staticJsonKeyGetter: Method,
 ) : StdSerializer<T>(converter.valueClass) {
     private val keyType: Class<*> = staticJsonKeyGetter.returnType
 
@@ -69,7 +69,7 @@ internal class KotlinKeySerializers(private val cache: ReflectionCache) : Simple
     override fun findSerializer(
         config: SerializationConfig,
         type: JavaType,
-        beanDesc: BeanDescription
+        beanDesc: BeanDescription,
     ): JsonSerializer<*>? {
         val rawClass = type.rawClass
 

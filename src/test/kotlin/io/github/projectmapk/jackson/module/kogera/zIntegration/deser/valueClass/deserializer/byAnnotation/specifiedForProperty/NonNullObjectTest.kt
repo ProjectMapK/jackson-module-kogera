@@ -1,7 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.deserializer.byAnnotation.specifiedForProperty
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.NonNullObject
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -9,26 +9,22 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class NonNullObjectTest {
-    companion object {
-        val mapper = jacksonObjectMapper()
-    }
-
     data class NonNull(
         @get:JsonDeserialize(using = NonNullObject.Deserializer::class)
         val getterAnn: NonNullObject,
         @field:JsonDeserialize(using = NonNullObject.Deserializer::class)
-        val fieldAnn: NonNullObject
+        val fieldAnn: NonNullObject,
     )
 
     @Test
     fun nonNull() {
-        val result = mapper.readValue<NonNull>(
+        val result = defaultMapper.readValue<NonNull>(
             """
                 {
                   "getterAnn" : "foo",
                   "fieldAnn" : "bar"
                 }
-            """.trimIndent()
+            """.trimIndent(),
         )
         assertEquals(NonNull(NonNullObject("foo-deser"), NonNullObject("bar-deser")), result)
     }
@@ -37,33 +33,33 @@ class NonNullObjectTest {
         @get:JsonDeserialize(using = NonNullObject.Deserializer::class)
         val getterAnn: NonNullObject?,
         @field:JsonDeserialize(using = NonNullObject.Deserializer::class)
-        val fieldAnn: NonNullObject?
+        val fieldAnn: NonNullObject?,
     )
 
     @Nested
     inner class NullableTest {
         @Test
         fun nonNullInput() {
-            val result = mapper.readValue<Nullable>(
+            val result = defaultMapper.readValue<Nullable>(
                 """
                 {
                   "getterAnn" : "foo",
                   "fieldAnn" : "bar"
                 }
-                """.trimIndent()
+                """.trimIndent(),
             )
             assertEquals(Nullable(NonNullObject("foo-deser"), NonNullObject("bar-deser")), result)
         }
 
         @Test
         fun nullInput() {
-            val result = mapper.readValue<Nullable>(
+            val result = defaultMapper.readValue<Nullable>(
                 """
                 {
                   "getterAnn" : null,
                   "fieldAnn" : null
                 }
-                """.trimIndent()
+                """.trimIndent(),
             )
             assertEquals(Nullable(null, null), result)
         }

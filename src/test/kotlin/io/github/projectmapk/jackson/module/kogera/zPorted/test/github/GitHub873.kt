@@ -1,7 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
-import io.github.projectmapk.jackson.module.kogera.readValue
 import io.github.projectmapk.jackson.module.kogera.defaultMapper
+import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Test
 
 class GitHub873 {

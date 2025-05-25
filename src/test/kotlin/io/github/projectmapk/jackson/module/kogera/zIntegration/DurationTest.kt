@@ -70,8 +70,8 @@ class DurationTest {
             mapOf(
                 "a" to 1.hours,
                 "b" to 2.hours,
-                "c" to 3.hours
-            )
+                "c" to 3.hours,
+            ),
         )
 
         assertEquals("""{"a":"PT1H","b":"PT2H","c":"PT3H"}""", result)
@@ -90,7 +90,7 @@ class DurationTest {
 
     data class Meeting(
         val start: Instant,
-        val duration: KotlinDuration
+        val duration: KotlinDuration,
     ) {
         companion object {
             @Suppress("unused")
@@ -103,7 +103,7 @@ class DurationTest {
     abstract class MeetingMixin(
         @Suppress("unused")
         @field:JsonFormat(shape = Shape.STRING)
-        val duration: KotlinDuration
+        val duration: KotlinDuration,
     )
 
     @Test
@@ -158,7 +158,7 @@ class DurationTest {
         @field:JsonFormat(shape = Shape.STRING)
         val shapeAnnotation: JavaDuration = JavaDuration.ofHours(1),
         @field:JsonFormat(shape = Shape.STRING)
-        val optShapeAnnotation: JavaDuration? = JavaDuration.ofHours(1)
+        val optShapeAnnotation: JavaDuration? = JavaDuration.ofHours(1),
     )
 
     data class KDTO(
@@ -167,7 +167,7 @@ class DurationTest {
         @field:JsonFormat(shape = Shape.STRING)
         val shapeAnnotation: KotlinDuration = 1.hours,
         @field:JsonFormat(shape = Shape.STRING)
-        val optShapeAnnotation: KotlinDuration? = 1.hours
+        val optShapeAnnotation: KotlinDuration? = 1.hours,
     )
 
     @Test
@@ -182,7 +182,7 @@ class DurationTest {
 
     data class DurationWithFormattedUnits(
         @field:JsonFormat(pattern = "HOURS") val formatted: KotlinDuration,
-        val default: KotlinDuration
+        val default: KotlinDuration,
     ) {
         companion object {
             @Suppress("unused")
@@ -190,7 +190,7 @@ class DurationTest {
             @JsonCreator
             fun create(
                 formatted: KotlinDuration,
-                default: KotlinDuration
+                default: KotlinDuration,
             ) = DurationWithFormattedUnits(formatted, default)
         }
     }
@@ -206,6 +206,6 @@ class DurationTest {
     }
 
     private fun jacksonObjectMapper(
-        configuration: KotlinModule.Builder.() -> Unit
+        configuration: KotlinModule.Builder.() -> Unit,
     ) = ObjectMapper().registerModule(kotlinModule(configuration))
 }

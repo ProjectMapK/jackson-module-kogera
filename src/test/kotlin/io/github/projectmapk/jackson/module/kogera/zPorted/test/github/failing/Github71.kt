@@ -1,6 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github.failing
 
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import io.github.projectmapk.jackson.module.kogera.zPorted.test.expectFailure
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -13,11 +13,11 @@ class TestGithub71 {
 
     @Test
     fun testInternalPropertySerliazation() {
-        val json = jacksonObjectMapper().writeValueAsString(Identifiable())
+        val json = defaultMapper.writeValueAsString(Identifiable())
 
         expectFailure<AssertionError>("GitHub #71 has been fixed!") {
             assertEquals("{\"identity\":null}", json) // fails: {"identity$jackson_module_kotlin":null}
-            val newInstance = jacksonObjectMapper().readValue<Identifiable>(json)
+            val newInstance = defaultMapper.readValue<Identifiable>(json)
             assertEquals(Identifiable(), newInstance)
         }
     }

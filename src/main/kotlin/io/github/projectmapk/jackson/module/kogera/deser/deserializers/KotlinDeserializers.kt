@@ -21,8 +21,6 @@ import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
-import kotlin.metadata.isSecondary
-import kotlin.metadata.jvm.signature
 
 internal object SequenceDeserializer : StdDeserializer<Sequence<*>>(Sequence::class.java) {
     private fun readResolve(): Any = SequenceDeserializer
@@ -46,7 +44,7 @@ internal object RegexDeserializer : StdDeserializer<Regex>(Regex::class.java) {
                 val optionsNode = node.get("options")
                 if (!optionsNode.isArray) {
                     throw IllegalStateException(
-                        "Expected an array of strings for RegexOptions, but type was ${node.nodeType}"
+                        "Expected an array of strings for RegexOptions, but type was ${node.nodeType}",
                     )
                 }
                 optionsNode.elements().asSequence().map { RegexOption.valueOf(it.asText()) }.toSet()
@@ -56,7 +54,7 @@ internal object RegexDeserializer : StdDeserializer<Regex>(Regex::class.java) {
             return Regex(pattern, options)
         } else {
             throw IllegalStateException(
-                "Expected a string or an object to deserialize a Regex, but type was ${node.nodeType}"
+                "Expected a string or an object to deserialize a Regex, but type was ${node.nodeType}",
             )
         }
     }
@@ -92,7 +90,7 @@ internal object ULongDeserializer : StdDeserializer<ULong>(ULong::class.java) {
 
 internal class WrapsNullableValueClassBoxDeserializer<S, D : Any>(
     private val creator: Method,
-    private val converter: ValueClassBoxConverter<S, D>
+    private val converter: ValueClassBoxConverter<S, D>,
 ) : WrapsNullableValueClassDeserializer<D>(converter.boxedClass) {
     private val inputType: Class<*> = creator.parameterTypes[0]
 
@@ -150,12 +148,12 @@ private fun findValueCreator(type: JavaType, clazz: Class<*>, jmClass: JmClass):
 
 internal class KotlinDeserializers(
     private val cache: ReflectionCache,
-    private val useJavaDurationConversion: Boolean
+    private val useJavaDurationConversion: Boolean,
 ) : SimpleDeserializers() {
     override fun findBeanDeserializer(
         type: JavaType,
         config: DeserializationConfig?,
-        beanDesc: BeanDescription
+        beanDesc: BeanDescription,
     ): JsonDeserializer<*>? {
         val rawClass = type.rawClass
 

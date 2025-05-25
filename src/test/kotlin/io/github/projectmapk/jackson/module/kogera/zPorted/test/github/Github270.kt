@@ -1,6 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -13,7 +13,7 @@ class TestGithub270 {
 
     @Test
     fun testPublicFieldOverlappingFunction() {
-        val json = jacksonObjectMapper().writeValueAsString(Wrapper("Hello"))
+        val json = defaultMapper.writeValueAsString(Wrapper("Hello"))
         assertEquals("""{"upper":"HELLO"}""", json)
     }
 }

@@ -5,15 +5,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.zPorted.test.SealedClassTest.SuperClass.B
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class SealedClassTest {
-    private val mapper = jacksonObjectMapper()
-
     /**
      * Json of a Serialized B-Object.
      */
@@ -24,13 +22,13 @@ class SealedClassTest {
      */
     @Test
     fun sealedClassWithoutSubTypes() {
-        val result = mapper.readValue(jsonB, SuperClass::class.java)
+        val result = defaultMapper.readValue(jsonB, SuperClass::class.java)
         assertTrue { result is B }
     }
 
     @Test
     fun sealedClassWithoutSubTypesList() {
-        val result = mapper.readValue(
+        val result = defaultMapper.readValue(
             """[$jsonB, $jsonB]""",
             object : TypeReference<List<SuperClass>>() {}
         )
@@ -49,7 +47,7 @@ class SealedClassTest {
     @Test
     fun sealedClassWithoutTypeDiscriminator() {
         val serializedSingle = """{"request":"single"}"""
-        val single = mapper.readValue(serializedSingle, SealedRequest::class.java)
+        val single = defaultMapper.readValue(serializedSingle, SealedRequest::class.java)
         assertEquals("single", (single as? SealedRequest.SingleRequest)?.request)
     }
 
@@ -60,7 +58,7 @@ class SealedClassTest {
     fun sealedClassWithoutTypeDiscriminatorList() {
         val serializedBatch = """[{"request":"first"},{"request":"second"}]"""
         expectFailure<MismatchedInputException>("Deserializing a list using deduction is fixed!") {
-            val batch = mapper.readValue(serializedBatch, SealedRequest::class.java) as SealedRequest.BatchRequest
+            val batch = defaultMapper.readValue(serializedBatch, SealedRequest::class.java) as SealedRequest.BatchRequest
             assertEquals(2, batch.requests.size)
             assertEquals("first", batch.requests[0].request)
             assertEquals("second", batch.requests[1].request)

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.projectmapk.jackson.module.kogera.KotlinFeature
 import io.github.projectmapk.jackson.module.kogera.KotlinModule
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Nested
@@ -20,12 +20,11 @@ class HasRequiredMarkerTest {
         .find { it.name == propertyName }
         ?.isRequired == true
 
-    val defaultMapper = jacksonObjectMapper()
     val nullToDefaultMapper = ObjectMapper().registerModule(
         KotlinModule.Builder()
             .enable(KotlinFeature.NullToEmptyCollection)
             .enable(KotlinFeature.NullToEmptyMap)
-            .build()
+            .build(),
     )
 
     class ConstructorParamTarget(
@@ -34,7 +33,7 @@ class HasRequiredMarkerTest {
         val hasDefault: String = "default",
         val collection: Collection<*>,
         val map: Map<*, *>,
-        val nonNull: Any
+        val nonNull: Any,
     )
 
     @Nested
@@ -127,7 +126,7 @@ class HasRequiredMarkerTest {
         @param:JsonProperty(required = true)
         val mapParam: Map<*, *>,
         @param:JsonProperty(required = true)
-        vararg val vararg: Int
+        vararg val vararg: Int,
     ) {
         @set:JsonProperty(required = true)
         var nullableProp: String? = null
@@ -175,7 +174,7 @@ class HasRequiredMarkerTest {
         val collection: Collection<*>,
         val map: Map<*, *>,
         val nonNull: Any,
-        val vararg: List<Int>
+        val vararg: List<Int>,
     ) {
         companion object {
             @JvmStatic
@@ -186,7 +185,7 @@ class HasRequiredMarkerTest {
                 collection: Collection<*>,
                 map: Map<*, *>,
                 nonNull: Any,
-                vararg vararg: Int
+                vararg vararg: Int,
             ) = FactoryParamTarget(nullable, hasDefault, collection, map, nonNull, vararg.asList())
         }
     }
@@ -223,7 +222,7 @@ class HasRequiredMarkerTest {
         val hasDefaultParam: String = "default",
         val collectionParam: Collection<*>,
         val mapParam: Map<*, *>,
-        val vararg: List<Int>
+        val vararg: List<Int>,
     ) {
         companion object {
             @JvmStatic
@@ -238,7 +237,7 @@ class HasRequiredMarkerTest {
                 @JsonProperty(required = true)
                 mapParam: Map<*, *>,
                 @JsonProperty(required = true)
-                vararg vararg: Int
+                vararg vararg: Int,
             ) = FactoryAnnotationTarget(nullableParam, hasDefaultParam, collectionParam, mapParam, vararg.asList())
         }
     }

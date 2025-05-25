@@ -1,13 +1,11 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class Github630 {
-    private val mapper = jacksonObjectMapper()
-
     data class Dto(
         // from #570, #603
         val FOO: Int = 0,
@@ -31,7 +29,7 @@ class Github630 {
 
         assertEquals(
             """{"FOO":0,"bAr":0,"b":0,"q":0,"quux":0,"corge-corge":0,"grault":0}""",
-            mapper.writeValueAsString(dto)
+            defaultMapper.writeValueAsString(dto)
         )
     }
 }

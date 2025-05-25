@@ -1,10 +1,8 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github.failing
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped
-import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
-import io.github.projectmapk.jackson.module.kogera.zPorted.test.expectFailure
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -19,7 +17,7 @@ class TestGithub50 {
     @Test
     fun testGithub50UnwrappedError() {
         val json = """{"firstName":"John","lastName":"Smith","position":"Manager"}"""
-        val obj: Employee = jacksonObjectMapper().readValue(json)
+        val obj: Employee = defaultMapper.readValue(json)
         assertEquals(Name("John", "Smith"), obj.name)
         assertEquals("Manager", obj.position)
     }

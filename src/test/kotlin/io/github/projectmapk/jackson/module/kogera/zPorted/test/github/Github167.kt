@@ -1,7 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import org.junit.jupiter.api.Test
 import java.util.function.IntSupplier
 
@@ -13,12 +13,12 @@ class TestGithub167 {
 
     @Test
     fun withKotlinExtension() {
-        jacksonObjectMapper().writeValueAsString(samObject)
+        defaultMapper.writeValueAsString(samObject)
     }
 
     @Test
     fun withKotlinExtension_Synthetic() {
-        jacksonObjectMapper().writeValueAsString(samObjectSynthetic)
+        defaultMapper.writeValueAsString(samObjectSynthetic)
     }
 
     @Test

@@ -30,7 +30,7 @@ private val primitiveClassToDesc = mapOf(
     Long::class.java to 'J',
     Short::class.java to 'S',
     Boolean::class.java to 'Z',
-    Void.TYPE to 'V'
+    Void.TYPE to 'V',
 )
 
 // -> this.name.replace(".", "/")
@@ -56,12 +56,12 @@ internal fun Array<Class<*>>.toDescBuilder(): StringBuilder = this
 
 internal fun Constructor<*>.toSignature(): JvmMethodSignature = JvmMethodSignature(
     "<init>",
-    parameterTypes.toDescBuilder().append('V').toString()
+    parameterTypes.toDescBuilder().append('V').toString(),
 )
 
 internal fun Method.toSignature(): JvmMethodSignature = JvmMethodSignature(
     this.name,
-    parameterTypes.toDescBuilder().appendDescriptor(this.returnType).toString()
+    parameterTypes.toDescBuilder().appendDescriptor(this.returnType).toString(),
 )
 
 internal val defaultConstructorMarker: Class<*> by lazy {

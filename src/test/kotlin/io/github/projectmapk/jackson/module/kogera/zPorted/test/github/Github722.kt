@@ -37,10 +37,10 @@ private class Github722 {
     @Test
     fun failing() {
         // The kotlin mapper uses the Kotlin default value instead of the Inject value.
-        val kotlinMapper = jacksonObjectMapper()
-        val result = kotlinMapper.readerFor(FailingDto::class.java)
+        val reader = jacksonObjectMapper()
+            .readerFor(FailingDto::class.java)
             .with(InjectableValues.Std(injectValues))
-            .readValue<FailingDto>("{}")
+        val result = reader.readValue<FailingDto>("{}")
 
         // fixed
         // assertNotEquals(result, expected, "GitHubXXX fixed.")
@@ -56,10 +56,10 @@ private class Github722 {
 
     @Test
     fun withoutDefaultValue() {
-        val kotlinMapper = jacksonObjectMapper()
-        val result = kotlinMapper.readerFor(WithoutDefaultValue::class.java)
+        val reader = jacksonObjectMapper()
+            .readerFor(WithoutDefaultValue::class.java)
             .with(InjectableValues.Std(injectValues))
-            .readValue<WithoutDefaultValue>("{}")
+        val result = reader.readValue<WithoutDefaultValue>("{}")
 
         // If there is no default value, the problem does not occur.
         assertEquals(WithoutDefaultValue(1, 2), result)

@@ -9,7 +9,9 @@ import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.NonNullObject
 import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.NullableObject
+import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.NullablePrimitive
 import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.Primitive
+import io.github.projectmapk.jackson.module.kogera.zIntegration.deser.valueClass.TwoUnitPrimitive
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Nested
@@ -42,12 +44,26 @@ class WithoutCustomDeserializeMethodTest {
             val result = defaultMapper.readValue<Map<NullableObject, String?>>("""{"bar":null}""")
             assertEquals(mapOf(NullableObject("bar") to null), result)
         }
+
+        @Test
+        fun nullablePrimitive() {
+            val result = defaultMapper.readValue<Map<NullablePrimitive, String?>>("""{"2":null}""")
+            assertEquals(mapOf(NullablePrimitive(2) to null), result)
+        }
+
+        @Test
+        fun twoUnitPrimitive() {
+            val result = defaultMapper.readValue<Map<TwoUnitPrimitive, String?>>("""{"1":null}""")
+            assertEquals(mapOf(TwoUnitPrimitive(1) to null), result)
+        }
     }
 
     data class Dst(
         val p: Map<Primitive, String?>,
         val nn: Map<NonNullObject, String?>,
-        val n: Map<NullableObject, String?>
+        val n: Map<NullableObject, String?>,
+        val np: Map<NullablePrimitive, String?>,
+        val tup: Map<TwoUnitPrimitive, String?>,
     )
 
     @Test
@@ -56,14 +72,18 @@ class WithoutCustomDeserializeMethodTest {
             {
               "p":{"1":null},
               "nn":{"foo":null},
-              "n":{"bar":null}
+              "n":{"bar":null},
+              "np":{"2":null},
+              "tup":{"2":null}
             }
         """.trimIndent()
         val result = defaultMapper.readValue<Dst>(src)
         val expected = Dst(
             mapOf(Primitive(1) to null),
             mapOf(NonNullObject("foo") to null),
-            mapOf(NullableObject("bar") to null)
+            mapOf(NullableObject("bar") to null),
+            mapOf(NullablePrimitive(2) to null),
+            mapOf(TwoUnitPrimitive(2) to null),
         )
 
         assertEquals(expected, result)
@@ -109,7 +129,7 @@ class WithoutCustomDeserializeMethodTest {
                     init {
                         addKeyDeserializer(Wrapped::class.java, Wrapped.KeyDeserializer())
                     }
-                }
+                },
             )
 
         val result = mapper.readValue<Map<Wrapper, String?>>("""{"foo-bar":null}""")

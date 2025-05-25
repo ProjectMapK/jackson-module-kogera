@@ -6,7 +6,7 @@ import kotlin.metadata.jvm.signature
 
 internal class JmFunction(
     val signature: JvmMethodSignature?,
-    val valueParameters: List<JmValueParameter>
+    val valueParameters: List<JmValueParameter>,
 ) {
     constructor(function: KmFunction) : this(function.signature, function.valueParameters.map { JmValueParameter(it) })
 }

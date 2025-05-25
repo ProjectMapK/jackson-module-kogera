@@ -18,7 +18,7 @@ internal sealed class UnsignedIntegerChecker<T : Comparable<T>, U : Comparable<U
             p,
             "Numeric value ($value) out of range of ${clazz.simpleName} ($min - $max).",
             JsonToken.VALUE_NUMBER_INT,
-            clazz
+            clazz,
         )
 }
 

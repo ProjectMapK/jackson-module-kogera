@@ -46,7 +46,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p28: NonNullObject,
         val p29: NonNullObject,
         val p30: NonNullObject,
-        val p31: NonNullObject
+        val p31: NonNullObject,
     ) {
         companion object {
             @JvmStatic
@@ -83,7 +83,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q28: NonNullObject = NonNullObject("p28"),
                 q29: NonNullObject = NonNullObject("p29"),
                 q30: NonNullObject = NonNullObject("p30"),
-                q31: NonNullObject = NonNullObject("p31")
+                q31: NonNullObject = NonNullObject("p31"),
             ) = Dst32(
                 q00,
                 q01,
@@ -116,7 +116,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q28,
                 q29,
                 q30,
-                q31
+                q31,
             )
         }
     }
@@ -159,7 +159,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p29: NonNullObject,
         val p30: NonNullObject,
         val p31: NonNullObject,
-        val p32: NonNullObject
+        val p32: NonNullObject,
     ) {
         companion object {
             @JvmStatic
@@ -197,7 +197,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q29: NonNullObject = NonNullObject("p29"),
                 q30: NonNullObject = NonNullObject("p30"),
                 q31: NonNullObject = NonNullObject("p31"),
-                q32: NonNullObject = NonNullObject("p32")
+                q32: NonNullObject = NonNullObject("p32"),
             ) = Dst33(
                 q00,
                 q01,
@@ -231,7 +231,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q29,
                 q30,
                 q31,
-                q32
+                q32,
             )
         }
     }
@@ -305,7 +305,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p60: NonNullObject,
         val p61: NonNullObject,
         val p62: NonNullObject,
-        val p63: NonNullObject
+        val p63: NonNullObject,
     ) {
         companion object {
             @JvmStatic
@@ -374,7 +374,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q60: NonNullObject = NonNullObject("p60"),
                 q61: NonNullObject = NonNullObject("p61"),
                 q62: NonNullObject = NonNullObject("p62"),
-                q63: NonNullObject = NonNullObject("p63")
+                q63: NonNullObject = NonNullObject("p63"),
             ) = Dst64(
                 q00,
                 q01,
@@ -439,7 +439,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q60,
                 q61,
                 q62,
-                q63
+                q63,
             )
         }
     }
@@ -514,7 +514,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p61: NonNullObject,
         val p62: NonNullObject,
         val p63: NonNullObject,
-        val p64: NonNullObject
+        val p64: NonNullObject,
     ) {
         companion object {
             @JvmStatic
@@ -584,7 +584,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q61: NonNullObject = NonNullObject("p61"),
                 q62: NonNullObject = NonNullObject("p62"),
                 q63: NonNullObject = NonNullObject("p63"),
-                q64: NonNullObject = NonNullObject("p64")
+                q64: NonNullObject = NonNullObject("p64"),
             ) = Dst65(
                 q00,
                 q01,
@@ -650,7 +650,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q61,
                 q62,
                 q63,
-                q64
+                q64,
             )
         }
     }
@@ -905,7 +905,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
         val p240: NonNullObject,
         val p241: NonNullObject,
         val p242: NonNullObject,
-        val p243: NonNullObject
+        val p243: NonNullObject,
     ) {
         companion object {
             @JvmStatic
@@ -1154,7 +1154,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q240: NonNullObject = NonNullObject("p240"),
                 q241: NonNullObject = NonNullObject("p241"),
                 q242: NonNullObject = NonNullObject("p242"),
-                q243: NonNullObject = NonNullObject("p243")
+                q243: NonNullObject = NonNullObject("p243"),
             ) = DstMax(
                 q000,
                 q001,
@@ -1399,7 +1399,7 @@ class DeserializeByFactoryWithDefaultArgumentsTest {
                 q240,
                 q241,
                 q242,
-                q243
+                q243,
             )
         }
     }

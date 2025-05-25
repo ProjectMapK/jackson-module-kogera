@@ -36,10 +36,10 @@ import kotlin.metadata.isNullable
 internal class KotlinFallbackAnnotationIntrospector(
     private val strictNullChecks: Boolean,
     private val useJavaDurationConversion: Boolean,
-    private val cache: ReflectionCache
+    private val cache: ReflectionCache,
 ) : NopAnnotationIntrospector() {
     private fun findKotlinParameter(
-        param: AnnotatedParameter
+        param: AnnotatedParameter,
     ): JmValueParameter? = when (val owner = param.owner.member) {
         is Constructor<*> -> cache.getJmClass(param.declaringClass)?.findJmConstructor(owner)?.valueParameters
         is Method -> if (Modifier.isStatic(owner.modifiers)) {
@@ -69,7 +69,7 @@ internal class KotlinFallbackAnnotationIntrospector(
     override fun refineDeserializationType(
         config: MapperConfig<*>,
         a: Annotated,
-        baseType: JavaType
+        baseType: JavaType,
     ): JavaType = findKotlinParameter(a)?.let { param ->
         val rawType = a.rawType
         param.reconstructedClassOrNull
@@ -138,7 +138,7 @@ internal class KotlinFallbackAnnotationIntrospector(
         config: MapperConfig<*>,
         valueClass: AnnotatedClass,
         declaredConstructors: List<PotentialCreator>,
-        declaredFactories: List<PotentialCreator>
+        declaredFactories: List<PotentialCreator>,
     ): PotentialCreator? {
         val jmClass = valueClass.creatableKotlinClass() ?: return null
         val primarilyConstructor = jmClass.primarilyConstructor()
@@ -168,7 +168,7 @@ private fun JmValueParameter.isNullishTypeAt(index: Int): Boolean = arguments.ge
 } != false // If a type argument cannot be taken, treat it as nullable to avoid unexpected failure.
 
 private fun JmValueParameter.requireStrictNullCheck(
-    type: JavaType
+    type: JavaType,
 ): Boolean = ((type.isArrayType || type.isCollectionLikeType) && !this.isNullishTypeAt(0)) ||
     (type.isMapLikeType && !this.isNullishTypeAt(1))
 
@@ -176,10 +176,10 @@ private fun JmClass.primarilyConstructor() = constructors.find { !it.isSecondary
 
 private fun isPossiblySingleString(
     jmConstructor: JmConstructor,
-    jmClass: JmClass
+    jmClass: JmClass,
 ) = jmConstructor.valueParameters.singleOrNull()?.let { it.isString && it.name !in jmClass.propertyNameSet } == true
 
 private fun isPossibleSingleString(
     isPossiblySingleString: Boolean,
-    javaConstructor: Constructor<*>
+    javaConstructor: Constructor<*>,
 ): Boolean = isPossiblySingleString && javaConstructor.parameters[0].annotations.none { it is JsonProperty }

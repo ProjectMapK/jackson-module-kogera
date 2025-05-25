@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
 import io.github.projectmapk.jackson.module.kogera.readValues
 import io.github.projectmapk.jackson.module.kogera.readValuesTyped
-import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

@@ -1,7 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -23,9 +23,9 @@ class TestGithub181 {
     @Test
     fun testReflectionExceptionOnDelegatedMap() {
         val testInstance = HealthStatusMap(mapOf("failed" to HealthStatus.FAILED, "okey dokey" to HealthStatus.OK))
-        val json = jacksonObjectMapper().writeValueAsString(testInstance)
+        val json = defaultMapper.writeValueAsString(testInstance)
         assertEquals("{\"failed\":\"FAILED\",\"okey dokey\":\"OK\"}", json)
-        val newInstance = jacksonObjectMapper().readValue<HealthStatusMap>(json)
+        val newInstance = defaultMapper.readValue<HealthStatusMap>(json)
         assertEquals(testInstance, newInstance)
     }
 }

@@ -1,6 +1,6 @@
 package io.github.projectmapk.jackson.module.kogera.zIntegration.ser
 
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -9,13 +9,12 @@ class JvmFieldTest {
         @JvmField
         val `foo-foo`: String,
         @JvmField
-        val `-bar`: String
+        val `-bar`: String,
     )
 
     @Test
     fun test() {
-        val mapper = jacksonObjectMapper()
-        val r = mapper.writeValueAsString(Src("foo", "bar"))
+        val r = defaultMapper.writeValueAsString(Src("foo", "bar"))
 
         assertEquals("{\"foo-foo\":\"foo\",\"-bar\":\"bar\"}", r)
     }

@@ -2,7 +2,7 @@ package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
+import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -10,17 +10,15 @@ import org.junit.jupiter.api.Test
 // verifying work around for this issue, no bug present
 
 class TestGithub179 {
-    val objectMapper = jacksonObjectMapper()
-
     @Test
     fun listOfStrings() {
-        val strings = objectMapper.readValue<Strings>("""[ "first", "second" ]""")
+        val strings = defaultMapper.readValue<Strings>("""[ "first", "second" ]""")
         assertEquals(strings.values, listOf("first", "second"))
     }
 
     @Test
     fun embeddedListOfStrings() {
-        val stringsContainer = objectMapper.readValue<StringsContainer>(
+        val stringsContainer = defaultMapper.readValue<StringsContainer>(
             """{ "strings" : [ "first", "second" ] }"""
         )
         assertEquals(stringsContainer.strings.values, listOf("first", "second"))
@@ -28,7 +26,7 @@ class TestGithub179 {
 
     @Test
     fun embeddedListOfEnums() {
-        val myEnumsContainer = objectMapper.readValue<MyEnumsContainer>(
+        val myEnumsContainer = defaultMapper.readValue<MyEnumsContainer>(
             """{ "myEnums" : [ "first", "second" ] }"""
         )
         assertEquals(myEnumsContainer.myEnums.values, listOf(MyEnum.FIRST, MyEnum.SECOND))

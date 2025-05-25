@@ -23,7 +23,7 @@ private class ArgumentBucketTest {
             val generator = BucketGenerator(
                 (0..31).map { String::class.java },
                 (0..31).map { mockValueParameter() },
-                emptyList()
+                emptyList(),
             )
             val result = generator.generate()
 
@@ -44,10 +44,10 @@ private class ArgumentBucketTest {
                     Int::class.java,
                     Float::class.java,
                     Long::class.java,
-                    Double::class.java
+                    Double::class.java,
                 ),
                 (1..8).map { mockValueParameter() },
-                emptyList()
+                emptyList(),
             )
             val result = generator.generate()
 
@@ -66,7 +66,7 @@ private class ArgumentBucketTest {
             val generator = BucketGenerator(
                 (0..32).map { String::class.java },
                 (0..32).map { mockValueParameter() },
-                emptyList()
+                emptyList(),
             )
             val result = generator.generate()
 
@@ -85,7 +85,7 @@ private class ArgumentBucketTest {
         val generator = BucketGenerator(
             (0..32).map { String::class.java },
             (0..32).map { mockValueParameter() },
-            List(33) { null }
+            List(33) { null },
         )
         val sut = generator.generate()
 
@@ -114,7 +114,7 @@ private class ArgumentBucketTest {
         val generator = BucketGenerator(
             listOf(Int::class.java, V::class.java),
             (1..2).map { mockValueParameter() },
-            listOf(converter, null)
+            listOf(converter, null),
         )
         val bucket = generator.generate()
 

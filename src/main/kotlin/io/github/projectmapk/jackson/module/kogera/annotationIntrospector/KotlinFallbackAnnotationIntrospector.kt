@@ -80,7 +80,11 @@ internal class KotlinFallbackAnnotationIntrospector(
     override fun findSerializationConverter(a: Annotated): Converter<*, *>? = when (a) {
         // Find a converter to handle the case where the getter returns an unboxed value from the value class.
         is AnnotatedMethod -> cache.findBoxedReturnType(a.member)?.let {
+            // To make annotations that process JavaDuration work,
+            // it is necessary to set up the conversion to JavaDuration here.
+            // This conversion will cause the deserialization settings for KotlinDuration to be ignored.
             if (useJavaDurationConversion && it == KOTLIN_DURATION_CLASS) {
+                // For early return, the same process is placed as the branch regarding AnnotatedClass.
                 if (a.rawReturnType == KOTLIN_DURATION_CLASS) {
                     KotlinToJavaDurationConverter
                 } else {

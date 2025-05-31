@@ -1,4 +1,4 @@
-package io.github.projectmapk.jackson.module.kogera.zIntegration.ser.valueClass.serializer.byAnnotation.nullableObject.byAnnotation
+package io.github.projectmapk.jackson.module.kogera.zIntegration.ser.valueClass.serializer.byAnnotation.nullableObject
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper
@@ -7,7 +7,7 @@ import io.github.projectmapk.jackson.module.kogera.zIntegration.ser.valueClass.s
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-class NullValueTest {
+class NonNullValueTest {
     companion object {
         val writer = jacksonObjectMapper().testPrettyWriter()
     }
@@ -20,14 +20,14 @@ class NullValueTest {
     )
 
     @Test
-    fun failing() {
-        val src = NonNullSrc(NullableObject(null), NullableObject(null))
+    fun nonNull() {
+        val src = NonNullSrc(NullableObject("foo"), NullableObject("bar"))
 
-        Assertions.assertNotEquals(
+        Assertions.assertEquals(
             """
                 {
-                  "getterAnn" : "NULL",
-                  "fieldAnn" : "NULL"
+                  "getterAnn" : "foo-ser",
+                  "fieldAnn" : "bar-ser"
                 }
             """.trimIndent(),
             writer.writeValueAsString(src),
@@ -43,13 +43,13 @@ class NullValueTest {
 
     @Test
     fun nullableWithoutNull() {
-        val src = NullableSrc(NullableObject(null), NullableObject(null))
+        val src = NullableSrc(NullableObject("foo"), NullableObject("bar"))
 
         Assertions.assertEquals(
             """
                 {
-                  "getterAnn" : "NULL",
-                  "fieldAnn" : "NULL"
+                  "getterAnn" : "foo-ser",
+                  "fieldAnn" : "bar-ser"
                 }
             """.trimIndent(),
             writer.writeValueAsString(src),

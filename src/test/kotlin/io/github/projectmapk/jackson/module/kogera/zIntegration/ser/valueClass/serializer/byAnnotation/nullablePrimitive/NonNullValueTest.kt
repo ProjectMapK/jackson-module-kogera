@@ -1,4 +1,4 @@
-package io.github.projectmapk.jackson.module.kogera.zIntegration.ser.valueClass.serializer.byAnnotation.nullablePrimitive.byAnnotation
+package io.github.projectmapk.jackson.module.kogera.zIntegration.ser.valueClass.serializer.byAnnotation.nullablePrimitive
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import io.github.projectmapk.jackson.module.kogera.jacksonObjectMapper

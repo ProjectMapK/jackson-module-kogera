@@ -63,8 +63,8 @@ internal sealed class ValueCreator<T> {
 internal fun List<JmValueParameter>.mapToConverters(
     rawTypes: List<Class<*>>,
     cache: ReflectionCache,
-): List<ValueClassUnboxConverter<Any>?> = mapIndexed { i, param ->
+): List<ValueClassUnboxConverter<Any, *>?> = mapIndexed { i, param ->
     param.reconstructedClassOrNull
         ?.takeIf { it.isUnboxableValueClass() && rawTypes[i] != it }
         ?.let { cache.getValueClassUnboxConverter(it) }
-} as List<ValueClassUnboxConverter<Any>?> // Cast to cheat generics
+} as List<ValueClassUnboxConverter<Any, *>?> // Cast to cheat generics

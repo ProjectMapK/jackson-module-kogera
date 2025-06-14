@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import io.github.projectmapk.jackson.module.kogera.deser.deserializers.WrapsNullableValueClassBoxDeserializer;
+import io.github.projectmapk.jackson.module.kogera.deser.deserializers.WrapsAnyValueClassBoxDeserializer;
 import kotlin.jvm.JvmClassMappingKt;
 import kotlin.reflect.KClass;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +15,7 @@ import java.io.IOException;
 
 /**
  * An interface to be inherited by JsonDeserializer that handles value classes that may wrap nullable.
- * @see WrapsNullableValueClassBoxDeserializer for implementation.
+ * @see WrapsAnyValueClassBoxDeserializer for implementation.
  */
 // To ensure maximum compatibility with StdDeserializer, this class is written in Java.
 public abstract class WrapsNullableValueClassDeserializer<D> extends StdDeserializer<D> {

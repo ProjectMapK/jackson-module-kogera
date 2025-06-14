@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.lang.reflect.InvocationTargetException
 
 class WithoutCustomDeserializeMethodTest {
     companion object {
@@ -132,8 +131,8 @@ class WithoutCustomDeserializeMethodTest {
 
     @Test
     fun callConstructorCheckTest() {
-        val e = assertThrows<InvocationTargetException> { defaultMapper.readValue<HasCheckConstructor>("-1") }
-        Assertions.assertTrue(e.cause === throwable)
+        val e = assertThrows<IllegalArgumentException> { defaultMapper.readValue<HasCheckConstructor>("-1") }
+        Assertions.assertTrue(e === throwable)
     }
 
     // If all JsonCreator tests are OK, no need to check throws from factory functions.

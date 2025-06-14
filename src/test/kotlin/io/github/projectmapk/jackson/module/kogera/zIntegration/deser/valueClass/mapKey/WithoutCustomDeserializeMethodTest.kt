@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.lang.reflect.InvocationTargetException
 import com.fasterxml.jackson.databind.KeyDeserializer as JacksonKeyDeserializer
 
 class WithoutCustomDeserializeMethodTest {
@@ -98,10 +97,10 @@ class WithoutCustomDeserializeMethodTest {
 
     @Test
     fun callConstructorCheckTest() {
-        val e = assertThrows<InvocationTargetException> {
+        val e = assertThrows<IllegalArgumentException> {
             defaultMapper.readValue<Map<HasCheckConstructor, String?>>("""{"-1":null}""")
         }
-        assertTrue(e.cause === throwable)
+        assertTrue(e === throwable)
     }
 
     data class Wrapped(val first: String, val second: String) {

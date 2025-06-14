@@ -110,7 +110,7 @@ private class ArgumentBucketTest {
     @Test
     fun unboxTest() {
         @Suppress("UNCHECKED_CAST")
-        val converter = ValueClassUnboxConverter(V::class.java) as ValueClassUnboxConverter<Any>
+        val converter = ValueClassUnboxConverter.create(V::class.java) as ValueClassUnboxConverter<Any, *>
         val generator = BucketGenerator(
             listOf(Int::class.java, V::class.java),
             (1..2).map { mockValueParameter() },

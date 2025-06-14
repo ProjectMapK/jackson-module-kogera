@@ -123,7 +123,9 @@ internal sealed class ValueClassStaticJsonValueSerializer<T : Any>(
         // If create a function with a JsonValue in the value class,
         // it will be compiled as a static method (= cannot be processed properly by Jackson),
         // so use a ValueClassSerializer.StaticJsonValue to handle this.
-        fun <T : Any> createOrNull(converter: ValueClassUnboxConverter<T, *>): StdSerializer<T>? = converter
+        fun <T : Any> createOrNull(
+            converter: ValueClassUnboxConverter<T, *>,
+        ): ValueClassStaticJsonValueSerializer<T>? = converter
             .valueClass
             .getStaticJsonValueGetter()
             ?.let {

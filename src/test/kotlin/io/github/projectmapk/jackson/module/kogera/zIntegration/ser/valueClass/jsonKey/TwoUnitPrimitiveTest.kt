@@ -2,7 +2,6 @@ package io.github.projectmapk.jackson.module.kogera.zIntegration.ser.valueClass.
 
 import com.fasterxml.jackson.annotation.JsonKey
 import io.github.projectmapk.jackson.module.kogera.defaultMapper
-import io.github.projectmapk.jackson.module.kogera.zIntegration.ser.valueClass.jsonKey.PrimitiveTest.NonNull
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

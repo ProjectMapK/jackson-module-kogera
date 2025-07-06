@@ -71,15 +71,15 @@ internal val STRING_CLASS = String::class.java
 internal val JAVA_UUID_CLASS = java.util.UUID::class.java
 internal val ANY_CLASS = Any::class.java
 
-internal val ANY_TO_ANY_METHOD_TYPE = MethodType.methodType(ANY_CLASS, ANY_CLASS)
-internal val ANY_TO_INT_METHOD_TYPE = MethodType.methodType(INT_CLASS, ANY_CLASS)
-internal val ANY_TO_LONG_METHOD_TYPE = MethodType.methodType(LONG_CLASS, ANY_CLASS)
-internal val ANY_TO_STRING_METHOD_TYPE = MethodType.methodType(STRING_CLASS, ANY_CLASS)
-internal val ANY_TO_JAVA_UUID_METHOD_TYPE = MethodType.methodType(JAVA_UUID_CLASS, ANY_CLASS)
-internal val INT_TO_ANY_METHOD_TYPE = MethodType.methodType(ANY_CLASS, INT_CLASS)
-internal val LONG_TO_ANY_METHOD_TYPE = MethodType.methodType(ANY_CLASS, LONG_CLASS)
-internal val STRING_TO_ANY_METHOD_TYPE = MethodType.methodType(ANY_CLASS, STRING_CLASS)
-internal val JAVA_UUID_TO_ANY_METHOD_TYPE = MethodType.methodType(ANY_CLASS, JAVA_UUID_CLASS)
+internal val ANY_TO_ANY_METHOD_TYPE by lazy { MethodType.methodType(ANY_CLASS, ANY_CLASS) }
+internal val ANY_TO_INT_METHOD_TYPE by lazy { MethodType.methodType(INT_CLASS, ANY_CLASS) }
+internal val ANY_TO_LONG_METHOD_TYPE by lazy { MethodType.methodType(LONG_CLASS, ANY_CLASS) }
+internal val ANY_TO_STRING_METHOD_TYPE by lazy { MethodType.methodType(STRING_CLASS, ANY_CLASS) }
+internal val ANY_TO_JAVA_UUID_METHOD_TYPE by lazy { MethodType.methodType(JAVA_UUID_CLASS, ANY_CLASS) }
+internal val INT_TO_ANY_METHOD_TYPE by lazy { MethodType.methodType(ANY_CLASS, INT_CLASS) }
+internal val LONG_TO_ANY_METHOD_TYPE by lazy { MethodType.methodType(ANY_CLASS, LONG_CLASS) }
+internal val STRING_TO_ANY_METHOD_TYPE by lazy { MethodType.methodType(ANY_CLASS, STRING_CLASS) }
+internal val JAVA_UUID_TO_ANY_METHOD_TYPE by lazy { MethodType.methodType(ANY_CLASS, JAVA_UUID_CLASS) }
 
 internal fun unreflect(method: Method): MethodHandle = MethodHandles.lookup().unreflect(method)
 internal fun unreflectAsType(method: Method, type: MethodType): MethodHandle = unreflect(method).asType(type)

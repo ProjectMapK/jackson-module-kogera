@@ -18,7 +18,7 @@ val jacksonVersion = libs.versions.jackson.get()
 val generatedSrcPath = "${layout.buildDirectory.get()}/generated/kotlin"
 
 group = groupStr
-version = "${jacksonVersion}-beta26"
+version = "${jacksonVersion}-beta27"
 
 repositories {
     mavenCentral()

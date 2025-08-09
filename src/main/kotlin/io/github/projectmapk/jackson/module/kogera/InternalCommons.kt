@@ -2,6 +2,8 @@ package io.github.projectmapk.jackson.module.kogera
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.PropertyName
 import io.github.projectmapk.jackson.module.kogera.annotation.JsonKUnbox
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
@@ -126,3 +128,12 @@ internal fun Method.toSignature(): JvmMethodSignature = JvmMethodSignature(
     this.name,
     parameterTypes.toDescBuilder().appendDescriptor(this.returnType).toString(),
 )
+
+// Delegate for calling package-private constructor
+internal fun kotlinInvalidNullException(
+    kotlinParameterName: String,
+    valueClass: Class<*>,
+    p: JsonParser,
+    msg: String,
+    pname: PropertyName,
+) = KotlinInvalidNullException(kotlinParameterName, valueClass, p, msg, pname)

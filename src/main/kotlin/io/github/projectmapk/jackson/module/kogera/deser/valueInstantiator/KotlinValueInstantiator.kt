@@ -11,13 +11,13 @@ import com.fasterxml.jackson.databind.deser.SettableBeanProperty
 import com.fasterxml.jackson.databind.deser.ValueInstantiator
 import com.fasterxml.jackson.databind.deser.impl.PropertyValueBuffer
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
-import com.fasterxml.jackson.databind.exc.InvalidNullException
 import com.fasterxml.jackson.databind.module.SimpleValueInstantiators
 import io.github.projectmapk.jackson.module.kogera.ReflectionCache
 import io.github.projectmapk.jackson.module.kogera.deser.WrapsNullableValueClassDeserializer
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.ConstructorValueCreator
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.MethodValueCreator
 import io.github.projectmapk.jackson.module.kogera.deser.valueInstantiator.creator.ValueCreator
+import io.github.projectmapk.jackson.module.kogera.kotlinInvalidNullException
 import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
@@ -99,9 +99,19 @@ internal class KotlinValueInstantiator(
                 } else {
                     val isMissingAndRequired = isMissing && jsonProp.isRequired
                     if (isMissingAndRequired || !(paramDef.isNullable || paramDef.isGenericType)) {
-                        throw InvalidNullException
-                            .from(ctxt, jsonProp.fullName, jsonProp.type)
-                            .wrapWithPath(this.valueClass, jsonProp.name)
+                        val kotlinParameterName = paramDef.name
+                        val pname = jsonProp.name
+                        val message = "Instantiation of ${this.valueTypeDesc} value failed for JSON property" +
+                            " $pname due to missing (therefore NULL) value for creator parameter" +
+                            " $kotlinParameterName which is a non-nullable type"
+
+                        throw kotlinInvalidNullException(
+                            kotlinParameterName,
+                            this.valueClass,
+                            ctxt.parser,
+                            message,
+                            jsonProp.fullName,
+                        ).wrapWithPath(this.valueClass, pname)
                     }
                 }
             }

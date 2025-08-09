@@ -1,8 +1,8 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.exc.InvalidNullException
 import io.github.projectmapk.jackson.module.kogera.KotlinFeature.NullIsSameAsDefault
+import io.github.projectmapk.jackson.module.kogera.KotlinInvalidNullException
 import io.github.projectmapk.jackson.module.kogera.kotlinModule
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -55,7 +55,7 @@ class TestNullToDefault {
 
     @Test
     fun shouldNotUseNullAsDefault() {
-        assertThrows<InvalidNullException> {
+        assertThrows<KotlinInvalidNullException> {
             createMapper(false).readValue<TestClass>(
                 """{
 					"sku": "974",
@@ -68,10 +68,9 @@ class TestNullToDefault {
         }
     }
 
-    // @Test(expected = MissingKotlinParameterException::class)
     @Test
     fun errorIfNotDefault() {
-        assertThrows<InvalidNullException> {
+        assertThrows<KotlinInvalidNullException> {
             createMapper(true).readValue<TestClass>(
                 """{
 						"sku": "974",

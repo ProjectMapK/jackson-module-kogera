@@ -1,7 +1,7 @@
 package io.github.projectmapk.jackson.module.kogera.zPorted.test.github
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.exc.InvalidNullException
+import io.github.projectmapk.jackson.module.kogera.KotlinInvalidNullException
 import io.github.projectmapk.jackson.module.kogera.defaultMapper
 import io.github.projectmapk.jackson.module.kogera.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -20,7 +20,7 @@ class TestGithub168 {
 
     @Test
     fun testIfRequiredIsReallyRequiredWhenAbsent() {
-        assertThrows<InvalidNullException> {
+        assertThrows<KotlinInvalidNullException> {
             defaultMapper.readValue<TestClass>("""{"baz":"whatever"}""")
         }
     }

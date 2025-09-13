@@ -42,7 +42,7 @@ jobs:
         # LTS versions, latest version (if exists)
         java-version: [ '17', '21', '24' ]
         # Minimum version, latest release version, latest pre-release version (if exists)
-        kotlin: ['2.0.21', '2.1.21', '2.2.10']
+        kotlin: ['2.0.21', '2.1.21', '2.2.20']
     env:
       KOTLIN_VERSION: ${{ matrix.kotlin }}
     name: "Kotlin ${{ matrix.kotlin }} - Java ${{ matrix.java-version }}"

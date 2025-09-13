@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.0.21" # Mainly for CI, it can be rewritten by environment variable.
-jackson = "2.19.2"
+jackson = "2.20.0"
 
 # test libs
 junit = "5.13.4"
@@ -8,16 +8,18 @@ junit = "5.13.4"
 [libraries]
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
 kotlin-metadata-jvm = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm" }
-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
-jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
+
+jackson-bom = { module = "com.fasterxml.jackson:jackson-bom", version.ref = "jackson" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind" }
+jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations" }
 
 # test libs
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 mockk = "io.mockk:mockk:1.14.5"
-jackson-xml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version.ref = "jackson" }
-jackson-csv = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-csv", version.ref = "jackson" }
-jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
+jackson-xml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml" }
+jackson-csv = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-csv" }
+jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310" }
 
 [plugins]
 kotlinter = { id = "org.jmailen.kotlinter", version = "5.0.2" }

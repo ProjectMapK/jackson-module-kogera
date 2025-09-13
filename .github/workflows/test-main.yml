@@ -42,7 +42,7 @@ jobs:
         # LTS versions, latest version (if exists)
         java-version: [ '17', '21', '24' ]
         # Minimum version, latest release version, latest pre-release version (if exists)
-        kotlin: ['2.0.21', '2.1.21', '2.2.0']
+        kotlin: ['2.0.21', '2.1.21', '2.2.10']
     env:
       KOTLIN_VERSION: ${{ matrix.kotlin }}
     name: "Kotlin ${{ matrix.kotlin }} - Java ${{ matrix.java-version }}"
@@ -50,9 +50,9 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: 'Set up java ${{ matrix.java-version }}'
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '${{ matrix.java-version }}'
           distribution: 'corretto'

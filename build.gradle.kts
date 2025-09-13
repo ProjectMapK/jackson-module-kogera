@@ -30,6 +30,7 @@ dependencies {
     implementation("${libs.kotlin.stdlib.get()}:${kotlinVersion}")
     implementation("${libs.kotlin.metadata.jvm.get()}:${kotlinVersion}")
 
+    implementation(platform(libs.jackson.bom))
     api(libs.jackson.databind)
     api(libs.jackson.annotations)
 

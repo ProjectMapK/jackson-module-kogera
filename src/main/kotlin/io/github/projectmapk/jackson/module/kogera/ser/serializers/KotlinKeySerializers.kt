@@ -22,7 +22,7 @@ import io.github.projectmapk.jackson.module.kogera.STRING_TO_ANY_METHOD_TYPE
 import io.github.projectmapk.jackson.module.kogera.StringValueClassUnboxConverter
 import io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
-import io.github.projectmapk.jackson.module.kogera.unreflectAsType
+import io.github.projectmapk.jackson.module.kogera.unreflectAsTypeWithAccessibilityModification
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
@@ -51,7 +51,7 @@ internal sealed class ValueClassStaticJsonKeySerializer<T : Any>(
     methodType: MethodType,
 ) : StdSerializer<T>(converter.valueClass) {
     private val keyType: Class<*> = staticJsonValueGetter.returnType
-    private val handle: MethodHandle = unreflectAsType(staticJsonValueGetter, methodType).let {
+    private val handle: MethodHandle = unreflectAsTypeWithAccessibilityModification(staticJsonValueGetter, methodType).let {
         MethodHandles.filterReturnValue(converter.unboxHandle, it)
     }
 

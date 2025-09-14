@@ -22,7 +22,7 @@ import io.github.projectmapk.jackson.module.kogera.STRING_TO_ANY_METHOD_TYPE
 import io.github.projectmapk.jackson.module.kogera.StringValueClassUnboxConverter
 import io.github.projectmapk.jackson.module.kogera.ValueClassUnboxConverter
 import io.github.projectmapk.jackson.module.kogera.isUnboxableValueClass
-import io.github.projectmapk.jackson.module.kogera.unreflectAsType
+import io.github.projectmapk.jackson.module.kogera.unreflectAsTypeWithAccessibilityModification
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.reflect.Method
@@ -83,7 +83,7 @@ internal sealed class ValueClassStaticJsonValueSerializer<T : Any>(
         staticJsonValueGetter: Method,
     ) : ValueClassStaticJsonValueSerializer<T>(
         converter,
-        unreflectAsType(staticJsonValueGetter, INT_TO_ANY_METHOD_TYPE),
+        unreflectAsTypeWithAccessibilityModification(staticJsonValueGetter, INT_TO_ANY_METHOD_TYPE),
     )
 
     internal class WrapsLong<T : Any>(
@@ -91,7 +91,7 @@ internal sealed class ValueClassStaticJsonValueSerializer<T : Any>(
         staticJsonValueGetter: Method,
     ) : ValueClassStaticJsonValueSerializer<T>(
         converter,
-        unreflectAsType(staticJsonValueGetter, LONG_TO_ANY_METHOD_TYPE),
+        unreflectAsTypeWithAccessibilityModification(staticJsonValueGetter, LONG_TO_ANY_METHOD_TYPE),
     )
 
     internal class WrapsString<T : Any>(
@@ -99,7 +99,7 @@ internal sealed class ValueClassStaticJsonValueSerializer<T : Any>(
         staticJsonValueGetter: Method,
     ) : ValueClassStaticJsonValueSerializer<T>(
         converter,
-        unreflectAsType(staticJsonValueGetter, STRING_TO_ANY_METHOD_TYPE),
+        unreflectAsTypeWithAccessibilityModification(staticJsonValueGetter, STRING_TO_ANY_METHOD_TYPE),
     )
 
     internal class WrapsJavaUuid<T : Any>(
@@ -107,7 +107,7 @@ internal sealed class ValueClassStaticJsonValueSerializer<T : Any>(
         staticJsonValueGetter: Method,
     ) : ValueClassStaticJsonValueSerializer<T>(
         converter,
-        unreflectAsType(staticJsonValueGetter, JAVA_UUID_TO_ANY_METHOD_TYPE),
+        unreflectAsTypeWithAccessibilityModification(staticJsonValueGetter, JAVA_UUID_TO_ANY_METHOD_TYPE),
     )
 
     internal class WrapsAny<T : Any>(
@@ -115,7 +115,7 @@ internal sealed class ValueClassStaticJsonValueSerializer<T : Any>(
         staticJsonValueGetter: Method,
     ) : ValueClassStaticJsonValueSerializer<T>(
         converter,
-        unreflectAsType(staticJsonValueGetter, ANY_TO_ANY_METHOD_TYPE),
+        unreflectAsTypeWithAccessibilityModification(staticJsonValueGetter, ANY_TO_ANY_METHOD_TYPE),
     )
 
     companion object {

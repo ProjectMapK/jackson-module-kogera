@@ -22,4 +22,4 @@ jackson-csv = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-cs
 jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310" }
 
 [plugins]
-kotlinter = { id = "org.jmailen.kotlinter", version = "5.0.2" }
+kotlinter = { id = "org.jmailen.kotlinter", version = "5.1.1" }

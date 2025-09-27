@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.PropertyName
+import com.fasterxml.jackson.databind.util.ClassUtil
 import io.github.projectmapk.jackson.module.kogera.annotation.JsonKUnbox
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
@@ -83,8 +84,13 @@ internal val LONG_TO_ANY_METHOD_TYPE by lazy { MethodType.methodType(ANY_CLASS, 
 internal val STRING_TO_ANY_METHOD_TYPE by lazy { MethodType.methodType(ANY_CLASS, STRING_CLASS) }
 internal val JAVA_UUID_TO_ANY_METHOD_TYPE by lazy { MethodType.methodType(ANY_CLASS, JAVA_UUID_CLASS) }
 
-internal fun unreflect(method: Method): MethodHandle = MethodHandles.lookup().unreflect(method)
-internal fun unreflectAsType(method: Method, type: MethodType): MethodHandle = unreflect(method).asType(type)
+internal fun unreflectWithAccessibilityModification(method: Method): MethodHandle = MethodHandles.lookup().unreflect(
+    method.apply { ClassUtil.checkAndFixAccess(this, false) },
+)
+internal fun unreflectAsTypeWithAccessibilityModification(
+    method: Method,
+    type: MethodType,
+): MethodHandle = unreflectWithAccessibilityModification(method).asType(type)
 
 private val primitiveClassToDesc = mapOf(
     Byte::class.java to 'B',

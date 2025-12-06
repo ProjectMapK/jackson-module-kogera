@@ -42,7 +42,7 @@ jobs:
         # LTS versions, latest version (if exists)
         java-version: [ '17', '21', '25' ]
         # Minimum version, latest release version, latest pre-release version (if exists)
-        kotlin: ['2.1.21', '2.2.20']
+        kotlin: ['2.1.21', '2.2.21', '2.3.0-RC2']
     env:
       KOTLIN_VERSION: ${{ matrix.kotlin }}
     name: "Kotlin ${{ matrix.kotlin }} - Java ${{ matrix.java-version }}"
@@ -50,18 +50,18 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: 'Set up java ${{ matrix.java-version }}'
         uses: actions/setup-java@v5
         with:
           java-version: '${{ matrix.java-version }}'
           distribution: 'corretto'
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
       - name: Test
         run: ./gradlew test
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v5
+        uses: mikepenz/action-junit-report@v6
         if: always()
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'

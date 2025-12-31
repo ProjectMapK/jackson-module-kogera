@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.Module
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ObjectReader
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException
+import com.fasterxml.jackson.databind.cfg.MapperBuilder
 import com.fasterxml.jackson.databind.cfg.MutableConfigOverride
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
@@ -200,6 +201,7 @@ public inline fun <reified T, reified U> JsonMapper.Builder.addMixIn(): JsonMapp
     T::class.java,
     U::class.java,
 )
+public inline fun <M : MapperBuilder<*, M>, reified T, reified U> M.addMixIn(): M = this.addMixIn(T::class.java, U::class.java)
 
 public operator fun ArrayNode.plus(element: Boolean) {
     add(element)

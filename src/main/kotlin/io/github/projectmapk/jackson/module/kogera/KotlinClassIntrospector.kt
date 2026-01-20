@@ -37,6 +37,8 @@ internal class KotlinBeanDescription(coll: POJOPropertiesCollector) : BasicBeanD
 internal object KotlinClassIntrospector : BasicClassIntrospector() {
     private fun readResolve(): Any = KotlinClassIntrospector
 
+    override fun copy(): KotlinClassIntrospector = this
+
     override fun forSerialization(
         config: SerializationConfig,
         type: JavaType,

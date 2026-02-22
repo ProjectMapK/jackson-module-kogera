@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 private class Github722 {
-    data class FailingDto @JsonCreator constructor(
+    data class FailingDto(
         @JacksonInject("foo")
         @JsonProperty("foo")
         val foo: Int = 100,

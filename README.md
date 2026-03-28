@@ -1,6 +1,12 @@
 jackson-module-kogera
 ====
 
+[!WARNING]
+Due to a busy schedule and a lack of motivation, I will no longer be actively maintaining this repository.
+Therefore, there are no plans to add support for `Jackson 3.x`.
+
+---
+
 Since `beta-23`, newer versions of `Kotlin` and `Java` than the original have been used to validate changes for `Jackson 3.x`.  
 See #Compatibility for details.
 

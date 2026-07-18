@@ -1,8 +1,6 @@
 name: test-main
 on:
   push:
-    branches:
-      - main
     paths:
       - "gradle/**"
       - "**.kts"

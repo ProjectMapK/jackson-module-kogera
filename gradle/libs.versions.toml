@@ -1,9 +1,9 @@
 [versions]
 kotlin = "2.1.21" # Mainly for CI, it can be rewritten by environment variable.
-jackson = "2.21.5"
+jackson = "2.22.1"
 
 # test libs
-junit = "6.0.3"
+junit = "6.1.2"
 
 [libraries]
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }

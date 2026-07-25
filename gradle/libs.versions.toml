@@ -1,20 +1,19 @@
 [versions]
-kotlin = "2.1.21" # Mainly for CI, it can be rewritten by environment variable.
+kotlin = "2.1.21" # The lowest supported version. Mainly for CI, it can be rewritten by environment variable.
 jackson = "2.21.5"
 
 # test libs
 junit = "6.1.2"
 
 [libraries]
-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
-kotlin-metadata-jvm = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm" }
+kotlin-metadata-jvm = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlin" }
 
 jackson-bom = { module = "com.fasterxml.jackson:jackson-bom", version.ref = "jackson" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind" }
 jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations" }
 
 # test libs
-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 mockk = "io.mockk:mockk:1.14.11"
 jackson-xml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml" }
@@ -22,4 +21,5 @@ jackson-csv = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-cs
 jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310" }
 
 [plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinter = { id = "org.jmailen.kotlinter", version = "5.1.1" }

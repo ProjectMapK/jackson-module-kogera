@@ -3,10 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     `maven-publish` // for JitPack
 
-    val kotlinVersion: String = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() }
-        ?: libs.versions.kotlin.get()
-
-    kotlin("jvm") version kotlinVersion
+    alias(libs.plugins.kotlin.jvm)
 
     java
     alias(libs.plugins.kotlinter)
@@ -25,10 +22,8 @@ repositories {
 }
 
 dependencies {
-    val kotlinVersion: String = System.getenv("KOTLIN_VERSION")?.takeIf { it.isNotEmpty() }
-        ?: libs.versions.kotlin.get()
-    implementation("${libs.kotlin.stdlib.get()}:${kotlinVersion}")
-    implementation("${libs.kotlin.metadata.jvm.get()}:${kotlinVersion}")
+    // kotlin-stdlib is added automatically by the Kotlin Gradle Plugin, as in the official Kotlin libraries.
+    implementation(libs.kotlin.metadata.jvm)
 
     implementation(platform(libs.jackson.bom))
     api(libs.jackson.databind)
@@ -41,7 +36,7 @@ dependencies {
 
     testImplementation(libs.mockk)
 
-    testImplementation("${libs.kotlin.reflect.get()}:${kotlinVersion}")
+    testImplementation(libs.kotlin.reflect)
     testImplementation(libs.jackson.xml)
     testImplementation(libs.jackson.csv)
     testImplementation(libs.jackson.jsr310)

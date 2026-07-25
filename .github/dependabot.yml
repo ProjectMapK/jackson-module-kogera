@@ -25,9 +25,15 @@ updates:
         patterns:
           - "*"
     ignore:
-      # The version of Kotlin is fixed to the lowest, so it is not subject to automatic updates
-      - dependency-name: "kotlin"
-      - dependency-name: "kotlin-metadata-jvm"
+      # Kotlin is fixed to the lowest supported version, so only patch updates are accepted.
+      - dependency-name: "org.jetbrains.kotlin:*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+      - dependency-name: "org.jetbrains.kotlin.jvm*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
       # Jackson 2.x has two LTS lines (2.21 and 2.22), and this project is based on the 2.21 line.
       # Only patch updates within 2.21 are accepted (2.22.0 is treated as a minor update).
       - dependency-name: "com.fasterxml.jackson:jackson-bom"

@@ -1,0 +1,22 @@
+name: warmup-jitpack
+description: Starts a JitPack build for the given tag and verifies that the artifact is published.
+
+inputs:
+  tag:
+    description: "Tag to build on JitPack (e.g. 2.21.5-beta38)"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        TAG: ${{ inputs.tag }}
+      run: |
+        set -euo pipefail
+        base="https://jitpack.io/com/github/${GITHUB_REPOSITORY}/${TAG}"
+        # JitPack builds on demand. Requesting the log starts the build and streams its output,
+        # so that the first consumer of a new version does not have to wait for it.
+        curl -fsSL --max-time 900 "${base}/build.log" | tail -n 50
+        # The log alone does not reliably report the result, so the artifact itself is requested.
+        curl -fsS --max-time 60 -o /dev/null "${base}/${GITHUB_REPOSITORY#*/}-${TAG}.pom"

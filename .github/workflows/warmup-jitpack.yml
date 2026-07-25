@@ -1,0 +1,31 @@
+name: warmup-jitpack
+# Builds every published release on JitPack, so that failures surface here
+# rather than being hit by the first consumer of the version.
+# The build itself lives in .github/actions/warmup-jitpack, because a release
+# created with GITHUB_TOKEN never triggers another workflow run; a workflow that
+# publishes a release on its own has to run that action directly instead.
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to build on JitPack (e.g. 2.21.5-beta38)"
+        required: true
+
+permissions:
+  contents: read # for checkout
+
+jobs:
+  warmup-jitpack:
+    name: warmup-jitpack
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Warm up JitPack
+        uses: ./.github/actions/warmup-jitpack
+        with:
+          tag: ${{ inputs.tag || github.event.release.tag_name }}

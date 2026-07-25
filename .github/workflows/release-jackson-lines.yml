@@ -1,0 +1,128 @@
+name: release-jackson-lines
+# Releases the same source for every supported Jackson minor line.
+# Triggered by publishing a release (e.g. 2.21.5-beta38), it creates a commit that
+# rewrites only the Jackson version in the version catalog, then tags it as
+# <latest patch of the line>-<same beta number> so JitPack can build it.
+# The tag is pushed only after the tests pass, so a line that is incompatible
+# with the current source is simply not released.
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      base_tag:
+        description: "Tag to derive from (e.g. 2.21.5-beta38)"
+        required: true
+
+permissions:
+  contents: write # for pushing tags and creating releases
+
+jobs:
+  release-jackson-lines:
+    strategy:
+      # A line that fails to build must not take the others down with it.
+      fail-fast: false
+      matrix:
+        # Jackson minor lines to release for.
+        jackson-line: [ '2.21', '2.22' ]
+    name: "Jackson ${{ matrix.jackson-line }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Plan
+        id: plan
+        env:
+          BASE_TAG: ${{ inputs.base_tag || github.event.release.tag_name }}
+          LINE: ${{ matrix.jackson-line }}
+        run: |
+          set -euo pipefail
+          # 2.21.5-beta38 -> beta38
+          suffix="${BASE_TAG#*-}"
+          esc="${LINE//./\\.}"
+          latest=$(curl -fsSL https://repo1.maven.org/maven2/com/fasterxml/jackson/jackson-bom/maven-metadata.xml \
+            | grep -oE "<version>${esc}\.[0-9]+</version>" | grep -oE '[0-9]+(\.[0-9]+)*' | sort -V | tail -n1)
+          [ -n "$latest" ] || { echo "::error::No release found for the Jackson ${LINE} line"; exit 1; }
+          version="${latest}-${suffix}"
+          echo "base_tag=$BASE_TAG" >> "$GITHUB_OUTPUT"
+          echo "jackson=$latest" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          # Skips the base tag itself, re-runs, and recursion from the releases created below.
+          if git ls-remote --exit-code --tags \
+               "https://github.com/${GITHUB_REPOSITORY}.git" "refs/tags/$version" > /dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::$version already exists, skipping"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.plan.outputs.skip == 'false'
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.plan.outputs.base_tag }}
+      - name: Set up java
+        if: steps.plan.outputs.skip == 'false'
+        uses: actions/setup-java@v5
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+      - name: Setup Gradle
+        if: steps.plan.outputs.skip == 'false'
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Rewrite the Jackson version
+        if: steps.plan.outputs.skip == 'false'
+        env:
+          JACKSON: ${{ steps.plan.outputs.jackson }}
+          VERSION: ${{ steps.plan.outputs.version }}
+        run: |
+          set -euo pipefail
+          sed -i -E "s|^jackson = \".*\"|jackson = \"${JACKSON}\"|" gradle/libs.versions.toml
+          # JitPack resolves artifacts by tag name, so the Gradle version must match it.
+          # This also verifies that the rewrite above took effect.
+          actual=$(./gradlew -q properties | sed -n 's/^version: //p')
+          if [ "$actual" != "$VERSION" ]; then
+            echo "::error::Gradle version ($actual) does not match the tag ($VERSION)"; exit 1
+          fi
+
+      - name: Lint
+        if: steps.plan.outputs.skip == 'false'
+        run: ./gradlew lintKotlin
+      - name: Test
+        if: steps.plan.outputs.skip == 'false'
+        run: ./gradlew test
+      - name: Publish Test Report
+        if: always() && steps.plan.outputs.skip == 'false'
+        uses: mikepenz/action-junit-report@v6
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+
+      - name: Tag and release
+        if: steps.plan.outputs.skip == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_URL: ${{ github.server_url }}/${{ github.repository }}
+          BASE_TAG: ${{ steps.plan.outputs.base_tag }}
+          JACKSON: ${{ steps.plan.outputs.jackson }}
+          VERSION: ${{ steps.plan.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # No commit is needed when the base tag already points at the target version.
+          if ! git diff --quiet; then
+            git commit -am "Build $VERSION against Jackson $JACKSON"
+          fi
+          git tag "$VERSION"
+          git push origin "refs/tags/$VERSION"
+          gh release create "$VERSION" --title "$VERSION" \
+            --notes "Build for \`Jackson $JACKSON\`. The source is identical to [$BASE_TAG](${BASE_URL}/releases/tag/$BASE_TAG)."
+
+      # A release created with GITHUB_TOKEN does not trigger warmup-jitpack.yml,
+      # so the shared action is run here instead.
+      - name: Warm up JitPack
+        if: steps.plan.outputs.skip == 'false'
+        uses: ./.github/actions/warmup-jitpack
+        with:
+          tag: ${{ steps.plan.outputs.version }}

@@ -5,6 +5,14 @@ inputs:
   tag:
     description: "Tag to build on JitPack (e.g. 2.21.5-beta38)"
     required: true
+  attempts:
+    description: "How many times to ask JitPack before giving up on the tag"
+    required: false
+    default: '10'
+  interval:
+    description: "Seconds to wait between those attempts"
+    required: false
+    default: '60'
 
 runs:
   using: composite
@@ -12,11 +20,32 @@ runs:
     - shell: bash
       env:
         TAG: ${{ inputs.tag }}
+        ATTEMPTS: ${{ inputs.attempts }}
+        INTERVAL: ${{ inputs.interval }}
       run: |
         set -euo pipefail
         base="https://jitpack.io/com/github/${GITHUB_REPOSITORY}/${TAG}"
+        log=$(mktemp)
         # JitPack builds on demand. Requesting the log starts the build and streams its output,
         # so that the first consumer of a new version does not have to wait for it.
-        curl -fsSL --max-time 900 "${base}/build.log" | tail -n 50
+        #
+        # JitPack answers with 404 while the tag is missing from the ref list it caches from
+        # GitHub, which is the normal state for a tag that was pushed moments ago, so that answer
+        # is waited out. The status has to be read from the response instead of relying on
+        # curl --fail, because it does not tell 404 apart from a timeout or a 5xx.
+        for attempt in $(seq 1 "$ATTEMPTS"); do
+          code=$(curl -sSL --max-time 900 -o "$log" -w '%{http_code}' "${base}/build.log") || code=000
+          case "$code" in
+            2??) break ;;
+            404 | 5?? | 000)
+              if [ "$attempt" -eq "$ATTEMPTS" ]; then
+                echo "::error::JitPack did not pick up ${TAG} (last status ${code})"; exit 1
+              fi
+              echo "::notice::JitPack does not know ${TAG} yet (${code}), retrying in ${INTERVAL}s (${attempt}/${ATTEMPTS})"
+              sleep "$INTERVAL" ;;
+            *) echo "::error::Requesting the JitPack build log failed with ${code}"; exit 1 ;;
+          esac
+        done
+        tail -n 50 "$log"
         # The log alone does not reliably report the result, so the artifact itself is requested.
         curl -fsS --max-time 60 -o /dev/null "${base}/${GITHUB_REPOSITORY#*/}-${TAG}.pom"

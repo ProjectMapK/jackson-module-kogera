@@ -64,7 +64,7 @@ jobs:
           ref: ${{ steps.plan.outputs.base_tag }}
       - name: Set up java
         if: steps.plan.outputs.skip == 'false'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           java-version: '17'
           distribution: 'corretto'

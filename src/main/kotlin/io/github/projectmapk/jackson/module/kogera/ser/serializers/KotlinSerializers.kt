@@ -2,12 +2,15 @@ package io.github.projectmapk.jackson.module.kogera.ser.serializers
 
 import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.JsonParser.NumberType
 import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializationConfig
 import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
 import com.fasterxml.jackson.databind.module.SimpleSerializers
+import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import io.github.projectmapk.jackson.module.kogera.ANY_TO_ANY_METHOD_TYPE
 import io.github.projectmapk.jackson.module.kogera.GenericValueClassUnboxConverter
@@ -29,28 +32,37 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.math.BigInteger
 
-internal object UByteSerializer : StdSerializer<UByte>(UByte::class.java) {
+// The unsigned integer serializers extend StdScalarSerializer so that polymorphic type information
+// (e.g. default typing on an `Any` property) is written as for other scalar values,
+// and report the integer format to schema generators (StdScalarSerializer assumes a string by default).
+internal object UByteSerializer : StdScalarSerializer<UByte>(UByte::class.java) {
     private fun readResolve(): Any = UByteSerializer
 
     override fun serialize(value: UByte, gen: JsonGenerator, provider: SerializerProvider) = gen
         .writeNumber(value.toShort())
+
+    override fun acceptJsonFormatVisitor(visitor: JsonFormatVisitorWrapper, typeHint: JavaType?) = visitIntFormat(visitor, typeHint, NumberType.INT)
 }
 
-internal object UShortSerializer : StdSerializer<UShort>(UShort::class.java) {
+internal object UShortSerializer : StdScalarSerializer<UShort>(UShort::class.java) {
     private fun readResolve(): Any = UShortSerializer
 
     override fun serialize(value: UShort, gen: JsonGenerator, provider: SerializerProvider) = gen
         .writeNumber(value.toInt())
+
+    override fun acceptJsonFormatVisitor(visitor: JsonFormatVisitorWrapper, typeHint: JavaType?) = visitIntFormat(visitor, typeHint, NumberType.INT)
 }
 
-internal object UIntSerializer : StdSerializer<UInt>(UInt::class.java) {
+internal object UIntSerializer : StdScalarSerializer<UInt>(UInt::class.java) {
     private fun readResolve(): Any = UIntSerializer
 
     override fun serialize(value: UInt, gen: JsonGenerator, provider: SerializerProvider) = gen
         .writeNumber(value.toLong())
+
+    override fun acceptJsonFormatVisitor(visitor: JsonFormatVisitorWrapper, typeHint: JavaType?) = visitIntFormat(visitor, typeHint, NumberType.LONG)
 }
 
-internal object ULongSerializer : StdSerializer<ULong>(ULong::class.java) {
+internal object ULongSerializer : StdScalarSerializer<ULong>(ULong::class.java) {
     private fun readResolve(): Any = ULongSerializer
 
     override fun serialize(value: ULong, gen: JsonGenerator, provider: SerializerProvider) {
@@ -60,6 +72,8 @@ internal object ULongSerializer : StdSerializer<ULong>(ULong::class.java) {
             else -> gen.writeNumber(BigInteger(value.toString()))
         }
     }
+
+    override fun acceptJsonFormatVisitor(visitor: JsonFormatVisitorWrapper, typeHint: JavaType?) = visitIntFormat(visitor, typeHint, NumberType.BIG_INTEGER)
 }
 
 // Class must be UnboxableValueClass.

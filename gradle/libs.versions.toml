@@ -15,7 +15,7 @@ jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations
 # test libs
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
-mockk = "io.mockk:mockk:1.14.11"
+mockk = "io.mockk:mockk:1.14.12"
 jackson-xml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml" }
 jackson-csv = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-csv" }
 jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310" }
